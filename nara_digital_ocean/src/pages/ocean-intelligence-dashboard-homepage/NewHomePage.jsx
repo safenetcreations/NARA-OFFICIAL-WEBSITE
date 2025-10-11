@@ -188,7 +188,7 @@ const NewHomePage = () => {
                 <div className="absolute inset-0 rounded-[36px] bg-gradient-to-br from-cyan-500/20 via-transparent to-blue-500/10 blur-3xl" />
                 <div className="relative rounded-[36px] border border-cyan-500/20 bg-slate-950/70 p-6 backdrop-blur-2xl shadow-[0_25px_80px_-40px_rgba(8,145,178,0.6)]">
                   <motion.div
-                    className="relative mx-auto aspect-[3/4] w-full max-w-[360px]"
+                    className="relative mx-auto w-full max-w-[480px] h-[650px]"
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.9, delay: 0.2 }}
@@ -696,25 +696,43 @@ const NewHomePage = () => {
                   Mission operations: 08:30 - 18:00 IST
                 </p>
               </div>
-              <div className="flex gap-3">
-                {[Icons.Twitter, Icons.Facebook, Icons.Linkedin, Icons.Youtube].map((IconComponent, index) => (
-                  <a
-                    key={index}
-                    href="#"
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-700/60 bg-slate-950/40 text-slate-300 transition hover:border-cyan-400/60 hover:text-cyan-200"
-                  >
-                    <IconComponent className="w-4 h-4" />
-                  </a>
-                ))}
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src="https://firebasestorage.googleapis.com/v0/b/nara-web-73384.firebasestorage.app/o/sri%20lankan%20goverment%2Fsrilankan%20embelm.png?alt=media"
+                      alt="Government of Sri Lanka emblem"
+                      className="h-10 w-10 object-contain drop-shadow-[0_0_12px_rgba(6,182,212,0.35)]"
+                      loading="lazy"
+                    />
+                    <img
+                      src="https://firebasestorage.googleapis.com/v0/b/nara-web-73384.firebasestorage.app/o/sri%20lankan%20goverment%2Fsl-flag-1.png?alt=media"
+                      alt="Flag of Sri Lanka"
+                      className="h-8 w-12 object-cover rounded-sm ring-1 ring-cyan-300/40"
+                      loading="lazy"
+                    />
+                    <span className="text-[11px] uppercase tracking-[0.35em] text-cyan-200/90">
+                      This is a Sri Lanka Government website
+                    </span>
+                  </div>
+                  <div className="flex gap-3">
+                    {[Icons.Twitter, Icons.Facebook, Icons.Linkedin, Icons.Youtube].map((IconComponent, index) => (
+                      <a
+                        key={index}
+                        href="#"
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-700/60 bg-slate-950/40 text-slate-300 transition hover:border-cyan-400/60 hover:text-cyan-200"
+                      >
+                        <IconComponent className="w-4 h-4" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 border-t border-slate-800/80 pt-8 text-xs text-slate-400">
-            <p>
-              © 2024 National Aquatic Resources Research & Development Agency. Crafted by www.safenetcreations.com.
-            </p>
-            <div className="flex flex-wrap items-center gap-4">
+          <div className="border-t border-slate-800/80 pt-8 text-xs text-slate-400">
+            <div className="flex flex-wrap items-center justify-center gap-4">
               <a href="#" className="hover:text-cyan-300 transition">Privacy &amp; Data Ethics</a>
               <a href="#" className="hover:text-cyan-300 transition">Terms of Collaboration</a>
               <a href="#" className="hover:text-cyan-300 transition">Transparency Portal</a>
@@ -722,6 +740,9 @@ const NewHomePage = () => {
                 <Icons.ShieldCheck className="w-4 h-4" /> ISO 27001 | GovCERT SL Aligned
               </span>
             </div>
+            <p className="mt-6 text-center">
+              © 2025 National Aquatic Resources Research & Development Agency. Crafted by <a href="https://www.safenetcreations.com" className="text-cyan-300 hover:text-cyan-100 transition" target="_blank" rel="noopener noreferrer">www.safenetcreations.com</a>.
+            </p>
           </div>
         </div>
       </footer>

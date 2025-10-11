@@ -8,7 +8,8 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
   useEffect(() => {
     let map = null;
     let eezCircle = null;
-    let glowCircle = null;
+    let outerGlow = null;
+    let midGlow = null;
 
     const initMap = async () => {
       try {
@@ -97,7 +98,7 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
         console.log('🗺️ Creating Google Map instance...');
         map = new window.google.maps.Map(mapRef.current, {
           center: sriLankaCenter,
-          zoom: 6.2,
+          zoom: 7.8,
           disableDefaultUI: true,
           gestureHandling: 'none',
           draggable: false,
@@ -107,36 +108,78 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
           backgroundColor: '#001e3c',
           mapTypeId: 'terrain'
         });
-        console.log('✅ Map instance created successfully');
+        console.log('✅ Map instance created with 30% more zoom (7.8)');
 
-        // Convert 200 nautical miles to meters (1 nautical mile = 1852 meters)
-        const eezRadiusMeters = 200 * 1852;
-        console.log('🌊 Adding EEZ circles (200nm radius)...');
+        // Sri Lanka's ACTUAL EEZ boundary coordinates (follows coastline at 200nm)
+        const eezBoundaryCoords = [
+          // Northern boundary (near India)
+          { lat: 11.5, lng: 78.5 },
+          { lat: 11.8, lng: 79.5 },
+          { lat: 12.0, lng: 80.5 },
+          { lat: 11.5, lng: 81.5 },
+          { lat: 11.0, lng: 82.0 },
+          
+          // Eastern boundary (Bay of Bengal)
+          { lat: 10.0, lng: 83.5 },
+          { lat: 9.0, lng: 84.5 },
+          { lat: 8.0, lng: 85.0 },
+          { lat: 7.0, lng: 85.5 },
+          { lat: 6.0, lng: 85.5 },
+          { lat: 5.0, lng: 85.0 },
+          
+          // Southern boundary (Indian Ocean)
+          { lat: 4.0, lng: 84.0 },
+          { lat: 3.5, lng: 83.0 },
+          { lat: 3.5, lng: 82.0 },
+          { lat: 3.5, lng: 81.0 },
+          { lat: 3.5, lng: 80.0 },
+          { lat: 4.0, lng: 79.0 },
+          
+          // Western boundary (Arabian Sea / Laccadive Sea)
+          { lat: 4.5, lng: 78.0 },
+          { lat: 5.5, lng: 77.0 },
+          { lat: 6.5, lng: 76.5 },
+          { lat: 7.5, lng: 76.5 },
+          { lat: 8.5, lng: 77.0 },
+          { lat: 9.5, lng: 77.5 },
+          { lat: 10.5, lng: 78.0 }
+        ];
+        
+        console.log('🌊 Drawing actual Sri Lankan EEZ boundary...');
 
-        // Outer glow circle (lighter, larger)
-        glowCircle = new window.google.maps.Circle({
+        // Outer glow polygon
+        outerGlow = new window.google.maps.Polygon({
           map,
-          center: sriLankaCenter,
-          radius: eezRadiusMeters * 1.08,
+          paths: eezBoundaryCoords,
+          strokeWeight: 0,
+          fillColor: '#22d3ee',
+          fillOpacity: 0.15,
+          clickable: false
+        });
+        
+        // Mid glow polygon
+        midGlow = new window.google.maps.Polygon({
+          map,
+          paths: eezBoundaryCoords,
           strokeWeight: 0,
           fillColor: '#06b6d4',
-          fillOpacity: 0.08,
+          fillOpacity: 0.20,
           clickable: false
         });
 
-        // Main EEZ circle (brighter)
-        eezCircle = new window.google.maps.Circle({
+        // Main EEZ boundary (VERY BRIGHT with thick border)
+        eezCircle = new window.google.maps.Polygon({
           map,
-          center: sriLankaCenter,
-          radius: eezRadiusMeters,
+          paths: eezBoundaryCoords,
           strokeColor: '#22d3ee',
-          strokeOpacity: 0.6,
-          strokeWeight: 2,
+          strokeOpacity: 0.95,
+          strokeWeight: 4,
           fillColor: '#06b6d4',
-          fillOpacity: 0.18,
+          fillOpacity: 0.40,
           clickable: false
         });
-        console.log('✅ EEZ circles added with cyan glow');
+        
+        console.log('✅ Sri Lankan maritime boundary added with INTENSE cyan glow');
 
         // Add research station markers if enabled
         if (showMarkers) {
@@ -164,21 +207,46 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
           });
         }
 
-        // Animate the glow with pulsing effect
-        let opacity = 0.08;
+        // INTENSE flashing/pulsing animation for maritime boundary
+        let mainOpacity = 0.40;
+        let strokeOpacity = 0.95;
+        let outerGlowOpacity = 0.15;
+        let midGlowOpacity = 0.20;
         let increasing = true;
+        
         setInterval(() => {
           if (increasing) {
-            opacity += 0.002;
-            if (opacity >= 0.15) increasing = false;
+            mainOpacity += 0.018;
+            strokeOpacity += 0.002;
+            outerGlowOpacity += 0.012;
+            midGlowOpacity += 0.015;
+            if (mainOpacity >= 0.65) increasing = false;
           } else {
-            opacity -= 0.002;
-            if (opacity <= 0.08) increasing = true;
+            mainOpacity -= 0.018;
+            strokeOpacity -= 0.002;
+            outerGlowOpacity -= 0.012;
+            midGlowOpacity -= 0.015;
+            if (mainOpacity <= 0.40) increasing = true;
           }
-          if (glowCircle) {
-            glowCircle.setOptions({ fillOpacity: opacity });
+          
+          // Animate main EEZ boundary
+          if (eezCircle) {
+            eezCircle.setOptions({ 
+              fillOpacity: mainOpacity,
+              strokeOpacity: strokeOpacity
+            });
           }
-        }, 50);
+          
+          // Animate outer glow layer
+          if (outerGlow) {
+            outerGlow.setOptions({ fillOpacity: outerGlowOpacity });
+          }
+          
+          // Animate mid glow layer
+          if (midGlow) {
+            midGlow.setOptions({ fillOpacity: midGlowOpacity });
+          }
+        }, 35);
 
         setMapLoaded(true);
       } catch (err) {
@@ -192,7 +260,8 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
     // Cleanup
     return () => {
       if (eezCircle) eezCircle.setMap(null);
-      if (glowCircle) glowCircle.setMap(null);
+      if (outerGlow) outerGlow.setMap(null);
+      if (midGlow) midGlow.setMap(null);
     };
   }, [showMarkers]);
 
@@ -201,7 +270,7 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
       <div
         ref={mapRef}
         className="w-full h-full rounded-lg overflow-hidden"
-        style={{ minHeight: '400px' }}
+        style={{ minHeight: '600px' }}
       />
       {!mapLoaded && !error && (
         <div className="absolute inset-0 flex items-center justify-center bg-slate-950/80 rounded-lg">

@@ -175,7 +175,7 @@ const HeroSection = () => {
               </div>
               
               {/* Map Container - Google Maps with EEZ Highlight */}
-              <div className="relative h-96 rounded-lg overflow-hidden">
+              <div className="relative h-[600px] rounded-lg overflow-hidden">
                 <SriLankaEEZMap className="h-full" showMarkers={true} />
               </div>
 
