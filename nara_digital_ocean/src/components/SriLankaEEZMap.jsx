@@ -12,23 +12,38 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
 
     const initMap = async () => {
       try {
+        const apiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY || 'AIzaSyBjDI-36r6TA4UAimHENGrK8NP8jh5d7Sg';
+        console.log('🗺️ Initializing Google Maps...');
+        console.log('📍 API Key:', apiKey ? `${apiKey.substring(0, 20)}...` : 'NOT FOUND');
+        
         // Check if Google Maps is already loaded
         if (!window.google?.maps) {
+          console.log('⏳ Loading Google Maps API...');
           // Load Google Maps dynamically
           const script = document.createElement('script');
-          const apiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY || 'AIzaSyAm7WGzLY7qM1i3pLgLhkceS1LTplYh6Lo';
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=geometry`;
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
           script.async = true;
           script.defer = true;
           
           await new Promise((resolve, reject) => {
-            script.onload = resolve;
-            script.onerror = reject;
+            script.onload = () => {
+              console.log('✅ Google Maps API loaded successfully');
+              resolve();
+            };
+            script.onerror = (err) => {
+              console.error('❌ Failed to load Google Maps API:', err);
+              reject(err);
+            };
             document.head.appendChild(script);
           });
+        } else {
+          console.log('✅ Google Maps API already loaded');
         }
 
-        if (!mapRef.current) return;
+        if (!mapRef.current) {
+          console.log('⚠️ Map container ref not ready');
+          return;
+        }
 
         // Sri Lanka center coordinates
         const sriLankaCenter = { lat: 7.8731, lng: 80.7718 };
@@ -79,6 +94,7 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
         ];
 
         // Initialize map
+        console.log('🗺️ Creating Google Map instance...');
         map = new window.google.maps.Map(mapRef.current, {
           center: sriLankaCenter,
           zoom: 6.2,
@@ -91,9 +107,11 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
           backgroundColor: '#001e3c',
           mapTypeId: 'terrain'
         });
+        console.log('✅ Map instance created successfully');
 
         // Convert 200 nautical miles to meters (1 nautical mile = 1852 meters)
         const eezRadiusMeters = 200 * 1852;
+        console.log('🌊 Adding EEZ circles (200nm radius)...');
 
         // Outer glow circle (lighter, larger)
         glowCircle = new window.google.maps.Circle({
@@ -118,6 +136,7 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
           fillOpacity: 0.18,
           clickable: false
         });
+        console.log('✅ EEZ circles added with cyan glow');
 
         // Add research station markers if enabled
         if (showMarkers) {
