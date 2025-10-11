@@ -1,0 +1,662 @@
+{
+    "metadata": {
+        "total_articles": 18,
+        "categories": {
+            "Education & Outreach": 2,
+            "Research & Development": 1,
+            "Policy & Management": 1,
+            "Technology & Innovation": 2,
+            "Environmental Initiatives": 1,
+            "Conservation & Awareness": 1,
+            "Community Development": 2,
+            "Capacity Building": 1,
+            "International Cooperation": 3,
+            "Cultural Events": 1,
+            "Industry Support": 1,
+            "Institutional Milestones": 1,
+            "Conservation Partnerships": 1
+        },
+        "export_date": "2025-09-19",
+        "source": "NARA Official Website",
+        "date_range": {
+            "from": "2025-01-20",
+            "to": "2025-09-15"
+        }
+    },
+    "articles": [
+        {
+            "id": 1,
+            "title": "A Day of Discovery at the Mangrove Forest",
+            "slug": "day-discovery-mangrove-forest",
+            "category": "Education & Outreach",
+            "date": "2025-09-15",
+            "location": "NARA Kadolkale Regional Research Center",
+            "author": "Ms. Nisanasala Jayasundara",
+            "author_position": "Scientist, NARA",
+            "read_time": 4,
+            "summary": "Grade 6 students from Maris Stella College, Negombo, explored mangrove ecosystems through hands-on workshops and field sessions, learning about conservation and environmental stewardship.",
+            "content": "A group of curious minds from Maris Stella College, Negombo, recently embarked on an unforgettable journey to the NARA Kadolkale Regional Research Center. Grade 6 students and their two teachers dived deep into the secrets of mangrove ecosystems through engaging workshops and hands-on field sessions conducted by Ms. Nisanasala Jayasundara, Scientist, NARA.\n\nThe educational program focused on mangrove adaptations, species identification, and the critical role these ecosystems play in coastal protection. Students learned about the unique survival mechanisms that allow mangroves to thrive in saltwater environments and their importance in biodiversity conservation.\n\nThrough interactive sessions, the young learners discovered the various threats facing mangrove ecosystems and the legal frameworks in place to protect them. The program emphasized the importance of environmental stewardship and inspired the next generation to become champions of conservation.",
+            "key_points": [
+                "Students learned about mangrove adaptations and survival mechanisms",
+                "Hands-on identification of true mangrove species",
+                "Education on conservation threats and legal frameworks",
+                "Inspiring the next generation of environmental stewards"
+            ],
+            "featured_image": "/assets/images/news/mangrove_discovery.jpg",
+            "tags": [
+                "Education",
+                "Mangroves",
+                "Conservation",
+                "Student Programs",
+                "Environmental Stewardship"
+            ],
+            "is_featured": true,
+            "related_articles": [
+                2,
+                6,
+                13
+            ],
+            "social_shares": 142,
+            "views": 1250
+        },
+        {
+            "id": 2,
+            "title": "NARA and NAQDA Join Forces for New Research Centre",
+            "slug": "nara-naqda-research-centre-partnership",
+            "category": "Research & Development",
+            "date": "2025-08-30",
+            "location": "Kusala Bangadeniya, Northwestern Province",
+            "author": "Prof. Sanath Hettiarachchi",
+            "author_position": "Chairman of NARA",
+            "read_time": 5,
+            "summary": "Marine Species Breeding and Aquaculture Research Centre established through strategic partnership between NARA and NAQDA, focusing on marine ornamental fish and sustainable aquaculture practices.",
+            "content": "The Marine Species Breeding and Aquaculture Research Centre has been established through a groundbreaking partnership between NARA and NAQDA. The MoU was signed by Prof. Sanath Hettiarachchi, Chairman of NARA, and Mr. Kithsiri Dharmapriya, Chairman of NAQDA, marking a significant milestone in Sri Lanka's aquaculture development.\n\nThis three-year initiative, beginning August 2025, will focus on the breeding and cultivation of marine ornamental fish, shrimp, corals, crabs, lobsters, and sea cucumbers. Special emphasis will be placed on breeding green mussels (Perna viridis), a species with high commercial value and nutritional benefits.\n\nThe center will also conduct crucial research on live feeds and water quality management, essential components for successful aquaculture operations. The facility aims to support entrepreneurs and university students through training programs and technology transfer initiatives.",
+            "key_points": [
+                "Focus on marine ornamental fish, shrimp, corals, crabs, lobsters, and sea cucumbers",
+                "Special emphasis on breeding green mussels (Perna viridis)",
+                "Research on live feeds and water quality management",
+                "Support for entrepreneurs and university students",
+                "Three-year initiative beginning August 2025"
+            ],
+            "featured_image": "/assets/images/news/nara_naqda_partnership.jpg",
+            "tags": [
+                "Partnership",
+                "Aquaculture",
+                "Research",
+                "Marine Species",
+                "Innovation"
+            ],
+            "is_featured": true,
+            "related_articles": [
+                4,
+                15,
+                18
+            ],
+            "social_shares": 89,
+            "views": 956
+        },
+        {
+            "id": 3,
+            "title": "National Workshop on Fishery Management Inventory (FMInv) \u2013 Sri Lanka",
+            "slug": "national-fishery-management-inventory-workshop",
+            "category": "Policy & Management",
+            "date": "2025-08-04",
+            "location": "Colombo",
+            "author": "NARA Research Team",
+            "author_position": "Marine Fisheries Division",
+            "read_time": 6,
+            "summary": "NARA hosted international workshop to strengthen sustainable fisheries management in Sri Lanka with experts from FAO, BOBP-IGO, and ICAR-CIFE.",
+            "content": "NARA successfully hosted the National Workshop on Fishery Management Inventory from August 4-6, 2025, bringing together national and international fisheries experts, scientists, and fishing community representatives. The workshop was facilitated by renowned international experts from FAO, BOBP-IGO, and ICAR-CIFE.\n\nThe workshop focused on three critical fishery management areas: sea cucumber fishery in Northern Sri Lanka, Puttalam Lagoon fishery management plans, and small pelagic fishery management in the Southwest coast. These sessions provided valuable insights into sustainable fishing practices and ecosystem-based management approaches.\n\nParticipants engaged in detailed discussions about current challenges, best practices, and innovative solutions for sustainable fisheries management. The workshop resulted in comprehensive action plans for each fishery sector, emphasizing community participation and scientific evidence-based decision making.",
+            "key_points": [
+                "International facilitators from FAO, BOBP-IGO, and ICAR-CIFE",
+                "Focus on sea cucumber fishery in Northern Sri Lanka",
+                "Puttalam Lagoon fishery management plans",
+                "Small pelagic fishery in Southwest coast management",
+                "Enhanced sustainable fisheries management initiatives"
+            ],
+            "featured_image": "/assets/images/news/fishery_management_workshop.jpg",
+            "tags": [
+                "Workshop",
+                "Fishery Management",
+                "International Cooperation",
+                "Sustainability"
+            ],
+            "is_featured": false,
+            "related_articles": [
+                8,
+                14,
+                3
+            ],
+            "social_shares": 67,
+            "views": 743
+        },
+        {
+            "id": 4,
+            "title": "NARA with Elcome: Transforming Sri Lanka's Fishing Industry",
+            "slug": "nara-elcome-fishing-industry-transformation",
+            "category": "Technology & Innovation",
+            "date": "2025-07-25",
+            "location": "NARA Headquarters",
+            "author": "Technology Integration Team",
+            "author_position": "NARA Innovation Division",
+            "read_time": 5,
+            "summary": "Partnership with Elcome International to enhance maritime safety and fleet management through cutting-edge Starlink technology and real-time monitoring systems.",
+            "content": "Elcome International LLC, a leading maritime services company, met with NARA officials to discuss revolutionary maritime technology services that could transform Sri Lanka's fisheries industry through their advanced Starlink customer portal.\n\nThe partnership will introduce real-time weather updates and navigation charts, enabling fishermen to make informed decisions about their fishing expeditions. The system will also provide seawater temperature and dissolved oxygen measurements, crucial data for optimizing fishing locations and catch quality.\n\nAdditionally, the technology includes live vessel tracking and CCTV monitoring for enhanced safety, emergency communication and medical support capabilities, and e-commerce facilities for direct buyer communication. A prototype model will be tested on selected multi-day boats to demonstrate the technology's effectiveness.",
+            "key_points": [
+                "Real-time weather updates and navigation charts",
+                "Seawater temperature and dissolved oxygen measurements",
+                "Live vessel tracking and CCTV monitoring",
+                "Emergency communication and medical support",
+                "E-commerce facilities for direct buyer communication",
+                "Prototype model for selected multi-day boats"
+            ],
+            "featured_image": "/assets/images/news/elcome_partnership.jpg",
+            "tags": [
+                "Technology",
+                "Maritime Safety",
+                "Innovation",
+                "Fisheries",
+                "Starlink"
+            ],
+            "is_featured": true,
+            "related_articles": [
+                9,
+                2,
+                4
+            ],
+            "social_shares": 156,
+            "views": 1345
+        },
+        {
+            "id": 5,
+            "title": "Sustainable Waste Management Partnership with MAS Active",
+            "slug": "sustainable-waste-management-mas-active",
+            "category": "Environmental Initiatives",
+            "date": "2025-07-09",
+            "location": "NARA Headquarters, Colombo 15",
+            "author": "Environmental Management Team",
+            "author_position": "NARA Sustainability Division",
+            "read_time": 3,
+            "summary": "MAS Active Linea Intimo donates color-coded garbage bins to promote sustainable waste management practices at NARA facilities.",
+            "content": "NARA received 48 color-coded garbage bins from MAS Active Linea Intimo as part of the comprehensive Sustainable Waste Management Project, enabling proper waste segregation and disposal practices across all NARA facilities.\n\nThe donation includes bins with a sophisticated color-coded system: green for organic waste, blue for paper and cardboard, orange for plastics and metal, and red for glass and hazardous materials. This system aligns perfectly with the Clean Sri Lanka Concept and demonstrates strong corporate social responsibility.\n\nAs part of the partnership, MAS representatives were given comprehensive tours of NARA's laboratories and research vessels to understand the organization's environmental research capabilities and commitment to sustainability.",
+            "key_points": [
+                "48 bins with color-coded system (green, blue, orange, red)",
+                "Proper separation of organic waste, paper, plastics, and glass",
+                "Alignment with Clean Sri Lanka Concept",
+                "Corporate social responsibility demonstration",
+                "Laboratory and research vessel tours for MAS representatives"
+            ],
+            "featured_image": "/assets/images/news/waste_management_partnership.jpg",
+            "tags": [
+                "Sustainability",
+                "Partnership",
+                "Environmental Management",
+                "Corporate Responsibility"
+            ],
+            "is_featured": false,
+            "related_articles": [
+                1,
+                6,
+                17
+            ],
+            "social_shares": 78,
+            "views": 634
+        },
+        {
+            "id": 6,
+            "title": "NARA Commemorates World Mangrove Day",
+            "slug": "world-mangrove-day-commemoration",
+            "category": "Conservation & Awareness",
+            "date": "2025-07-26",
+            "location": "NARA Kadolkale Regional Research Center",
+            "author": "Conservation Team",
+            "author_position": "NARA Coastal Ecosystems Division",
+            "read_time": 4,
+            "summary": "Awareness workshop with local and international participants to enhance understanding of mangrove ecosystems and conservation efforts.",
+            "content": "An impactful awareness workshop was held at NARA Kadolkale Regional Research Center in celebration of World Mangrove Day, bringing together local and international participants including representatives from Korean Maritime and Ocean University.\n\nThe workshop covered comprehensive mangrove ecosystem identification and the critical importance of these coastal guardians. Participants learned about the ecological and socio-economic significance of mangroves, including their role in coastal protection, carbon sequestration, and biodiversity conservation.\n\nThe program highlighted current threats to mangrove ecosystems and the legal protection frameworks in place. Participants engaged in hands-on restoration activities in Negombo Lagoon, demonstrating practical conservation techniques and fostering international collaboration in environmental protection.",
+            "key_points": [
+                "Mangrove ecosystem identification and importance",
+                "Ecological and socio-economic significance",
+                "Current threats and legal protection frameworks",
+                "Hands-on restoration activities in Negombo Lagoon",
+                "International collaboration with Korean institutions"
+            ],
+            "featured_image": "/assets/images/news/world_mangrove_day.jpg",
+            "tags": [
+                "Mangroves",
+                "Conservation",
+                "International Cooperation",
+                "Education"
+            ],
+            "is_featured": false,
+            "related_articles": [
+                1,
+                13,
+                14
+            ],
+            "social_shares": 94,
+            "views": 812
+        },
+        {
+            "id": 7,
+            "title": "Udawalawa Reservoir Fishing Community Capacity Enhancement",
+            "slug": "udawalawa-fishing-community-capacity-enhancement",
+            "category": "Community Development",
+            "date": "2025-07-15",
+            "location": "Udawalawa Reservoir",
+            "author": "Community Development Team",
+            "author_position": "NARA Socio-Economic Division",
+            "read_time": 4,
+            "summary": "Three-day workshop targeting unemployed women in fishing community for value-added fishery product development and entrepreneurship.",
+            "content": "NARA scientists conducted a comprehensive three-day workshop targeting unemployed women from the local fishing community, focusing on value-added fishery products and entrepreneurship skills development.\n\nParticipants received hands-on training in preparing innovative seaweed products including jelly and pudding, as well as traditional smoked fish and modern fish patty preparation techniques. The workshop also covered essential marketing strategies and entrepreneurship education to help women establish sustainable self-employment opportunities.\n\nThe program included plans for a demonstration at the popular Udawalawa Elephant Orphanage, providing participants with direct market exposure and networking opportunities with tourists and local businesses.",
+            "key_points": [
+                "Training on seaweed products (jelly and pudding)",
+                "Smoked fish and fish patty preparation",
+                "Marketing and entrepreneurship education",
+                "Women's empowerment in fisheries",
+                "Planned demonstration at Udawalawa Elephant Orphanage",
+                "Sustainable self-employment opportunities"
+            ],
+            "featured_image": "/assets/images/news/udawalawa_capacity_building.jpg",
+            "tags": [
+                "Community Development",
+                "Women Empowerment",
+                "Value Addition",
+                "Training"
+            ],
+            "is_featured": false,
+            "related_articles": [
+                13,
+                7,
+                2
+            ],
+            "social_shares": 123,
+            "views": 987
+        },
+        {
+            "id": 8,
+            "title": "Ecosystem Approach to Fisheries Management Workshop",
+            "slug": "ecosystem-approach-fisheries-management-workshop",
+            "category": "Capacity Building",
+            "date": "2025-07-10",
+            "location": "Colombo",
+            "author": "BOBP-IGO Collaboration Team",
+            "author_position": "Regional Fisheries Management",
+            "read_time": 5,
+            "summary": "BOBP-IGO and NARA collaborate on EAFM capacity-building workshop for sustainable fisheries management across multiple agencies.",
+            "content": "The Bay of Bengal Programme Inter-Governmental Organization (BOBP-IGO), in collaboration with NARA, conducted a comprehensive capacity-building workshop on the Ecosystem Approach to Fisheries Management (EAFM).\n\nThe workshop brought together multi-agency participation from key institutions across Sri Lanka, focusing on practical case studies from Puttalam Lagoon and Jaffna Lagoon. Participants learned to integrate ecological, social, and governance aspects into fisheries management decisions.\n\nExpert guidance from regional specialists provided insights into best practices and innovative approaches to sustainable fisheries management. The workshop significantly advanced ecosystem-based fisheries management understanding and implementation capacity among participating institutions.",
+            "key_points": [
+                "Multi-agency participation from key institutions",
+                "Focus on Puttalam Lagoon and Jaffna Lagoon case studies",
+                "Integration of ecological, social, and governance aspects",
+                "Expert guidance from regional specialists",
+                "Advancement of ecosystem-based fisheries management"
+            ],
+            "featured_image": "/assets/images/news/eafm_workshop.jpg",
+            "tags": [
+                "EAFM",
+                "Capacity Building",
+                "International Cooperation",
+                "Fisheries Management"
+            ],
+            "is_featured": false,
+            "related_articles": [
+                3,
+                14,
+                8
+            ],
+            "social_shares": 56,
+            "views": 678
+        },
+        {
+            "id": 9,
+            "title": "NARA Partners with Dialog for Real-time Fish Hotspot Alerts",
+            "slug": "nara-dialog-fish-hotspot-alerts",
+            "category": "Technology & Innovation",
+            "date": "2025-06-20",
+            "location": "NARA Headquarters",
+            "author": "Digital Innovation Team",
+            "author_position": "NARA Technology Division",
+            "read_time": 3,
+            "summary": "Partnership with Dialog Axiata to provide SMS-based fishing ground advisories through the trilingual Sayuru platform.",
+            "content": "NARA and Dialog Axiata signed a groundbreaking agreement to disseminate potential fishing ground advisories through Dialog's innovative trilingual Sayuru fishing app, delivering real-time tuna location information via SMS to registered fishermen.\n\nThis partnership leverages NARA's 16+ years of fish forecasting experience, providing daily updates on tuna populations and optimal fishing locations. The service helps fishermen optimize their fuel costs and increase catch efficiency through scientific data-driven advisories.\n\nThe trilingual platform ensures accessibility for fishermen from different linguistic backgrounds, making vital fishing information available in Sinhala, Tamil, and English.",
+            "key_points": [
+                "Integration with Dialog's Sayuru fishing app",
+                "Real-time tuna location SMS alerts",
+                "Cost optimization for fishermen",
+                "Trilingual platform support",
+                "16+ years of fish forecasting experience",
+                "Daily updates on tuna populations"
+            ],
+            "featured_image": "/assets/images/news/dialog_partnership.jpg",
+            "tags": [
+                "Technology",
+                "SMS Alerts",
+                "Fisheries",
+                "Partnership",
+                "Innovation"
+            ],
+            "is_featured": false,
+            "related_articles": [
+                4,
+                9,
+                15
+            ],
+            "social_shares": 201,
+            "views": 1456
+        },
+        {
+            "id": 10,
+            "title": "NARA Kowul Wasanthaya - 2025",
+            "slug": "nara-kowul-wasanthaya-2025",
+            "category": "Cultural Events",
+            "date": "2025-04-15",
+            "location": "NARA Headquarters",
+            "author": "Cultural Committee",
+            "author_position": "NARA Administration",
+            "read_time": 2,
+            "summary": "Annual Sinhala and Tamil New Year celebration fostering cultural unity and community spirit at NARA.",
+            "content": "NARA celebrated the traditional Sinhala and Tamil New Year with vibrant cultural festivities and active staff participation. The celebration embodied the spirit of renewal and unity that characterizes this important cultural milestone.\n\nStaff members from all divisions participated in traditional games, cultural performances, and community building activities. The event strengthened bonds among colleagues and celebrated Sri Lanka's rich cultural heritage.",
+            "key_points": [
+                "Traditional New Year celebrations",
+                "Staff cultural participation",
+                "Community building activities"
+            ],
+            "featured_image": "/assets/images/news/kowul_wasanthaya.jpg",
+            "tags": [
+                "Cultural Events",
+                "New Year",
+                "Staff Activities",
+                "Community"
+            ],
+            "is_featured": false,
+            "related_articles": [
+                16,
+                10,
+                12
+            ],
+            "social_shares": 87,
+            "views": 543
+        },
+        {
+            "id": 11,
+            "title": "Scripps Grants Modern Multi-media Projector to NARA",
+            "slug": "scripps-multimedia-projector-grant",
+            "category": "International Cooperation",
+            "date": "2025-03-20",
+            "location": "NARA Headquarters",
+            "author": "International Relations Team",
+            "author_position": "NARA Global Partnerships",
+            "read_time": 3,
+            "summary": "Scripps Institute provides advanced presentation equipment to enhance NARA's research capabilities and international collaboration.",
+            "content": "NARA received a state-of-the-art multi-media projector from the prestigious Scripps Institute as part of the successful completion of the ADB-Scripps collaborative project, significantly enhancing research presentation capabilities.\n\nThis modern equipment will facilitate better knowledge sharing during scientific conferences, workshops, and training programs. The donation represents the strong partnership between NARA and Scripps Institute in advancing marine science research and education.\n\nThe projector will be utilized in NARA's main conference hall for national and international scientific presentations, training sessions, and collaborative research meetings.",
+            "key_points": [
+                "Advanced presentation equipment from Scripps Institute",
+                "Part of successful ADB-Scripps project",
+                "Enhancement of research activities",
+                "International collaboration benefits"
+            ],
+            "featured_image": "/assets/images/news/scripps_projector.jpg",
+            "tags": [
+                "International Cooperation",
+                "Equipment",
+                "Research Enhancement",
+                "Scripps"
+            ],
+            "is_featured": false,
+            "related_articles": [
+                14,
+                11,
+                6
+            ],
+            "social_shares": 45,
+            "views": 392
+        },
+        {
+            "id": 12,
+            "title": "Chamber of Marine Industry Partnership for Environmental Education",
+            "slug": "marine-industry-environmental-education-partnership",
+            "category": "Education & Outreach",
+            "date": "2025-03-15",
+            "location": "NARA Headquarters",
+            "author": "Education Partnership Team",
+            "author_position": "NARA Educational Outreach",
+            "read_time": 4,
+            "summary": "NARA and Chamber of Marine Industry collaborate on environmental education for future generations through innovative youth programs.",
+            "content": "NARA initiated strategic dialogue with the Chamber of Marine Industry Sri Lanka to build robust private sector partnerships for creating environmentally conscious future citizens through expanded Aqua Club and Junior Scientists programs.\n\nThe partnership focuses on developing the next generation of marine industry professionals while instilling strong environmental values. The collaboration will offer globally recognized certifications and hands-on learning experiences in marine science and conservation.\n\nThis initiative represents a significant step toward integrating private sector expertise with NARA's educational mission, ensuring sustainable workforce development for Sri Lanka's marine sector.",
+            "key_points": [
+                "Private sector partnership development",
+                "Focus on youth environmental education",
+                "Marine industry workforce development",
+                "Aqua Club and Junior Scientists program expansion",
+                "Globally recognized certifications"
+            ],
+            "featured_image": "/assets/images/news/marine_industry_partnership.jpg",
+            "tags": [
+                "Education",
+                "Partnership",
+                "Youth Development",
+                "Marine Industry"
+            ],
+            "is_featured": false,
+            "related_articles": [
+                1,
+                12,
+                7
+            ],
+            "social_shares": 72,
+            "views": 589
+        },
+        {
+            "id": 13,
+            "title": "Livelihood Development Through Mangrove-based Products",
+            "slug": "livelihood-development-mangrove-products",
+            "category": "Community Development",
+            "date": "2025-03-14",
+            "location": "NARA Kadolkale Regional Research Center",
+            "author": "Livelihood Development Team",
+            "author_position": "NARA Community Engagement",
+            "read_time": 5,
+            "summary": "Workshop on innovative mangrove-based products for women's livelihood enhancement in fishing communities.",
+            "content": "NARA conducted an innovative awareness workshop focused on developing groundbreaking mangrove-based products to support livelihood enhancement and empower women in fishing communities.\n\nThe workshop introduced participants to creating herbal tea from Acanthus illicifolius, a mangrove species with medicinal properties, and extracting natural dyes from Rhizophora mucronata and Xylocarpus granatum for textile and craft applications.\n\nSeventy participants from various fishing communities received field exposure for species identification and hands-on training in product development. The program specifically emphasized women's empowerment by providing sustainable income generation opportunities through mangrove resource utilization.",
+            "key_points": [
+                "Herbal tea from Acanthus illicifolius",
+                "Mangrove dye extraction from Rhizophora mucronata and Xylocarpus granatum",
+                "Field exposure for species identification",
+                "70 participants from fishing communities",
+                "Women's empowerment focus"
+            ],
+            "featured_image": "/assets/images/news/mangrove_products.jpg",
+            "tags": [
+                "Livelihood Development",
+                "Mangroves",
+                "Women Empowerment",
+                "Innovation"
+            ],
+            "is_featured": false,
+            "related_articles": [
+                1,
+                6,
+                7
+            ],
+            "social_shares": 108,
+            "views": 923
+        },
+        {
+            "id": 14,
+            "title": "Norway-Sri Lanka Bilateral Project Phase III Inception",
+            "slug": "norway-sri-lanka-bilateral-project-phase-3",
+            "category": "International Cooperation",
+            "date": "2025-02-17",
+            "location": "Ministry of Fisheries, Aquatic and Ocean Resources",
+            "author": "International Projects Team",
+            "author_position": "NARA Global Partnerships",
+            "read_time": 6,
+            "summary": "Launch of Phase III (2025-2028) of Norway-Sri Lanka bilateral project for sustainable marine resource management.",
+            "content": "The inception meeting for Norway-Sri Lanka Bilateral Project Phase III was successfully held, marking the launch of an ambitious 2025-2028 project timeline focused on strengthening sustainable management of marine resources through enhanced collaboration with Norwegian institutions.\n\nThis phase emphasizes collaboration with the prestigious Institute of Marine Research Norway, bringing world-class expertise to Sri Lanka's marine sector. The project focuses on sustainable marine resource management practices and positions Sri Lanka as a regional leader in responsible fisheries management.\n\nWith Norwegian government support through NORAD, this partnership represents one of the most significant international collaborations in Sri Lanka's marine research history, promising transformative impacts on the sector.",
+            "key_points": [
+                "2025-2028 project timeline",
+                "Collaboration with Institute of Marine Research Norway",
+                "Sustainable marine resource management focus",
+                "Norwegian government support through NORAD",
+                "Regional leadership in responsible fisheries management"
+            ],
+            "featured_image": "/assets/images/news/norway_project_phase3.jpg",
+            "tags": [
+                "International Cooperation",
+                "Bilateral Project",
+                "Marine Management",
+                "Norway"
+            ],
+            "is_featured": true,
+            "related_articles": [
+                11,
+                6,
+                3
+            ],
+            "social_shares": 134,
+            "views": 1123
+        },
+        {
+            "id": 15,
+            "title": "Addressing Ornamental Aquatic Fish Sector Challenges",
+            "slug": "ornamental-fish-sector-challenges",
+            "category": "Industry Support",
+            "date": "2025-02-10",
+            "location": "NARA Headquarters",
+            "author": "Industry Support Team",
+            "author_position": "NARA Aquaculture Division",
+            "read_time": 4,
+            "summary": "NARA meets with ornamental fish exporters to address quarantine and market challenges in the industry.",
+            "content": "NARA organized a crucial meeting with the Association of Live Tropical Fish Exporters to discuss pressing challenges in quarantine procedures, market demand, and export processes for Sri Lanka's ornamental fish sector.\n\nDiscussions centered on streamlining quarantine procedures to reduce mortality rates and processing times. NARA scientists presented research on natural plant alternatives to antimicrobials, offering sustainable solutions for fish health management.\n\nThe meeting resulted in collaborative plans for optimizing export processes, enhancing market competitiveness, and establishing research partnerships to address industry-specific challenges through scientific innovation.",
+            "key_points": [
+                "Quarantine procedure streamlining",
+                "Natural plant alternatives to antimicrobials",
+                "Export process optimization",
+                "Market competitiveness enhancement",
+                "Research collaboration opportunities"
+            ],
+            "featured_image": "/assets/images/news/ornamental_fish_meeting.jpg",
+            "tags": [
+                "Ornamental Fish",
+                "Industry Support",
+                "Export Enhancement",
+                "Problem Solving"
+            ],
+            "is_featured": false,
+            "related_articles": [
+                2,
+                18,
+                9
+            ],
+            "social_shares": 91,
+            "views": 776
+        },
+        {
+            "id": 16,
+            "title": "NARA Celebrates 43rd Anniversary",
+            "slug": "nara-43rd-anniversary-celebration",
+            "category": "Institutional Milestones",
+            "date": "2025-01-30",
+            "location": "NARA Headquarters",
+            "author": "Anniversary Committee",
+            "author_position": "NARA Administration",
+            "read_time": 3,
+            "summary": "Simple and meaningful ceremony marking NARA's 43 years of aquatic research excellence and environmental stewardship.",
+            "content": "NARA celebrated its 43rd anniversary with a simple yet meaningful Buddhist ceremony including Mal Pooja Pinkama and Dhamma speech, reflecting on the organization's four decades of contributions to Sri Lanka's aquatic resource management.\n\nThe ceremony honored past and present employees who have dedicated their careers to advancing marine science and protecting Sri Lanka's aquatic resources. The celebration emphasized NARA's role as a steward of the nation's blue economy and marine biodiversity.\n\nThe anniversary marked not just institutional achievements but reaffirmed NARA's commitment to future aquatic resource management and sustainable development of Sri Lanka's marine sector.",
+            "key_points": [
+                "43 years of scientific excellence",
+                "Buddhist ceremony and Dhamma speech",
+                "Recognition of past and present employees",
+                "Reflection on environmental stewardship",
+                "Commitment to future aquatic resource management"
+            ],
+            "featured_image": "/assets/images/news/43rd_anniversary.jpg",
+            "tags": [
+                "Anniversary",
+                "Milestone",
+                "Celebration",
+                "Heritage"
+            ],
+            "is_featured": false,
+            "related_articles": [
+                10,
+                16,
+                17
+            ],
+            "social_shares": 156,
+            "views": 1087
+        },
+        {
+            "id": 17,
+            "title": "NARA & LB Finance Partner for Biodiversity and Livelihoods",
+            "slug": "nara-lb-finance-biodiversity-partnership",
+            "category": "Conservation Partnerships",
+            "date": "2025-01-25",
+            "location": "Kaisawella, Dondra, Southern Province",
+            "author": "Conservation Partnership Team",
+            "author_position": "NARA Marine Conservation",
+            "read_time": 5,
+            "summary": "Partnership to create artificial fish habitats and coral replanting for biodiversity enhancement and community tourism.",
+            "content": "NARA and LB Finance signed a transformative MoU for a pilot project to create artificial fish habitats and replant corals in Kaisawella, Dondra, combining marine conservation with innovative community-based tourism opportunities.\n\nThe project focuses on creating artificial habitat structures to enhance fish breeding grounds while simultaneously implementing coral replanting initiatives to restore damaged reef ecosystems. This dual approach maximizes ecological benefits while creating sustainable economic opportunities.\n\nThe community-based management approach ensures local stakeholder involvement in conservation efforts while supporting the marine ornamental fish trade through sustainable practices and eco-tourism development.",
+            "key_points": [
+                "Artificial habitat creation for fish breeding",
+                "Coral replanting initiatives",
+                "Community-based management approach",
+                "Sustainable tourism development",
+                "Marine ornamental fish trade support"
+            ],
+            "featured_image": "/assets/images/news/lb_finance_partnership.jpg",
+            "tags": [
+                "Partnership",
+                "Biodiversity",
+                "Conservation",
+                "Tourism",
+                "Livelihoods"
+            ],
+            "is_featured": false,
+            "related_articles": [
+                5,
+                6,
+                13
+            ],
+            "social_shares": 119,
+            "views": 854
+        },
+        {
+            "id": 18,
+            "title": "Enhancing the Ornamental Aquatic Plant Industry",
+            "slug": "ornamental-aquatic-plant-industry-enhancement",
+            "category": "Industry Development",
+            "date": "2025-01-20",
+            "location": "NARA Headquarters",
+            "author": "Plant Industry Development Team",
+            "author_position": "NARA Biotechnology Division",
+            "read_time": 4,
+            "summary": "Collaborative meeting to address challenges and opportunities in Sri Lanka's ornamental aquatic plant sector.",
+            "content": "NARA organized a strategic meeting with ornamental aquatic plant exporters and NAQDA to discuss market demand analysis, production capabilities, and export process improvements for Sri Lanka's growing ornamental plant sector.\n\nDiscussions focused on market demand analysis and species requirements from international buyers, along with strategies for utilizing NAQDA's tissue culture laboratory facilities for scaled production. NARA's expertise in plant tissue culture protocol development offers significant potential for industry growth.\n\nThe meeting resulted in commitments for government process streamlining and enhanced industry stakeholder collaboration, positioning Sri Lanka as a competitive player in the global ornamental aquatic plant market.",
+            "key_points": [
+                "Market demand analysis and species requirements",
+                "NAQDA tissue culture laboratory utilization",
+                "NARA plant tissue culture protocol development",
+                "Government process streamlining",
+                "Industry stakeholder collaboration enhancement"
+            ],
+            "featured_image": "/assets/images/news/aquatic_plant_meeting.jpg",
+            "tags": [
+                "Ornamental Plants",
+                "Industry Development",
+                "Export Enhancement",
+                "Collaboration"
+            ],
+            "is_featured": false,
+            "related_articles": [
+                15,
+                2,
+                12
+            ],
+            "social_shares": 63,
+            "views": 567
+        }
+    ]
+}

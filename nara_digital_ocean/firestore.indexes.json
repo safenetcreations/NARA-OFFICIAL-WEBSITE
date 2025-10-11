@@ -1,0 +1,149 @@
+{
+    "indexes": [
+        {
+            "collectionGroup": "news",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "category",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "published_date",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "news",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "status",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "featured",
+                    "order": "DESCENDING"
+                },
+                {
+                    "fieldPath": "published_date",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "research_projects",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "status",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "start_date",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "research_projects",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "division",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "priority",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "publications",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "type",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "publication_date",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "publications",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "authors",
+                    "arrayConfig": "CONTAINS"
+                },
+                {
+                    "fieldPath": "publication_date",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "procurement_notices",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "status",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "submission_deadline",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "job_postings",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "department",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "application_deadline",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "applications",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "applicant_id",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "submission_date",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "events",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "event_type",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "start_date",
+                    "order": "ASCENDING"
+                }
+            ]
+        }
+    ],
+    "fieldOverrides": []
+}

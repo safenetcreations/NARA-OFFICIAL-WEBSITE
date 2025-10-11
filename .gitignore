@@ -1,0 +1,24 @@
+
+.clinerules/byterover-rules.md
+.kilocode/rules/byterover-rules.md
+.roo/rules/byterover-rules.md
+.windsurf/rules/byterover-rules.md
+.cursor/rules/byterover-rules.mdc
+.kiro/steering/byterover-rules.md
+.qoder/rules/byterover-rules.md
+.augment/rules/byterover-rules.md# Node / Vite
+node_modules/
+dist/
+build/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+.env.*
+.firebase/
+# Nested project ignores
+nara_digital_ocean/node_modules/
+nara_digital_ocean/build/
+nara_digital_ocean/dist/
