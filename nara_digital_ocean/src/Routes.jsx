@@ -25,6 +25,12 @@ const ProcurementRecruitmentPortal = lazy(() => import("./pages/procurement-recr
 const FirebaseAdminAuthenticationPortal = lazy(() => import('./pages/firebase-admin-authentication-portal'));
 const FirebaseAdminDashboardControlCenter = lazy(() => import('./pages/firebase-admin-dashboard-control-center'));
 
+// New Admin Panel
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const ContentManager = lazy(() => import('./pages/admin/ContentManager'));
+
 function Routes() {
   return (
     <FirebaseAuthProvider>
@@ -66,6 +72,13 @@ function Routes() {
                 path="/firebase-admin-dashboard-control-center"
                 element={<FirebaseAdminDashboardControlCenter />}
               />
+
+              {/* New Admin Panel Routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="content" element={<ContentManager />} />
+              </Route>
             </RouterRoutes>
           </Suspense>
         </ErrorBoundary>
