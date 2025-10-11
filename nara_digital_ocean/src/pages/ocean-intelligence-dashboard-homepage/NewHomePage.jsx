@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import * as Icons from 'lucide-react';
 import AppImage from '../../components/AppImage';
 import { useOceanData } from '../../hooks/useOceanData';
+import SriLankaEEZMap from '../../components/SriLankaEEZMap';
 
 const NewHomePage = () => {
   const [lastUpdate, setLastUpdate] = useState(new Date());
@@ -192,101 +193,18 @@ const NewHomePage = () => {
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.9, delay: 0.2 }}
                   >
-                    <motion.div
-                      className="absolute inset-0 rounded-full border border-cyan-400/30"
-                      animate={{ opacity: [0.4, 0.9, 0.4] }}
-                      transition={{ duration: 6, repeat: Infinity }}
-                    />
-                    <motion.div
-                      className="absolute inset-8 rounded-full border border-cyan-400/20"
-                      animate={{ opacity: [0.2, 0.6, 0.2], scale: [0.95, 1.05, 0.95] }}
-                      transition={{ duration: 8, repeat: Infinity }}
-                    />
-                    <motion.svg
-                      viewBox="0 0 400 520"
-                      className="relative h-full w-full"
-                      initial={{ rotate: -2 }}
-                      animate={{ rotate: 0 }}
-                      transition={{ duration: 1.5, ease: 'easeOut' }}
-                    >
-                      <defs>
-                        <radialGradient id="heroWaterGradient" cx="50%" cy="45%" r="65%">
-                          <stop offset="0%" stopColor="rgba(56,189,248,0.25)" />
-                          <stop offset="60%" stopColor="rgba(8,47,73,0.45)" />
-                          <stop offset="100%" stopColor="rgba(2,6,23,0.9)" />
-                        </radialGradient>
-                        <linearGradient id="heroLandGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" stopColor="#38bdf8" />
-                          <stop offset="45%" stopColor="#0ea5e9" />
-                          <stop offset="100%" stopColor="#0f172a" />
-                        </linearGradient>
-                        <radialGradient id="heroEEZGradient" cx="50%" cy="50%" r="60%">
-                          <stop offset="0%" stopColor="rgba(14,165,233,0.32)" />
-                          <stop offset="55%" stopColor="rgba(8,145,178,0.18)" />
-                          <stop offset="100%" stopColor="rgba(8,47,73,0)" />
-                        </radialGradient>
-                        <filter id="heroMapGlow" x="-30%" y="-30%" width="160%" height="160%">
-                          <feGaussianBlur stdDeviation="12" result="coloredBlur" />
-                          <feMerge>
-                            <feMergeNode in="coloredBlur" />
-                            <feMergeNode in="SourceGraphic" />
-                          </feMerge>
-                        </filter>
-                      </defs>
+                    {/* Google Maps with EEZ Highlight */}
+                    <div className="relative h-full w-full rounded-3xl overflow-hidden">
+                      <SriLankaEEZMap className="h-full w-full" showMarkers={true} />
+                    </div>
 
-                      <circle cx="200" cy="260" r="190" fill="url(#heroWaterGradient)" />
-                      <circle cx="200" cy="260" r="150" fill="url(#heroEEZGradient)" />
-
-                      <motion.circle
-                        cx="200"
-                        cy="260"
-                        r="180"
-                        fill="none"
-                        stroke="rgba(56,189,248,0.35)"
-                        strokeWidth="2"
-                        strokeDasharray="6 14"
-                        animate={{ strokeDashoffset: [0, -120] }}
-                        transition={{ duration: 14, repeat: Infinity, ease: 'linear' }}
-                      />
-
-                      <motion.path
-                        d="M228 65c-52 15-93 58-103 110-7 38 3 77 16 114 14 38 21 84 4 126-11 28 11 62 38 79 30 19 72 21 100-1 29-22 45-67 44-113-2-62-20-122-43-176-14-32-32-64-55-88-13-14-27-42-1-51z"
-                        fill="url(#heroLandGradient)"
-                        stroke="rgba(148, 223, 255, 0.7)"
-                        strokeWidth="8"
-                        strokeLinejoin="round"
-                        filter="url(#heroMapGlow)"
-                      />
-
-                      <motion.path
-                        d="M205 110c-22 28-45 78-36 118 11 48 34 96 12 144"
-                        fill="none"
-                        stroke="rgba(248,250,252,0.3)"
-                        strokeWidth="3"
-                        strokeDasharray="8 12"
-                        animate={{ strokeDashoffset: [0, 24] }}
-                        transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-                      />
-
-                      {[0, 60, -60, 120].map((angle, index) => (
-                        <motion.circle
-                          key={index}
-                          cx={200 + Math.cos((angle * Math.PI) / 180) * 140}
-                          cy={260 + Math.sin((angle * Math.PI) / 180) * 140}
-                          r="6"
-                          fill="rgba(56,189,248,0.6)"
-                          animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.2, 0.8] }}
-                          transition={{ duration: 4 + index, repeat: Infinity, delay: index * 0.6 }}
-                        />
-                      ))}
-                    </motion.svg>
-
+                    {/* NARA Logo Overlay */}
                     <motion.div
                       className="pointer-events-none absolute inset-0 flex items-center justify-center"
                       animate={{ scale: [0.94, 1, 0.94] }}
                       transition={{ duration: 6, repeat: Infinity }}
                     >
-                      <div className="flex h-28 w-28 items-center justify-center rounded-full bg-slate-900/70 shadow-inner shadow-cyan-500/20">
+                      <div className="flex h-28 w-28 items-center justify-center rounded-full bg-slate-900/70 shadow-inner shadow-cyan-500/20 backdrop-blur-sm border border-cyan-400/30">
                         <AppImage
                           src="/assets/nara-logo.png"
                           alt="NARA crest"

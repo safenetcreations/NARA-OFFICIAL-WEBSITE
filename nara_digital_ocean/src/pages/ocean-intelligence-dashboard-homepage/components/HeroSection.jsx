@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
+import SriLankaEEZMap from '../../../components/SriLankaEEZMap';
 
 const HeroSection = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -173,40 +174,25 @@ const HeroSection = () => {
                 </div>
               </div>
               
-              {/* Map Container */}
-              <div className="relative h-96 bg-ocean-deep/30 rounded-lg overflow-hidden">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  loading="lazy"
-                  title="Sri Lankan Waters"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  src="https://www.google.com/maps?q=7.8731,80.7718&z=7&output=embed"
-                  className="rounded-lg"
-                />
-                
-                {/* Overlay Data Points */}
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute top-1/4 left-1/3 w-4 h-4 bg-coral-warm rounded-full animate-pulse"></div>
-                  <div className="absolute top-1/2 right-1/3 w-3 h-3 bg-success rounded-full animate-pulse"></div>
-                  <div className="absolute bottom-1/3 left-1/2 w-3 h-3 bg-warning rounded-full animate-pulse"></div>
-                </div>
+              {/* Map Container - Google Maps with EEZ Highlight */}
+              <div className="relative h-96 rounded-lg overflow-hidden">
+                <SriLankaEEZMap className="h-full" showMarkers={true} />
               </div>
 
               {/* Map Legend */}
               <div className="flex items-center justify-between mt-4 text-sm">
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4 flex-wrap gap-2">
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-coral-warm rounded-full"></div>
+                    <div className="w-3 h-3 bg-cyan-400 rounded-full opacity-60"></div>
+                    <span className="text-white/80">200nm EEZ</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
                     <span className="text-white/80">Research Stations</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-success rounded-full"></div>
-                    <span className="text-white/80">Monitoring Buoys</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-warning rounded-full"></div>
-                    <span className="text-white/80">Active Alerts</span>
+                    <div className="w-3 h-3 bg-cyan-300 rounded-full"></div>
+                    <span className="text-white/80">Sovereign Waters</span>
                   </div>
                 </div>
                 <Button
