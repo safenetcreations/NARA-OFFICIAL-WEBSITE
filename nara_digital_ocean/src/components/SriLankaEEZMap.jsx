@@ -145,41 +145,42 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
           { lat: 10.5, lng: 78.0 }
         ];
         
-        console.log('🌊 Drawing actual Sri Lankan EEZ boundary...');
+        console.log('🌊 Drawing colorful glowing border line with Polyline...');
 
-        // Outer glow polygon
-        outerGlow = new window.google.maps.Polygon({
-          map,
-          paths: eezBoundaryCoords,
-          strokeWeight: 0,
-          fillColor: '#22d3ee',
-          fillOpacity: 0.15,
-          clickable: false
-        });
-        
-        // Mid glow polygon
-        midGlow = new window.google.maps.Polygon({
-          map,
-          paths: eezBoundaryCoords,
-          strokeWeight: 0,
-          fillColor: '#06b6d4',
-          fillOpacity: 0.20,
-          clickable: false
-        });
+        // Close the path for a complete border
+        const closedPath = [...eezBoundaryCoords, eezBoundaryCoords[0]];
 
-        // Main EEZ boundary (VERY BRIGHT with thick border)
-        eezCircle = new window.google.maps.Polygon({
+        // Outer glow border (VERY WIDE)
+        outerGlow = new window.google.maps.Polyline({
           map,
-          paths: eezBoundaryCoords,
+          path: closedPath,
           strokeColor: '#22d3ee',
-          strokeOpacity: 0.95,
-          strokeWeight: 4,
-          fillColor: '#06b6d4',
-          fillOpacity: 0.40,
+          strokeOpacity: 0.50,
+          strokeWeight: 25,
           clickable: false
         });
         
-        console.log('✅ Sri Lankan maritime boundary added with INTENSE cyan glow');
+        // Mid glow border (WIDE)
+        midGlow = new window.google.maps.Polyline({
+          map,
+          path: closedPath,
+          strokeColor: '#06b6d4',
+          strokeOpacity: 0.80,
+          strokeWeight: 16,
+          clickable: false
+        });
+
+        // Main EEZ boundary (VERY THICK colorful border line)
+        eezCircle = new window.google.maps.Polyline({
+          map,
+          path: closedPath,
+          strokeColor: '#22d3ee',
+          strokeOpacity: 1.0,
+          strokeWeight: 10,
+          clickable: false
+        });
+        
+        console.log('✅ Colorful glowing POLYLINE border added - visible now!');
 
         // Add research station markers if enabled
         if (showMarkers) {
@@ -207,46 +208,52 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
           });
         }
 
-        // INTENSE flashing/pulsing animation for maritime boundary
-        let mainOpacity = 0.40;
-        let strokeOpacity = 0.95;
-        let outerGlowOpacity = 0.15;
-        let midGlowOpacity = 0.20;
+        // DRAMATIC COLORFUL glowing border animation - cycling through BRIGHT colors
+        const colors = [
+          '#00ffff', // Bright Cyan
+          '#0099ff', // Bright Blue
+          '#6633ff', // Bright Purple
+          '#ff00ff', // Bright Magenta
+          '#ff0066', // Bright Pink
+          '#ff3300', // Bright Red-Orange
+          '#ff9900', // Bright Orange
+          '#ffff00', // Bright Yellow
+          '#00ff00'  // Bright Green
+        ];
+        
+        let colorIndex = 0;
+        let mainStrokeOpacity = 1.0;
         let increasing = true;
         
+        console.log('🎨 Starting COLORFUL border animation...');
+        
+        // SLOWER Color cycling animation - change every 1 second
         setInterval(() => {
-          if (increasing) {
-            mainOpacity += 0.018;
-            strokeOpacity += 0.002;
-            outerGlowOpacity += 0.012;
-            midGlowOpacity += 0.015;
-            if (mainOpacity >= 0.65) increasing = false;
-          } else {
-            mainOpacity -= 0.018;
-            strokeOpacity -= 0.002;
-            outerGlowOpacity -= 0.012;
-            midGlowOpacity -= 0.015;
-            if (mainOpacity <= 0.40) increasing = true;
-          }
+          colorIndex = (colorIndex + 1) % colors.length;
           
-          // Animate main EEZ boundary
+          console.log(`🌈 Border color changed to: ${colors[colorIndex]}`);
+          
           if (eezCircle) {
             eezCircle.setOptions({ 
-              fillOpacity: mainOpacity,
-              strokeOpacity: strokeOpacity
+              strokeColor: colors[colorIndex],
+              strokeOpacity: 1.0
             });
           }
           
-          // Animate outer glow layer
-          if (outerGlow) {
-            outerGlow.setOptions({ fillOpacity: outerGlowOpacity });
+          if (midGlow) {
+            midGlow.setOptions({ 
+              strokeColor: colors[(colorIndex + 3) % colors.length],
+              strokeOpacity: 0.75
+            });
           }
           
-          // Animate mid glow layer
-          if (midGlow) {
-            midGlow.setOptions({ fillOpacity: midGlowOpacity });
+          if (outerGlow) {
+            outerGlow.setOptions({ 
+              strokeColor: colors[(colorIndex + 6) % colors.length],
+              strokeOpacity: 0.50
+            });
           }
-        }, 35);
+        }, 1000);
 
         setMapLoaded(true);
       } catch (err) {
