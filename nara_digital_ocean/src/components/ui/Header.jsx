@@ -11,10 +11,18 @@ const Header = ({ className = '' }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [language, setLanguage] = useState(() => localStorage.getItem('nara_lang') || 'en');
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const theme = useThemeStore((s) => s?.theme);
   const toggleTheme = useThemeStore((s) => s?.toggleTheme);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Language options
+  const languageOptions = [
+    { code: 'en', name: 'English', flag: '🇬🇧' },
+    { code: 'si', name: 'සිංහල', flag: '🇱🇰' },
+    { code: 'ta', name: 'தமிழ்', flag: '🇱🇰' }
+  ];
 
   // Navigation structure - organized by category for professional appearance
   const navigationData = {
@@ -129,6 +137,7 @@ const Header = ({ className = '' }) => {
   useEffect(() => {
     const handleClickOutside = () => {
       setActiveDropdown(null);
+      setIsLanguageOpen(false);
     };
 
     document.addEventListener('click', handleClickOutside);
@@ -165,7 +174,12 @@ const Header = ({ className = '' }) => {
 
   const handleLanguageChange = (value) => {
     setLanguage(value);
-    try { localStorage.setItem('nara_lang', value); } catch {}
+    setIsLanguageOpen(false);
+    try { 
+      localStorage.setItem('nara_lang', value);
+      // Could trigger a re-render or translation update here
+      window.dispatchEvent(new CustomEvent('languageChange', { detail: value }));
+    } catch {}
   };
 
   // Check if any path in category is active
@@ -198,18 +212,43 @@ const Header = ({ className = '' }) => {
               </Link>
             </div>
             <div className="flex items-center space-x-3">
-              {/* Language */}
+              {/* Language Selector */}
               <div className="relative">
                 <button
                   type="button"
-                  className="px-2 py-1 rounded-md hover:bg-slate-100 inline-flex items-center"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsLanguageOpen(!isLanguageOpen);
+                  }}
+                  className="px-2 py-1 rounded-md hover:bg-slate-100 inline-flex items-center transition-colors"
                   aria-label="Select language"
+                  aria-expanded={isLanguageOpen}
                 >
                   <Icon name="Globe" size={14} className="mr-1" />
-                  <span className="uppercase">{language}</span>
+                  <span className="uppercase font-medium">{language}</span>
+                  <Icon name="ChevronDown" size={12} className={`ml-1 transition-transform ${isLanguageOpen ? 'rotate-180' : ''}`} />
                 </button>
-                {/* Simple language quick options */}
-                <div className="absolute right-0 mt-1 bg-white border border-slate-200 rounded-md shadow-sm hidden group-focus-within:block" />
+                
+                {/* Language Dropdown */}
+                {isLanguageOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg z-50 py-1">
+                    {languageOptions.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => handleLanguageChange(lang.code)}
+                        className={`w-full px-4 py-2.5 text-left hover:bg-slate-50 transition-colors flex items-center gap-3 ${
+                          language === lang.code ? 'bg-cyan-50 text-cyan-700' : 'text-slate-700'
+                        }`}
+                      >
+                        <span className="text-lg">{lang.flag}</span>
+                        <span className="font-medium">{lang.name}</span>
+                        {language === lang.code && (
+                          <Icon name="Check" size={16} className="ml-auto text-cyan-600" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
               {/* Theme toggle */}
               <button

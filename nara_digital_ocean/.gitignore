@@ -10,3 +10,4 @@ vite.config.*s.*
 .env.local
 .env.*
 .firebase/
+serviceAccountKey.json
