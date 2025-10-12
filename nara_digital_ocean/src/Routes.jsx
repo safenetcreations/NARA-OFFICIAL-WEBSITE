@@ -25,6 +25,10 @@ const ProcurementRecruitmentPortal = lazy(() => import("./pages/procurement-recr
 const FirebaseAdminAuthenticationPortal = lazy(() => import('./pages/firebase-admin-authentication-portal'));
 const FirebaseAdminDashboardControlCenter = lazy(() => import('./pages/firebase-admin-dashboard-control-center'));
 
+// Legal & Compliance Pages
+const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy'));
+const DataSubjectRights = lazy(() => import('./pages/legal/DataSubjectRights'));
+
 // New Admin Panel
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
@@ -62,6 +66,11 @@ function Routes() {
               <Route path="/about-nara-our-story" element={<AboutNARAStoryPage />} />
               <Route path="/nara-news-updates-center" element={<NARANewsUpdatesCenter />} />
               <Route path="/procurement-recruitment-portal" element={<ProcurementRecruitmentPortal />} />
+              
+              {/* Legal & Compliance Routes */}
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/data-subject-rights" element={<DataSubjectRights />} />
+              
               <Route path="*" element={<NotFound />} />
 
               <Route

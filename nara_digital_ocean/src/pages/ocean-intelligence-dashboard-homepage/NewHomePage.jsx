@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import * as Icons from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import AppImage from '../../components/AppImage';
 import { useOceanData } from '../../hooks/useOceanData';
 import SriLankaEEZMap from '../../components/SriLankaEEZMap';
@@ -10,6 +11,7 @@ const NewHomePage = () => {
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const { scrollY } = useScroll();
   const heroRef = useRef(null);
+  const { t } = useTranslation(['home', 'common']);
 
   // Real-time ocean data
   const {
@@ -22,6 +24,19 @@ const NewHomePage = () => {
   const y1 = useTransform(scrollY, [0, 300], [0, 100]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
+  const heroTitle = t('hero.title', { ns: 'home', returnObjects: true });
+  const heroStats = t('hero.stats', { ns: 'home', returnObjects: true });
+  const heroOverview = t('hero.overview', { ns: 'home', returnObjects: true });
+  const researchContent = t('research', { ns: 'home', returnObjects: true });
+  const intelligenceContent = t('intelligence', { ns: 'home', returnObjects: true });
+  const missionContent = t('mission', { ns: 'home', returnObjects: true });
+  const portalContent = t('portal', { ns: 'home', returnObjects: true });
+  const missionControlContent = t('missionControl', { ns: 'home', returnObjects: true });
+  const highlightsContent = t('highlights', { ns: 'home', returnObjects: true });
+  const navigationContent = t('navigation', { ns: 'home', returnObjects: true });
+  const contactContent = t('contact', { ns: 'home', returnObjects: true });
+  const footerContent = t('footer', { ns: 'home', returnObjects: true });
+
   // Auto-refresh data every 5 minutes
   useEffect(() => {
     const interval = setInterval(() => {
@@ -32,46 +47,130 @@ const NewHomePage = () => {
   }, [refreshData]);
 
   // Enhanced research areas data with real-time integration
-  const researchAreas = [
+  const researchAreasConfig = [
     {
+      key: 'marineBiodiversity',
       icon: Icons.Fish,
-      title: "Marine Biodiversity",
-      description: "Protecting 50,000+ marine species",
-      stat: oceanData?.speciesCount || "15K",
-      unit: "Species Documented",
-      color: "from-blue-500 to-cyan-500",
-      trend: oceanData?.speciesTrend || "stable",
-      live: true
+      color: 'from-blue-500 to-cyan-500',
+      statValue: oceanData?.speciesCount,
+      trend: oceanData?.speciesTrend || 'stable'
     },
     {
+      key: 'climateResearch',
       icon: Icons.Thermometer,
-      title: "Climate Research",
-      description: "Real-time ocean temperature monitoring",
-      stat: oceanData?.temperature || "24/7",
-      unit: "Climate Tracking",
-      color: "from-purple-500 to-pink-500",
-      trend: oceanData?.tempTrend || "warming",
-      live: true
+      color: 'from-purple-500 to-pink-500',
+      statValue: oceanData?.temperature,
+      trend: oceanData?.tempTrend || 'warming'
     },
     {
+      key: 'conservation',
       icon: Icons.Shield,
-      title: "Conservation",
-      description: "Sustainable fishing practices",
-      stat: oceanData?.conservationRate || "85%",
-      unit: "Success Rate",
-      color: "from-green-500 to-teal-500",
-      trend: oceanData?.conservationTrend || "improving",
-      live: true
+      color: 'from-green-500 to-teal-500',
+      statValue: oceanData?.conservationRate,
+      trend: oceanData?.conservationTrend || 'improving'
     },
     {
+      key: 'satelliteMonitoring',
       icon: Icons.Satellite,
-      title: "Satellite Monitoring",
-      description: "AI-powered ocean surveillance",
-      stat: oceanData?.satelliteObservations || "500",
-      unit: "Daily Observations",
-      color: "from-orange-500 to-red-500",
-      trend: oceanData?.satelliteTrend || "active",
-      live: true
+      color: 'from-orange-500 to-red-500',
+      statValue: oceanData?.satelliteObservations,
+      trend: oceanData?.satelliteTrend || 'active'
+    }
+  ];
+
+  const researchAreas = researchAreasConfig.map((config) => {
+    const copy = researchContent?.areas?.[config.key] || {};
+    return {
+      key: config.key,
+      icon: config.icon,
+      color: config.color,
+      trend: config.trend,
+      live: true,
+      title: copy.title || '',
+      description: copy.description || '',
+      stat: config.statValue || copy.statFallback || '',
+      unit: copy.unit || ''
+    };
+  });
+
+  const livePointColors = ['bg-green-500', 'bg-blue-500', 'bg-yellow-500'];
+  const missionStatsIcons = [Icons.Award, Icons.Users, Icons.Globe2];
+
+  const portalCardsConfig = [
+    {
+      key: 'research',
+      icon: Icons.Microscope,
+      gradient: 'from-purple-600 to-pink-600',
+      link: '/research-excellence-portal'
+    },
+    {
+      key: 'maritime',
+      icon: Icons.Ship,
+      gradient: 'from-blue-600 to-cyan-600',
+      link: '/maritime-services-hub'
+    },
+    {
+      key: 'marketplace',
+      icon: Icons.ShoppingBag,
+      gradient: 'from-green-600 to-teal-600',
+      link: '/nara-digital-marketplace'
+    }
+  ];
+
+  const highlightCardsConfig = [
+    {
+      key: 'programs',
+      icon: Icons.Microscope,
+      accent: 'from-cyan-500/0 via-cyan-500/20 to-blue-600/0',
+      iconColor: 'text-cyan-300'
+    },
+    {
+      key: 'observatories',
+      icon: Icons.Satellite,
+      accent: 'from-blue-500/0 via-blue-500/20 to-cyan-500/0',
+      iconColor: 'text-blue-300'
+    },
+    {
+      key: 'dataAssets',
+      icon: Icons.Database,
+      accent: 'from-teal-500/0 via-teal-500/20 to-blue-600/0',
+      iconColor: 'text-teal-300'
+    },
+    {
+      key: 'partners',
+      icon: Icons.Users,
+      accent: 'from-cyan-500/0 via-blue-500/20 to-cyan-500/0',
+      iconColor: 'text-cyan-200'
+    }
+  ];
+
+  const navigationColumns = [
+    {
+      key: 'missionPillars',
+      links: [
+        { key: 'dashboard', to: '/ocean-intelligence-dashboard-homepage', type: 'link' },
+        { key: 'research', to: '/research-excellence-portal', type: 'link' },
+        { key: 'knowledge', to: '/knowledge-discovery-center', type: 'link' },
+        { key: 'partnership', to: '/partnership-innovation-gateway', type: 'link' }
+      ]
+    },
+    {
+      key: 'commandCenters',
+      links: [
+        { key: 'maritime', to: '/maritime-services-hub', type: 'link' },
+        { key: 'emergency', to: '/emergency-response-network', type: 'link' },
+        { key: 'integration', to: '/integration-systems-platform', type: 'link' },
+        { key: 'learning', to: '/learning-development-academy', type: 'link' }
+      ]
+    },
+    {
+      key: 'policy',
+      links: [
+        { key: 'bulletins', to: '/nara-news-updates-center', type: 'link' },
+        { key: 'transactions', to: '/payment-gateway-hub', type: 'link' },
+        { key: 'charter', href: '#', type: 'anchor' },
+        { key: 'accessibility', href: '#', type: 'anchor' }
+      ]
     }
   ];
 
@@ -82,7 +181,7 @@ const NewHomePage = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
           <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>
-            Live Data: {lastUpdate.toLocaleTimeString()}
+            {t('hero.liveDataLabel', { ns: 'home' })}: {lastUpdate.toLocaleTimeString()}
           </span>
         </div>
       </div>
@@ -117,13 +216,15 @@ const NewHomePage = () => {
               >
                 <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-slate-900/60 px-4 py-2 text-xs uppercase tracking-[0.35em] text-cyan-200/90 backdrop-blur">
                   <Icons.Radar className="h-4 w-4" />
-                  Sri Lanka Exclusive Economic Zone
+                  {t('hero.badge', { ns: 'home' })}
                 </div>
                 <h1 className="text-4xl md:text-6xl font-bold font-space leading-tight">
-                  Commanding <span className="text-cyan-400">200 Nautical Miles</span> of Sovereign Ocean Intelligence
+                  {heroTitle?.lead}{' '}
+                  <span className="text-cyan-400">{heroTitle?.highlight}</span>
+                  {heroTitle?.trail ? ` ${heroTitle.trail}` : ''}
                 </h1>
                 <p className="text-base md:text-lg text-slate-300/90 max-w-2xl">
-                  NARA&apos;s national mission control fuses satellite telemetry, autonomous gliders, and coastal observatories to illuminate Sri Lanka&apos;s seas. Every pulse safeguards maritime trade, blue economy prosperity, and climate resilience across the island nation.
+                  {t('hero.description', { ns: 'home' })}
                 </p>
 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4">
@@ -140,40 +241,40 @@ const NewHomePage = () => {
                     ) : (
                       <Icons.RefreshCw className="h-4 w-4" />
                     )}
-                    Sync Live Sensors
+                    {t('hero.actions.sync', { ns: 'home' })}
                   </button>
                   <Link
                     to="/research-excellence-portal"
                     className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-500/30 px-6 py-3 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400/60 hover:text-cyan-100"
                   >
                     <Icons.Compass className="h-4 w-4" />
-                    Launch Intelligence Console
+                    {t('hero.actions.launch', { ns: 'home' })}
                   </Link>
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-3">
                   <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 backdrop-blur">
-                    <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Active Sensors</div>
+                    <div className="text-xs uppercase tracking-[0.3em] text-slate-400">{heroStats?.activeSensors?.label}</div>
                     <div className="mt-2 text-3xl font-semibold text-white">{oceanData?.activeSensors || '318'}</div>
                     <div className="mt-1 flex items-center gap-2 text-xs text-cyan-200/80">
                       <Icons.Signal className="h-3.5 w-3.5" />
-                      Satellite, buoy, and ROV network
+                      {heroStats?.activeSensors?.caption}
                     </div>
                   </div>
                   <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 backdrop-blur">
-                    <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Protected Waters</div>
+                    <div className="text-xs uppercase tracking-[0.3em] text-slate-400">{heroStats?.protectedWaters?.label}</div>
                     <div className="mt-2 text-3xl font-semibold text-white">{oceanData?.protectedArea || '1.0M km²'}</div>
                     <div className="mt-1 flex items-center gap-2 text-xs text-cyan-200/80">
                       <Icons.ShieldCheck className="h-3.5 w-3.5" />
-                      EEZ coverage within 200 NM
+                      {heroStats?.protectedWaters?.caption}
                     </div>
                   </div>
                   <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 backdrop-blur">
-                    <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Live Alerts</div>
+                    <div className="text-xs uppercase tracking-[0.3em] text-slate-400">{heroStats?.liveAlerts?.label}</div>
                     <div className="mt-2 text-3xl font-semibold text-white">{oceanData?.liveAlerts || '12'}</div>
                     <div className="mt-1 flex items-center gap-2 text-xs text-cyan-200/80">
                       <Icons.AlertTriangle className="h-3.5 w-3.5" />
-                      Fisheries, navic, and weather
+                      {heroStats?.liveAlerts?.caption}
                     </div>
                   </div>
                 </div>
@@ -240,14 +341,14 @@ const NewHomePage = () => {
                   <div className="mt-10 space-y-4 text-sm text-slate-300/90">
                     <div className="flex items-center justify-between rounded-2xl border border-slate-800/70 bg-slate-900/60 px-4 py-3">
                       <div>
-                        <p className="text-[11px] uppercase tracking-[0.3em] text-cyan-200/80">Sovereign Waters</p>
-                        <p className="text-base font-semibold text-white">200 NM EEZ Radius</p>
+                        <p className="text-[11px] uppercase tracking-[0.3em] text-cyan-200/80">{heroOverview?.sovereignWaters?.label}</p>
+                        <p className="text-base font-semibold text-white">{heroOverview?.sovereignWaters?.value}</p>
                       </div>
                       <Icons.Waves className="h-5 w-5 text-cyan-300" />
                     </div>
                     <div className="flex items-center justify-between rounded-2xl border border-slate-800/70 bg-slate-900/60 px-4 py-3">
                       <div>
-                        <p className="text-[11px] uppercase tracking-[0.3em] text-cyan-200/80">Last Sync</p>
+                        <p className="text-[11px] uppercase tracking-[0.3em] text-cyan-200/80">{heroOverview?.lastSync?.label}</p>
                         <p className="text-base font-semibold text-white">{lastUpdate.toLocaleTimeString()}</p>
                       </div>
                       <Icons.Loader className="h-5 w-5 animate-spin text-cyan-300" />
@@ -272,11 +373,11 @@ const NewHomePage = () => {
           >
             <h2 className="text-5xl md:text-6xl font-bold font-space mb-4">
               <span className="bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">
-                Research Excellence
+                {researchContent?.heading}
               </span>
             </h2>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              Leading ocean research with cutting-edge technology and scientific innovation
+              {researchContent?.description}
             </p>
           </motion.div>
 
@@ -284,7 +385,7 @@ const NewHomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {researchAreas.map((area, index) => (
               <motion.div
-                key={index}
+                key={area.key || index}
                 initial={{ y: 50, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -334,36 +435,29 @@ const NewHomePage = () => {
               transition={{ duration: 0.8 }}
             >
               <h2 className="text-4xl md:text-5xl font-bold font-space mb-6">
-                Real-Time
+                {intelligenceContent?.heading?.lead}
                 <span className="block bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">
-                  Ocean Intelligence
+                  {intelligenceContent?.heading?.highlight}
                 </span>
               </h2>
               <p className="text-gray-400 mb-8 text-lg">
-                Monitor ocean conditions, marine traffic, and environmental data in real-time 
-                with our advanced satellite and sensor network covering Sri Lankan waters.
+                {intelligenceContent?.description}
               </p>
-              
+
               {/* Live Data Points */}
               <div className="space-y-4 mb-8">
-                <div className="flex items-center gap-4">
-                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-gray-300">127 Active Research Stations</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                  <span className="text-gray-300">3,847 Marine Species Tracked</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
-                  <span className="text-gray-300">15 Research Vessels at Sea</span>
-                </div>
+                {(intelligenceContent?.livePoints || []).map((point, index) => (
+                  <div key={index} className="flex items-center gap-4">
+                    <div className={`w-3 h-3 ${livePointColors[index % livePointColors.length]} rounded-full animate-pulse`}></div>
+                    <span className="text-gray-300">{point}</span>
+                  </div>
+                ))}
               </div>
               
               <Link to="/ocean-intelligence-dashboard">
                 <button className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full hover:scale-105 transition-all duration-300">
                   <span className="flex items-center gap-2 text-white font-semibold">
-                    Access Live Dashboard
+                    {intelligenceContent?.cta}
                     <Icons.ExternalLink className="w-4 h-4 group-hover:rotate-45 transition-transform" />
                   </span>
                 </button>
@@ -422,17 +516,17 @@ const NewHomePage = () => {
                   transition={{ duration: 3, repeat: Infinity }}
                   className="absolute -top-4 -right-4 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-4 backdrop-blur-xl"
                 >
-                  <div className="text-2xl font-bold text-white">28.5°C</div>
-                  <div className="text-xs text-white/80">Ocean Temp</div>
+                  <div className="text-2xl font-bold text-white">{intelligenceContent?.floatingStats?.temperature?.value}</div>
+                  <div className="text-xs text-white/80">{intelligenceContent?.floatingStats?.temperature?.label}</div>
                 </motion.div>
-                
+
                 <motion.div
                   animate={{ y: [5, -5, 5] }}
                   transition={{ duration: 3, repeat: Infinity }}
                   className="absolute -bottom-4 -left-4 bg-gradient-to-br from-green-600 to-teal-600 rounded-xl p-4 backdrop-blur-xl"
                 >
-                  <div className="text-2xl font-bold text-white">7.8</div>
-                  <div className="text-xs text-white/80">pH Level</div>
+                  <div className="text-2xl font-bold text-white">{intelligenceContent?.floatingStats?.ph?.value}</div>
+                  <div className="text-xs text-white/80">{intelligenceContent?.floatingStats?.ph?.label}</div>
                 </motion.div>
               </div>
             </motion.div>
@@ -458,31 +552,24 @@ const NewHomePage = () => {
           >
             <h2 className="text-5xl md:text-7xl font-bold font-space mb-8">
               <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                Protecting Our Oceans
+                {missionContent?.heading}
               </span>
             </h2>
             <p className="text-xl md:text-2xl text-gray-300 leading-relaxed">
-              "Through cutting-edge research and innovation, we safeguard Sri Lanka's marine 
-              ecosystems for future generations while advancing the blue economy through 
-              sustainable practices and scientific excellence."
+              &ldquo;{missionContent?.description}&rdquo;
             </p>
-            
+
             <div className="mt-12 flex items-center justify-center gap-8">
-              <div className="text-center">
-                <Icons.Award className="w-12 h-12 text-cyan-400 mx-auto mb-2" />
-                <div className="text-3xl font-bold text-white">25+</div>
-                <div className="text-sm text-gray-400">Years of Excellence</div>
-              </div>
-              <div className="text-center">
-                <Icons.Users className="w-12 h-12 text-blue-400 mx-auto mb-2" />
-                <div className="text-3xl font-bold text-white">500+</div>
-                <div className="text-sm text-gray-400">Scientists</div>
-              </div>
-              <div className="text-center">
-                <Icons.Globe2 className="w-12 h-12 text-purple-400 mx-auto mb-2" />
-                <div className="text-3xl font-bold text-white">50+</div>
-                <div className="text-sm text-gray-400">Global Partners</div>
-              </div>
+              {(missionContent?.stats || []).map((stat, index) => {
+                const IconComponent = missionStatsIcons[index % missionStatsIcons.length];
+                return (
+                  <div key={stat?.label || index} className="text-center">
+                    <IconComponent className={`w-12 h-12 mx-auto mb-2 ${index === 0 ? 'text-cyan-400' : index === 1 ? 'text-blue-400' : 'text-purple-400'}`} />
+                    <div className="text-3xl font-bold text-white">{stat?.value}</div>
+                    <div className="text-sm text-gray-400">{stat?.label}</div>
+                  </div>
+                );
+              })}
             </div>
           </motion.div>
         </div>
@@ -497,61 +584,44 @@ const NewHomePage = () => {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold font-space mb-4">
-              Quick Access Portal
+              {portalContent?.heading}
             </h2>
-            <p className="text-xl text-gray-400">Navigate to our specialized platforms</p>
+            <p className="text-xl text-gray-400">{portalContent?.subheading}</p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                title: "Research Portal",
-                description: "Access scientific publications and data",
-                icon: Icons.Microscope,
-                link: "/research-excellence-portal",
-                gradient: "from-purple-600 to-pink-600"
-              },
-              {
-                title: "Maritime Services",
-                description: "Vessel tracking and port information",
-                icon: Icons.Ship,
-                link: "/maritime-services-hub",
-                gradient: "from-blue-600 to-cyan-600"
-              },
-              {
-                title: "Digital Marketplace",
-                description: "Purchase research data and reports",
-                icon: Icons.ShoppingBag,
-                link: "/nara-digital-marketplace",
-                gradient: "from-green-600 to-teal-600"
-              }
-            ].map((portal, index) => (
-              <motion.div
-                key={index}
-                initial={{ y: 50, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-              >
-                <Link to={portal.link}>
-                  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 p-8 border border-gray-700 hover:border-cyan-500 transition-all duration-300">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${portal.gradient} opacity-0 group-hover:opacity-10 transition-opacity`}></div>
-                    
-                    <div className={`inline-flex p-4 rounded-xl bg-gradient-to-r ${portal.gradient} mb-4`}>
-                      <portal.icon className="w-8 h-8 text-white" />
+            {portalCardsConfig.map((card, index) => {
+              const copy = portalContent?.cards?.[card.key] || {};
+              const IconComponent = card.icon;
+              const buttonLabel = portalContent?.cta || copy.title;
+              return (
+                <motion.div
+                  key={card.key}
+                  initial={{ y: 50, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <Link to={card.link}>
+                    <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 p-8 border border-gray-700 hover:border-cyan-500 transition-all duration-300">
+                      <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 group-hover:opacity-10 transition-opacity`}></div>
+
+                      <div className={`inline-flex p-4 rounded-xl bg-gradient-to-r ${card.gradient} mb-4`}>
+                        <IconComponent className="w-8 h-8 text-white" />
+                      </div>
+
+                      <h3 className="text-2xl font-bold text-white mb-2">{copy.title}</h3>
+                      <p className="text-gray-400 mb-4">{copy.description}</p>
+
+                      <div className="flex items-center gap-2 text-cyan-400 group-hover:gap-4 transition-all">
+                        <span>{buttonLabel}</span>
+                        <Icons.ArrowRight className="w-5 h-5" />
+                      </div>
                     </div>
-                    
-                    <h3 className="text-2xl font-bold text-white mb-2">{portal.title}</h3>
-                    <p className="text-gray-400 mb-4">{portal.description}</p>
-                    
-                    <div className="flex items-center gap-2 text-cyan-400 group-hover:gap-4 transition-all">
-                      <span>Enter Portal</span>
-                      <Icons.ArrowRight className="w-5 h-5" />
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                  </Link>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -574,31 +644,31 @@ const NewHomePage = () => {
                   </div>
                 </div>
                 <div>
-                  <p className="text-cyan-300 text-xs tracking-[0.35em] uppercase">National Mission Control</p>
-                  <h3 className="text-3xl md:text-4xl font-semibold font-space leading-tight">Safeguarding Sri Lanka&apos;s Blue Economy</h3>
+                  <p className="text-cyan-300 text-xs tracking-[0.35em] uppercase">{missionControlContent?.badge}</p>
+                  <h3 className="text-3xl md:text-4xl font-semibold font-space leading-tight">{missionControlContent?.title}</h3>
                 </div>
               </div>
               <p className="text-slate-300/90 text-lg leading-relaxed">
-                The National Aquatic Resources Research & Development Agency orchestrates ocean intelligence, policy, and innovation to secure a resilient maritime future for the nation.
+                {missionControlContent?.description}
               </p>
             </div>
 
             <div className="w-full max-w-md bg-slate-900/60 border border-slate-700/40 rounded-2xl p-6 lg:p-8 backdrop-blur-xl shadow-[0_25px_80px_-40px_rgba(6,182,212,0.45)]">
-              <h4 className="text-lg font-semibold mb-3">Request a Strategic Briefing</h4>
+              <h4 className="text-lg font-semibold mb-3">{missionControlContent?.form?.title}</h4>
               <p className="text-sm text-slate-300/90 mb-5">
-                Receive monthly intelligence dispatches, mission updates, and collaboration windows from the command center.
+                {missionControlContent?.form?.description}
               </p>
               <form className="space-y-4" onSubmit={(event) => event.preventDefault()}>
                 <input
                   type="text"
                   required
-                  placeholder="Full name"
+                  placeholder={missionControlContent?.form?.placeholders?.name}
                   className="w-full rounded-xl bg-slate-950/60 border border-slate-700/60 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/70 focus:border-transparent"
                 />
                 <input
                   type="email"
                   required
-                  placeholder="Work email"
+                  placeholder={missionControlContent?.form?.placeholders?.email}
                   className="w-full rounded-xl bg-slate-950/60 border border-slate-700/60 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/70 focus:border-transparent"
                 />
                 <button
@@ -606,104 +676,71 @@ const NewHomePage = () => {
                   className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:shadow-cyan-400/30"
                 >
                   <Icons.Send className="w-4 h-4" />
-                  Join the mission
+                  {missionControlContent?.form?.cta}
                 </button>
               </form>
               <p className="text-xs text-slate-400 mt-4">
-                We protect your data in alignment with GovCERT SL and global research ethics protocols.
+                {missionControlContent?.form?.privacy}
               </p>
             </div>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 via-cyan-500/20 to-blue-600/0 opacity-0 transition-opacity group-hover:opacity-100" />
-              <div className="relative flex items-start justify-between gap-6">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Research Programs</p>
-                  <p className="text-4xl font-semibold text-white mt-3">42</p>
-                  <p className="text-sm text-slate-400 mt-3">
-                    Active ocean science missions advancing biodiversity, climate, and naval readiness.
-                  </p>
+            {highlightCardsConfig.map((card) => {
+              const copy = highlightsContent?.cards?.[card.key] || {};
+              const IconComponent = card.icon;
+              return (
+                <div key={card.key} className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${card.accent} opacity-0 transition-opacity group-hover:opacity-100`} />
+                  <div className="relative flex items-start justify-between gap-6">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.3em] text-slate-400">{copy.label}</p>
+                      <p className="text-4xl font-semibold text-white mt-3">{copy.value}</p>
+                      <p className="text-sm text-slate-400 mt-3">{copy.description}</p>
+                    </div>
+                    <IconComponent className={`w-10 h-10 ${card.iconColor}`} />
+                  </div>
                 </div>
-                <Icons.Microscope className="w-10 h-10 text-cyan-300" />
-              </div>
-            </div>
-            <div className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 via-blue-500/20 to-cyan-500/0 opacity-0 transition-opacity group-hover:opacity-100" />
-              <div className="relative flex items-start justify-between gap-6">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Observatories</p>
-                  <p className="text-4xl font-semibold text-white mt-3">18</p>
-                  <p className="text-sm text-slate-400 mt-3">
-                    Coastal, deep-sea, and satellite-linked stations monitoring the Indian Ocean corridor.
-                  </p>
-                </div>
-                <Icons.Satellite className="w-10 h-10 text-blue-300" />
-              </div>
-            </div>
-            <div className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-teal-500/0 via-teal-500/20 to-blue-600/0 opacity-0 transition-opacity group-hover:opacity-100" />
-              <div className="relative flex items-start justify-between gap-6">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Data Assets</p>
-                  <p className="text-4xl font-semibold text-white mt-3">12.4M</p>
-                  <p className="text-sm text-slate-400 mt-3">
-                    Verified datapoints fueling analytics, conservation, and maritime decision systems.
-                  </p>
-                </div>
-                <Icons.Database className="w-10 h-10 text-teal-300" />
-              </div>
-            </div>
-            <div className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 via-blue-500/20 to-cyan-500/0 opacity-0 transition-opacity group-hover:opacity-100" />
-              <div className="relative flex items-start justify-between gap-6">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Allied Partners</p>
-                  <p className="text-4xl font-semibold text-white mt-3">65+</p>
-                  <p className="text-sm text-slate-400 mt-3">
-                    Government, academic, and private alliances powering ocean stewardship initiatives.
-                  </p>
-                </div>
-                <Icons.Users className="w-10 h-10 text-cyan-200" />
-              </div>
-            </div>
+              );
+            })}
           </div>
 
           <div className="grid gap-10 lg:grid-cols-4">
-            <div className="space-y-5">
-              <h4 className="text-sm font-semibold tracking-[0.3em] uppercase text-cyan-200">Mission Pillars</h4>
-              <ul className="space-y-3 text-sm text-slate-300">
-                <li><Link to="/ocean-intelligence-dashboard-homepage" className="hover:text-cyan-300 transition">Ocean Intelligence Dashboard</Link></li>
-                <li><Link to="/research-excellence-portal" className="hover:text-cyan-300 transition">Research Excellence Portal</Link></li>
-                <li><Link to="/knowledge-discovery-center" className="hover:text-cyan-300 transition">Knowledge Discovery Center</Link></li>
-                <li><Link to="/partnership-innovation-gateway" className="hover:text-cyan-300 transition">Partnership Innovation Gateway</Link></li>
-              </ul>
-            </div>
-            <div className="space-y-5">
-              <h4 className="text-sm font-semibold tracking-[0.3em] uppercase text-cyan-200">Digital Command Centers</h4>
-              <ul className="space-y-3 text-sm text-slate-300">
-                <li><Link to="/maritime-services-hub" className="hover:text-cyan-300 transition">Maritime Services Hub</Link></li>
-                <li><Link to="/emergency-response-network" className="hover:text-cyan-300 transition">Emergency Response Network</Link></li>
-                <li><Link to="/integration-systems-platform" className="hover:text-cyan-300 transition">Integration Systems Platform</Link></li>
-                <li><Link to="/learning-development-academy" className="hover:text-cyan-300 transition">Learning & Development Academy</Link></li>
-              </ul>
-            </div>
-            <div className="space-y-5">
-              <h4 className="text-sm font-semibold tracking-[0.3em] uppercase text-cyan-200">Policy & Compliance</h4>
-              <ul className="space-y-3 text-sm text-slate-300">
-                <li><Link to="/nara-news-updates-center" className="hover:text-cyan-300 transition">Mission Bulletins</Link></li>
-                <li><Link to="/payment-gateway-hub" className="hover:text-cyan-300 transition">Secure Transactions</Link></li>
-                <li><a href="#" className="hover:text-cyan-300 transition">Data Protection Charter</a></li>
-                <li><a href="#" className="hover:text-cyan-300 transition">Accessibility Statement</a></li>
-              </ul>
-            </div>
+            {navigationColumns.map((column) => {
+              const columnCopy = navigationContent?.[column.key] || {};
+              return (
+                <div key={column.key} className="space-y-5">
+                  <h4 className="text-sm font-semibold tracking-[0.3em] uppercase text-cyan-200">{columnCopy.heading}</h4>
+                  <ul className="space-y-3 text-sm text-slate-300">
+                    {column.links.map((link) => {
+                      const label = columnCopy.links?.[link.key] || '';
+                      if (link.type === 'anchor') {
+                        return (
+                          <li key={link.key}>
+                            <a href={link.href || '#'} className="hover:text-cyan-300 transition">
+                              {label}
+                            </a>
+                          </li>
+                        );
+                      }
+                      return (
+                        <li key={link.key}>
+                          <Link to={link.to || '#'} className="hover:text-cyan-300 transition">
+                            {label}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })}
             <div className="space-y-6">
-              <h4 className="text-sm font-semibold tracking-[0.3em] uppercase text-cyan-200">Contact & Duty Desk</h4>
+              <h4 className="text-sm font-semibold tracking-[0.3em] uppercase text-cyan-200">{contactContent?.heading}</h4>
               <div className="space-y-4 text-sm text-slate-300">
                 <p className="flex items-start gap-3">
                   <Icons.MapPin className="mt-0.5 w-4 h-4 text-cyan-300" />
-                  Crow Island, Colombo 15, Sri Lanka
+                  {contactContent?.address}
                 </p>
                 <p className="flex items-center gap-3">
                   <Icons.Phone className="w-4 h-4 text-cyan-300" />
@@ -715,7 +752,7 @@ const NewHomePage = () => {
                 </p>
                 <p className="flex items-center gap-3">
                   <Icons.Clock className="w-4 h-4 text-cyan-300" />
-                  Mission operations: 08:30 - 18:00 IST
+                  {contactContent?.hours}
                 </p>
               </div>
             </div>
@@ -734,7 +771,7 @@ const NewHomePage = () => {
                   loading="lazy"
                 />
                 <span className="text-sm uppercase tracking-[0.3em] font-medium">
-                  This is a Sri Lanka Government website
+                  {footerContent?.badge}
                 </span>
                 <img
                   src="https://firebasestorage.googleapis.com/v0/b/nara-web-73384.firebasestorage.app/o/sri%20lankan%20goverment%2Fsl-flag-1.png?alt=media&token=cf422533-b8df-4d92-a08f-978704d34124"
@@ -747,20 +784,20 @@ const NewHomePage = () => {
               {/* Line 2: Legal Links & Compliance */}
               <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-slate-400 border-y border-slate-800/50 py-4">
                 <a href="#" className="hover:text-cyan-300 transition-colors">
-                  Privacy &amp; Data Ethics
+                  {footerContent?.legal?.privacy}
                 </a>
                 <span className="text-slate-700">•</span>
                 <a href="#" className="hover:text-cyan-300 transition-colors">
-                  Terms of Collaboration
+                  {footerContent?.legal?.terms}
                 </a>
                 <span className="text-slate-700">•</span>
                 <a href="#" className="hover:text-cyan-300 transition-colors">
-                  Transparency Portal
+                  {footerContent?.legal?.transparency}
                 </a>
                 <span className="text-slate-700">•</span>
                 <span className="flex items-center gap-2 text-slate-500">
                   <Icons.ShieldCheck className="w-4 h-4" />
-                  ISO 27001 | GovCERT SL Aligned
+                  {footerContent?.legal?.compliance}
                 </span>
               </div>
 
@@ -779,10 +816,10 @@ const NewHomePage = () => {
 
               {/* Line 4: Copyright */}
               <p className="text-sm text-slate-500 pt-3">
-                © 2025 National Aquatic Resources Research & Development Agency. 
+                {footerContent?.copyright}
                 <br className="sm:hidden" />
                 <span className="hidden sm:inline"> </span>
-                Crafted by <a href="https://www.safenetcreations.com" className="text-cyan-300 hover:text-cyan-100 transition-colors font-medium" target="_blank" rel="noopener noreferrer">www.safenetcreations.com</a>
+                {footerContent?.craftedBy} <a href="https://www.safenetcreations.com" className="text-cyan-300 hover:text-cyan-100 transition-colors font-medium" target="_blank" rel="noopener noreferrer">www.safenetcreations.com</a>
               </p>
 
             </div>

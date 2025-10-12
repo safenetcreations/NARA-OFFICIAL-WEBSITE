@@ -1,0 +1,214 @@
+{
+  "hero": {
+    "liveDataLabel": "Live Data",
+    "badge": "Sri Lanka Exclusive Economic Zone",
+    "title": {
+      "lead": "Commanding",
+      "highlight": "200 Nautical Miles",
+      "trail": "of Sovereign Ocean Intelligence"
+    },
+    "description": "NARA's national mission control fuses satellite telemetry, autonomous gliders, and coastal observatories to illuminate Sri Lanka's seas. Every pulse safeguards maritime trade, blue economy prosperity, and climate resilience across the island nation.",
+    "actions": {
+      "sync": "Sync Live Sensors",
+      "launch": "Launch Intelligence Console"
+    },
+    "stats": {
+      "activeSensors": {
+        "label": "Active Sensors",
+        "caption": "Satellite, buoy, and ROV network"
+      },
+      "protectedWaters": {
+        "label": "Protected Waters",
+        "caption": "EEZ coverage within 200 NM"
+      },
+      "liveAlerts": {
+        "label": "Live Alerts",
+        "caption": "Fisheries, NAVIC, and weather"
+      }
+    },
+    "lastUpdated": "Last updated",
+    "overview": {
+      "sovereignWaters": {
+        "label": "Sovereign Waters",
+        "value": "200 NM EEZ Radius"
+      },
+      "lastSync": {
+        "label": "Last Sync"
+      }
+    }
+  },
+  "research": {
+    "heading": "Research Excellence",
+    "description": "Leading ocean research with cutting-edge technology and scientific innovation",
+    "areas": {
+      "marineBiodiversity": {
+        "title": "Marine Biodiversity",
+        "description": "Protecting 50,000+ marine species",
+        "unit": "Species Documented",
+        "statFallback": "15K"
+      },
+      "climateResearch": {
+        "title": "Climate Research",
+        "description": "Real-time ocean temperature monitoring",
+        "unit": "Climate Tracking",
+        "statFallback": "24/7"
+      },
+      "conservation": {
+        "title": "Conservation",
+        "description": "Sustainable fishing practices",
+        "unit": "Success Rate",
+        "statFallback": "85%"
+      },
+      "satelliteMonitoring": {
+        "title": "Satellite Monitoring",
+        "description": "AI-powered ocean surveillance",
+        "unit": "Daily Observations",
+        "statFallback": "500"
+      }
+    }
+  },
+  "intelligence": {
+    "heading": {
+      "lead": "Real-Time",
+      "highlight": "Ocean Intelligence"
+    },
+    "description": "Monitor ocean conditions, marine traffic, and environmental data in real-time with our advanced satellite and sensor network covering Sri Lankan waters.",
+    "livePoints": [
+      "127 Active Research Stations",
+      "3,847 Marine Species Tracked",
+      "15 Research Vessels at Sea"
+    ],
+    "cta": "Access Live Dashboard",
+    "floatingStats": {
+      "temperature": {
+        "value": "28.5°C",
+        "label": "Ocean Temp"
+      },
+      "ph": {
+        "value": "7.8",
+        "label": "pH Level"
+      }
+    }
+  },
+  "mission": {
+    "heading": "Protecting Our Oceans",
+    "description": "Through cutting-edge research and innovation, we safeguard Sri Lanka's marine ecosystems for future generations while advancing the blue economy through sustainable practices and scientific excellence.",
+    "stats": [
+      {
+        "value": "25+",
+        "label": "Years of Excellence"
+      },
+      {
+        "value": "500+",
+        "label": "Scientists"
+      },
+      {
+        "value": "50+",
+        "label": "Global Partners"
+      }
+    ]
+  },
+  "portal": {
+    "heading": "Quick Access Portal",
+    "subheading": "Navigate to our specialized platforms",
+    "cards": {
+      "research": {
+        "title": "Research Portal",
+        "description": "Access scientific publications and data"
+      },
+      "maritime": {
+        "title": "Maritime Services",
+        "description": "Vessel tracking and port information"
+      },
+      "marketplace": {
+        "title": "Digital Marketplace",
+        "description": "Purchase research data and reports"
+      }
+    },
+    "cta": "Enter Portal"
+  },
+  "missionControl": {
+    "badge": "National Mission Control",
+    "title": "Safeguarding Sri Lanka's Blue Economy",
+    "description": "The National Aquatic Resources Research & Development Agency orchestrates ocean intelligence, policy, and innovation to secure a resilient maritime future for the nation.",
+    "form": {
+      "title": "Request a Strategic Briefing",
+      "description": "Receive monthly intelligence dispatches, mission updates, and collaboration windows from the command center.",
+      "placeholders": {
+        "name": "Full name",
+        "email": "Work email"
+      },
+      "cta": "Join the mission",
+      "privacy": "We protect your data in alignment with GovCERT SL and global research ethics protocols."
+    }
+  },
+  "highlights": {
+    "cards": {
+      "programs": {
+        "label": "Research Programs",
+        "value": "42",
+        "description": "Active ocean science missions advancing biodiversity, climate, and naval readiness."
+      },
+      "observatories": {
+        "label": "Observatories",
+        "value": "18",
+        "description": "Coastal, deep-sea, and satellite-linked stations monitoring the Indian Ocean corridor."
+      },
+      "dataAssets": {
+        "label": "Data Assets",
+        "value": "12.4M",
+        "description": "Verified datapoints fueling analytics, conservation, and maritime decision systems."
+      },
+      "partners": {
+        "label": "Allied Partners",
+        "value": "65+",
+        "description": "Government, academic, and private alliances powering ocean stewardship initiatives."
+      }
+    }
+  },
+  "navigation": {
+    "missionPillars": {
+      "heading": "Mission Pillars",
+      "links": {
+        "dashboard": "Ocean Intelligence Dashboard",
+        "research": "Research Excellence Portal",
+        "knowledge": "Knowledge Discovery Center",
+        "partnership": "Partnership Innovation Gateway"
+      }
+    },
+    "commandCenters": {
+      "heading": "Digital Command Centers",
+      "links": {
+        "maritime": "Maritime Services Hub",
+        "emergency": "Emergency Response Network",
+        "integration": "Integration Systems Platform",
+        "learning": "Learning & Development Academy"
+      }
+    },
+    "policy": {
+      "heading": "Policy & Compliance",
+      "links": {
+        "bulletins": "Mission Bulletins",
+        "transactions": "Secure Transactions",
+        "charter": "Data Protection Charter",
+        "accessibility": "Accessibility Statement"
+      }
+    }
+  },
+  "contact": {
+    "heading": "Contact & Duty Desk",
+    "address": "Crow Island, Colombo 15, Sri Lanka",
+    "hours": "Mission operations: 08:30 - 18:00 IST"
+  },
+  "footer": {
+    "badge": "This is a Sri Lanka Government website",
+    "legal": {
+      "privacy": "Privacy & Data Ethics",
+      "terms": "Terms of Collaboration",
+      "transparency": "Transparency Portal",
+      "compliance": "ISO 27001 | GovCERT SL Aligned"
+    },
+    "craftedBy": "Crafted by",
+    "copyright": "© 2025 National Aquatic Resources Research & Development Agency."
+  }
+}

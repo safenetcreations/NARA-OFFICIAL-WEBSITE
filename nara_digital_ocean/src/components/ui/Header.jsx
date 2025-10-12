@@ -10,7 +10,12 @@ const Header = ({ className = '' }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [language, setLanguage] = useState(() => localStorage.getItem('nara_lang') || 'en');
+  const [language, setLanguage] = useState(() => {
+    if (typeof window === 'undefined') {
+      return 'en';
+    }
+    return localStorage.getItem('nara-lang') || 'en';
+  });
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const theme = useThemeStore((s) => s?.theme);
   const toggleTheme = useThemeStore((s) => s?.toggleTheme);
@@ -175,9 +180,8 @@ const Header = ({ className = '' }) => {
   const handleLanguageChange = (value) => {
     setLanguage(value);
     setIsLanguageOpen(false);
-    try { 
-      localStorage.setItem('nara_lang', value);
-      // Could trigger a re-render or translation update here
+    try {
+      localStorage.setItem('nara-lang', value);
       window.dispatchEvent(new CustomEvent('languageChange', { detail: value }));
     } catch {}
   };

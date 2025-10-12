@@ -1,0 +1,56 @@
+{
+  "language": {
+    "english": "ඉංග්‍රීසි",
+    "tamil": "දෙමළ",
+    "sinhala": "සිංහල"
+  },
+  "navbar": {
+    "languageLabel": "භාෂාව",
+    "back": "ආපසු",
+    "brand": {
+      "title": "NARA",
+      "subtitle": "මුහුදු පර්යේෂණය"
+    },
+    "themes": {
+      "ocean": "මුහුද",
+      "cosmic": "අභ්‍යවකාශය"
+    },
+    "menu": {
+      "research": {
+        "title": "ගවේෂණ හා බුද්ධිමතාත්මක සේවාවන්",
+        "links": {
+          "researchExcellencePortal": "ගවේෂණ ශ්‍රේෂ්ඨත්ව ද්වාරය",
+          "researchCollaboration": "ගවේෂණ සමාන්විතතාව",
+          "knowledgeDiscovery": "දැනුම සොයාගැනීම",
+          "partnershipInnovation": "හවුල්කාරී නව්‍යත්වය"
+        }
+      },
+      "services": {
+        "title": "සේවා හා මෙහෙයුම්",
+        "links": {
+          "digitalMarketplace": "ඩිජිටල් වෙළඳ පොළ",
+          "maritimeServices": "සාගරික සේවාවන්",
+          "governmentServices": "රාජ්‍ය සේවාවන්",
+          "emergencyResponse": "හදිසි ප්‍රතිචාර"
+        }
+      },
+      "resources": {
+        "title": "සාධන",
+        "links": {
+          "digitalProductLibrary": "ඩිජිටල් නිෂ්පාදන පුස්තකාලය",
+          "learningAcademy": "ඉගෙනීමේ අකැඩමිය",
+          "regionalImpact": "ප්‍රාදේශීය බලපෑම",
+          "integrationSystems": "එකතු කිරීමේ පද්ධති"
+        }
+      },
+      "about": {
+        "title": "අප ගැන",
+        "links": {
+          "ourStory": "අපේ කතාව",
+          "newsUpdates": "පුවත් හා යාවත්කාලීන",
+          "procurement": "මිලදී ගැනීම්"
+        }
+      }
+    }
+  }
+}

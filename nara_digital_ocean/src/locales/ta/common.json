@@ -1,0 +1,56 @@
+{
+  "language": {
+    "english": "ஆங்கிலம்",
+    "tamil": "தமிழ்",
+    "sinhala": "சிங்களம்"
+  },
+  "navbar": {
+    "languageLabel": "மொழி",
+    "back": "பின் செல்ல",
+    "brand": {
+      "title": "NARA",
+      "subtitle": "கடல் ஆராய்ச்சி"
+    },
+    "themes": {
+      "ocean": "கடல்",
+      "cosmic": "விண்வெளி"
+    },
+    "menu": {
+      "research": {
+        "title": "ஆராய்ச்சி மற்றும் நுண்ணறிவு",
+        "links": {
+          "researchExcellencePortal": "ஆராய்ச்சி சிறப்புத் தளம்",
+          "researchCollaboration": "ஆராய்ச்சி கூட்டாண்மை",
+          "knowledgeDiscovery": "அறிவு கண்டுபிடிப்பு",
+          "partnershipInnovation": "கூட்டாண்மை புதுமை"
+        }
+      },
+      "services": {
+        "title": "சேவைகள் மற்றும் செயல்பாடுகள்",
+        "links": {
+          "digitalMarketplace": "டிஜிட்டல் சந்தை",
+          "maritimeServices": "கடல்சார் சேவைகள்",
+          "governmentServices": "அரசு சேவைகள்",
+          "emergencyResponse": "அவசர நடவடிக்கை"
+        }
+      },
+      "resources": {
+        "title": "வளங்கள்",
+        "links": {
+          "digitalProductLibrary": "டிஜிட்டல் தயாரிப்பு நூலகம்",
+          "learningAcademy": "கற்றல் அகாடமி",
+          "regionalImpact": "பிராந்திய தாக்கம்",
+          "integrationSystems": "இணைப்பு அமைப்புகள்"
+        }
+      },
+      "about": {
+        "title": "எங்களை பற்றி",
+        "links": {
+          "ourStory": "எங்கள் கதை",
+          "newsUpdates": "செய்திகள் மற்றும் புதுப்பிப்புகள்",
+          "procurement": "கொள்முதல்"
+        }
+      }
+    }
+  }
+}

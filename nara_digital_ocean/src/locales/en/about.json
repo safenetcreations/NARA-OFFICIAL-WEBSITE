@@ -1,0 +1,74 @@
+{
+  "about": {
+    "hero": {
+      "title": "About Us",
+      "subtitle": "National Aquatic Resources Research and Development Agency"
+    },
+    "overview": {
+      "title": "Overview",
+      "content": "Imagine the endless whisper of waves cradling ancient secrets, where turquoise depths meet emerald shores--a realm where life's symphony pulses with untamed vitality. Here, in the embrace of Sri Lanka's boundless aquatic tapestry, stands the National Aquatic Resources Research and Development Agency (NARA): a beacon of hope, a forge of dreams, igniting the spark of tomorrow's Blue Revolution. For over four decades, we have danced with the tides of innovation and resilience, guardians of an Exclusive Economic Zone (EEZ) spanning 517,000 square kilometers--a majestic ocean heart eight times vaster than our island soul. We are more than stewards; we are visionaries, transforming the raw poetry of seas and rivers into a legacy of abundance, unity, and unyielding promise for every soul who calls these waters home."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "content": "To soar as the unrivaled lighthouse of scientific brilliance in the region, illuminating paths to eternal harmony in the conservation, management, and blossoming of aquatic wonders--where every ripple echoes a world renewed, and every horizon beckons with boundless possibility."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "content": "To unleash revolutionary, heart-stirring solutions that conquer national horizons in the aquatic realm, wielding the thunder of scientific insight, the fire of technological mastery, and the depth of our sacred resource wisdom--propelling sustainable triumphs that uplift communities, heal ecosystems, and etch prosperity into the stars."
+    },
+    "logo": {
+      "title": "The Story Behind Our Logo",
+      "content": "Behold the dolphin: a celestial navigator of abyssal mysteries, leaping skyward in joyous defiance of gravity's pull. In NARA's emblem, this radiant sentinel embodies the luminous intellect and boundless curiosity that conquer the ocean's enigmas--mirroring our sacred role as the nation's oceanic oracle. An eternal ally to humankind, the dolphin whispers tales of profound kinship with the deep, a clarion call to cherish and defend. Like this graceful voyager, who glides seamlessly between freshwater idylls and saline symphonies, NARA embodies the fluid grace of duality--honoring inland sanctuaries and offshore epics alike. In its arching, gaze-fixed-forward poise lies our unbreakable spirit: bold, uncharted, eternally charging toward dawn's first light, where challenges dissolve into waves of wonder."
+    },
+    "legacy": {
+      "title": "Our Legacy: A Journey of Aquatic Excellence",
+      "intro": "From the seismic swells of 1981, when the United Nations Convention on the Law of the Sea unfurled Sri Lanka's 200-nautical-mile EEZ like a banner of destiny, NARA emerged--a phoenix forged in the fires of foresight.",
+      "periods": {
+        "1981": "We charted the unknown, scripting EEZ odysseys, oceanographic revelations, and IUCN symphonies--igniting the flames of unified guardianship that still burn bright.",
+        "1996": "Tempered by Act No. 32, we ascended to hydrographic sovereignty and conservation's sacred covenant, harmonizing with UNCLOS's global chorus to safeguard our liquid lineage.",
+        "2000s": "Amid the 2004 tsunami's tempests, we rose unbreakable, alchemizing grief into resilient fortresses of monitoring, while UNESCO alliances wove threads of enlightenment across our waves.",
+        "2010s": "We conquered with acoustic symphonies of stock wisdom, global pacts like the UK's Ocean Country Partnership igniting youth fires, and the 2020 President's Awards crowning our scholarly stars--crescendoing in our 2025 Navy MOU, a pact of steel and science to conquer the deep."
+      }
+    },
+    "mandate": {
+      "title": "Our Mandate: Pillars of Impact",
+      "intro": "NARA is the alchemist of aquatic aspiration, transmuting knowledge into kinetic force.",
+      "pillars": [
+        {
+          "title": "Igniting Expertise's Flame",
+          "text": "We summon the cosmos of science and technology to propel national quests for living legacies and non-living treasures."
+        },
+        {
+          "title": "The Forge of Discovery",
+          "text": "We pioneer quests into the essence of aquatic realms--unveiling, appraising, stewarding, preserving, and elevating."
+        },
+        {
+          "title": "Sages of Counsel",
+          "text": "We bestow prophetic guidance sculpting policies that dance the delicate waltz of plenty and planetary grace."
+        },
+        {
+          "title": "The Grand Alliance",
+          "text": "We unite titans of industry and intellect in a chorus of cohesion--birthing a national tide unstoppable."
+        },
+        {
+          "title": "Beacons of Wisdom",
+          "text": "We harvest, herald, and hymn the lore of waters, illuminating trails for guardianship and renewal."
+        },
+        {
+          "title": "Empowerment's Tide",
+          "text": "We kindle inner fires through transformative training, arming champions with valor and velocity."
+        },
+        {
+          "title": "The Eternal Oath",
+          "text": "We wield every power and honor every duty--our compass true, our course unyielding, our legacy immortal."
+        }
+      ],
+      "closing": "We are the dream-weavers of Sri Lanka's liquid eternity."
+    },
+    "cta": {
+      "title": "Join Our Journey",
+      "description": "Rise with us: immerse in our quests, ally in our ascent.",
+      "button": "Explore Our Mission"
+    }
+  }
+}

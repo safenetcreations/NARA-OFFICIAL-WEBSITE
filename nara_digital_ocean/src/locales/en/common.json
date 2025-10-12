@@ -1,0 +1,56 @@
+{
+  "language": {
+    "english": "English",
+    "tamil": "Tamil",
+    "sinhala": "Sinhala"
+  },
+  "navbar": {
+    "languageLabel": "Language",
+    "back": "Back",
+    "brand": {
+      "title": "NARA",
+      "subtitle": "Ocean Research"
+    },
+    "themes": {
+      "ocean": "Ocean",
+      "cosmic": "Cosmic"
+    },
+    "menu": {
+      "research": {
+        "title": "Research & Intelligence",
+        "links": {
+          "researchExcellencePortal": "Research Excellence Portal",
+          "researchCollaboration": "Research Collaboration",
+          "knowledgeDiscovery": "Knowledge Discovery",
+          "partnershipInnovation": "Partnership Innovation"
+        }
+      },
+      "services": {
+        "title": "Services & Operations",
+        "links": {
+          "digitalMarketplace": "Digital Marketplace",
+          "maritimeServices": "Maritime Services",
+          "governmentServices": "Government Services",
+          "emergencyResponse": "Emergency Response"
+        }
+      },
+      "resources": {
+        "title": "Resources",
+        "links": {
+          "digitalProductLibrary": "Digital Product Library",
+          "learningAcademy": "Learning Academy",
+          "regionalImpact": "Regional Impact",
+          "integrationSystems": "Integration Systems"
+        }
+      },
+      "about": {
+        "title": "About",
+        "links": {
+          "ourStory": "Our Story",
+          "newsUpdates": "News & Updates",
+          "procurement": "Procurement"
+        }
+      }
+    }
+  }
+}
