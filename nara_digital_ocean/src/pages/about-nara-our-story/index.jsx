@@ -53,7 +53,14 @@ const AboutNARAStoryPage = () => {
   const heroStats = Array.isArray(hero?.stats) ? hero.stats : [];
   const historyBody = Array.isArray(history?.body) ? history.body : [];
   const timeline = useMemo(() => (Array.isArray(history?.timeline) ? history.timeline : []), [history]);
-  const timelinePreview = timeline.slice(0, 4);
+  const timelineLoop = useMemo(() => {
+    if (!timeline.length) {
+      return [];
+    }
+    const duplicated = timeline.map((item, index) => ({ ...item, _loopId: `dup-${index}` }));
+    return [...timeline, ...duplicated];
+  }, [timeline]);
+  const timelineScrollDuration = Math.max(24, timeline.length * 6);
   const achievementItems = Array.isArray(achievements?.items) ? achievements.items : [];
   const timelineIntro = history?.timelineIntro || '';
 
@@ -146,7 +153,7 @@ const AboutNARAStoryPage = () => {
               className="relative"
             >
               <div className="absolute -inset-4 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-[32px] blur-3xl" />
-              <div className="relative bg-slate-900/80 border border-slate-700/50 rounded-[32px] p-6 backdrop-blur-xl shadow-[0_25px_80px_-35px_rgba(6,182,212,0.55)]">
+              <div className="relative bg-slate-900/80 border border-slate-700/50 rounded-[32px] p-6 backdrop-blur-xl shadow-[0_25px_80px_-35px_rgba(6,182,212,0.55)] overflow-hidden">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-sm uppercase tracking-[0.35em] text-cyan-200/70">
                     {history?.timelineTitle}
@@ -156,40 +163,44 @@ const AboutNARAStoryPage = () => {
                     {timeline.length} milestones
                   </div>
                 </div>
-                <div className="space-y-4 max-h-[420px] overflow-y-auto pr-2 timeline-scroll">
-                  {timelinePreview.map((item, idx) => (
-                    <motion.div
-                      key={`${item?.year}-${idx}`}
-                      whileHover={{ y: -4 }}
-                      className="group relative rounded-2xl overflow-hidden border border-slate-700/60 bg-slate-900/70"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 via-cyan-500/15 to-blue-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="grid grid-cols-[96px_minmax(0,1fr)] gap-4">
-                        <div className="relative h-full">
-                          <AppImage
-                            src={getTimelineMedia(item?.year)}
-                            alt={`${item?.year} milestone`}
-                            className="h-full w-full object-cover"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/40 to-slate-900/90" />
-                          <span className="absolute bottom-2 left-2 text-xs font-semibold text-white/80">
-                            {item?.year}
-                          </span>
-                        </div>
-                        <div className="py-4 pr-4">
-                          <h3 className="text-lg font-semibold text-cyan-200 mb-1">
-                            {item?.title}
-                          </h3>
-                          <p className="text-sm text-slate-300/90 leading-relaxed">
-                            {item?.description}
-                          </p>
+                <div className="relative h-[780px] overflow-hidden">
+                  <motion.div
+                    className="space-y-4 pr-2"
+                    animate={{ y: ['0%', '-50%'] }}
+                    transition={{ duration: timelineScrollDuration, repeat: Infinity, ease: 'linear' }}
+                  >
+                    {timelineLoop.map((item, idx) => (
+                      <div
+                        key={`${item?.year}-${item?._loopId || idx}`}
+                        className="group relative rounded-2xl overflow-hidden border border-slate-700/60 bg-slate-900/70 min-h-[230px]"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 via-cyan-500/15 to-blue-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="grid grid-cols-[112px_minmax(0,1fr)] gap-4">
+                          <div className="relative h-full">
+                            <AppImage
+                              src={getTimelineMedia(item?.year)}
+                              alt={`${item?.year} milestone`}
+                              className="h-full w-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/40 to-slate-900/90" />
+                            <span className="absolute bottom-3 left-3 text-xs font-semibold text-white/85">
+                              {item?.year}
+                            </span>
+                          </div>
+                          <div className="py-5 pr-5">
+                            <h3 className="text-lg font-semibold text-cyan-200 mb-2">
+                              {item?.title}
+                            </h3>
+                            <p className="text-sm text-slate-300/90 leading-relaxed line-clamp-4">
+                              {item?.description}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
-                <div className="mt-4 text-right text-xs text-cyan-200/70">
-                  {timeline.length > 4 ? `+${timeline.length - 4} more moments below` : ''}
+                    ))}
+                  </motion.div>
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-slate-900 to-transparent" />
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-slate-900 to-transparent" />
                 </div>
               </div>
             </motion.div>

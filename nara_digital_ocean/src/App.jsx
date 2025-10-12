@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import Routes from "./Routes";
 import useThemeStore from './store/theme';
 import CookieConsent from './components/compliance/CookieConsent';
+import AccessibilityToolbar from './components/compliance/AccessibilityToolbar';
 import './styles/variables.css';
 import './styles/theme-global.css';
 import './styles/academy-themes.css';
@@ -19,6 +20,7 @@ function App() {
     <>
       <Routes />
       <CookieConsent />
+      <AccessibilityToolbar />
     </>
   );
 }
