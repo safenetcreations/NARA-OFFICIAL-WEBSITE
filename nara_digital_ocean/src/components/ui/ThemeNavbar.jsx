@@ -52,6 +52,15 @@ const ThemeNavbar = () => {
 
   const menuItems = [
     {
+      titleKey: 'navbar.menu.about.title',
+      icon: Icons.Info,
+      dropdown: [
+        { labelKey: 'navbar.menu.about.links.procurement', path: '/procurement-recruitment-portal', icon: Icons.Briefcase },
+        { labelKey: 'navbar.menu.about.links.ourStory', path: '/about-nara-our-story', icon: Icons.Heart },
+        { labelKey: 'navbar.menu.about.links.newsUpdates', path: '/nara-news-updates-center', icon: Icons.Newspaper }
+      ]
+    },
+    {
       titleKey: 'navbar.menu.research.title',
       icon: Icons.Microscope,
       dropdown: [
@@ -79,15 +88,6 @@ const ThemeNavbar = () => {
         { labelKey: 'navbar.menu.resources.links.learningAcademy', path: '/learning-development-academy', icon: Icons.GraduationCap },
         { labelKey: 'navbar.menu.resources.links.regionalImpact', path: '/regional-impact-network', icon: Icons.Globe },
         { labelKey: 'navbar.menu.resources.links.integrationSystems', path: '/integration-systems-platform', icon: Icons.Network }
-      ]
-    },
-    {
-      titleKey: 'navbar.menu.about.title',
-      icon: Icons.Info,
-      dropdown: [
-        { labelKey: 'navbar.menu.about.links.procurement', path: '/procurement-recruitment-portal', icon: Icons.Briefcase },
-        { labelKey: 'navbar.menu.about.links.ourStory', path: '/about-nara-our-story', icon: Icons.Heart },
-        { labelKey: 'navbar.menu.about.links.newsUpdates', path: '/nara-news-updates-center', icon: Icons.Newspaper }
       ]
     }
   ];

@@ -14,6 +14,30 @@ const ProfessionalHeader = ({ className = '' }) => {
 
   // Professional navigation structure for government research institute
   const navigationData = {
+    about: {
+      title: 'About NARA',
+      icon: 'Info',
+      items: [
+        {
+          name: 'Procurement & Recruitment',
+          path: '/procurement-recruitment-portal',
+          icon: 'Briefcase',
+          description: 'Tenders & career opportunities'
+        },
+        {
+          name: 'Our Story',
+          path: '/about-nara-our-story',
+          icon: 'BookText',
+          description: 'Mission, vision & achievements'
+        },
+        {
+          name: 'News & Updates',
+          path: '/nara-news-updates-center',
+          icon: 'Newspaper',
+          description: 'Latest announcements & press releases'
+        }
+      ]
+    },
     research: {
       title: 'Research & Intelligence',
       icon: 'FlaskConical',
@@ -128,30 +152,6 @@ const ProfessionalHeader = ({ className = '' }) => {
           path: '/regional-impact-network',
           icon: 'Globe',
           description: 'Community engagement initiatives'
-        }
-      ]
-    },
-    about: {
-      title: 'About NARA',
-      icon: 'Info',
-      items: [
-        {
-          name: 'Procurement & Recruitment',
-          path: '/procurement-recruitment-portal',
-          icon: 'Briefcase',
-          description: 'Tenders & career opportunities'
-        },
-        {
-          name: 'Our Story',
-          path: '/about-nara-our-story',
-          icon: 'BookText',
-          description: 'Mission, vision & achievements'
-        },
-        {
-          name: 'News & Updates',
-          path: '/nara-news-updates-center',
-          icon: 'Newspaper',
-          description: 'Latest announcements & press releases'
         }
       ]
     }

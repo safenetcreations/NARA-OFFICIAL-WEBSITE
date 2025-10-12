@@ -14,6 +14,15 @@ const OceanSpaceHeader = () => {
   // NASA-inspired navigation structure with oceanic themes
   const navigationMenu = [
     {
+      title: 'About',
+      icon: Icons.Info,
+      submenu: [
+        { name: 'Careers', path: '/procurement-recruitment-portal', icon: Icons.Briefcase },
+        { name: 'Our Story', path: '/about-nara-our-story', icon: Icons.History },
+        { name: 'News & Updates', path: '/nara-news-updates-center', icon: Icons.Newspaper }
+      ]
+    },
+    {
       title: 'Research',
       icon: Icons.Waves,
       submenu: [
@@ -48,15 +57,6 @@ const OceanSpaceHeader = () => {
         { name: 'Digital Marketplace', path: '/nara-digital-marketplace', icon: Icons.ShoppingBag },
         { name: 'Product Library', path: '/digital-product-library', icon: Icons.Database },
         { name: 'Payment Gateway', path: '/payment-gateway-hub', icon: Icons.CreditCard }
-      ]
-    },
-    {
-      title: 'About',
-      icon: Icons.Info,
-      submenu: [
-        { name: 'Careers', path: '/procurement-recruitment-portal', icon: Icons.Briefcase },
-        { name: 'Our Story', path: '/about-nara-our-story', icon: Icons.History },
-        { name: 'News & Updates', path: '/nara-news-updates-center', icon: Icons.Newspaper }
       ]
     }
   ];

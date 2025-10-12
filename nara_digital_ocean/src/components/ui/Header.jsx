@@ -31,6 +31,29 @@ const Header = ({ className = '' }) => {
 
   // Navigation structure - organized by category for professional appearance
   const navigationData = {
+    about: {
+      title: 'About NARA',
+      items: [
+        {
+          name: 'Careers & Recruitment',
+          path: '/procurement-recruitment-portal',
+          icon: 'Briefcase',
+          description: 'Join our team'
+        },
+        {
+          name: 'Our Story',
+          path: '/about-nara-our-story',
+          icon: 'Heart',
+          description: 'Mission & vision'
+        },
+        {
+          name: 'News & Updates',
+          path: '/nara-news-updates-center',
+          icon: 'Newspaper',
+          description: 'Latest announcements'
+        }
+      ]
+    },
     research: {
       title: 'Research & Data',
       items: [
