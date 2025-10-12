@@ -143,37 +143,29 @@ const ThemeNavbar = () => {
            left: 0, 
            right: 0, 
            zIndex: 1000,
-           margin: '12px',
-           width: 'calc(100% - 24px)'
+           margin: '8px',
+           width: 'calc(100% - 16px)'
          }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', width: '100%' }}>
-        {/* Back + Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <button
-            onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/'); }}
-            className="btn-ghost"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.75rem', borderRadius: '999px' }}
-            aria-label={t('navbar.back')}
-            title={t('navbar.back')}
-          >
-            <Icons.ArrowLeft className="w-5 h-5" />
-            <span className="hidden md:inline" style={{ fontSize: '0.85rem' }}>{t('navbar.back')}</span>
-          </button>
-
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
-            <div className="glass" style={{ padding: '6px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <AppImage
-                src="/assets/nara-logo.png"
-                alt="NARA logo"
-                className="w-10 h-10 object-contain"
-              />
-            </div>
-            <div>
-              <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text)' }}>{t('navbar.brand.title')}</h1>
-              <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.7, color: 'var(--muted)' }}>{t('navbar.brand.subtitle')}</p>
-            </div>
-          </Link>
-        </div>
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        gap: '1rem',
+        width: '100%',
+        padding: '0.5rem 1rem'
+      }}>
+        {/* Logo Section - Compact */}
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none', flexShrink: 0 }}>
+          <AppImage
+            src="/assets/nara-logo.png"
+            alt="NARA logo"
+            className="w-10 h-10 md:w-12 md:h-12 object-contain"
+          />
+          <div className="hidden sm:block">
+            <h1 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{t('navbar.brand.title')}</h1>
+            <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.7, color: 'var(--muted)', lineHeight: 1.2 }}>{t('navbar.brand.subtitle')}</p>
+          </div>
+        </Link>
 
         {/* Desktop Navigation */}
         <div className="nav-links" style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '1rem' }}>
@@ -255,52 +247,32 @@ const ThemeNavbar = () => {
           ))}
         </div>
 
-        {/* Right side actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          {/* Contact Us Button */}
+        {/* Right side actions - Compact */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+          {/* Contact Button - Compact */}
           <Link
             to="/contact-us"
-            className="btn-ghost hidden md:flex"
+            className="btn-ghost hidden lg:flex"
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.5rem 1rem',
+              gap: '0.4rem',
+              padding: '0.5rem 0.875rem',
               borderRadius: '999px',
-              fontSize: '0.9rem',
+              fontSize: '0.85rem',
               fontWeight: 500,
               background: 'var(--primary)',
               color: 'white',
               transition: 'all 0.3s ease',
-              textDecoration: 'none'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 194, 255, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
+              textDecoration: 'none',
+              whiteSpace: 'nowrap'
             }}
           >
             <Icons.Phone className="w-4 h-4" />
-            {t('navbar.menu.contact.links.getInTouch')}
+            <span className="hidden xl:inline">{t('navbar.menu.contact.links.getInTouch')}</span>
           </Link>
 
-          <button
-            onClick={cycleLanguage}
-            className="btn-ghost md:hidden"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '0.5rem'
-            }}
-            aria-label={t('navbar.languageLabel')}
-          >
-            <Icons.Globe2 className="w-5 h-5" />
-          </button>
-
+          {/* Language Selector - Compact */}
           <div
             ref={languageMenuRef}
             className="hidden md:block"
@@ -312,19 +284,18 @@ const ThemeNavbar = () => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.55rem',
-                padding: '0.5rem 1rem',
+                gap: '0.4rem',
+                padding: '0.5rem 0.75rem',
                 borderRadius: '999px',
-                fontSize: '0.85rem',
-                fontWeight: 500,
-                minWidth: '150px'
+                fontSize: '0.8rem',
+                fontWeight: 500
               }}
               aria-haspopup="listbox"
               aria-expanded={languageMenuOpen}
+              title={t('navbar.languageLabel')}
             >
-              <Icons.Globe2 className="w-4 h-4" style={{ color: 'var(--primary)' }} />
-              <span style={{ opacity: 0.7 }}>{t('navbar.languageLabel')}</span>
-              <span style={{ fontWeight: 600 }}>{t(activeLanguage.labelKey)}</span>
+              <Icons.Globe2 className="w-4 h-4" />
+              <span style={{ fontWeight: 600 }}>{activeLanguage.code.toUpperCase()}</span>
               <Icons.ChevronDown className={`w-3 h-3 transition-transform ${languageMenuOpen ? 'rotate-180' : ''}`} />
             </button>
 
@@ -376,37 +347,33 @@ const ThemeNavbar = () => {
             </AnimatePresence>
           </div>
 
-          {/* Theme Toggle */}
+          {/* Theme Toggle - Icon Only */}
           <button 
             onClick={toggleTheme}
-            className="btn-ghost"
+            className="btn-ghost hidden lg:flex"
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.5rem 1rem',
-              borderRadius: '999px',
-              fontSize: '0.85rem'
+              justifyContent: 'center',
+              padding: '0.5rem',
+              borderRadius: '999px'
             }}
+            title={theme === 'ocean' ? t('navbar.themes.ocean') : t('navbar.themes.cosmic')}
+            aria-label="Toggle theme"
           >
             {theme === 'ocean' ? (
-              <>
-                <Icons.Waves className="w-4 h-4" style={{ color: '#00c2ff' }} />
-                <span>{t('navbar.themes.ocean')}</span>
-              </>
+              <Icons.Waves className="w-4 h-4" style={{ color: '#00c2ff' }} />
             ) : (
-              <>
-                <Icons.Sparkles className="w-4 h-4" style={{ color: '#a78bfa' }} />
-                <span>{t('navbar.themes.cosmic')}</span>
-              </>
+              <Icons.Sparkles className="w-4 h-4" style={{ color: '#a78bfa' }} />
             )}
           </button>
 
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="btn-ghost md:hidden"
-            style={{ padding: '0.5rem' }}
+            className="btn-ghost lg:hidden"
+            style={{ padding: '0.5rem', borderRadius: '8px' }}
+            aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <Icons.X className="w-5 h-5" /> : <Icons.Menu className="w-5 h-5" />}
           </button>
