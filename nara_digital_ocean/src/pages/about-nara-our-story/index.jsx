@@ -163,7 +163,7 @@ const AboutNARAStoryPage = () => {
                     {timeline.length} milestones
                   </div>
                 </div>
-                <div className="relative h-[420px] overflow-hidden mt-auto">
+                <div className="relative h-[520px] md:h-[600px] overflow-hidden mt-auto">
                   <motion.div
                     className="space-y-4 pr-2"
                     animate={{ y: ['0%', '-50%'] }}
@@ -172,23 +172,23 @@ const AboutNARAStoryPage = () => {
                     {timelineLoop.map((item, idx) => (
                       <div
                         key={`${item?.year}-${item?._loopId || idx}`}
-                        className="group relative flex rounded-2xl overflow-hidden border border-slate-700/60 bg-slate-900/70 min-h-[280px]"
+                        className="group relative flex rounded-2xl overflow-hidden border border-slate-700/60 bg-slate-900/70 min-h-[190px]"
                       >
                         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 via-cyan-500/15 to-blue-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         <div className="flex gap-3 items-stretch w-full">
-                          <div className="relative w-[132px] h-[132px] flex-shrink-0 self-start ml-4 overflow-hidden rounded-2xl">
+                          <div className="relative w-[128px] h-[128px] flex-shrink-0 self-center ml-4">
                             <AppImage
                               src={getTimelineMedia(item?.year)}
                               alt={`${item?.year} milestone`}
-                              className="h-full w-full object-cover"
+                              className="h-full w-full object-cover rounded-2xl"
                             />
                             <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-transparent via-slate-900/30 to-slate-900/80" />
                             <span className="absolute bottom-3 left-3 text-xs font-semibold text-white/90">
                               {item?.year}
                             </span>
                           </div>
-                          <div className="py-7 pr-6 flex-1 min-w-0 flex flex-col justify-center gap-3">
-                            <h3 className="text-base md:text-lg font-semibold text-cyan-200">
+                          <div className="py-5 pr-5 flex-1 min-w-0">
+                            <h3 className="text-base md:text-lg font-semibold text-cyan-200 mb-2">
                               {item?.title}
                             </h3>
                             <p className="text-sm md:text-base text-slate-200/80 leading-relaxed line-clamp-4">

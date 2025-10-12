@@ -35,22 +35,33 @@ const Header = ({ className = '' }) => {
       title: 'About NARA',
       items: [
         {
+          name: 'Our Story',
+          path: '/about-nara-our-story',
+          icon: 'Heart',
+          description: 'Mission & vision'
+        }
+      ]
+    },
+    contact: {
+      title: 'Contact Us',
+      items: [
+        {
           name: 'Careers & Recruitment',
           path: '/procurement-recruitment-portal',
           icon: 'Briefcase',
           description: 'Join our team'
         },
         {
-          name: 'Our Story',
-          path: '/about-nara-our-story',
-          icon: 'Heart',
-          description: 'Mission & vision'
-        },
-        {
           name: 'News & Updates',
           path: '/nara-news-updates-center',
           icon: 'Newspaper',
           description: 'Latest announcements'
+        },
+        {
+          name: 'Get In Touch',
+          path: '/contact-us',
+          icon: 'Mail',
+          description: 'Contact information'
         }
       ]
     },

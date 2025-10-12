@@ -22,6 +22,7 @@ const IntegrationSystemsPlatform = lazy(() => import("./pages/integration-system
 const AboutNARAStoryPage = lazy(() => import("./pages/about-nara-our-story"));
 const NARANewsUpdatesCenter = lazy(() => import("./pages/nara-news-updates-center"));
 const ProcurementRecruitmentPortal = lazy(() => import("./pages/procurement-recruitment-portal"));
+const ContactUs = lazy(() => import("./pages/contact-us"));
 const FirebaseAdminAuthenticationPortal = lazy(() => import('./pages/firebase-admin-authentication-portal'));
 const FirebaseAdminDashboardControlCenter = lazy(() => import('./pages/firebase-admin-dashboard-control-center'));
 
@@ -71,6 +72,7 @@ function Routes() {
               <Route path="/about-nara-our-story" element={<AboutNARAStoryPage />} />
               <Route path="/nara-news-updates-center" element={<NARANewsUpdatesCenter />} />
               <Route path="/procurement-recruitment-portal" element={<ProcurementRecruitmentPortal />} />
+              <Route path="/contact-us" element={<ContactUs />} />
               
               {/* Legal & Compliance Routes */}
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />

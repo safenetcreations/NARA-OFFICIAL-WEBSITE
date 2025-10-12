@@ -17,9 +17,16 @@ const OceanSpaceHeader = () => {
       title: 'About',
       icon: Icons.Info,
       submenu: [
+        { name: 'Our Story', path: '/about-nara-our-story', icon: Icons.History }
+      ]
+    },
+    {
+      title: 'Contact Us',
+      icon: Icons.Mail,
+      submenu: [
         { name: 'Careers', path: '/procurement-recruitment-portal', icon: Icons.Briefcase },
-        { name: 'Our Story', path: '/about-nara-our-story', icon: Icons.History },
-        { name: 'News & Updates', path: '/nara-news-updates-center', icon: Icons.Newspaper }
+        { name: 'News & Updates', path: '/nara-news-updates-center', icon: Icons.Newspaper },
+        { name: 'Get In Touch', path: '/contact-us', icon: Icons.Phone }
       ]
     },
     {

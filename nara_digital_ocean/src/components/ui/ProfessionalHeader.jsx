@@ -19,22 +19,34 @@ const ProfessionalHeader = ({ className = '' }) => {
       icon: 'Info',
       items: [
         {
+          name: 'Our Story',
+          path: '/about-nara-our-story',
+          icon: 'BookText',
+          description: 'Mission, vision & achievements'
+        }
+      ]
+    },
+    contact: {
+      title: 'Contact Us',
+      icon: 'Mail',
+      items: [
+        {
           name: 'Procurement & Recruitment',
           path: '/procurement-recruitment-portal',
           icon: 'Briefcase',
           description: 'Tenders & career opportunities'
         },
         {
-          name: 'Our Story',
-          path: '/about-nara-our-story',
-          icon: 'BookText',
-          description: 'Mission, vision & achievements'
-        },
-        {
           name: 'News & Updates',
           path: '/nara-news-updates-center',
           icon: 'Newspaper',
           description: 'Latest announcements & press releases'
+        },
+        {
+          name: 'Get In Touch',
+          path: '/contact-us',
+          icon: 'Phone',
+          description: 'Contact information & form'
         }
       ]
     },
