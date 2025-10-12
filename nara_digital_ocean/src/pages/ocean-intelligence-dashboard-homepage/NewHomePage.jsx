@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import AppImage from '../../components/AppImage';
 import { useOceanData } from '../../hooks/useOceanData';
 import SriLankaEEZMap from '../../components/SriLankaEEZMap';
+import OceanIntelligenceHub from '../../components/sections/OceanIntelligenceHub';
 
 const NewHomePage = () => {
   const [lastUpdate, setLastUpdate] = useState(new Date());
@@ -574,6 +575,9 @@ const NewHomePage = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* Ocean Intelligence Hub Section */}
+      <OceanIntelligenceHub />
 
       {/* Quick Access Portal */}
       <section className="relative py-32 px-4 bg-gradient-to-b from-black via-gray-900 to-black">
