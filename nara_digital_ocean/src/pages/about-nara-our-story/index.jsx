@@ -1,8 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import Header from '../../components/ui/Header';
+import ThemeNavbar from '../../components/ui/ThemeNavbar';
+import AppImage from '../../components/AppImage';
 import * as Icons from 'lucide-react';
+
+const TIMELINE_MEDIA = {
+  '1981': 'https://images.unsplash.com/photo-1521207418485-99c705420785?auto=format&fit=crop&w=800&q=80',
+  '1986--2000': 'https://images.unsplash.com/photo-1465935343323-d742334bcbda?auto=format&fit=crop&w=800&q=80',
+  '1996': 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80',
+  '1997': 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=800&q=80',
+  '2012': 'https://images.unsplash.com/photo-1529245856380-49914082df87?auto=format&fit=crop&w=800&q=80',
+  '2013': 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80',
+  '2020': 'https://images.unsplash.com/photo-1470167825433-0d803d281b5e?auto=format&fit=crop&w=800&q=80',
+  '2021': 'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=800&q=80',
+  '2024': 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80',
+  '2025': 'https://images.unsplash.com/photo-1474511320723-9a56873867b5?auto=format&fit=crop&w=800&q=80'
+};
+
+const ACHIEVEMENT_ICONS = [Icons.FlaskConical, Icons.Globe2, Icons.Handshake, Icons.Sparkles];
+const DEFAULT_TIMELINE_MEDIA = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80';
 
 const AboutNARAStoryPage = () => {
   const { t, i18n } = useTranslation('about');
@@ -28,39 +45,51 @@ const AboutNARAStoryPage = () => {
     return () => window.removeEventListener('languageChange', handleLanguageChange);
   }, [i18n, language]);
 
+  const hero = t('about.hero', { returnObjects: true });
+  const history = t('about.history', { returnObjects: true });
+  const achievements = t('about.achievements', { returnObjects: true });
+  const cta = t('about.cta', { returnObjects: true });
+
+  const heroStats = Array.isArray(hero?.stats) ? hero.stats : [];
+  const historyBody = Array.isArray(history?.body) ? history.body : [];
+  const timeline = useMemo(() => (Array.isArray(history?.timeline) ? history.timeline : []), [history]);
+  const timelinePreview = timeline.slice(0, 4);
+  const achievementItems = Array.isArray(achievements?.items) ? achievements.items : [];
+  const timelineIntro = history?.timelineIntro || '';
+
+  const getTimelineMedia = (year) => TIMELINE_MEDIA[year] || DEFAULT_TIMELINE_MEDIA;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      <Header />
-      <div style={{ height: '72px' }} />
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
+      <ThemeNavbar />
+      <div style={{ height: '88px' }} />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-slate-900 to-cyan-950">
-          <div className="absolute inset-0 opacity-30">
-            <motion.div
-              animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
-              transition={{ duration: 20, repeat: Infinity, repeatType: 'reverse' }}
-              className="w-full h-full"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 50%), " +
-                  "radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)"
-              }}
-            />
-          </div>
-          {[...Array(30)].map((_, index) => (
-            <motion.div
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-slate-900 to-cyan-950" />
+        <div className="absolute inset-0 opacity-30">
+          <motion.div
+            animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
+            transition={{ duration: 25, repeat: Infinity, repeatType: 'reverse' }}
+            className="w-full h-full"
+            style={{
+              backgroundImage:
+                'radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.15) 0%, transparent 60%),' +
+                'radial-gradient(circle at 85% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 55%)'
+            }}
+          />
+          {[...Array(40)].map((_, index) => (
+            <motion.span
               key={index}
-              className="absolute w-1 h-1 bg-cyan-400/30 rounded-full"
+              className="absolute w-1 h-1 bg-cyan-400/40 rounded-full"
               animate={{
-                y: [0, -120, 0],
-                x: [0, Math.random() * 80 - 40, 0],
-                opacity: [0, 0.8, 0]
+                y: [0, -140, 0],
+                opacity: [0, 0.9, 0]
               }}
               transition={{
-                duration: Math.random() * 8 + 6,
+                duration: 12 + Math.random() * 6,
                 repeat: Infinity,
-                delay: Math.random() * 5
+                delay: Math.random() * 6
               }}
               style={{
                 left: `${Math.random() * 100}%`,
@@ -70,166 +99,145 @@ const AboutNARAStoryPage = () => {
           ))}
         </div>
 
-        <div className="relative z-10 text-center text-white px-4 max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] gap-16 items-start">
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.8, type: 'spring' }}
-              className="mb-8 inline-block"
-            >
-              <Icons.Waves className="w-24 h-24 text-cyan-400 drop-shadow-[0_0_30px_rgba(6,182,212,0.6)]" />
-            </motion.div>
-
-            <h1 className="text-6xl md:text-8xl font-bold mb-8 bg-gradient-to-r from-cyan-300 via-blue-300 to-cyan-300 bg-clip-text text-transparent animate-gradient">
-              {t('about.hero.title')}
-            </h1>
-
-            <p className="text-2xl md:text-3xl mb-12 text-cyan-100/90 font-light tracking-wide">
-              {t('about.hero.subtitle')}
-            </p>
-
-            <motion.div
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity }}
-              className="inline-flex flex-col items-center gap-2 text-cyan-300/60"
-            >
-              <span className="text-sm uppercase tracking-widest">Scroll to Explore</span>
-              <Icons.ChevronDown className="w-6 h-6" />
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Overview Section */}
-      <section className="py-32 px-4 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-950/20 to-transparent" />
-        <div className="max-w-6xl mx-auto relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-5xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
-              {t('about.overview.title')}
-            </h2>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative"
-          >
-            <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-3xl blur-xl" />
-            <div className="relative bg-slate-900/80 backdrop-blur-xl rounded-3xl p-12 border border-slate-700/50">
-              <p className="text-xl md:text-2xl text-slate-200 leading-relaxed font-light">
-                {t('about.overview.content')}
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Vision & Mission Section */}
-      <section className="py-32 px-4 relative">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12">
-            <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="relative group"
+              className="space-y-8"
             >
-              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500" />
-              <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-10 border border-slate-700/50 h-full">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="p-4 bg-cyan-500/10 rounded-2xl">
-                    <Icons.Eye className="w-10 h-10 text-cyan-400" />
-                  </div>
-                  <h3 className="text-3xl font-bold text-cyan-300">
-                    {t('about.vision.title')}
-                  </h3>
-                </div>
-                <p className="text-lg text-slate-300 leading-relaxed">
-                  {t('about.vision.content')}
-                </p>
+              <div className="inline-flex items-center gap-3 rounded-full border border-cyan-400/40 bg-slate-900/60 px-5 py-2 text-xs uppercase tracking-[0.45em] text-cyan-200/80 shadow-[0_0_25px_rgba(6,182,212,0.25)]">
+                <Icons.History className="w-4 h-4" />
+                {hero?.badge}
+              </div>
+              <h1 className="text-4xl md:text-6xl xl:text-7xl font-bold bg-gradient-to-r from-cyan-200 via-blue-200 to-cyan-100 bg-clip-text text-transparent leading-tight">
+                {hero?.title}
+              </h1>
+              <p className="text-2xl md:text-3xl text-cyan-200/90 font-light tracking-wide">
+                {hero?.headline}
+              </p>
+              <p className="text-lg md:text-xl text-slate-200/90 leading-relaxed whitespace-pre-line">
+                {hero?.description}
+              </p>
+
+              <div className="grid sm:grid-cols-3 gap-6 pt-6">
+                {heroStats.map((stat, index) => (
+                  <motion.div
+                    key={`${stat?.label}-${index}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 + 0.4 }}
+                    className="rounded-2xl border border-cyan-500/20 bg-slate-900/70 backdrop-blur p-6 shadow-[0_15px_40px_-25px_rgba(6,182,212,0.45)]"
+                  >
+                    <div className="text-3xl font-bold text-cyan-300">{stat?.value}</div>
+                    <p className="mt-2 text-sm text-slate-300/90 leading-snug">
+                      {stat?.label}
+                    </p>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="relative group"
+              initial={{ opacity: 0, x: 60 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.9, delay: 0.2 }}
+              className="relative"
             >
-              <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500" />
-              <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-10 border border-slate-700/50 h-full">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="p-4 bg-blue-500/10 rounded-2xl">
-                    <Icons.Target className="w-10 h-10 text-blue-400" />
+              <div className="absolute -inset-4 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-[32px] blur-3xl" />
+              <div className="relative bg-slate-900/80 border border-slate-700/50 rounded-[32px] p-6 backdrop-blur-xl shadow-[0_25px_80px_-35px_rgba(6,182,212,0.55)]">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm uppercase tracking-[0.35em] text-cyan-200/70">
+                    {history?.timelineTitle}
+                  </span>
+                  <div className="flex items-center gap-2 text-xs text-cyan-200/80">
+                    <Icons.Clock className="w-3.5 h-3.5" />
+                    {timeline.length} milestones
                   </div>
-                  <h3 className="text-3xl font-bold text-blue-300">
-                    {t('about.mission.title')}
-                  </h3>
                 </div>
-                <p className="text-lg text-slate-300 leading-relaxed">
-                  {t('about.mission.content')}
-                </p>
+                <div className="space-y-4 max-h-[420px] overflow-y-auto pr-2 timeline-scroll">
+                  {timelinePreview.map((item, idx) => (
+                    <motion.div
+                      key={`${item?.year}-${idx}`}
+                      whileHover={{ y: -4 }}
+                      className="group relative rounded-2xl overflow-hidden border border-slate-700/60 bg-slate-900/70"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 via-cyan-500/15 to-blue-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="grid grid-cols-[96px_minmax(0,1fr)] gap-4">
+                        <div className="relative h-full">
+                          <AppImage
+                            src={getTimelineMedia(item?.year)}
+                            alt={`${item?.year} milestone`}
+                            className="h-full w-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/40 to-slate-900/90" />
+                          <span className="absolute bottom-2 left-2 text-xs font-semibold text-white/80">
+                            {item?.year}
+                          </span>
+                        </div>
+                        <div className="py-4 pr-4">
+                          <h3 className="text-lg font-semibold text-cyan-200 mb-1">
+                            {item?.title}
+                          </h3>
+                          <p className="text-sm text-slate-300/90 leading-relaxed">
+                            {item?.description}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+                <div className="mt-4 text-right text-xs text-cyan-200/70">
+                  {timeline.length > 4 ? `+${timeline.length - 4} more moments below` : ''}
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Logo Story Section */}
-      <section className="py-32 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-cyan-950/30 via-blue-950/30 to-transparent" />
-        <div className="max-w-5xl mx-auto relative z-10">
+      {/* History Narrative */}
+      <section className="py-28 px-4 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-950/30 to-transparent" />
+        <div className="relative max-w-7xl mx-auto space-y-14">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-16"
+            className="text-center"
           >
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 4, repeat: Infinity }}
-              className="inline-block mb-8"
-            >
-              <div className="w-32 h-32 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(6,182,212,0.5)]">
-                <Icons.Fish className="w-16 h-16 text-white" />
-              </div>
-            </motion.div>
-
-            <h2 className="text-5xl font-bold mb-8 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
-              {t('about.logo.title')}
+            <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
+              {history?.title}
             </h2>
-
-            <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-3xl blur-xl" />
-              <div className="relative bg-slate-900/60 backdrop-blur-xl rounded-3xl p-10 border border-slate-700/30">
-                <p className="text-xl text-slate-200 leading-relaxed font-light">
-                  {t('about.logo.content')}
-                </p>
-              </div>
-            </div>
+            <p className="text-xl text-slate-200/90 leading-relaxed max-w-4xl mx-auto">
+              {history?.intro}
+            </p>
           </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-10">
+            {historyBody.map((paragraph, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                className="relative"
+              >
+                <div className="absolute -inset-4 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-3xl opacity-0 hover:opacity-100 blur-xl transition" />
+                <div className="relative bg-slate-900/70 border border-slate-700/50 rounded-3xl p-8 shadow-[0_20px_60px_-40px_rgba(6,182,212,0.6)]">
+                  <p className="text-lg text-slate-200/90 leading-relaxed">{paragraph}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Legacy Timeline Section */}
-      <section className="py-32 px-4 relative">
+      {/* Timeline Section */}
+      <section className="py-28 px-4">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -237,41 +245,39 @@ const AboutNARAStoryPage = () => {
             viewport={{ once: true }}
             className="text-center mb-20"
           >
-            <h2 className="text-5xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
-              {t('about.legacy.title')}
-            </h2>
-            <p className="text-xl text-slate-300 max-w-4xl mx-auto leading-relaxed">
-              {t('about.legacy.intro')}
-            </p>
+            <h3 className="text-4xl md:text-5xl font-semibold mb-4 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
+              {history?.timelineTitle}
+            </h3>
+            {timelineIntro && (
+              <p className="text-lg text-slate-300/90 max-w-3xl mx-auto">
+                {timelineIntro}
+              </p>
+            )}
           </motion.div>
 
-          <div className="space-y-12">
-            {['1981', '1996', '2000s', '2010s'].map((period, index) => (
+          <div className="relative border-l border-slate-700/60 ml-6">
+            {timeline.map((item, idx) => (
               <motion.div
-                key={period}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -40 : 40 }}
+                key={`${item?.year}-${idx}`}
+                initial={{ opacity: 0, x: idx % 2 === 0 ? -30 : 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="relative"
+                transition={{ duration: 0.6, delay: idx * 0.05 }}
+                className="relative pl-10 pb-12"
               >
-                <div className="flex items-start gap-8">
-                  <div className="flex-shrink-0 w-32 text-right">
-                    <span className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                      {period}
-                    </span>
+                <span className="absolute left-0 top-2 -translate-x-1/2 flex h-3 w-3">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400/60 animate-ping" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500" />
+                </span>
+                <div className="rounded-3xl border border-slate-700/60 bg-slate-900/75 backdrop-blur px-6 py-5 shadow-[0_20px_60px_-40px_rgba(37,99,235,0.6)]">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-sm uppercase tracking-[0.4em] text-cyan-200/70">{item?.year}</span>
+                    <div className="h-px flex-1 bg-gradient-to-r from-cyan-400/60 to-transparent" />
                   </div>
-
-                  <div className="flex-grow">
-                    <div className="relative group">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-2xl opacity-0 group-hover:opacity-100 blur transition-all duration-300" />
-                      <div className="relative bg-slate-900/80 backdrop-blur border border-slate-700/50 rounded-2xl p-8">
-                        <p className="text-lg text-slate-200 leading-relaxed">
-                          {t(`about.legacy.periods.${period}`)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  <h4 className="text-xl font-semibold text-cyan-200 mb-2">{item?.title}</h4>
+                  <p className="text-slate-200/90 leading-relaxed text-sm md:text-base">
+                    {item?.description}
+                  </p>
                 </div>
               </motion.div>
             ))}
@@ -279,89 +285,81 @@ const AboutNARAStoryPage = () => {
         </div>
       </section>
 
-      {/* Mandate Section */}
-      <section className="py-32 px-4 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-950/20 to-transparent" />
-        <div className="max-w-7xl mx-auto relative z-10">
+      {/* Achievements Section */}
+      <section className="py-28 px-4 relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-950/25 via-slate-950/20 to-transparent" />
+        <div className="relative max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-20"
+            className="text-center mb-16"
           >
-            <h2 className="text-5xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
-              {t('about.mandate.title')}
-            </h2>
-            <p className="text-xl text-slate-300 max-w-4xl mx-auto">
-              {t('about.mandate.intro')}
+            <h3 className="text-4xl md:text-5xl font-semibold mb-4 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
+              {achievements?.title}
+            </h3>
+            <p className="text-lg text-slate-300/90 max-w-3xl mx-auto">
+              {achievements?.intro}
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[0, 1, 2, 3, 4, 5, 6].map((index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="relative group"
-              >
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl opacity-0 group-hover:opacity-100 blur transition-all duration-300" />
-                <div className="relative bg-slate-900 border border-slate-700/50 rounded-2xl p-8 h-full">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-                    <h3 className="text-xl font-bold text-cyan-300">
-                      {t(`about.mandate.pillars.${index}.title`)}
-                    </h3>
+          <div className="grid md:grid-cols-2 gap-8">
+            {achievementItems.map((item, idx) => {
+              const IconComponent = ACHIEVEMENT_ICONS[idx] || Icons.Star;
+              return (
+                <motion.div
+                  key={`${item?.title}-${idx}`}
+                  initial={{ opacity: 0, y: 25 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  className="relative group"
+                >
+                  <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-cyan-500/60 to-blue-600/60 opacity-0 group-hover:opacity-100 blur-xl transition" />
+                  <div className="relative rounded-3xl border border-slate-700/50 bg-slate-900/80 p-8 h-full flex flex-col gap-4">
+                    <div className="inline-flex items-center gap-3 text-cyan-200">
+                      <div className="p-3 rounded-2xl bg-cyan-500/15">
+                        <IconComponent className="w-6 h-6" />
+                      </div>
+                      <h4 className="text-xl font-semibold text-cyan-100">{item?.title}</h4>
+                    </div>
+                    <p className="text-slate-200/90 leading-relaxed text-sm md:text-base">
+                      {item?.description}
+                    </p>
                   </div>
-                  <p className="text-slate-300 leading-relaxed">
-                    {t(`about.mandate.pillars.${index}.text`)}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-16 text-center"
-          >
-            <p className="text-2xl text-cyan-300 font-light italic">
-              {t('about.mandate.closing')}
-            </p>
-          </motion.div>
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="py-32 px-4 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-950/40 via-blue-950/40 to-cyan-950/40" />
-        <div className="max-w-4xl mx-auto text-center relative z-10">
+        <div className="relative max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
+            className="bg-slate-900/80 border border-cyan-500/30 rounded-[40px] px-10 py-14 shadow-[0_25px_80px_-40px_rgba(6,182,212,0.65)]"
           >
-            <h2 className="text-5xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
-              {t('about.cta.title')}
-            </h2>
-            <p className="text-2xl text-slate-300 mb-12 font-light">
-              {t('about.cta.description')}
+            <h3 className="text-4xl md:text-5xl font-semibold mb-6 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
+              {cta?.title}
+            </h3>
+            <p className="text-xl text-slate-200/90 mb-10">
+              {cta?.description}
             </p>
-
             <motion.a
-              href="http://www.nara.ac.lk"
+              href="https://www.nara.ac.lk"
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-12 py-5 rounded-full text-xl font-semibold shadow-[0_0_40px_rgba(6,182,212,0.4)] hover:shadow-[0_0_60px_rgba(6,182,212,0.6)] transition-all duration-300"
+              className="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-12 py-5 rounded-full text-lg font-semibold shadow-[0_0_45px_rgba(6,182,212,0.45)] hover:shadow-[0_0_60px_rgba(6,182,212,0.65)] transition"
             >
-              {t('about.cta.button')}
+              {cta?.button}
               <Icons.ArrowRight className="w-6 h-6" />
             </motion.a>
           </motion.div>

@@ -28,6 +28,11 @@ const FirebaseAdminDashboardControlCenter = lazy(() => import('./pages/firebase-
 // Legal & Compliance Pages
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy'));
 const DataSubjectRights = lazy(() => import('./pages/legal/DataSubjectRights'));
+const TermsOfUse = lazy(() => import('./pages/legal/TermsOfUse'));
+const CookiePolicy = lazy(() => import('./pages/legal/CookiePolicy'));
+const AccessibilityStatement = lazy(() => import('./pages/legal/AccessibilityStatement'));
+const RTIDisclosure = lazy(() => import('./pages/legal/RTIDisclosure'));
+const SecurityPolicy = lazy(() => import('./pages/legal/SecurityPolicy'));
 
 // New Admin Panel
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
@@ -70,6 +75,11 @@ function Routes() {
               {/* Legal & Compliance Routes */}
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/data-subject-rights" element={<DataSubjectRights />} />
+              <Route path="/terms-of-use" element={<TermsOfUse />} />
+              <Route path="/cookie-policy" element={<CookiePolicy />} />
+              <Route path="/accessibility-statement" element={<AccessibilityStatement />} />
+              <Route path="/rti-disclosure" element={<RTIDisclosure />} />
+              <Route path="/security-policy" element={<SecurityPolicy />} />
               
               <Route path="*" element={<NotFound />} />
 
