@@ -136,6 +136,12 @@ const ProfessionalHeader = ({ className = '' }) => {
       icon: 'Info',
       items: [
         {
+          name: 'Procurement & Recruitment',
+          path: '/procurement-recruitment-portal',
+          icon: 'Briefcase',
+          description: 'Tenders & career opportunities'
+        },
+        {
           name: 'Our Story',
           path: '/about-nara-our-story',
           icon: 'BookText',
@@ -146,12 +152,6 @@ const ProfessionalHeader = ({ className = '' }) => {
           path: '/nara-news-updates-center',
           icon: 'Newspaper',
           description: 'Latest announcements & press releases'
-        },
-        {
-          name: 'Procurement & Recruitment',
-          path: '/procurement-recruitment-portal',
-          icon: 'Briefcase',
-          description: 'Tenders & career opportunities'
         }
       ]
     }

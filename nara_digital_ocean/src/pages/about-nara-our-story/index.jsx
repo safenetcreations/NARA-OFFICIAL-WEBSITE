@@ -112,33 +112,33 @@ const AboutNARAStoryPage = () => {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="space-y-8"
+              className="flex flex-col gap-8 min-h-[760px]"
             >
               <div className="inline-flex items-center gap-3 rounded-full border border-cyan-400/40 bg-slate-900/60 px-5 py-2 text-xs uppercase tracking-[0.45em] text-cyan-200/80 shadow-[0_0_25px_rgba(6,182,212,0.25)]">
                 <Icons.History className="w-4 h-4" />
                 {hero?.badge}
               </div>
-              <h1 className="text-4xl md:text-6xl xl:text-7xl font-bold bg-gradient-to-r from-cyan-200 via-blue-200 to-cyan-100 bg-clip-text text-transparent leading-tight">
+              <h1 className="text-3xl md:text-5xl xl:text-6xl font-bold bg-gradient-to-r from-cyan-200 via-blue-200 to-cyan-100 bg-clip-text text-transparent leading-tight">
                 {hero?.title}
               </h1>
-              <p className="text-2xl md:text-3xl text-cyan-200/90 font-light tracking-wide">
+              <p className="text-xl md:text-2xl text-cyan-200/90 font-light tracking-wide">
                 {hero?.headline}
               </p>
-              <p className="text-lg md:text-xl text-slate-200/90 leading-relaxed whitespace-pre-line">
+              <p className="text-base md:text-lg text-slate-200/90 leading-relaxed whitespace-pre-line">
                 {hero?.description}
               </p>
 
-              <div className="grid sm:grid-cols-3 gap-6 pt-6">
+              <div className="grid sm:grid-cols-3 gap-6 pt-6 mt-auto">
                 {heroStats.map((stat, index) => (
                   <motion.div
                     key={`${stat?.label}-${index}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 + 0.4 }}
-                    className="rounded-2xl border border-cyan-500/20 bg-slate-900/70 backdrop-blur p-6 shadow-[0_15px_40px_-25px_rgba(6,182,212,0.45)]"
+                    className="rounded-2xl border border-cyan-500/20 bg-slate-900/70 backdrop-blur p-5 shadow-[0_15px_40px_-25px_rgba(6,182,212,0.45)]"
                   >
-                    <div className="text-3xl font-bold text-cyan-300">{stat?.value}</div>
-                    <p className="mt-2 text-sm text-slate-300/90 leading-snug">
+                    <div className="text-2xl font-bold text-cyan-300">{stat?.value}</div>
+                    <p className="mt-2 text-xs text-slate-300/90 leading-snug">
                       {stat?.label}
                     </p>
                   </motion.div>
@@ -150,10 +150,10 @@ const AboutNARAStoryPage = () => {
               initial={{ opacity: 0, x: 60 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.9, delay: 0.2 }}
-              className="relative"
+              className="relative flex flex-col min-h-[740px]"
             >
               <div className="absolute -inset-4 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-[32px] blur-3xl" />
-              <div className="relative bg-slate-900/80 border border-slate-700/50 rounded-[32px] p-6 backdrop-blur-xl shadow-[0_25px_80px_-35px_rgba(6,182,212,0.55)] overflow-hidden">
+              <div className="relative flex flex-col bg-slate-900/80 border border-slate-700/50 rounded-[32px] p-6 backdrop-blur-xl shadow-[0_25px_80px_-35px_rgba(6,182,212,0.55)] overflow-hidden">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-sm uppercase tracking-[0.35em] text-cyan-200/70">
                     {history?.timelineTitle}
@@ -163,7 +163,7 @@ const AboutNARAStoryPage = () => {
                     {timeline.length} milestones
                   </div>
                 </div>
-                <div className="relative h-[780px] overflow-hidden">
+                <div className="relative flex-1 overflow-hidden">
                   <motion.div
                     className="space-y-4 pr-2"
                     animate={{ y: ['0%', '-50%'] }}
@@ -172,26 +172,26 @@ const AboutNARAStoryPage = () => {
                     {timelineLoop.map((item, idx) => (
                       <div
                         key={`${item?.year}-${item?._loopId || idx}`}
-                        className="group relative rounded-2xl overflow-hidden border border-slate-700/60 bg-slate-900/70 min-h-[230px]"
+                        className="group relative flex rounded-2xl overflow-hidden border border-slate-700/60 bg-slate-900/70 min-h-[190px]"
                       >
                         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 via-cyan-500/15 to-blue-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        <div className="grid grid-cols-[112px_minmax(0,1fr)] gap-4">
-                          <div className="relative h-full">
+                        <div className="flex gap-4 items-stretch w-full">
+                          <div className="relative w-[120px] h-[120px] flex-shrink-0 self-center ml-4">
                             <AppImage
                               src={getTimelineMedia(item?.year)}
                               alt={`${item?.year} milestone`}
-                              className="h-full w-full object-cover"
+                              className="h-full w-full object-cover rounded-2xl"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/40 to-slate-900/90" />
-                            <span className="absolute bottom-3 left-3 text-xs font-semibold text-white/85">
+                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-transparent via-slate-900/30 to-slate-900/80" />
+                            <span className="absolute bottom-3 left-3 text-xs font-semibold text-white/90">
                               {item?.year}
                             </span>
                           </div>
-                          <div className="py-5 pr-5">
-                            <h3 className="text-lg font-semibold text-cyan-200 mb-2">
+                          <div className="py-5 pr-6 flex-1 min-w-0">
+                            <h3 className="text-base md:text-lg font-semibold text-cyan-200 mb-2">
                               {item?.title}
                             </h3>
-                            <p className="text-sm text-slate-300/90 leading-relaxed line-clamp-4">
+                            <p className="text-sm md:text-base text-slate-200/85 leading-relaxed line-clamp-4">
                               {item?.description}
                             </p>
                           </div>
@@ -199,8 +199,8 @@ const AboutNARAStoryPage = () => {
                       </div>
                     ))}
                   </motion.div>
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-slate-900 to-transparent" />
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-slate-900 to-transparent" />
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-slate-900 to-transparent" />
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-slate-900 to-transparent" />
                 </div>
               </div>
             </motion.div>

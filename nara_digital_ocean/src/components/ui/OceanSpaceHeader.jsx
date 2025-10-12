@@ -54,9 +54,9 @@ const OceanSpaceHeader = () => {
       title: 'About',
       icon: Icons.Info,
       submenu: [
+        { name: 'Careers', path: '/procurement-recruitment-portal', icon: Icons.Briefcase },
         { name: 'Our Story', path: '/about-nara-our-story', icon: Icons.History },
-        { name: 'News & Updates', path: '/nara-news-updates-center', icon: Icons.Newspaper },
-        { name: 'Careers', path: '/procurement-recruitment-portal', icon: Icons.Briefcase }
+        { name: 'News & Updates', path: '/nara-news-updates-center', icon: Icons.Newspaper }
       ]
     }
   ];
