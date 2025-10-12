@@ -443,7 +443,14 @@
           "ஆசிரியர் பரிசீலனைக்கு சமர்ப்பிக்கவும்"
         ],
         "submit": "வரைவு வடிவில் சேமிக்க",
-        "cancel": "ரத்து செய்யவும்"
+        "cancel": "ரத்து செய்யவும்",
+        "types": [
+          { "value": "research_article", "label": "ஆராய்ச்சி கட்டுரை" },
+          { "value": "review_article", "label": "மதிப்பாய்வு கட்டுரை" },
+          { "value": "short_communication", "label": "குறுங்குறிப்பு" },
+          { "value": "case_study", "label": "வழக்குக்கூறு ஆய்வு" },
+          { "value": "technical_note", "label": "தொழில்நுட்ப குறிப்பு" }
+        ]
       }
     },
     "alerts": {

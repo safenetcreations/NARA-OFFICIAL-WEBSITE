@@ -272,10 +272,9 @@ const ThemeNavbar = () => {
             <span className="hidden xl:inline">{t('navbar.menu.contact.links.getInTouch')}</span>
           </Link>
 
-          {/* Language Selector - Compact */}
+          {/* Language Selector - Always Visible */}
           <div
             ref={languageMenuRef}
-            className="hidden md:block"
             style={{ position: 'relative' }}
           >
             <button
@@ -347,24 +346,32 @@ const ThemeNavbar = () => {
             </AnimatePresence>
           </div>
 
-          {/* Theme Toggle - Icon Only */}
+          {/* Theme Toggle - Always Visible */}
           <button 
             onClick={toggleTheme}
-            className="btn-ghost hidden lg:flex"
+            className="btn-ghost"
             style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              padding: '0.5rem',
-              borderRadius: '999px'
+              gap: '0.4rem',
+              padding: '0.5rem 0.75rem',
+              borderRadius: '999px',
+              fontSize: '0.8rem',
+              fontWeight: 500
             }}
             title={theme === 'ocean' ? t('navbar.themes.ocean') : t('navbar.themes.cosmic')}
             aria-label="Toggle theme"
           >
             {theme === 'ocean' ? (
-              <Icons.Waves className="w-4 h-4" style={{ color: '#00c2ff' }} />
+              <>
+                <Icons.Waves className="w-4 h-4" style={{ color: '#00c2ff' }} />
+                <span className="hidden sm:inline">{t('navbar.themes.ocean')}</span>
+              </>
             ) : (
-              <Icons.Sparkles className="w-4 h-4" style={{ color: '#a78bfa' }} />
+              <>
+                <Icons.Sparkles className="w-4 h-4" style={{ color: '#a78bfa' }} />
+                <span className="hidden sm:inline">{t('navbar.themes.cosmic')}</span>
+              </>
             )}
           </button>
 

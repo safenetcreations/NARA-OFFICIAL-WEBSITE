@@ -443,7 +443,14 @@
           "සම්පාදක සමාලෝචනයට ඉදිරිපත් කරන්න"
         ],
         "submit": "කෙටුම්පත ලෙස සුරකින්න",
-        "cancel": "අවලංගු කරන්න"
+        "cancel": "අවලංගු කරන්න",
+        "types": [
+          { "value": "research_article", "label": "ගවේෂණ ලිපිය" },
+          { "value": "review_article", "label": "සමාලෝචන ලිපිය" },
+          { "value": "short_communication", "label": "කෙටි සන්නිවේදනය" },
+          { "value": "case_study", "label": "දෘශ්ටාන්ත අධ්‍යයනය" },
+          { "value": "technical_note", "label": "තාක්ෂණික සටහන" }
+        ]
       }
     },
     "alerts": {
