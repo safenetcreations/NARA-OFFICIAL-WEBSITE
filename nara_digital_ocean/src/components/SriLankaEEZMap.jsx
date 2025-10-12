@@ -13,9 +13,17 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
 
     const initMap = async () => {
       try {
-        const apiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY || 'AIzaSyBjDI-36r6TA4UAimHENGrK8NP8jh5d7Sg';
+        const apiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
+        
+        if (!apiKey) {
+          console.warn('⚠️ Google Maps API key not found. Using fallback visualization.');
+          setError('Map visualization unavailable. Please configure Google Maps API key.');
+          setMapLoaded(true);
+          return;
+        }
+        
         console.log('🗺️ Initializing Google Maps...');
-        console.log('📍 API Key:', apiKey ? `${apiKey.substring(0, 20)}...` : 'NOT FOUND');
+        console.log('📍 API Key configured');
         
         // Check if Google Maps is already loaded
         if (!window.google?.maps) {
@@ -33,7 +41,7 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
             };
             script.onerror = (err) => {
               console.error('❌ Failed to load Google Maps API:', err);
-              reject(err);
+              reject(new Error('Failed to load Google Maps. Please check your API key.'));
             };
             document.head.appendChild(script);
           });
