@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
 import researchService from '../../../services/researchService';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const ProjectManagementSection = ({ projects: initialProjects = [], loading: initialLoading = false, user }) => {
   const [projects, setProjects] = useState(initialProjects);
@@ -17,6 +18,67 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
   const [selectedProject, setSelectedProject] = useState(null);
 
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation('collaboration');
+
+  const projectCopy = t('projects', { returnObjects: true }) || {};
+  const filtersCopy = projectCopy.filters || {};
+  const labels = projectCopy.labels || {};
+  const alerts = projectCopy.alerts || {};
+  const detailCopy = projectCopy.detail || {};
+  const createCopy = projectCopy.create || {};
+  const headingText = projectCopy.heading || 'Project Management';
+  const descriptionText = projectCopy.description || 'Manage collaborative research projects across institutions';
+  const newButtonText = projectCopy.buttons?.new || 'New Project';
+
+  const fallbackStatusOptions = [
+    { value: 'all', label: 'All Statuses' },
+    { value: 'planning', label: 'Planning' },
+    { value: 'active', label: 'Active' },
+    { value: 'completed', label: 'Completed' },
+    { value: 'on_hold', label: 'On Hold' }
+  ];
+
+  const statusOptions = Array.isArray(projectCopy.statusOptions) && projectCopy.statusOptions.length
+    ? projectCopy.statusOptions
+    : fallbackStatusOptions;
+
+  const tabsCopy = projectCopy.tabs || {};
+
+  const statusLabelMap = useMemo(() => {
+    const map = {};
+    statusOptions.forEach((option) => {
+      if (option?.value) {
+        map[option.value] = option.label;
+      }
+    });
+    return map;
+  }, [statusOptions]);
+
+  const formatStatus = (status) => {
+    if (!status) {
+      return labels?.tbd || 'TBD';
+    }
+    return statusLabelMap[status] || status.replace('_', ' ').toUpperCase();
+  };
+
+  const formatDate = (date, fallback = labels?.tbd || 'TBD') => {
+    if (!date) {
+      return fallback;
+    }
+    try {
+      return new Date(date).toLocaleDateString();
+    } catch (error) {
+      return fallback;
+    }
+  };
+
+  const replaceToken = (template, value) =>
+    typeof template === 'string' ? template.replace('{{count}}', value).replace('{{date}}', value) : value;
+
+  const formatCollaboratorCount = (count) => replaceToken(labels?.collaboratorCount, count) || `${count} collaborators`;
+  const formatProjectCount = (count) => replaceToken(labels?.count, count) || `${count} projects`;
+  const formatUpdatedText = (date) => (labels?.updated ? labels.updated.replace('{{date}}', date) : `Updated ${date}`);
+  const formatMoreMembers = (count) => replaceToken(labels?.moreMembers, count) || `+${count} more team members`;
 
   useEffect(() => {
     if (isAuthenticated && user?.id) {
@@ -37,14 +99,6 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
     }
   };
 
-  const statusOptions = [
-    { value: 'all', label: 'All Statuses' },
-    { value: 'planning', label: 'Planning' },
-    { value: 'active', label: 'Active' },
-    { value: 'completed', label: 'Completed' },
-    { value: 'on_hold', label: 'On Hold' }
-  ];
-
   const getStatusColor = (status) => {
     switch (status) {
       case 'active': return 'text-success bg-success/10';
@@ -55,127 +109,146 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
     }
   };
 
-  const ProjectCard = ({ project, isUserProject = false }) => (
-    <div className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
-          <div className="flex items-center space-x-3 mb-2">
-            <h3 className="font-cta text-lg font-semibold text-text-primary">
-              {project?.title || 'Untitled Project'}
-            </h3>
-            <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(project?.status)}`}>
-              {project?.status?.replace('_', ' ')?.toUpperCase() || 'PLANNING'}
-            </span>
-          </div>
-          <div className="flex items-center space-x-4 text-sm text-text-secondary mb-3">
-            <div className="flex items-center space-x-1">
-              <Icon name="User" size={14} />
-              <span>{project?.lead_researcher?.full_name || 'Lead Researcher'}</span>
+  const ProjectCard = ({ project, isUserProject = false }) => {
+    const collaboratorCount = project?.project_collaborators?.length || 0;
+    const updatedDate = formatDate(project?.updated_at || project?.created_at, labels?.tbd || 'TBD');
+    const startDate = formatDate(project?.start_date, labels?.tbd || 'TBD');
+
+    return (
+      <div className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <div className="flex items-center space-x-3 mb-2">
+              <h3 className="font-cta text-lg font-semibold text-text-primary">
+                {project?.title || labels?.untitled || 'Untitled Project'}
+              </h3>
+              <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(project?.status)}`}>
+                {formatStatus(project?.status)}
+              </span>
             </div>
-            <div className="flex items-center space-x-1">
-              <Icon name="Building" size={14} />
-              <span>{project?.division?.name || 'Division'}</span>
+            <div className="flex items-center space-x-4 text-sm text-text-secondary mb-3">
+              <div className="flex items-center space-x-1">
+                <Icon name="User" size={14} />
+                <span>{project?.lead_researcher?.full_name || labels?.teamLead || 'Lead Researcher'}</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Icon name="Building" size={14} />
+                <span>{project?.division?.name || labels?.division || 'Division'}</span>
+              </div>
             </div>
           </div>
-        </div>
-        {isUserProject && (
-          <Button
-            variant="ghost"
-            size="sm"
-            iconName="Settings"
-            onClick={() => setSelectedProject(project)}
-          />
-        )}
-      </div>
-      
-      <p className="font-body text-sm text-text-secondary mb-4 line-clamp-3">
-        {project?.description || 'Research project focused on marine science and ocean conservation.'}
-      </p>
-      
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-4 text-sm">
-          <div className="flex items-center space-x-1 text-text-secondary">
-            <Icon name="Calendar" size={14} />
-            <span>
-              {project?.start_date ? new Date(project?.start_date)?.toLocaleDateString() : 'TBD'}
-            </span>
-          </div>
-          <div className="flex items-center space-x-1 text-text-secondary">
-            <Icon name="Users" size={14} />
-            <span>{project?.project_collaborators?.length || 0} collaborators</span>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          {project?.budget_total && (
-            <span className="text-sm font-medium text-accent">
-              ${(project?.budget_total / 1000)?.toFixed(0)}K
-            </span>
-          )}
-        </div>
-      </div>
-      
-      {project?.project_collaborators?.length > 0 && (
-        <div className="flex items-center space-x-3 mb-4">
-          <span className="text-sm text-text-secondary">Collaborators:</span>
-          <div className="flex -space-x-2">
-            {project?.project_collaborators?.slice(0, 3)?.map((collab, index) => (
-              <div
-                key={index}
-                className="w-8 h-8 bg-muted border-2 border-card rounded-full flex items-center justify-center text-xs font-medium text-text-secondary"
-                title={collab?.user?.full_name}
-              >
-                {collab?.user?.full_name?.charAt(0) || 'U'}
-              </div>
-            ))}
-            {project?.project_collaborators?.length > 3 && (
-              <div className="w-8 h-8 bg-muted border-2 border-card rounded-full flex items-center justify-center text-xs font-medium text-text-secondary">
-                +{project?.project_collaborators?.length - 3}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-      
-      <div className="flex items-center justify-between pt-4 border-t border-border">
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            iconName="Eye"
-            onClick={() => setSelectedProject(project)}
-          >
-            View Details
-          </Button>
-          {!isUserProject && isAuthenticated && (
+          {isUserProject && (
             <Button
               variant="ghost"
               size="sm"
-              iconName="UserPlus"
-              onClick={() => handleJoinRequest(project?.id)}
-            >
-              Request to Join
-            </Button>
+              iconName="Settings"
+              onClick={() => setSelectedProject(project)}
+            />
           )}
         </div>
-        <div className="text-xs text-text-secondary">
-          Updated {new Date(project?.updated_at || project?.created_at)?.toLocaleDateString()}
+
+        <p className="font-body text-sm text-text-secondary mb-4 line-clamp-3">
+          {project?.description || labels?.description || 'Research project focused on marine science and ocean conservation.'}
+        </p>
+
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-4 text-sm">
+            <div className="flex items-center space-x-1 text-text-secondary">
+              <Icon name="Calendar" size={14} />
+              <span>{startDate}</span>
+            </div>
+            <div className="flex items-center space-x-1 text-text-secondary">
+              <Icon name="Users" size={14} />
+              <span>{formatCollaboratorCount(collaboratorCount)}</span>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            {project?.budget_total && (
+              <span className="text-sm font-medium text-accent">
+                ${(project?.budget_total / 1000)?.toFixed(0)}K
+              </span>
+            )}
+          </div>
+        </div>
+
+        {collaboratorCount > 0 && (
+          <div className="flex items-center space-x-3 mb-4">
+            <span className="text-sm text-text-secondary">{labels?.collaborators || 'Collaborators:'}</span>
+            <div className="flex -space-x-2">
+              {project?.project_collaborators?.slice(0, 3)?.map((collab, index) => (
+                <div
+                  key={index}
+                  className="w-8 h-8 bg-muted border-2 border-card rounded-full flex items-center justify-center text-xs font-medium text-text-secondary"
+                  title={collab?.user?.full_name}
+                >
+                  {collab?.user?.full_name?.charAt(0) || 'U'}
+                </div>
+              ))}
+              {collaboratorCount > 3 && (
+                <div
+                  className="w-8 h-8 bg-muted border-2 border-card rounded-full flex items-center justify-center text-xs font-medium text-text-secondary"
+                  title={formatMoreMembers(collaboratorCount - 3)}
+                >
+                  +{collaboratorCount - 3}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between pt-4 border-t border-border">
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              iconName="Eye"
+              onClick={() => setSelectedProject(project)}
+            >
+              {labels?.viewDetails || 'View Details'}
+            </Button>
+            {!isUserProject && isAuthenticated && (
+              <Button
+                variant="ghost"
+                size="sm"
+                iconName="UserPlus"
+                onClick={() => handleJoinRequest(project?.id)}
+              >
+                {labels?.requestJoin || 'Request to Join'}
+              </Button>
+            )}
+          </div>
+          <div className="text-xs text-text-secondary">
+            {formatUpdatedText(updatedDate)}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const handleJoinRequest = async (projectId) => {
     if (!isAuthenticated) {
-      alert('Please sign in to request joining projects');
+      alert(alerts?.signinJoin || 'Please sign in to request joining projects');
       return;
     }
     
     // Mock join request - would implement actual logic
-    alert('Join request sent successfully!');
+    alert(alerts?.joinSuccess || 'Join request sent successfully!');
   };
 
   const ProjectDetailModal = ({ project, onClose }) => {
     if (!project) return null;
+
+    const startedText = detailCopy?.started
+      ? detailCopy.started.replace('{{date}}', formatDate(project?.start_date, labels?.tbd || 'TBD'))
+      : `Started ${formatDate(project?.start_date, labels?.tbd || 'TBD')}`;
+    const startDate = formatDate(project?.start_date, labels?.tbd || 'TBD');
+    const endDate = project?.end_date
+      ? formatDate(project?.end_date, labels?.tbd || 'TBD')
+      : labels?.ongoing || 'Ongoing';
+    const budgetValue = project?.budget_total
+      ? `$${(project?.budget_total / 1000)?.toFixed(0)}K`
+      : labels?.tbd || 'TBD';
+    const collaborators = project?.project_collaborators || [];
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -185,24 +258,24 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-3">
                   <h2 className="font-headline text-2xl font-bold text-text-primary">
-                    {project?.title}
+                    {project?.title || labels?.untitled || 'Untitled Project'}
                   </h2>
                   <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(project?.status)}`}>
-                    {project?.status?.replace('_', ' ')?.toUpperCase()}
+                    {formatStatus(project?.status)}
                   </span>
                 </div>
                 <div className="flex items-center space-x-4 text-text-secondary mb-4">
                   <div className="flex items-center space-x-2">
                     <Icon name="User" size={16} />
-                    <span>{project?.lead_researcher?.full_name}</span>
+                    <span>{project?.lead_researcher?.full_name || labels?.teamLead || 'Lead Researcher'}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Icon name="Building" size={16} />
-                    <span>{project?.division?.name}</span>
+                    <span>{project?.division?.name || labels?.division || 'Division'}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Icon name="Calendar" size={16} />
-                    <span>Started {new Date(project?.start_date)?.toLocaleDateString()}</span>
+                    <span>{startedText}</span>
                   </div>
                 </div>
               </div>
@@ -211,43 +284,43 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
             
             <div className="space-y-6">
               <div>
-                <h3 className="font-cta text-lg font-semibold text-text-primary mb-3">Project Description</h3>
+                <h3 className="font-cta text-lg font-semibold text-text-primary mb-3">
+                  {detailCopy?.descriptionHeading || 'Project Description'}
+                </h3>
                 <p className="font-body text-text-secondary leading-relaxed">
-                  {project?.description || 'Detailed project description will be displayed here.'}
+                  {project?.description || detailCopy?.defaultDescription || 'Detailed project description will be displayed here.'}
                 </p>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="font-cta text-lg font-semibold text-text-primary mb-3">Project Details</h3>
+                  <h3 className="font-cta text-lg font-semibold text-text-primary mb-3">
+                    {detailCopy?.detailsHeading || 'Project Details'}
+                  </h3>
                   <div className="space-y-3">
                     <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-text-secondary">Status</span>
-                      <span className="font-medium">{project?.status?.replace('_', ' ')?.toUpperCase()}</span>
+                      <span className="text-text-secondary">{detailCopy?.status || 'Status'}</span>
+                      <span className="font-medium">{formatStatus(project?.status)}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-text-secondary">Start Date</span>
-                      <span className="font-medium">
-                        {project?.start_date ? new Date(project?.start_date)?.toLocaleDateString() : 'TBD'}
-                      </span>
+                      <span className="text-text-secondary">{detailCopy?.start || 'Start Date'}</span>
+                      <span className="font-medium">{startDate}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-text-secondary">End Date</span>
-                      <span className="font-medium">
-                        {project?.end_date ? new Date(project?.end_date)?.toLocaleDateString() : 'Ongoing'}
-                      </span>
+                      <span className="text-text-secondary">{detailCopy?.end || 'End Date'}</span>
+                      <span className="font-medium">{endDate}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-border">
-                      <span className="text-text-secondary">Budget</span>
-                      <span className="font-medium">
-                        ${project?.budget_total ? (project?.budget_total / 1000)?.toFixed(0) + 'K' : 'TBD'}
-                      </span>
+                      <span className="text-text-secondary">{detailCopy?.budget || 'Budget'}</span>
+                      <span className="font-medium">{budgetValue}</span>
                     </div>
                   </div>
                 </div>
                 
                 <div>
-                  <h3 className="font-cta text-lg font-semibold text-text-primary mb-3">Team Members</h3>
+                  <h3 className="font-cta text-lg font-semibold text-text-primary mb-3">
+                    {detailCopy?.teamHeading || labels?.team || 'Team Members'}
+                  </h3>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
                       <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
@@ -257,27 +330,27 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
                         <div className="font-medium text-text-primary">
                           {project?.lead_researcher?.full_name}
                         </div>
-                        <div className="text-sm text-text-secondary">Lead Researcher</div>
+                        <div className="text-sm text-text-secondary">{labels?.teamLead || 'Lead Researcher'}</div>
                       </div>
                     </div>
-                    {project?.project_collaborators?.slice(0, 4)?.map((collab, index) => (
+                    {collaborators.slice(0, 4)?.map((collab, index) => (
                       <div key={index} className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
                         <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
                           <Icon name="User" size={16} className="text-text-secondary" />
                         </div>
                         <div>
                           <div className="font-medium text-text-primary">
-                            {collab?.user?.full_name || 'Team Member'}
+                            {collab?.user?.full_name || labels?.teamMember || 'Team Member'}
                           </div>
                           <div className="text-sm text-text-secondary">
-                            {collab?.role?.replace('_', ' ') || 'Collaborator'}
+                            {collab?.role?.replace('_', ' ') || labels?.collaboratorRole || 'Collaborator'}
                           </div>
                         </div>
                       </div>
                     ))}
-                    {project?.project_collaborators?.length > 4 && (
+                    {collaborators.length > 4 && (
                       <div className="text-sm text-text-secondary text-center py-2">
-                        +{project?.project_collaborators?.length - 4} more team members
+                        {formatMoreMembers(collaborators.length - 4)}
                       </div>
                     )}
                   </div>
@@ -286,13 +359,13 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
               
               <div className="flex items-center space-x-4 pt-6 border-t border-border">
                 <Button variant="default" iconName="MessageCircle" iconPosition="left">
-                  Join Discussion
+                  {labels?.joinDiscussion || 'Join Discussion'}
                 </Button>
                 <Button variant="outline" iconName="Calendar" iconPosition="left">
-                  View Timeline
+                  {labels?.viewTimeline || 'View Timeline'}
                 </Button>
                 <Button variant="outline" iconName="FileText" iconPosition="left">
-                  View Documents
+                  {labels?.viewDocuments || 'View Documents'}
                 </Button>
               </div>
             </div>
@@ -315,7 +388,10 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
 
     const handleSubmit = async (e) => {
       e?.preventDefault();
-      if (!isAuthenticated || !user?.id) return;
+      if (!isAuthenticated || !user?.id) {
+        alert(alerts?.signinCreate || 'Please sign in to create a project');
+        return;
+      }
 
       try {
         const projectData = {
@@ -327,15 +403,15 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
 
         const { data, error } = await researchService?.projects?.create(projectData);
         if (!error && data) {
-          alert('Project created successfully!');
+          alert(alerts?.createSuccess || 'Project created successfully!');
           onClose();
           loadUserProjects();
         } else {
-          alert('Error creating project. Please try again.');
+          alert(alerts?.createError || 'Error creating project. Please try again.');
         }
       } catch (error) {
         console.error('Error creating project:', error);
-        alert('Error creating project. Please try again.');
+        alert(alerts?.createError || 'Error creating project. Please try again.');
       }
     };
 
@@ -345,14 +421,14 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-headline text-xl font-bold text-text-primary">
-                Create New Project
+                {createCopy?.title || 'Create New Project'}
               </h2>
               <Button variant="ghost" size="sm" iconName="X" onClick={onClose} />
             </div>
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
-                label="Project Title"
+                label={createCopy?.fields?.title || 'Project Title'}
                 value={formData?.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e?.target?.value }))}
                 required
@@ -360,7 +436,7 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
               
               <div>
                 <label className="block text-sm font-medium text-text-primary mb-2">
-                  Project Description
+                  {createCopy?.fields?.description || 'Project Description'}
                 </label>
                 <textarea
                   value={formData?.description}
@@ -374,13 +450,13 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
                   type="date"
-                  label="Start Date"
+                  label={createCopy?.fields?.start || 'Start Date'}
                   value={formData?.start_date}
                   onChange={(e) => setFormData(prev => ({ ...prev, start_date: e?.target?.value }))}
                 />
                 <Input
                   type="date"
-                  label="End Date (Optional)"
+                  label={createCopy?.fields?.end || 'End Date (Optional)'}
                   value={formData?.end_date}
                   onChange={(e) => setFormData(prev => ({ ...prev, end_date: e?.target?.value }))}
                 />
@@ -388,10 +464,10 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
               
               <Input
                 type="number"
-                label="Budget (USD)"
+                label={createCopy?.fields?.budget || 'Budget (USD)'}
                 value={formData?.budget_total}
                 onChange={(e) => setFormData(prev => ({ ...prev, budget_total: e?.target?.value }))}
-                placeholder="e.g. 50000"
+                placeholder={createCopy?.placeholders?.budget || 'e.g. 50000'}
               />
               
               <div className="flex items-center space-x-2">
@@ -403,16 +479,16 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
                   className="rounded border-border"
                 />
                 <label htmlFor="is_public" className="text-sm text-text-secondary">
-                  Make this project visible to the public
+                  {createCopy?.public || 'Make this project visible to the public'}
                 </label>
               </div>
               
               <div className="flex items-center space-x-4 pt-4">
                 <Button type="submit" variant="default" className="flex-1">
-                  Create Project
+                  {createCopy?.submit || 'Create Project'}
                 </Button>
                 <Button type="button" variant="outline" onClick={onClose}>
-                  Cancel
+                  {createCopy?.cancel || 'Cancel'}
                 </Button>
               </div>
             </form>
@@ -438,10 +514,10 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-headline text-2xl font-bold text-text-primary mb-2">
-            Project Management
+            {headingText}
           </h2>
           <p className="font-body text-text-secondary">
-            Manage collaborative research projects across institutions
+            {descriptionText}
           </p>
         </div>
         {isAuthenticated && (
@@ -451,7 +527,7 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
             iconPosition="left"
             onClick={() => setShowCreateModal(true)}
           >
-            New Project
+            {newButtonText}
           </Button>
         )}
       </div>
@@ -464,7 +540,7 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
             activeTab === 'all' ?'bg-card text-text-primary shadow-sm' :'text-text-secondary hover:text-text-primary'
           }`}
         >
-          All Projects ({projects?.length || 0})
+          {(tabsCopy?.all || 'All Projects')} ({projects?.length || 0})
         </button>
         {isAuthenticated && (
           <button
@@ -473,7 +549,7 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
               activeTab === 'my' ?'bg-card text-text-primary shadow-sm' :'text-text-secondary hover:text-text-primary'
             }`}
           >
-            My Projects ({userProjects?.length || 0})
+            {(tabsCopy?.mine || 'My Projects')} ({userProjects?.length || 0})
           </button>
         )}
       </div>
@@ -483,7 +559,7 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Input
             type="search"
-            placeholder="Search projects..."
+            placeholder={filtersCopy?.searchPlaceholder || 'Search projects...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e?.target?.value)}
           />
@@ -491,14 +567,14 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
             options={statusOptions}
             value={selectedStatus}
             onChange={setSelectedStatus}
-            placeholder="Filter by status"
+            placeholder={filtersCopy?.statusPlaceholder || 'Filter by status'}
           />
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="sm" iconName="Filter">
-              More Filters
+              {filtersCopy?.more || 'More Filters'}
             </Button>
             <span className="text-sm text-text-secondary">
-              {filteredProjects?.length || 0} projects
+              {formatProjectCount(filteredProjects?.length || 0)}
             </span>
           </div>
         </div>
@@ -532,11 +608,14 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
             <Icon name="FolderOpen" size={24} className="text-text-secondary" />
           </div>
           <h3 className="font-cta text-lg font-semibold text-text-primary mb-2">
-            {activeTab === 'my' ? 'No projects found' : 'No projects match your criteria'}
+            {activeTab === 'my'
+              ? labels?.mineEmpty || 'No projects found'
+              : labels?.empty || 'No projects match your criteria'}
           </h3>
           <p className="font-body text-text-secondary mb-6">
-            {activeTab === 'my' ?'Start by creating your first research project' :'Try adjusting your search or filters'
-            }
+            {activeTab === 'my'
+              ? labels?.mineEmptyDescription || 'Start by creating your first research project'
+              : labels?.emptyDescription || 'Try adjusting your search or filters'}
           </p>
           {activeTab === 'my' && isAuthenticated && (
             <Button 
@@ -544,7 +623,7 @@ const ProjectManagementSection = ({ projects: initialProjects = [], loading: ini
               iconName="Plus"
               onClick={() => setShowCreateModal(true)}
             >
-              Create Project
+              {labels?.create || 'Create project'}
             </Button>
           )}
         </div>

@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
 import researchService from '../../../services/researchService';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const PeerReviewSection = ({ user }) => {
   const [activeTab, setActiveTab] = useState('submissions');
@@ -21,6 +22,47 @@ const PeerReviewSection = ({ user }) => {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation('collaboration');
+
+  const peerReviewCopy = t('peerReview', { returnObjects: true }) || {};
+  const systemCopy = peerReviewCopy.system || {};
+  const tabsCopy = peerReviewCopy.tabs || {};
+  const filtersCopy = peerReviewCopy.filters || {};
+  const statusOptionsCopy = peerReviewCopy.statusOptions || [];
+  const statusLabels = peerReviewCopy.statusLabels || {};
+  const publicationCardCopy = peerReviewCopy.publicationCard || {};
+  const submissionsCopy = peerReviewCopy.submissions || {};
+  const reviewsCopy = peerReviewCopy.reviews || {};
+  const publicationsListCopy = peerReviewCopy.publicationsList || {};
+  const submitModalCopy = peerReviewCopy.modals?.submit || {};
+  const alertsCopy = peerReviewCopy.alerts || {};
+
+  const defaultStatusOptions = [
+    { value: 'all', label: 'All Statuses' },
+    { value: 'draft', label: 'Draft' },
+    { value: 'submitted', label: 'Submitted' },
+    { value: 'under_review', label: 'Under Review' },
+    { value: 'accepted', label: 'Accepted' },
+    { value: 'published', label: 'Published' }
+  ];
+
+  const statusOptions = statusOptionsCopy.length ? statusOptionsCopy : defaultStatusOptions;
+  const statusLabelMap = useMemo(() => {
+    const map = {};
+    statusOptions.forEach((option) => {
+      if (option?.value) {
+        map[option.value] = option.label;
+      }
+    });
+    return map;
+  }, [statusOptions]);
+
+  const formatStatus = (status) => {
+    if (!status) {
+      return statusLabelMap.all || 'ALL';
+    }
+    return statusLabelMap[status] || status.replace('_', ' ')?.toUpperCase();
+  };
 
   useEffect(() => {
     loadPublicationsData();
@@ -89,15 +131,6 @@ const PeerReviewSection = ({ user }) => {
     }
   };
 
-  const statusOptions = [
-    { value: 'all', label: 'All Statuses' },
-    { value: 'draft', label: 'Draft' },
-    { value: 'submitted', label: 'Submitted' },
-    { value: 'under_review', label: 'Under Review' },
-    { value: 'accepted', label: 'Accepted' },
-    { value: 'published', label: 'Published' }
-  ];
-
   const getStatusColor = (status) => {
     switch (status) {
       case 'published': return 'text-success bg-success/10';
@@ -110,81 +143,91 @@ const PeerReviewSection = ({ user }) => {
     }
   };
 
-  const PublicationCard = ({ publication, showActions = false }) => (
-    <div className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
-          <h3 className="font-cta text-lg font-semibold text-text-primary mb-2 line-clamp-2">
-            {publication?.title || 'Research Publication Title'}
-          </h3>
-          <div className="flex items-center space-x-4 text-sm text-text-secondary mb-3">
-            <div className="flex items-center space-x-1">
-              <Icon name="Calendar" size={14} />
-              <span>
-                {publication?.publication_date 
-                  ? new Date(publication?.publication_date)?.toLocaleDateString()
-                  : 'Publication Date TBD'
-                }
+  const PublicationCard = ({ publication, showActions = false }) => {
+    const title = publication?.title || publicationCardCopy.titleFallback || 'Research Publication Title';
+    const publicationDate = publication?.publication_date
+      ? new Date(publication.publication_date).toLocaleDateString()
+      : publicationCardCopy.dateFallback || 'Publication Date TBD';
+    const journalName = publication?.journal_name || publicationCardCopy.journalFallback || 'Journal Name';
+    const authorsLabel = publicationCardCopy.authorsLabel || 'Authors:';
+    const moreAuthorsLabel = publication?.publication_authors?.length > 3
+      ? formatString(publicationCardCopy.moreAuthors, { count: publication.publication_authors.length - 3 })
+      : null;
+    const citationsText = formatString(publicationCardCopy.citations, { count: publication?.citation_count || 0 })
+      || `${publication?.citation_count || 0} citations`;
+    const viewsText = formatString(publicationCardCopy.views, { count: Math.floor(Math.random() * 500) + 100 })
+      || `${Math.floor(Math.random() * 500) + 100} views`;
+    const viewLabel = publicationCardCopy.view || 'View';
+    const editLabel = publicationCardCopy.edit || 'Edit';
+    const statusLabel = formatStatus(publication?.status);
+
+    return (
+      <div className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <h3 className="font-cta text-lg font-semibold text-text-primary mb-2 line-clamp-2">{title}</h3>
+            <div className="flex items-center space-x-4 text-sm text-text-secondary mb-3">
+              <div className="flex items-center space-x-1">
+                <Icon name="Calendar" size={14} />
+                <span>{publicationDate}</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Icon name="BookOpen" size={14} />
+                <span>{journalName}</span>
+              </div>
+            </div>
+            <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(publication?.status)}`}>
+              {statusLabel}
+            </span>
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <div className="font-cta text-sm text-text-secondary mb-2">{authorsLabel}</div>
+          <div className="flex flex-wrap gap-2">
+            {publication?.publication_authors?.slice(0, 3)?.map((author, index) => (
+              <span key={index} className="text-sm text-text-primary">
+                {author?.user?.full_name}
+                {index < (publication?.publication_authors?.length - 1) && index < 2 ? ',' : ''}
               </span>
+            ))}
+            {publication?.publication_authors?.length > 3 && (
+              <span className="text-sm text-text-secondary">{moreAuthorsLabel}</span>
+            )}
+          </div>
+        </div>
+
+        {publication?.abstract && (
+          <p className="font-body text-sm text-text-secondary mb-4 line-clamp-3">
+            {publication.abstract}
+          </p>
+        )}
+
+        <div className="flex items-center justify-between pt-4 border-t border-border">
+          <div className="flex items-center space-x-4 text-sm text-text-secondary">
+            <div className="flex items-center space-x-1">
+              <Icon name="Quote" size={14} />
+              <span>{citationsText}</span>
             </div>
             <div className="flex items-center space-x-1">
-              <Icon name="BookOpen" size={14} />
-              <span>{publication?.journal_name || 'Journal Name'}</span>
+              <Icon name="Eye" size={14} />
+              <span>{viewsText}</span>
             </div>
           </div>
-          <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(publication?.status)}`}>
-            {publication?.status?.replace('_', ' ')?.toUpperCase() || 'DRAFT'}
-          </span>
-        </div>
-      </div>
-      
-      <div className="mb-4">
-        <div className="font-cta text-sm text-text-secondary mb-2">Authors:</div>
-        <div className="flex flex-wrap gap-2">
-          {publication?.publication_authors?.slice(0, 3)?.map((author, index) => (
-            <span key={index} className="text-sm text-text-primary">
-              {author?.user?.full_name}
-              {index < (publication?.publication_authors?.length - 1) && index < 2 ? ',' : ''}
-            </span>
-          ))}
-          {publication?.publication_authors?.length > 3 && (
-            <span className="text-sm text-text-secondary">
-              +{publication?.publication_authors?.length - 3} more
-            </span>
-          )}
-        </div>
-      </div>
-      
-      {publication?.abstract && (
-        <p className="font-body text-sm text-text-secondary mb-4 line-clamp-3">
-          {publication?.abstract}
-        </p>
-      )}
-      
-      <div className="flex items-center justify-between pt-4 border-t border-border">
-        <div className="flex items-center space-x-4 text-sm text-text-secondary">
-          <div className="flex items-center space-x-1">
-            <Icon name="Quote" size={14} />
-            <span>{publication?.citation_count || 0} citations</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <Icon name="Eye" size={14} />
-            <span>{Math.floor(Math.random() * 500) + 100} views</span>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm" iconName="Eye">
-            View
-          </Button>
-          {showActions && (
-            <Button variant="ghost" size="sm" iconName="Edit">
-              Edit
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="sm" iconName="Eye">
+              {viewLabel}
             </Button>
-          )}
+            {showActions && (
+              <Button variant="ghost" size="sm" iconName="Edit">
+                {editLabel}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const ReviewRequestCard = ({ request }) => (
     <div className="bg-card border border-border rounded-lg p-6">

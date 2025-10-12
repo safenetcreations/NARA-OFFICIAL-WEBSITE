@@ -50,6 +50,15 @@
           "newsUpdates": "News & Updates",
           "procurement": "Procurement"
         }
+      },
+      "news": {
+        "title": "News & Updates"
+      },
+      "contact": {
+        "title": "Contact",
+        "links": {
+          "getInTouch": "Contact Us"
+        }
       }
     }
   }

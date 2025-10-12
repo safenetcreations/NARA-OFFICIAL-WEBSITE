@@ -59,15 +59,6 @@ const ThemeNavbar = () => {
       ]
     },
     {
-      titleKey: 'navbar.menu.contact.title',
-      icon: Icons.Mail,
-      dropdown: [
-        { labelKey: 'navbar.menu.about.links.procurement', path: '/procurement-recruitment-portal', icon: Icons.Briefcase },
-        { labelKey: 'navbar.menu.about.links.newsUpdates', path: '/nara-news-updates-center', icon: Icons.Newspaper },
-        { labelKey: 'navbar.menu.contact.links.getInTouch', path: '/contact-us', icon: Icons.Phone }
-      ]
-    },
-    {
       titleKey: 'navbar.menu.research.title',
       icon: Icons.Microscope,
       dropdown: [
@@ -79,7 +70,7 @@ const ThemeNavbar = () => {
     },
     {
       titleKey: 'navbar.menu.services.title',
-      icon: Icons.Settings,
+      icon: Icons.Briefcase,
       dropdown: [
         { labelKey: 'navbar.menu.services.links.digitalMarketplace', path: '/nara-digital-marketplace', icon: Icons.ShoppingBag },
         { labelKey: 'navbar.menu.services.links.maritimeServices', path: '/maritime-services-hub', icon: Icons.Ship },
@@ -89,12 +80,20 @@ const ThemeNavbar = () => {
     },
     {
       titleKey: 'navbar.menu.resources.title',
-      icon: Icons.Folder,
+      icon: Icons.FolderOpen,
       dropdown: [
         { labelKey: 'navbar.menu.resources.links.digitalProductLibrary', path: '/digital-product-library', icon: Icons.Archive },
         { labelKey: 'navbar.menu.resources.links.learningAcademy', path: '/learning-development-academy', icon: Icons.GraduationCap },
         { labelKey: 'navbar.menu.resources.links.regionalImpact', path: '/regional-impact-network', icon: Icons.Globe },
         { labelKey: 'navbar.menu.resources.links.integrationSystems', path: '/integration-systems-platform', icon: Icons.Network }
+      ]
+    },
+    {
+      titleKey: 'navbar.menu.news.title',
+      icon: Icons.Newspaper,
+      dropdown: [
+        { labelKey: 'navbar.menu.about.links.newsUpdates', path: '/nara-news-updates-center', icon: Icons.Newspaper },
+        { labelKey: 'navbar.menu.about.links.procurement', path: '/procurement-recruitment-portal', icon: Icons.Briefcase }
       ]
     }
   ];
@@ -258,6 +257,36 @@ const ThemeNavbar = () => {
 
         {/* Right side actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {/* Contact Us Button */}
+          <Link
+            to="/contact-us"
+            className="btn-ghost hidden md:flex"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 1rem',
+              borderRadius: '999px',
+              fontSize: '0.9rem',
+              fontWeight: 500,
+              background: 'var(--primary)',
+              color: 'white',
+              transition: 'all 0.3s ease',
+              textDecoration: 'none'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 194, 255, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          >
+            <Icons.Phone className="w-4 h-4" />
+            {t('navbar.menu.contact.links.getInTouch')}
+          </Link>
+
           <button
             onClick={cycleLanguage}
             className="btn-ghost md:hidden"
@@ -472,6 +501,30 @@ const ThemeNavbar = () => {
                 ))}
               </div>
             ))}
+
+            {/* Mobile Contact Us Button */}
+            <Link
+              to="/contact-us"
+              onClick={() => setMobileMenuOpen(false)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                padding: '0.875rem 1.5rem',
+                marginTop: '1.5rem',
+                borderRadius: '999px',
+                fontSize: '0.95rem',
+                fontWeight: 600,
+                background: 'var(--primary)',
+                color: 'white',
+                textDecoration: 'none',
+                boxShadow: '0 4px 12px rgba(0, 194, 255, 0.3)'
+              }}
+            >
+              <Icons.Phone className="w-5 h-5" />
+              {t('navbar.menu.contact.links.getInTouch')}
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,12 +1,26 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import * as Icons from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useResearchData } from '../../hooks/useResearchData';
+
+const resolveIconComponent = (iconRef, fallback = Icons.Activity) => {
+  if (!iconRef) {
+    return fallback;
+  }
+  if (typeof iconRef === 'string' && Icons[iconRef]) {
+    return Icons[iconRef];
+  }
+  if (typeof iconRef === 'function') {
+    return iconRef;
+  }
+  return fallback;
+};
+
+const normalizeKey = (value = '') => value.toString().toLowerCase().replace(/[^a-z0-9]+/g, '');
 
 const ResearchExcellenceRedesign = () => {
   const [activeTab, setActiveTab] = useState('publications');
-  const [selectedResearch, setSelectedResearch] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('year');
@@ -15,125 +29,189 @@ const ResearchExcellenceRedesign = () => {
 
   // Real-time research data
   const {
-    researchData,
     publications,
     teams,
     metrics,
-    isLoading,
-    error,
-    refreshData
+    isLoading
   } = useResearchData();
 
   // Parallax effects
-  const y1 = useTransform(scrollY, [0, 500], [0, 150]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
-  // Research publications data
-  const researchPublications = [
-    {
-      id: 1,
-      title: "Deep Ocean Biodiversity Mapping of Sri Lankan Waters",
-      authors: "Dr. Sarah Chen, Prof. Kumar Silva, Dr. Amanda Roberts",
-      year: 2024,
-      journal: "Nature Ocean Sciences",
-      impact: 12.5,
-      citations: 245,
-      category: "Marine Biology",
-      thumbnail: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400",
-      abstract: "Comprehensive analysis of deep-sea ecosystems revealing 127 new species...",
-      tags: ["Deep Sea", "Biodiversity", "New Species"],
-      downloadCount: 3847
-    },
-    {
-      id: 2,
-      title: "Climate Impact on Coral Reef Systems: A 10-Year Study",
-      authors: "Prof. Michael Thompson, Dr. Priya Fernando",
-      year: 2024,
-      journal: "Science Advances",
-      impact: 9.8,
-      citations: 189,
-      category: "Climate Science",
-      thumbnail: "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=400",
-      abstract: "Long-term monitoring reveals critical temperature thresholds for coral survival...",
-      tags: ["Climate Change", "Coral Reefs", "Conservation"],
-      downloadCount: 2156
-    },
-    {
-      id: 3,
-      title: "AI-Powered Ocean Current Prediction Models",
-      authors: "Dr. James Liu, Prof. Nimal Perera",
-      year: 2023,
-      journal: "Journal of Marine Technology",
-      impact: 8.2,
-      citations: 156,
-      category: "Ocean Technology",
-      thumbnail: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400",
-      abstract: "Machine learning algorithms achieving 94% accuracy in current predictions...",
-      tags: ["AI", "Ocean Currents", "Predictive Modeling"],
-      downloadCount: 1892
+  const { t } = useTranslation(['research', 'common']);
+
+  const heroContent = t('hero', { ns: 'research', returnObjects: true }) || {};
+  const metricsContent = t('metrics', { ns: 'research', returnObjects: true }) || {};
+  const tabsContent = t('tabs', { ns: 'research', returnObjects: true }) || [];
+  const publicationsContent = t('publications', { ns: 'research', returnObjects: true }) || {};
+  const teamsContent = t('teams', { ns: 'research', returnObjects: true }) || {};
+  const projectsContent = t('projects', { ns: 'research', returnObjects: true }) || {};
+  const impactContent = t('impact', { ns: 'research', returnObjects: true }) || {};
+  const ctaContent = t('cta', { ns: 'research', returnObjects: true }) || {};
+  const placeholdersContent = t('placeholders', { ns: 'research', returnObjects: true }) || {};
+
+  const tabConfig = Array.isArray(tabsContent) && tabsContent.length
+    ? tabsContent
+    : [
+        { key: 'publications', label: 'Publications' },
+        { key: 'teams', label: 'Research Teams' },
+        { key: 'projects', label: 'Projects' },
+        { key: 'datasets', label: 'Datasets' },
+        { key: 'collaboration', label: 'Collaboration' }
+      ];
+
+  const categories = useMemo(
+    () => (Array.isArray(publicationsContent?.categories) ? publicationsContent.categories : []),
+    [publicationsContent]
+  );
+
+  const sortOptions = useMemo(
+    () => (Array.isArray(publicationsContent?.sortOptions) ? publicationsContent.sortOptions : []),
+    [publicationsContent]
+  );
+
+  const publicationLabels = {
+    citations: 'Citations',
+    downloads: 'Downloads',
+    impact: 'IF',
+    pdf: 'PDF',
+    ...(publicationsContent?.labels || {})
+  };
+  const publicationEmpty = {
+    title: '',
+    description: '',
+    ...(publicationsContent?.empty || {})
+  };
+  const searchPlaceholder = publicationsContent?.searchPlaceholder || 'Search publications...';
+  const loadMoreLabel = publicationsContent?.loadMore || 'Load More Publications';
+
+  const fallbackPublications = useMemo(() => {
+    if (!Array.isArray(publicationsContent?.fallback)) {
+      return [];
     }
-  ];
+    return publicationsContent.fallback.map((pub, index) => ({
+      id: pub.id || index + 1,
+      ...pub,
+      tags: Array.isArray(pub.tags) ? pub.tags : []
+    }));
+  }, [publicationsContent]);
 
-  // Research teams data
-  const researchTeams = [
-    {
-      name: "Marine Biodiversity Unit",
-      lead: "Dr. Sarah Chen",
-      members: 12,
-      projects: 8,
-      funding: "$2.5M",
-      icon: Icons.Fish,
-      color: "from-blue-500 to-cyan-500"
-    },
-    {
-      name: "Climate Research Division",
-      lead: "Prof. Kumar Silva",
-      members: 18,
-      projects: 12,
-      funding: "$4.2M",
-      icon: Icons.Thermometer,
-      color: "from-purple-500 to-pink-500"
-    },
-    {
-      name: "Ocean Technology Lab",
-      lead: "Dr. James Liu",
-      members: 15,
-      projects: 10,
-      funding: "$3.8M",
-      icon: Icons.Cpu,
-      color: "from-green-500 to-teal-500"
-    },
-    {
-      name: "Conservation Research",
-      lead: "Prof. Amanda Roberts",
-      members: 10,
-      projects: 6,
-      funding: "$1.9M",
-      icon: Icons.Shield,
-      color: "from-orange-500 to-red-500"
+  const metricsFallbackRaw = useMemo(() => {
+    if (!Array.isArray(metricsContent?.fallback)) {
+      return [];
     }
+    return metricsContent.fallback;
+  }, [metricsContent]);
+
+  const metricsTranslationMap = useMemo(() => {
+    return metricsFallbackRaw.reduce((acc, metric) => {
+      const key = metric.key ? normalizeKey(metric.key) : normalizeKey(metric.label);
+      if (key && metric.label) {
+        acc[key] = metric.label;
+      }
+      return acc;
+    }, {});
+  }, [metricsFallbackRaw]);
+
+  const researchMetrics = useMemo(() => {
+    const fallbackByKey = metricsFallbackRaw.reduce((acc, metric) => {
+      const key = metric.key ? normalizeKey(metric.key) : normalizeKey(metric.label);
+      if (key) {
+        acc[key] = metric;
+      }
+      return acc;
+    }, {});
+    const source = Array.isArray(metrics) && metrics.length ? metrics : metricsFallbackRaw;
+    return source.map((metric) => {
+      const key = metric.key ? normalizeKey(metric.key) : normalizeKey(metric.label);
+      const fallbackMetric = fallbackByKey[key] || {};
+      return {
+        ...metric,
+        label: metricsTranslationMap[key] || metric.label || fallbackMetric.label || '',
+        value: metric.value ?? fallbackMetric.value ?? '',
+        change: metric.change ?? fallbackMetric.change ?? '',
+        icon: resolveIconComponent(metric.icon ?? fallbackMetric.icon, Icons.Activity)
+      };
+    });
+  }, [metrics, metricsFallbackRaw, metricsTranslationMap]);
+
+  const teamsLabels = {
+    members: 'Members',
+    projects: 'Projects',
+    funding: 'Funding',
+    ...(teamsContent?.labels || {})
+  };
+
+  const teamsFallback = useMemo(() => {
+    if (!Array.isArray(teamsContent?.fallback)) {
+      return [];
+    }
+    return teamsContent.fallback.map((team) => ({
+      ...team,
+      icon: resolveIconComponent(team.icon, Icons.Users)
+    }));
+  }, [teamsContent]);
+
+  const researchTeams = useMemo(() => {
+    const source = Array.isArray(teams) && teams.length ? teams : teamsFallback;
+    return source.map((team, index) => {
+      const fallbackTeam = teamsFallback[index] || {};
+      return {
+        ...team,
+        name: team.name ?? fallbackTeam.name ?? '',
+        lead: team.lead ?? fallbackTeam.lead ?? '',
+        members: team.members ?? fallbackTeam.members ?? 0,
+        projects: team.projects ?? fallbackTeam.projects ?? 0,
+        funding: team.funding ?? fallbackTeam.funding ?? '',
+        color: team.color ?? fallbackTeam.color ?? 'from-blue-500 to-cyan-500',
+        icon: resolveIconComponent(team.icon ?? fallbackTeam.icon, Icons.Users)
+      };
+    });
+  }, [teams, teamsFallback]);
+
+  const teamStats = useMemo(() => {
+    if (!Array.isArray(teamsContent?.stats)) {
+      return [];
+    }
+    return teamsContent.stats.map((stat) => ({
+      ...stat,
+      icon: resolveIconComponent(stat.icon, Icons.Activity)
+    }));
+  }, [teamsContent]);
+
+  const teamStatGradients = ['from-blue-900/20 to-purple-900/20', 'from-purple-900/20 to-pink-900/20', 'from-green-900/20 to-teal-900/20'];
+  const teamStatIconColors = ['text-blue-400', 'text-purple-400', 'text-green-400'];
+
+  const projectsLabels = {
+    progress: 'Progress',
+    team: 'Team',
+    budget: 'Budget',
+    deadline: 'Deadline',
+    ...(projectsContent?.labels || {})
+  };
+
+  const projectItems = useMemo(() => {
+    if (!Array.isArray(projectsContent?.fallback)) {
+      return [];
+    }
+    return projectsContent.fallback;
+  }, [projectsContent]);
+
+  const impactPoints = Array.isArray(impactContent?.points) ? impactContent.points : [];
+
+  const impactPositions = [
+    { top: '-80px', left: '50%' },
+    { top: '50%', right: '-120px' },
+    { bottom: '-80px', left: '50%' },
+    { top: '50%', left: '-120px' }
   ];
 
-  // Categories for filtering
-  const categories = [
-    { value: 'all', label: 'All Categories' },
-    { value: 'Marine Biology', label: 'Marine Biology' },
-    { value: 'Climate Science', label: 'Climate Science' },
-    { value: 'Ocean Technology', label: 'Ocean Technology' },
-    { value: 'Conservation', label: 'Conservation' }
-  ];
-
-  // Sort options
-  const sortOptions = [
-    { value: 'year', label: 'Publication Year' },
-    { value: 'citations', label: 'Citations' },
-    { value: 'impact', label: 'Impact Factor' },
-    { value: 'downloads', label: 'Downloads' }
-  ];
+  const datasetPlaceholder = placeholdersContent?.datasets;
+  const collaborationPlaceholder = placeholdersContent?.collaboration;
 
   // Filtered and sorted publications
   const filteredPublications = useMemo(() => {
-    const source = publications && publications.length > 0 ? publications : researchPublications;
+    const source = Array.isArray(publications) && publications.length ? publications : fallbackPublications;
     let filtered = [...source];
 
     if (searchTerm) {
@@ -173,27 +251,7 @@ const ResearchExcellenceRedesign = () => {
     });
 
     return filtered;
-  }, [publications, researchPublications, searchTerm, selectedCategory, sortBy, sortOrder]);
-
-  // Compose research metrics with icon components and safe fallbacks
-  const researchMetrics = useMemo(() => {
-    const defaults = [
-      { label: 'Active Projects', value: 47, change: '+12%', icon: Icons.Briefcase },
-      { label: 'Publications (2024)', value: 89, change: '+23%', icon: Icons.FileText },
-      { label: 'International Collaborations', value: 32, change: '+8%', icon: Icons.Globe },
-      { label: 'Research Funding', value: '$12.4M', change: '+15%', icon: Icons.TrendingUp },
-    ];
-    if (Array.isArray(metrics) && metrics.length) {
-      return metrics.map((m) => ({
-        label: m?.label ?? '',
-        value: m?.value ?? 0,
-        change: m?.change ?? '+0%',
-        icon: Icons[m?.icon] || Icons.Activity,
-      }));
-    }
-    return defaults;
-  }, [metrics]);
-
+  }, [publications, fallbackPublications, searchTerm, selectedCategory, sortBy, sortOrder]);
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Hero Section with Animated Background */}
@@ -240,7 +298,7 @@ const ResearchExcellenceRedesign = () => {
               <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 p-1 rounded-2xl">
                 <div className="bg-black/80 backdrop-blur-xl px-6 py-3 rounded-2xl">
                   <span className="text-purple-400 font-space text-sm tracking-widest uppercase">
-                    Research Division
+                    {heroContent?.badge}
                   </span>
                 </div>
               </div>
@@ -254,7 +312,7 @@ const ResearchExcellenceRedesign = () => {
             className="text-6xl md:text-8xl font-bold font-space mb-4"
           >
             <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
-              Research Excellence
+              {heroContent?.title}
             </span>
           </motion.h1>
 
@@ -264,7 +322,7 @@ const ResearchExcellenceRedesign = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-xl text-gray-300 max-w-3xl mx-auto mb-8"
           >
-            Advancing ocean science through groundbreaking research, innovation, and global collaboration
+            {heroContent?.description}
           </motion.p>
 
           {/* Live Metrics Bar */}
@@ -294,17 +352,17 @@ const ResearchExcellenceRedesign = () => {
       <section className="sticky top-[72px] z-40 bg-black/80 backdrop-blur-xl border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex space-x-8 overflow-x-auto">
-            {['publications', 'teams', 'projects', 'datasets', 'collaboration'].map((tab) => (
+            {tabConfig.map((tab) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
                 className={`py-4 px-2 capitalize font-medium transition-all duration-300 border-b-2 ${
-                  activeTab === tab
+                  activeTab === tab.key
                     ? 'text-purple-400 border-purple-400'
                     : 'text-gray-400 border-transparent hover:text-white'
                 }`}
               >
-                {tab}
+                {tab.label}
               </button>
             ))}
           </div>
@@ -326,7 +384,7 @@ const ResearchExcellenceRedesign = () => {
                 <div className="flex-1 relative">
                   <input
                     type="text"
-                    placeholder="Search publications..."
+                    placeholder={searchPlaceholder}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full px-12 py-4 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-all"
@@ -356,10 +414,10 @@ const ResearchExcellenceRedesign = () => {
                   {sortOptions.map(option => (
                     <optgroup key={option.value} label={option.label} className="bg-black">
                       <option value={`${option.value}-desc`} className="bg-black">
-                        {option.label} (High to Low)
+                        {t('publications.sort.highToLow', { ns: 'research', label: option.label })}
                       </option>
                       <option value={`${option.value}-asc`} className="bg-black">
-                        {option.label} (Low to High)
+                        {t('publications.sort.lowToHigh', { ns: 'research', label: option.label })}
                       </option>
                     </optgroup>
                   ))}
@@ -388,7 +446,6 @@ const ResearchExcellenceRedesign = () => {
                       animate={{ x: 0, opacity: 1 }}
                       transition={{ delay: index * 0.1 }}
                       whileHover={{ scale: 1.02 }}
-                      onClick={() => setSelectedResearch(pub)}
                       className="group cursor-pointer"
                     >
                       <div className="bg-gradient-to-r from-white/5 to-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:border-purple-500 transition-all duration-300">
@@ -431,7 +488,7 @@ const ResearchExcellenceRedesign = () => {
                                 {pub.journal}
                               </span>
                               <span className="text-purple-400 font-semibold">
-                                IF: {pub.impact}
+                                {(publicationLabels?.impact || 'IF')}: {pub.impact}
                               </span>
                             </div>
                           </div>
@@ -440,16 +497,16 @@ const ResearchExcellenceRedesign = () => {
                           <div className="md:col-span-2">
                             <div className="space-y-4">
                               <div className="text-center p-3 bg-white/5 rounded-xl">
-                                <div className="text-2xl font-bold text-cyan-400">{pub.citations}</div>
-                                <div className="text-xs text-gray-400">Citations</div>
+                              <div className="text-2xl font-bold text-cyan-400">{pub.citations}</div>
+                                <div className="text-xs text-gray-400">{publicationLabels?.citations}</div>
                               </div>
                               <div className="text-center p-3 bg-white/5 rounded-xl">
-                                <div className="text-2xl font-bold text-green-400">{pub.downloadCount}</div>
-                                <div className="text-xs text-gray-400">Downloads</div>
+                              <div className="text-2xl font-bold text-green-400">{pub.downloadCount}</div>
+                                <div className="text-xs text-gray-400">{publicationLabels?.downloads}</div>
                               </div>
                               <button className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg text-white font-medium hover:from-purple-700 hover:to-pink-700 transition-all">
                                 <Icons.Download className="inline w-4 h-4 mr-1" />
-                                PDF
+                                {publicationLabels?.pdf || 'PDF'}
                               </button>
                             </div>
                           </div>
@@ -460,8 +517,8 @@ const ResearchExcellenceRedesign = () => {
                 ) : (
                   <div className="col-span-full text-center py-12">
                     <Icons.SearchX className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-white mb-2">No publications found</h3>
-                    <p className="text-gray-400">Try adjusting your search criteria or filters.</p>
+                    <h3 className="text-xl font-semibold text-white mb-2">{publicationEmpty?.title}</h3>
+                    <p className="text-gray-400">{publicationEmpty?.description}</p>
                   </div>
                 )}
               </div>
@@ -470,7 +527,7 @@ const ResearchExcellenceRedesign = () => {
               {filteredPublications.length > 0 && (
                 <div className="text-center mt-12">
                   <button className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-white font-medium hover:scale-105 transition-all">
-                    Load More Publications
+                    {loadMoreLabel}
                     <Icons.ChevronDown className="inline w-5 h-5 ml-2" />
                   </button>
                 </div>
@@ -504,25 +561,29 @@ const ResearchExcellenceRedesign = () => {
                           <team.icon className="w-6 h-6 text-white" />
                         </div>
                         <h3 className="text-xl font-bold text-white mb-2">{team.name}</h3>
-                        <p className="text-gray-400 text-sm mb-4">Lead: {team.lead}</p>
+                        {team.lead && (
+                          <p className="text-gray-400 text-sm mb-4">
+                            {t('teams.labels.lead', { ns: 'research', name: team.lead })}
+                          </p>
+                        )}
                         
                         <div className="space-y-2 mb-4">
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Members</span>
+                            <span className="text-gray-400 text-sm">{teamsLabels?.members}</span>
                             <span className="text-white font-semibold">{team.members}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Projects</span>
+                            <span className="text-gray-400 text-sm">{teamsLabels?.projects}</span>
                             <span className="text-white font-semibold">{team.projects}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Funding</span>
+                            <span className="text-gray-400 text-sm">{teamsLabels?.funding}</span>
                             <span className="text-green-400 font-semibold">{team.funding}</span>
                           </div>
                         </div>
 
                         <button className="w-full py-2 border border-purple-500 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all">
-                          View Team Profile
+                          {teamsContent?.viewProfile}
                         </button>
                       </div>
                     </div>
@@ -532,21 +593,19 @@ const ResearchExcellenceRedesign = () => {
 
               {/* Team Stats */}
               <div className="mt-16 grid md:grid-cols-3 gap-6">
-                <div className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 backdrop-blur-xl rounded-2xl p-8 border border-white/10 text-center">
-                  <Icons.Users className="w-12 h-12 text-blue-400 mx-auto mb-4" />
-                  <div className="text-4xl font-bold text-white mb-2">152</div>
-                  <div className="text-gray-400">Total Researchers</div>
-                </div>
-                <div className="bg-gradient-to-br from-purple-900/20 to-pink-900/20 backdrop-blur-xl rounded-2xl p-8 border border-white/10 text-center">
-                  <Icons.Award className="w-12 h-12 text-purple-400 mx-auto mb-4" />
-                  <div className="text-4xl font-bold text-white mb-2">47</div>
-                  <div className="text-gray-400">PhD Candidates</div>
-                </div>
-                <div className="bg-gradient-to-br from-green-900/20 to-teal-900/20 backdrop-blur-xl rounded-2xl p-8 border border-white/10 text-center">
-                  <Icons.Globe className="w-12 h-12 text-green-400 mx-auto mb-4" />
-                  <div className="text-4xl font-bold text-white mb-2">23</div>
-                  <div className="text-gray-400">International Partners</div>
-                </div>
+                {teamStats.map((stat, index) => {
+                  const StatIcon = stat.icon || Icons.Activity;
+                  return (
+                    <div
+                      key={index}
+                      className={`bg-gradient-to-br ${teamStatGradients[index % teamStatGradients.length]} backdrop-blur-xl rounded-2xl p-8 border border-white/10 text-center`}
+                    >
+                      <StatIcon className={`w-12 h-12 mx-auto mb-4 ${teamStatIconColors[index % teamStatIconColors.length]}`} />
+                      <div className="text-4xl font-bold text-white mb-2">{stat.value}</div>
+                      <div className="text-gray-400">{stat.label}</div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </motion.section>
@@ -564,52 +623,15 @@ const ResearchExcellenceRedesign = () => {
               <div className="text-center mb-12">
                 <h2 className="text-4xl font-bold font-space mb-4">
                   <span className="bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">
-                    Active Research Projects
+                    {projectsContent?.heading}
                   </span>
                 </h2>
-                <p className="text-gray-400 text-xl">47 ongoing projects across multiple disciplines</p>
+                <p className="text-gray-400 text-xl">{projectsContent?.description}</p>
               </div>
 
               {/* Project Cards */}
               <div className="grid md:grid-cols-2 gap-6">
-                {[
-                  {
-                    title: "Deep Sea Exploration Initiative",
-                    status: "In Progress",
-                    progress: 65,
-                    team: "Marine Biology Unit",
-                    budget: "$3.2M",
-                    deadline: "Dec 2024",
-                    description: "Mapping uncharted deep sea territories using advanced ROV technology"
-                  },
-                  {
-                    title: "Coral Restoration Program",
-                    status: "In Progress",
-                    progress: 45,
-                    team: "Conservation Research",
-                    budget: "$1.8M",
-                    deadline: "Mar 2025",
-                    description: "Large-scale coral reef restoration using innovative transplantation techniques"
-                  },
-                  {
-                    title: "AI Ocean Monitoring System",
-                    status: "Testing Phase",
-                    progress: 80,
-                    team: "Ocean Technology Lab",
-                    budget: "$2.5M",
-                    deadline: "Sep 2024",
-                    description: "Developing AI models for real-time ocean condition monitoring"
-                  },
-                  {
-                    title: "Climate Impact Assessment",
-                    status: "Data Collection",
-                    progress: 30,
-                    team: "Climate Research Division",
-                    budget: "$4.1M",
-                    deadline: "Jun 2025",
-                    description: "Comprehensive study on climate change effects on marine ecosystems"
-                  }
-                ].map((project, index) => (
+                {projectItems.map((project, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
@@ -630,7 +652,7 @@ const ResearchExcellenceRedesign = () => {
                     {/* Progress Bar */}
                     <div className="mb-4">
                       <div className="flex justify-between text-sm mb-2">
-                        <span className="text-gray-400">Progress</span>
+                        <span className="text-gray-400">{projectsLabels?.progress}</span>
                         <span className="text-cyan-400">{project.progress}%</span>
                       </div>
                       <div className="h-2 bg-white/10 rounded-full overflow-hidden">
@@ -645,15 +667,15 @@ const ResearchExcellenceRedesign = () => {
 
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
-                        <div className="text-gray-400">Team</div>
+                        <div className="text-gray-400">{projectsLabels?.team}</div>
                         <div className="text-white font-medium">{project.team}</div>
                       </div>
                       <div>
-                        <div className="text-gray-400">Budget</div>
+                        <div className="text-gray-400">{projectsLabels?.budget}</div>
                         <div className="text-green-400 font-medium">{project.budget}</div>
                       </div>
                       <div>
-                        <div className="text-gray-400">Deadline</div>
+                        <div className="text-gray-400">{projectsLabels?.deadline}</div>
                         <div className="text-yellow-400 font-medium">{project.deadline}</div>
                       </div>
                     </div>
@@ -665,6 +687,49 @@ const ResearchExcellenceRedesign = () => {
         )}
       </AnimatePresence>
 
+      {/* Placeholder Sections */}
+      {activeTab === 'datasets' && datasetPlaceholder && (
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="py-20 px-4"
+        >
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl font-bold font-space mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+              {datasetPlaceholder.title}
+            </h2>
+            <p className="text-xl text-gray-300 mb-8">{datasetPlaceholder.description}</p>
+            {datasetPlaceholder.cta && (
+              <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full text-white font-medium hover:scale-105 transition-all">
+                {datasetPlaceholder.cta}
+              </button>
+            )}
+          </div>
+        </motion.section>
+      )}
+
+      {activeTab === 'collaboration' && collaborationPlaceholder && (
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="py-20 px-4"
+        >
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl font-bold font-space mb-4 bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+              {collaborationPlaceholder.title}
+            </h2>
+            <p className="text-xl text-gray-300 mb-8">{collaborationPlaceholder.description}</p>
+            {collaborationPlaceholder.cta && (
+              <button className="px-8 py-4 border-2 border-purple-500 rounded-full text-purple-400 font-medium hover:bg-purple-500 hover:text-white transition-all">
+                {collaborationPlaceholder.cta}
+              </button>
+            )}
+          </div>
+        </motion.section>
+      )}
+
       {/* Research Impact Section */}
       <section className="py-20 px-4 bg-gradient-to-b from-black via-purple-950/10 to-black">
         <div className="max-w-7xl mx-auto">
@@ -675,10 +740,10 @@ const ResearchExcellenceRedesign = () => {
           >
             <h2 className="text-4xl md:text-5xl font-bold font-space mb-4">
               <span className="bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-                Global Research Impact
+                {impactContent?.heading}
               </span>
             </h2>
-            <p className="text-xl text-gray-400">Our research shapes ocean conservation worldwide</p>
+            <p className="text-xl text-gray-400">{impactContent?.description}</p>
           </motion.div>
 
           {/* Impact Visualization */}
@@ -703,22 +768,17 @@ const ResearchExcellenceRedesign = () => {
                 </div>
 
                 {/* Data points around globe */}
-                {[
-                  { top: '-80px', left: '50%', label: '3,847', sublabel: 'Citations' },
-                  { top: '50%', right: '-120px', label: '89', sublabel: 'Papers' },
-                  { bottom: '-80px', left: '50%', label: '32', sublabel: 'Countries' },
-                  { top: '50%', left: '-120px', label: '245', sublabel: 'Partners' }
-                ].map((pos, i) => (
+                {impactPoints.map((point, i) => (
                   <motion.div
                     key={i}
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: i * 0.2 }}
                     className="absolute bg-black/80 backdrop-blur-xl rounded-xl p-3 border border-purple-500/30"
-                    style={pos}
+                    style={impactPositions[i] || {}}
                   >
-                    <div className="text-2xl font-bold text-purple-400">{pos.label}</div>
-                    <div className="text-xs text-gray-400">{pos.sublabel}</div>
+                    <div className="text-2xl font-bold text-purple-400">{point.value}</div>
+                    <div className="text-xs text-gray-400">{point.label}</div>
                   </motion.div>
                 ))}
               </div>
@@ -737,20 +797,20 @@ const ResearchExcellenceRedesign = () => {
           >
             <h2 className="text-4xl md:text-5xl font-bold font-space mb-6">
               <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-600 bg-clip-text text-transparent">
-                Join Our Research Community
+                {ctaContent?.heading}
               </span>
             </h2>
             <p className="text-xl text-gray-300 mb-8">
-              Collaborate with world-class scientists and contribute to ocean conservation
+              {ctaContent?.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-white font-medium hover:scale-105 transition-all">
                 <Icons.UserPlus className="inline w-5 h-5 mr-2" />
-                Become a Researcher
+                {ctaContent?.primary}
               </button>
               <button className="px-8 py-4 border-2 border-purple-500 rounded-full text-purple-400 font-medium hover:bg-purple-500 hover:text-white transition-all">
                 <Icons.Mail className="inline w-5 h-5 mr-2" />
-                Contact Research Team
+                {ctaContent?.secondary}
               </button>
             </div>
           </motion.div>

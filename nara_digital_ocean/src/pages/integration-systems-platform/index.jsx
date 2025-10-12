@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Database, Globe, Satellite, Settings, Activity, AlertCircle, CheckCircle, Clock, TrendingUp, Shield, Zap, Users } from 'lucide-react';
-import Header from '../../components/ui/Header';
 import GovernmentDatabaseSection from './components/GovernmentDatabaseSection';
 import InternationalResearchSection from './components/InternationalResearchSection';
 import SatelliteDataSection from './components/SatelliteDataSection';
@@ -112,7 +111,6 @@ const IntegrationSystemsPlatform = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -124,7 +122,6 @@ const IntegrationSystemsPlatform = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
         <div className="max-w-7xl mx-auto px-4 py-12">

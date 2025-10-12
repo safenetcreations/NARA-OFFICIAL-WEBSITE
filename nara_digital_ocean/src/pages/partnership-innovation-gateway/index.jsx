@@ -1,5 +1,4 @@
 import React from 'react';
-import Header from '../../components/ui/Header';
 import GlobalNetworkSection from './components/GlobalNetworkSection';
 import InnovationShowcase from './components/InnovationShowcase';
 import PartnershipOpportunities from './components/PartnershipOpportunities';
@@ -45,9 +44,8 @@ const PartnershipInnovationGateway = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
       {/* Hero Section */}
-      <section className="pt-24 pb-16 bg-gradient-to-br from-primary/5 via-background to-accent/5">
+      <section className="pb-16 bg-gradient-to-br from-primary/5 via-background to-accent/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-full mb-6">

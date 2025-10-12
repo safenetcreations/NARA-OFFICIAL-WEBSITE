@@ -8,6 +8,7 @@ import Select from '../../components/ui/Select';
 import Header from '../../components/ui/Header';
 import { useAuth } from '../../contexts/AuthContext';
 import researchService from '../../services/researchService';
+import { useTranslation } from 'react-i18next';
 
 import ResearcherNetworkSection from './components/ResearcherNetworkSection';
 import ProjectManagementSection from './components/ProjectManagementSection';
@@ -138,6 +139,14 @@ const ResearchCollaborationPlatform = () => {
   });
 
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation('collaboration');
+
+  const heroContent = t('hero', { returnObjects: true }) || {};
+  const heroStatsContent = heroContent?.stats || {};
+  const institutesContent = t('institutes', { returnObjects: true }) || {};
+  const modulesContent = t('modules', { returnObjects: true }) || {};
+  const collaborationsContent = t('collaborations', { returnObjects: true }) || {};
+  const ctaContent = t('cta', { returnObjects: true }) || {};
 
   useEffect(() => {
     loadDashboardData();
@@ -195,14 +204,48 @@ const ResearchCollaborationPlatform = () => {
     }
   };
 
+  const instituteFilters = useMemo(() => {
+    const filters = institutesContent?.filters;
+    if (Array.isArray(filters) && filters.length) {
+      return filters;
+    }
+    return [
+      { value: 'all', label: 'All regions' },
+      { value: 'north-america', label: 'North America' },
+      { value: 'europe', label: 'Europe' },
+      { value: 'asia', label: 'South & East Asia' },
+      { value: 'asia-pacific', label: 'Asia Pacific' }
+    ];
+  }, [institutesContent]);
+
+  const translatedInstitutes = useMemo(() => {
+    const list = institutesContent?.list;
+    if (Array.isArray(list) && list.length) {
+      return list;
+    }
+    return TRUSTED_INSTITUTES;
+  }, [institutesContent]);
+
   const filteredInstitutes = useMemo(() => {
     if (selectedFilter === 'all') {
-      return TRUSTED_INSTITUTES;
+      return translatedInstitutes;
     }
-    return TRUSTED_INSTITUTES.filter((institute) => institute.region === selectedFilter);
-  }, [selectedFilter]);
+    return translatedInstitutes.filter((institute) => institute.region === selectedFilter);
+  }, [selectedFilter, translatedInstitutes]);
+
+  const modules = useMemo(() => {
+    const moduleList = modulesContent?.list;
+    if (Array.isArray(moduleList) && moduleList.length) {
+      return moduleList;
+    }
+    return COLLABORATION_STREAMS;
+  }, [modulesContent]);
 
   const signatureCollaborations = useMemo(() => {
+    const translatedList = collaborationsContent?.list;
+    if (Array.isArray(translatedList) && translatedList.length) {
+      return translatedList;
+    }
     if (dashboardData?.collaborations?.length) {
       return dashboardData.collaborations.map((collaboration, index) => ({
         id: collaboration?.id || `collab-${index}`,
@@ -215,7 +258,7 @@ const ResearchCollaborationPlatform = () => {
       }));
     }
 
-    return [
+    return collaborationsContent?.list?.length ? collaborationsContent.list : [
       {
         id: 'indo-pacific',
         title: 'Indo-Pacific Ocean Health Observatory',
@@ -244,7 +287,7 @@ const ResearchCollaborationPlatform = () => {
         focus: 'Coral resilience'
       }
     ];
-  }, [dashboardData?.collaborations]);
+  }, [collaborationsContent, dashboardData?.collaborations]);
 
   const researcherCount = useMemo(() => {
     const metricValue = dashboardData?.metrics?.active_researchers || dashboardData?.metrics?.researchers_total;
@@ -272,7 +315,51 @@ const ResearchCollaborationPlatform = () => {
     return 'USD 2.3M';
   }, [dashboardData]);
 
-  const modules = useMemo(() => COLLABORATION_STREAMS, []);
+  const heroStatCards = useMemo(() => [
+    {
+      key: 'institutes',
+      value: `${translatedInstitutes.length}+`,
+      label: heroStatsContent?.institutes?.label || 'Trusted institutes',
+      description: heroStatsContent?.institutes?.description || 'High-trust partners across 6 continents',
+      icon: 'Building',
+      accent: 'bg-cyan-500/20 text-cyan-300'
+    },
+    {
+      key: 'researchers',
+      value: researcherCount,
+      label: heroStatsContent?.researchers?.label || 'Researchers collaborating',
+      description: heroStatsContent?.researchers?.description || 'Credentialed experts verified by partner institutes',
+      icon: 'Users',
+      accent: 'bg-emerald-500/20 text-emerald-300'
+    },
+    {
+      key: 'projects',
+      value: projectCount,
+      label: heroStatsContent?.projects?.label || 'Active joint missions',
+      description: heroStatsContent?.projects?.description || 'Live initiatives spanning 18 thematic programmes',
+      icon: 'Navigation',
+      accent: 'bg-blue-500/20 text-blue-300'
+    },
+    {
+      key: 'funding',
+      value: grantVolume,
+      label: heroStatsContent?.funding?.label || 'Funding unlocked',
+      description: heroStatsContent?.funding?.description || 'Competitive grants, philanthropic capital, & innovation funds',
+      icon: 'DollarSign',
+      accent: 'bg-purple-500/20 text-purple-300'
+    }
+  ], [translatedInstitutes.length, heroStatsContent, researcherCount, projectCount, grantVolume]);
+
+  const ctaFeatures = useMemo(() => {
+    if (Array.isArray(ctaContent?.features) && ctaContent.features.length) {
+      return ctaContent.features;
+    }
+    return [
+      'ISO 27001 & GDPR compliant collaboration',
+      'Real-time mission telemetry dashboards',
+      'Endorsed by 12 national research councils'
+    ];
+  }, [ctaContent]);
 
   const renderModuleContent = () => {
     switch (activeModule) {
@@ -338,14 +425,13 @@ const ResearchCollaborationPlatform = () => {
             <div className="max-w-4xl space-y-6">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200">
                 <Icon name="Globe" size={16} />
-                NARA Global Collaboration Grid
+                {heroContent?.badge || 'NARA Global Collaboration Grid'}
               </span>
               <h1 className="text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">
-                World-leading ocean institutes building the future of marine science together
+                {heroContent?.title || 'World-leading ocean institutes building the future of marine science together'}
               </h1>
               <p className="max-w-2xl text-lg text-slate-300">
-                Join trusted research leaders across 54 nations to co-design expeditions, accelerate publications,
-                and unlock high-impact funding for transformative ocean initiatives.
+                {heroContent?.description || 'Join trusted research leaders across 54 nations to co-design expeditions, accelerate publications, and unlock high-impact funding for transformative ocean initiatives.'}
               </p>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                 <div className="flex-1">
@@ -353,7 +439,7 @@ const ResearchCollaborationPlatform = () => {
                     type="search"
                     value={searchQuery}
                     onChange={(event) => setSearchQuery(event?.target?.value)}
-                    placeholder="Search researchers, institutes, or programmes"
+                    placeholder={heroContent?.searchPlaceholder || 'Search researchers, institutes, or programmes'}
                     className="bg-white/5 border-white/20 text-white placeholder:text-slate-400"
                   />
                 </div>
@@ -364,7 +450,7 @@ const ResearchCollaborationPlatform = () => {
                   iconPosition="left"
                   onClick={() => setActiveModule('networking')}
                 >
-                  Explore collaborators
+                  {heroContent?.primaryCta || 'Explore collaborators'}
                 </Button>
                 <Button
                   variant="ghost"
@@ -373,63 +459,26 @@ const ResearchCollaborationPlatform = () => {
                   iconPosition="left"
                   onClick={handleJoinPlatform}
                 >
-                  Join alliance
+                  {heroContent?.secondaryCta || 'Join alliance'}
                 </Button>
               </div>
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-2xl bg-white/5 px-6 py-5 backdrop-blur">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-slate-300">Trusted institutes</p>
-                    <p className="mt-2 text-3xl font-semibold">{TRUSTED_INSTITUTES.length}+ </p>
+              {heroStatCards.map((card) => (
+                <div key={card.key} className="rounded-2xl bg-white/5 px-6 py-5 backdrop-blur">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-slate-300">{card.label}</p>
+                      <p className="mt-2 text-3xl font-semibold">{card.value}</p>
+                    </div>
+                    <div className={`rounded-xl p-3 ${card.accent}`}>
+                      <Icon name={card.icon} size={20} />
+                    </div>
                   </div>
-                  <div className="rounded-xl bg-cyan-500/20 p-3 text-cyan-300">
-                    <Icon name="Building" size={20} />
-                  </div>
+                  <p className="mt-3 text-xs text-slate-400">{card.description}</p>
                 </div>
-                <p className="mt-3 text-xs text-slate-400">High-trust partners across 6 continents</p>
-              </div>
-
-              <div className="rounded-2xl bg-white/5 px-6 py-5 backdrop-blur">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-slate-300">Researchers collaborating</p>
-                    <p className="mt-2 text-3xl font-semibold">{researcherCount}</p>
-                  </div>
-                  <div className="rounded-xl bg-emerald-500/20 p-3 text-emerald-300">
-                    <Icon name="Users" size={20} />
-                  </div>
-                </div>
-                <p className="mt-3 text-xs text-slate-400">Credentialed experts verified by partner institutes</p>
-              </div>
-
-              <div className="rounded-2xl bg-white/5 px-6 py-5 backdrop-blur">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-slate-300">Active joint missions</p>
-                    <p className="mt-2 text-3xl font-semibold">{projectCount}</p>
-                  </div>
-                  <div className="rounded-xl bg-blue-500/20 p-3 text-blue-300">
-                    <Icon name="Navigation" size={20} />
-                  </div>
-                </div>
-                <p className="mt-3 text-xs text-slate-400">Live initiatives spanning 18 thematic programmes</p>
-              </div>
-
-              <div className="rounded-2xl bg-white/5 px-6 py-5 backdrop-blur">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-slate-300">Funding unlocked</p>
-                    <p className="mt-2 text-3xl font-semibold">{grantVolume}</p>
-                  </div>
-                  <div className="rounded-xl bg-purple-500/20 p-3 text-purple-300">
-                    <Icon name="DollarSign" size={20} />
-                  </div>
-                </div>
-                <p className="mt-3 text-xs text-slate-400">Competitive grants, philanthropic capital, & innovation funds</p>
-              </div>
+              ))}
             </div>
           </div>
         </section>
@@ -439,24 +488,19 @@ const ResearchCollaborationPlatform = () => {
           <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
               <div className="max-w-3xl space-y-3">
-                <h2 className="text-3xl font-semibold text-white">Trusted research institutes shaping the alliance</h2>
+                <h2 className="text-3xl font-semibold text-white">
+                  {institutesContent?.heading || 'Trusted research institutes shaping the alliance'}
+                </h2>
                 <p className="text-slate-300">
-                  NARA curates partnerships with the world’s most respected marine science organisations, combining rigorous
-                  academic credentials, mission readiness, and shared governance frameworks.
+                  {institutesContent?.description || 'NARA curates partnerships with the world’s most respected marine science organisations, combining rigorous academic credentials, mission readiness, and shared governance frameworks.'}
                 </p>
               </div>
               <div className="w-full sm:w-64">
                 <Select
-                  options={[
-                    { value: 'all', label: 'All regions' },
-                    { value: 'north-america', label: 'North America' },
-                    { value: 'europe', label: 'Europe' },
-                    { value: 'asia', label: 'South & East Asia' },
-                    { value: 'asia-pacific', label: 'Asia Pacific' }
-                  ]}
+                  options={instituteFilters}
                   value={selectedFilter}
                   onChange={setSelectedFilter}
-                  placeholder="Filter by region"
+                  placeholder={institutesContent?.filterPlaceholder || 'Filter by region'}
                   className="bg-white/5"
                 />
               </div>
@@ -501,7 +545,7 @@ const ResearchCollaborationPlatform = () => {
                       iconPosition="right"
                       onClick={() => setActiveModule('partnerships')}
                     >
-                      View collaboration playbook
+                      {institutesContent?.cta || 'View collaboration playbook'}
                     </Button>
                   </div>
                 </div>
@@ -514,10 +558,11 @@ const ResearchCollaborationPlatform = () => {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
               <div className="flex-1 space-y-4">
-                <h2 className="text-3xl font-semibold">Signature global collaboration programmes</h2>
+                <h2 className="text-3xl font-semibold">
+                  {collaborationsContent?.heading || 'Signature global collaboration programmes'}
+                </h2>
                 <p className="text-slate-300">
-                  Secure mission-critical alliances, pooled infrastructure, and rapid deployment support across the world’s most
-                  trusted research corridors.
+                  {collaborationsContent?.description || 'Secure mission-critical alliances, pooled infrastructure, and rapid deployment support across the world’s most trusted research corridors.'}
                 </p>
               </div>
               <Button
@@ -527,7 +572,7 @@ const ResearchCollaborationPlatform = () => {
                 iconPosition="left"
                 onClick={() => setActiveModule('projects')}
               >
-                Schedule a partnership briefing
+                {collaborationsContent?.cta || 'Schedule a partnership briefing'}
               </Button>
             </div>
 
@@ -563,7 +608,7 @@ const ResearchCollaborationPlatform = () => {
                     iconPosition="right"
                     onClick={() => setActiveModule('partnerships')}
                   >
-                    Explore playbook
+                    {collaborationsContent?.cardCta || 'Explore playbook'}
                   </Button>
                 </div>
               ))}
@@ -575,9 +620,11 @@ const ResearchCollaborationPlatform = () => {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="max-w-3xl">
-                <h2 className="text-3xl font-semibold text-white">Advanced collaboration suite</h2>
+                <h2 className="text-3xl font-semibold text-white">
+                  {modulesContent?.heading || 'Advanced collaboration suite'}
+                </h2>
                 <p className="mt-3 text-slate-300">
-                  Switch between specialised workspaces built with our partner institutes to accelerate discovery and impact.
+                  {modulesContent?.description || 'Switch between specialised workspaces built with our partner institutes to accelerate discovery and impact.'}
                 </p>
               </div>
               <div className="flex gap-3">
@@ -588,7 +635,7 @@ const ResearchCollaborationPlatform = () => {
                   iconPosition="left"
                   onClick={() => setShowSignInModal(true)}
                 >
-                  Sign in
+                  {modulesContent?.signIn || 'Sign in'}
                 </Button>
                 <Button
                   variant="default"
@@ -597,7 +644,7 @@ const ResearchCollaborationPlatform = () => {
                   iconPosition="left"
                   onClick={handleJoinPlatform}
                 >
-                  Request access
+                  {modulesContent?.requestAccess || 'Request access'}
                 </Button>
               </div>
             </div>
@@ -629,7 +676,7 @@ const ResearchCollaborationPlatform = () => {
             <div className="mt-10 rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
               {renderModuleContent() || (
                 <div className="flex h-56 items-center justify-center text-slate-300">
-                  Select a collaboration module to begin.
+                  {modulesContent?.empty || 'Select a collaboration module to begin.'}
                 </div>
               )}
             </div>
@@ -640,9 +687,11 @@ const ResearchCollaborationPlatform = () => {
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="rounded-3xl border border-white/10 bg-white/5 p-10 text-center backdrop-blur">
-              <h2 className="text-3xl font-semibold text-white">Co-create the next era of ocean intelligence</h2>
+              <h2 className="text-3xl font-semibold text-white">
+                {ctaContent?.heading || 'Co-create the next era of ocean intelligence'}
+              </h2>
               <p className="mt-4 text-lg text-slate-300">
-                Our partnership concierge will help align your institute with the right programme, governance model, and funding pathway within 48 hours.
+                {ctaContent?.description || 'Our partnership concierge will help align your institute with the right programme, governance model, and funding pathway within 48 hours.'}
               </p>
               <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Button
@@ -652,7 +701,7 @@ const ResearchCollaborationPlatform = () => {
                   iconPosition="left"
                   onClick={() => setShowSignUpModal(true)}
                 >
-                  Request onboarding dossier
+                  {ctaContent?.primary || 'Request onboarding dossier'}
                 </Button>
                 <Button
                   variant="ghost"
@@ -661,22 +710,16 @@ const ResearchCollaborationPlatform = () => {
                   iconPosition="left"
                   onClick={() => setActiveModule('partnerships')}
                 >
-                  Book strategic consultation
+                  {ctaContent?.secondary || 'Book strategic consultation'}
                 </Button>
               </div>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400">
-                <div className="flex items-center gap-2">
-                  <Icon name="Shield" size={14} />
-                  ISO 27001 & GDPR compliant collaboration
-                </div>
-                <div className="flex items-center gap-2">
-                  <Icon name="Activity" size={14} />
-                  Real-time mission telemetry dashboards
-                </div>
-                <div className="flex items-center gap-2">
-                  <Icon name="Award" size={14} />
-                  Endorsed by 12 national research councils
-                </div>
+                {ctaFeatures.map((feature, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Icon name={index === 0 ? 'Shield' : index === 1 ? 'Activity' : 'Award'} size={14} />
+                    {feature}
+                  </div>
+                ))}
               </div>
             </div>
           </div>

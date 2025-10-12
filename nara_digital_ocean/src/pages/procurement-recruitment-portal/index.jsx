@@ -30,7 +30,6 @@ import {
   MapPin
 } from 'lucide-react';
 import { ProcurementAuthProvider, useProcurementAuth } from '../../contexts/ProcurementAuthContext';
-import ThemeNavbar from '../../components/ui/ThemeNavbar';
 import {
   procurementService,
   recruitmentService,
@@ -1756,8 +1755,6 @@ const PortalExperience = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-950 to-slate-900 text-slate-100">
-      <ThemeNavbar />
-      <div style={{ height: '72px' }} />
       <header className="relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute -left-32 top-0 h-64 w-64 rounded-full bg-cyan-500/20 blur-3xl" />

@@ -1,13 +1,10 @@
 import React from 'react';
-import ThemeNavbar from '../../components/ui/ThemeNavbar';
 import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
 
 const DigitalProductLibrary = () => {
   return (
-    <>
-      <ThemeNavbar />
-      <div className='min-h-screen' style={{ background: 'var(--bg)', paddingTop: '80px' }}>
+      <div className='min-h-screen' style={{ background: 'var(--bg)' }}>
         <div className='container' style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -53,7 +50,6 @@ const DigitalProductLibrary = () => {
           </motion.div>
         </div>
       </div>
-    </>
   );
 };
 

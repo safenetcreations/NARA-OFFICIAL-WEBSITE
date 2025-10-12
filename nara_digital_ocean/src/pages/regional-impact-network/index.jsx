@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
-import Header from '../../components/ui/Header';
 import Icon from '../../components/AppIcon';
 import Image from '../../components/AppImage';
 import Button from '../../components/ui/Button';
@@ -119,8 +118,7 @@ const RegionalImpactNetwork = () => {
         <meta name="description" content="Explore NARA's six regional research centers across Sri Lanka, showcasing local marine ecosystems, community partnerships, and region-specific research projects that benefit coastal communities." />
         <meta name="keywords" content="NARA regional centers, marine research Sri Lanka, coastal communities, fishing villages, marine conservation, ocean science network" />
       </Helmet>
-      <Header />
-      <main className="pt-16">
+      <main>
         {/* Hero Section */}
         <section className="relative bg-gradient-to-br from-ocean-deep via-ocean-medium to-ocean-light text-white overflow-hidden">
           <div className="absolute inset-0 bg-black/20"></div>

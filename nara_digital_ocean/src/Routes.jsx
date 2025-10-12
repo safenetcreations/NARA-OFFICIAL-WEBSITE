@@ -1,9 +1,11 @@
 import React, { Suspense, lazy } from "react";
-import { BrowserRouter, Routes as RouterRoutes, Route } from "react-router-dom";
+import { BrowserRouter, Routes as RouterRoutes, Route, useLocation } from "react-router-dom";
 import ScrollToTop from "components/ScrollToTop";
 import ErrorBoundary from "components/ErrorBoundary";
 import NotFound from "./pages/NotFound";
 import FirebaseAuthProvider from './contexts/FirebaseAuthContext';
+import GovFooter from './components/compliance/GovFooter';
+import ThemeNavbar from './components/ui/ThemeNavbar';
 
 const OceanIntelligenceDashboardHomepage = lazy(() => import("./pages/ocean-intelligence-dashboard-homepage"));
 const ResearchExcellencePortal = lazy(() => import("./pages/research-excellence-portal"));
@@ -41,6 +43,33 @@ const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const ContentManager = lazy(() => import('./pages/admin/ContentManager'));
 
+// Layout component with header and footer
+function Layout({ children }) {
+  const location = useLocation();
+  
+  // Pages where header/footer should be hidden (admin pages)
+  const hideLayoutPaths = [
+    '/firebase-admin-authentication-portal',
+    '/firebase-admin-dashboard-control-center',
+    '/admin/login',
+    '/admin/dashboard',
+    '/admin/content',
+    '/admin'
+  ];
+  
+  const shouldShowLayout = !hideLayoutPaths.some(path => location.pathname.startsWith(path));
+  
+  return (
+    <>
+      {shouldShowLayout && <ThemeNavbar />}
+      <div style={shouldShowLayout ? { paddingTop: '88px' } : {}}>
+        {children}
+      </div>
+      {shouldShowLayout && <GovFooter />}
+    </>
+  );
+}
+
 function Routes() {
   return (
     <FirebaseAuthProvider>
@@ -54,7 +83,8 @@ function Routes() {
               </div>
             }
           >
-            <RouterRoutes>
+            <Layout>
+              <RouterRoutes>
               <Route path="/" element={<OceanIntelligenceDashboardHomepage />} />
               <Route path="/research-excellence-portal" element={<ResearchExcellencePortal />} />
               <Route path="/emergency-response-network" element={<EmergencyResponseNetwork />} />
@@ -101,6 +131,7 @@ function Routes() {
                 <Route path="content" element={<ContentManager />} />
               </Route>
             </RouterRoutes>
+            </Layout>
           </Suspense>
         </ErrorBoundary>
       </BrowserRouter>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import ThemeNavbar from '../../components/ui/ThemeNavbar';
 import AppImage from '../../components/AppImage';
 import * as Icons from 'lucide-react';
 
@@ -68,9 +67,6 @@ const AboutNARAStoryPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
-      <ThemeNavbar />
-      <div style={{ height: '88px' }} />
-
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-slate-900 to-cyan-950" />

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/ui/Header';
-import GovFooter from '../../components/compliance/GovFooter';
 import { FileText, AlertCircle, Shield, Scale, Users, Globe } from 'lucide-react';
 
 const TermsOfUse = () => {
@@ -177,9 +176,6 @@ const TermsOfUse = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      <Header />
-      <div style={{ height: '72px' }} />
-
       {/* Hero */}
       <div className="bg-gradient-to-r from-cyan-950/40 via-blue-950/40 to-cyan-950/40 border-b border-cyan-500/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -330,8 +326,6 @@ const TermsOfUse = () => {
           </div>
         </div>
       </div>
-
-      <GovFooter />
     </div>
   );
 };

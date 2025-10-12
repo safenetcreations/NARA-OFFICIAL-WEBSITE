@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Header from '../../components/ui/Header';
-import GovFooter from '../../components/compliance/GovFooter';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 
@@ -34,8 +33,6 @@ const ContactUs = () => {
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-        <Header />
-
         {/* Hero Section */}
         <section className="relative py-20 px-4 bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 text-white">
           <div className="max-w-7xl mx-auto text-center">
@@ -254,8 +251,6 @@ const ContactUs = () => {
             </div>
           </div>
         </section>
-
-        <GovFooter />
       </div>
     </>
   );

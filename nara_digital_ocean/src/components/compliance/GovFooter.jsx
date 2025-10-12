@@ -113,27 +113,6 @@ const GovFooter = () => {
 
   return (
     <footer className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border-t border-slate-800">
-      {/* Government Badge */}
-      <div className="bg-gradient-to-r from-amber-600 to-amber-500 py-3">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center gap-3">
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/nara-web-73384.firebasestorage.app/o/sri%20lankan%20goverment%2Femblem.png?alt=media&token=ee87baa9-d8bc-47b3-b30e-c1c5b8b2ac1e"
-              alt="Sri Lanka Emblem"
-              className="h-8 w-8 object-contain"
-            />
-            <span className="text-white font-semibold text-sm uppercase tracking-wider">
-              {t.govBadge}
-            </span>
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/nara-web-73384.firebasestorage.app/o/sri%20lankan%20goverment%2Fsl-flag-1.png?alt=media&token=cf422533-b8df-4d92-a08f-978704d34124"
-              alt="Sri Lanka Flag"
-              className="h-6 w-9 object-cover rounded"
-            />
-          </div>
-        </div>
-      </div>
-
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
@@ -234,23 +213,57 @@ const GovFooter = () => {
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="border-t border-slate-800 pt-8 text-center space-y-2">
-          <p className="text-sm text-slate-400">
-            {t.copyright}
-          </p>
-          <p className="text-xs text-slate-500">{t.rights}</p>
-          <p className="text-xs text-slate-500">
-            {t.poweredBy}{' '}
-            <a 
-              href="https://www.safenetcreations.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
-            >
-              {t.safenet}
-            </a>
-          </p>
+      </div>
+
+      {/* Bottom Section - Government Badge & Legal */}
+      <div className="bg-gradient-to-r from-slate-900 to-slate-800 border-t border-slate-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
+          {/* Government Badge with Official Emblem & Flag */}
+          <div className="flex items-center justify-center gap-4 pb-4 border-b border-slate-700">
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/nara-web-73384.firebasestorage.app/o/sri%20lankan%20goverment%2Fsrilankan%20embelm.png?alt=media&token=f8e4b9e8-1e4d-4350-bbee-76d04b7d0928"
+              alt="Sri Lanka Government Emblem"
+              className="h-16 w-16 object-contain drop-shadow-lg"
+              loading="eager"
+            />
+            <span className="text-slate-200 font-semibold text-sm uppercase tracking-wider">
+              {t.govBadge}
+            </span>
+            <img
+              src="/assets/images/sri-lanka-flag.png"
+              alt="Sri Lanka Flag"
+              className="h-10 w-16 object-cover rounded shadow-lg"
+              loading="eager"
+            />
+          </div>
+
+          {/* Quick Legal Links */}
+          <div className="flex flex-wrap justify-center items-center gap-2 text-xs text-slate-400">
+            <Link to="/privacy-policy" className="hover:text-cyan-400 transition-colors">Privacy & Data Ethics</Link>
+            <span className="text-slate-600">•</span>
+            <Link to="/terms-of-use" className="hover:text-cyan-400 transition-colors">Terms of Collaboration</Link>
+            <span className="text-slate-600">•</span>
+            <Link to="/rti-disclosure" className="hover:text-cyan-400 transition-colors">Transparency Portal</Link>
+            <span className="text-slate-600">•</span>
+            <span className="text-green-400">{t.iso}</span>
+            <span className="text-slate-600">|</span>
+            <span className="text-amber-400">{t.govcert}</span>
+          </div>
+
+          {/* Copyright & Powered By */}
+          <div className="text-center text-xs text-slate-500">
+            <span>{t.copyright}. </span>
+            <span>{t.poweredBy}{' '}
+              <a 
+                href="https://www.safenetcreations.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:text-cyan-300 transition-colors"
+              >
+                www.safenetcreations.com
+              </a>
+            </span>
+          </div>
         </div>
       </div>
     </footer>

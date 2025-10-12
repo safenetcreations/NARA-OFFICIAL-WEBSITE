@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/ui/Header';
-import GovFooter from '../../components/compliance/GovFooter';
 import { Shield, User, Eye, Edit, Trash2, Lock, Download, AlertCircle, Send, CheckCircle } from 'lucide-react';
 
 const DataSubjectRights = () => {
@@ -151,9 +150,6 @@ const DataSubjectRights = () => {
   if (submitted) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-        <Header />
-        <div style={{ height: '72px' }} />
-        
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="bg-gradient-to-br from-green-950/30 to-cyan-950/30 border-2 border-green-500/30 rounded-2xl p-8 md:p-12 text-center">
             <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -218,9 +214,6 @@ const DataSubjectRights = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      <Header />
-      <div style={{ height: '72px' }} />
-
       {/* Hero */}
       <div className="bg-gradient-to-r from-cyan-950/40 via-blue-950/40 to-cyan-950/40 border-b border-cyan-500/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -410,8 +403,6 @@ const DataSubjectRights = () => {
           </div>
         </div>
       </div>
-
-      <GovFooter />
     </div>
   );
 };

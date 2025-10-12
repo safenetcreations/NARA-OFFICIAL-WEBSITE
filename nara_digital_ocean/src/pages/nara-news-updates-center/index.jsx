@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import ThemeNavbar from '../../components/ui/ThemeNavbar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Calendar, 
@@ -177,8 +176,6 @@ const NewsPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
-      <ThemeNavbar />
-      <div style={{ height: '72px' }} />
       {/* Enhanced Header Section */}
       <section className="bg-gradient-to-r from-blue-900 via-teal-800 to-cyan-900 text-white py-20">
         <div className="max-w-7xl mx-auto px-4">

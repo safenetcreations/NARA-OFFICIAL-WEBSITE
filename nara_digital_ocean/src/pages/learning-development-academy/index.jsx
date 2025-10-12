@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as Icons from 'lucide-react';
-import ThemeNavbar from '../../components/ui/ThemeNavbar';
 import useThemeStore from '../../store/theme';
 import { coursesData } from '../../data/coursesData';
 
@@ -111,10 +110,8 @@ const LearningDevelopmentAcademy = () => {
   };
 
   return (
-    <>
-      <ThemeNavbar />
       <div className={getThemeClasses()}>
-        <div className="pt-24 pb-12">
+        <div className="pb-12">
           {/* Hero Section */}
           <motion.section 
             initial={{ opacity: 0, y: 20 }}
@@ -771,7 +768,6 @@ const LearningDevelopmentAcademy = () => {
           </section>
         </div>
       </div>
-    </>
   );
 };
 
