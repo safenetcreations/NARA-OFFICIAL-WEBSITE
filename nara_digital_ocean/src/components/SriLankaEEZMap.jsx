@@ -15,15 +15,20 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
       try {
         const apiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
         
+        console.log('🔍 DEBUG: Checking API key...');
+        console.log('🔍 DEBUG: API key exists?', !!apiKey);
+        console.log('🔍 DEBUG: API key length:', apiKey?.length || 0);
+        console.log('🔍 DEBUG: API key first 20 chars:', apiKey?.substring(0, 20) || 'NONE');
+        
         if (!apiKey) {
-          console.warn('⚠️ Google Maps API key not found. Using fallback visualization.');
-          setError('Map visualization unavailable. Please configure Google Maps API key.');
+          console.error('❌ FATAL: Google Maps API key not found in environment!');
+          setError('Map visualization unavailable. API key not configured.');
           setMapLoaded(true);
           return;
         }
         
         console.log('🗺️ Initializing Google Maps...');
-        console.log('📍 API Key configured');
+        console.log('📍 API Key configured - Length:', apiKey.length);
         
         // Check if Google Maps is already loaded
         if (!window.google?.maps) {

@@ -172,11 +172,11 @@ const AboutNARAStoryPage = () => {
                     {timelineLoop.map((item, idx) => (
                       <div
                         key={`${item?.year}-${item?._loopId || idx}`}
-                        className="group relative flex rounded-2xl overflow-hidden border border-slate-700/60 bg-slate-900/70 min-h-[190px]"
+                        className="group relative flex rounded-2xl overflow-hidden border border-slate-700/60 bg-slate-900/70 min-h-[260px]"
                       >
                         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 via-cyan-500/15 to-blue-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         <div className="flex gap-3 items-stretch w-full">
-                          <div className="relative w-[128px] h-[128px] flex-shrink-0 self-center ml-4">
+                          <div className="relative w-[160px] md:w-[200px] flex-shrink-0 self-stretch ml-4 overflow-hidden rounded-2xl">
                             <AppImage
                               src={getTimelineMedia(item?.year)}
                               alt={`${item?.year} milestone`}
@@ -187,7 +187,7 @@ const AboutNARAStoryPage = () => {
                               {item?.year}
                             </span>
                           </div>
-                          <div className="py-5 pr-5 flex-1 min-w-0">
+                          <div className="py-7 pr-6 flex-1 min-w-0">
                             <h3 className="text-base md:text-lg font-semibold text-cyan-200 mb-2">
                               {item?.title}
                             </h3>
