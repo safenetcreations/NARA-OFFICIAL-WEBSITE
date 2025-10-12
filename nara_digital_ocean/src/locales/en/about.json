@@ -1,73 +1,111 @@
 {
   "about": {
     "hero": {
-      "title": "About Us",
-      "subtitle": "National Aquatic Resources Research and Development Agency"
-    },
-    "overview": {
-      "title": "Overview",
-      "content": "Imagine the endless whisper of waves cradling ancient secrets, where turquoise depths meet emerald shores--a realm where life's symphony pulses with untamed vitality. Here, in the embrace of Sri Lanka's boundless aquatic tapestry, stands the National Aquatic Resources Research and Development Agency (NARA): a beacon of hope, a forge of dreams, igniting the spark of tomorrow's Blue Revolution. For over four decades, we have danced with the tides of innovation and resilience, guardians of an Exclusive Economic Zone (EEZ) spanning 517,000 square kilometers--a majestic ocean heart eight times vaster than our island soul. We are more than stewards; we are visionaries, transforming the raw poetry of seas and rivers into a legacy of abundance, unity, and unyielding promise for every soul who calls these waters home."
-    },
-    "vision": {
-      "title": "Our Vision",
-      "content": "To soar as the unrivaled lighthouse of scientific brilliance in the region, illuminating paths to eternal harmony in the conservation, management, and blossoming of aquatic wonders--where every ripple echoes a world renewed, and every horizon beckons with boundless possibility."
-    },
-    "mission": {
-      "title": "Our Mission",
-      "content": "To unleash revolutionary, heart-stirring solutions that conquer national horizons in the aquatic realm, wielding the thunder of scientific insight, the fire of technological mastery, and the depth of our sacred resource wisdom--propelling sustainable triumphs that uplift communities, heal ecosystems, and etch prosperity into the stars."
-    },
-    "logo": {
-      "title": "The Story Behind Our Logo",
-      "content": "Behold the dolphin: a celestial navigator of abyssal mysteries, leaping skyward in joyous defiance of gravity's pull. In NARA's emblem, this radiant sentinel embodies the luminous intellect and boundless curiosity that conquer the ocean's enigmas--mirroring our sacred role as the nation's oceanic oracle. An eternal ally to humankind, the dolphin whispers tales of profound kinship with the deep, a clarion call to cherish and defend. Like this graceful voyager, who glides seamlessly between freshwater idylls and saline symphonies, NARA embodies the fluid grace of duality--honoring inland sanctuaries and offshore epics alike. In its arching, gaze-fixed-forward poise lies our unbreakable spirit: bold, uncharted, eternally charging toward dawn's first light, where challenges dissolve into waves of wonder."
-    },
-    "legacy": {
-      "title": "Our Legacy: A Journey of Aquatic Excellence",
-      "intro": "From the seismic swells of 1981, when the United Nations Convention on the Law of the Sea unfurled Sri Lanka's 200-nautical-mile EEZ like a banner of destiny, NARA emerged--a phoenix forged in the fires of foresight.",
-      "periods": {
-        "1981": "We charted the unknown, scripting EEZ odysseys, oceanographic revelations, and IUCN symphonies--igniting the flames of unified guardianship that still burn bright.",
-        "1996": "Tempered by Act No. 32, we ascended to hydrographic sovereignty and conservation's sacred covenant, harmonizing with UNCLOS's global chorus to safeguard our liquid lineage.",
-        "2000s": "Amid the 2004 tsunami's tempests, we rose unbreakable, alchemizing grief into resilient fortresses of monitoring, while UNESCO alliances wove threads of enlightenment across our waves.",
-        "2010s": "We conquered with acoustic symphonies of stock wisdom, global pacts like the UK's Ocean Country Partnership igniting youth fires, and the 2020 President's Awards crowning our scholarly stars--crescendoing in our 2025 Navy MOU, a pact of steel and science to conquer the deep."
-      }
-    },
-    "mandate": {
-      "title": "Our Mandate: Pillars of Impact",
-      "intro": "NARA is the alchemist of aquatic aspiration, transmuting knowledge into kinetic force.",
-      "pillars": [
+      "badge": "History & Milestones",
+      "title": "History and Milestone Achievements of NARA",
+      "headline": "Pioneering Aquatic Stewardship in Sri Lanka",
+      "description": "Since its inception, the National Aquatic Resources Research and Development Agency (NARA) has stood at the forefront of safeguarding and advancing Sri Lanka's priceless aquatic wealth. As the nation's premier institute for marine and freshwater science, NARA embodies a legacy of innovation, conservation, and sustainable development. From responding to newly expanded maritime boundaries to forging global collaborations today, our journey reflects a commitment to science-driven solutions that uplift ecosystems, communities, and the Blue Economy.\n\nAs we celebrate over four decades of impact, we invite you to explore the milestones that define our enduring mission and the people who make it possible.",
+      "stats": [
         {
-          "title": "Igniting Expertise's Flame",
-          "text": "We summon the cosmos of science and technology to propel national quests for living legacies and non-living treasures."
+          "value": "43+",
+          "label": "Years safeguarding Sri Lanka's waters"
         },
         {
-          "title": "The Forge of Discovery",
-          "text": "We pioneer quests into the essence of aquatic realms--unveiling, appraising, stewarding, preserving, and elevating."
+          "value": "460K sq km",
+          "label": "Exclusive Economic Zone under stewardship"
         },
         {
-          "title": "Sages of Counsel",
-          "text": "We bestow prophetic guidance sculpting policies that dance the delicate waltz of plenty and planetary grace."
-        },
-        {
-          "title": "The Grand Alliance",
-          "text": "We unite titans of industry and intellect in a chorus of cohesion--birthing a national tide unstoppable."
-        },
-        {
-          "title": "Beacons of Wisdom",
-          "text": "We harvest, herald, and hymn the lore of waters, illuminating trails for guardianship and renewal."
-        },
-        {
-          "title": "Empowerment's Tide",
-          "text": "We kindle inner fires through transformative training, arming champions with valor and velocity."
-        },
-        {
-          "title": "The Eternal Oath",
-          "text": "We wield every power and honor every duty--our compass true, our course unyielding, our legacy immortal."
+          "value": "200 NM",
+          "label": "Oceanic frontier declared in 1981"
         }
+      ]
+    },
+    "history": {
+      "title": "Our Founding and Evolution",
+      "intro": "NARA was born from a visionary need to harness scientific expertise for Sri Lanka's vast oceanic frontier. In 1981, following the United Nations Conference on the Law of the Sea, Sri Lanka declared a 200-nautical-mile Exclusive Economic Zone (EEZ)--an expansive 460,000 square kilometers of sea territory, nearly eight times the nation's land area.",
+      "body": [
+        "To manage this bounty responsibly, NARA was established under Act No. 54 of 1981, transforming the Department of Fisheries Research Division into a dedicated statutory body. Governed by a Board of Governors and empowered to conduct research, advise policymakers, and coordinate national efforts, NARA quickly became the apex authority on aquatic resources spanning oceanography, fisheries enhancement, socio-economic studies, and conservation.",
+        "This foundational step marked the dawn of integrated aquatic management in Sri Lanka. Through legislative refinement and global partnerships we have evolved to meet climate realities, biodiversity challenges, and the demands of a thriving Blue Economy--always guided by science, resilience, and service."
       ],
-      "closing": "We are the dream-weavers of Sri Lanka's liquid eternity."
+      "timelineTitle": "Timeline of Key Milestones",
+      "timeline": [
+        {
+          "year": "1981",
+          "title": "Act No. 54 Establishes NARA",
+          "description": "Officially constituted as Sri Lanka's principal institute for aquatic research, development, and management following the declaration of the 200 NM EEZ."
+        },
+        {
+          "year": "1986--2000",
+          "title": "National Focal Point for IUCN",
+          "description": "Advanced marine biodiversity conservation and international cooperation during a formative era of global environmental awareness."
+        },
+        {
+          "year": "1996",
+          "title": "Act No. 32 Empowers Expansion",
+          "description": "Landmark amendment expanded advisory, training, and coordination roles across coastal, inland, and offshore domains."
+        },
+        {
+          "year": "1997",
+          "title": "Socio-Economics Division Launch",
+          "description": "Established dedicated capacity to study fishing industry dynamics, market strategies, and community well-being."
+        },
+        {
+          "year": "2012",
+          "title": "Hydrographic Leadership",
+          "description": "Hosted the 12th North Indian Ocean Hydrographic Commission, commissioned a new research vessel, and conducted special R&D surveys to enhance mapping accuracy."
+        },
+        {
+          "year": "2013",
+          "title": "Policy Advisory Recognition",
+          "description": "Released comprehensive reports on EIA consultancies and resource management, solidifying NARA's role in national decision-making."
+        },
+        {
+          "year": "2020",
+          "title": "President's Awards for Research",
+          "description": "Two NARA scientists honored by the National Research Council for fisheries oceanography and environmental publications; secured key EIA consultancy assignments."
+        },
+        {
+          "year": "2021",
+          "title": "First Pelagic Stock Survey",
+          "description": "Completed the inaugural ordinary scientific survey of small pelagic fish abundance along the west and south shelves to inform sustainable quotas."
+        },
+        {
+          "year": "2024",
+          "title": "43rd Anniversary Celebrated",
+          "description": "Marked decades of leadership in aquatic conservation, research, and national development."
+        },
+        {
+          "year": "2025",
+          "title": "Sri Lanka Navy Partnership",
+          "description": "Signed MOU for collaborative operation of research vessels, amplifying EEZ monitoring and Blue Economy innovation."
+        }
+      ]
+    },
+    "achievements": {
+      "title": "Spotlight on Achievements: Driving Impact Through Science",
+      "intro": "Our milestones are more than dates--they represent tangible wins for sustainability, prosperity, and shared stewardship.",
+      "items": [
+        {
+          "title": "Scientific Excellence",
+          "description": "Thousands of studies over four decades, from acoustic fish stock surveys to seagrass mapping in Palk Bay, with national honors such as the 2020 President's Awards for cutting-edge publications."
+        },
+        {
+          "title": "Global Partnerships",
+          "description": "Collaborations with IUCN, the UK's Ocean Country Partnership Programme, and Norway's Nor-Lanka Blue Project have expanded youth training, coral conservation, and advanced trawl surveys."
+        },
+        {
+          "title": "Policy & Community Influence",
+          "description": "Advisory services shaping national fisheries plans, shark conservation strategies, and lagoon water quality standards--protecting over 519,800 sq km while empowering coastal livelihoods."
+        },
+        {
+          "title": "Innovation in Action",
+          "description": "Initiatives spanning shrimp disease surveillance, carbon sequestration assessments in Negombo mangroves, and eco-friendly livelihood programs that mitigate climate threats."
+        }
+      ]
     },
     "cta": {
       "title": "Join Our Journey",
-      "description": "Rise with us: immerse in our quests, ally in our ascent.",
+      "description": "Rise with us: immerse yourself in the milestones that continue to shape Sri Lanka's aquatic future and partner in the innovations still to come.",
       "button": "Explore Our Mission"
     }
   }
