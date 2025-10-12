@@ -5,7 +5,6 @@ import Image from '../../components/AppImage';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
-import Header from '../../components/ui/Header';
 import { useAuth } from '../../contexts/AuthContext';
 import researchService from '../../services/researchService';
 import { useTranslation } from 'react-i18next';
@@ -414,7 +413,6 @@ const ResearchCollaborationPlatform = () => {
 
   return (
     <div className="min-h-screen bg-[#020617] text-white">
-      <Header className="bg-transparent" />
       <main className="pt-24">
         <section className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 via-transparent to-blue-900/20" />

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../../components/ui/Header';
 import { Eye, Keyboard, Ear, MousePointer, Smartphone, CheckCircle, AlertCircle, Mail } from 'lucide-react';
 
 const AccessibilityStatement = () => {

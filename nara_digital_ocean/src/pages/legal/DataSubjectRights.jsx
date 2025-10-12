@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../../components/ui/Header';
 import { Shield, User, Eye, Edit, Trash2, Lock, Download, AlertCircle, Send, CheckCircle } from 'lucide-react';
 
 const DataSubjectRights = () => {

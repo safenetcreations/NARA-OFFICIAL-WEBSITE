@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../../components/ui/Header';
 import { Cookie, Settings, Eye, Shield, Trash2, Info } from 'lucide-react';
 
 const CookiePolicy = () => {

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../../components/ui/Header';
 import { FileText, Info, DollarSign, Users, Building, Clock, Download, Send } from 'lucide-react';
 
 const RTIDisclosure = () => {
