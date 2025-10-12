@@ -718,71 +718,73 @@ const NewHomePage = () => {
                   Mission operations: 08:30 - 18:00 IST
                 </p>
               </div>
-              <div className="mt-10 w-full border-t border-slate-800/70 pt-6">
-                <div className="flex flex-col gap-4 text-center">
-                  
-                  {/* Line 1: Government Website Badge */}
-                  <div className="flex items-center justify-center gap-3 text-cyan-200">
-                    <img
-                      src="https://firebasestorage.googleapis.com/v0/b/nara-web-73384.firebasestorage.app/o/sri%20lankan%20goverment%2Fsrilankan%20embelm.png?alt=media&token=f8e4b9e8-1e4d-4350-bbee-76d04b7d0928"
-                      alt="Government of Sri Lanka emblem"
-                      className="h-9 w-9 object-contain"
-                      loading="lazy"
-                    />
-                    <span className="text-xs uppercase tracking-[0.3em] font-medium">
-                      This is a Sri Lanka Government website
-                    </span>
-                    <img
-                      src="https://firebasestorage.googleapis.com/v0/b/nara-web-73384.firebasestorage.app/o/sri%20lankan%20goverment%2Fsl-flag-1.png?alt=media&token=cf422533-b8df-4d92-a08f-978704d34124"
-                      alt="Flag of Sri Lanka"
-                      className="h-7 w-10 object-cover rounded-sm ring-1 ring-cyan-300/40"
-                      loading="lazy"
-                    />
-                  </div>
+            </div>
+          </div>
 
-                  {/* Line 2: Legal Links & Compliance */}
-                  <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-slate-400 border-y border-slate-800/50 py-3">
-                    <a href="#" className="hover:text-cyan-300 transition-colors">
-                      Privacy &amp; Data Ethics
-                    </a>
-                    <span className="text-slate-700">•</span>
-                    <a href="#" className="hover:text-cyan-300 transition-colors">
-                      Terms of Collaboration
-                    </a>
-                    <span className="text-slate-700">•</span>
-                    <a href="#" className="hover:text-cyan-300 transition-colors">
-                      Transparency Portal
-                    </a>
-                    <span className="text-slate-700">•</span>
-                    <span className="flex items-center gap-1.5 text-slate-500">
-                      <Icons.ShieldCheck className="w-3.5 h-3.5" />
-                      ISO 27001 | GovCERT SL Aligned
-                    </span>
-                  </div>
-
-                  {/* Line 3: Social Media Icons */}
-                  <div className="flex items-center justify-center gap-3">
-                    {[Icons.Twitter, Icons.Facebook, Icons.Linkedin, Icons.Youtube].map((IconComponent, index) => (
-                      <a
-                        key={index}
-                        href="#"
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-700/60 bg-slate-950/40 text-slate-400 transition-all hover:border-cyan-400/60 hover:text-cyan-200 hover:bg-slate-800/60"
-                      >
-                        <IconComponent className="w-4 h-4" />
-                      </a>
-                    ))}
-                  </div>
-
-                  {/* Line 4: Copyright */}
-                  <p className="text-xs text-slate-500 pt-2">
-                    © 2025 National Aquatic Resources Research & Development Agency. 
-                    <br className="sm:hidden" />
-                    <span className="hidden sm:inline"> </span>
-                    Crafted by <a href="https://www.safenetcreations.com" className="text-cyan-300 hover:text-cyan-100 transition-colors font-medium" target="_blank" rel="noopener noreferrer">www.safenetcreations.com</a>
-                  </p>
-
-                </div>
+          {/* Centered Footer Section */}
+          <div className="mt-16 w-full border-t border-slate-800/70 pt-8">
+            <div className="max-w-4xl mx-auto flex flex-col gap-5 text-center">
+              
+              {/* Line 1: Government Website Badge */}
+              <div className="flex items-center justify-center gap-3 text-cyan-200">
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/nara-web-73384.firebasestorage.app/o/sri%20lankan%20goverment%2Fsrilankan%20embelm.png?alt=media&token=f8e4b9e8-1e4d-4350-bbee-76d04b7d0928"
+                  alt="Government of Sri Lanka emblem"
+                  className="h-10 w-10 object-contain"
+                  loading="lazy"
+                />
+                <span className="text-sm uppercase tracking-[0.3em] font-medium">
+                  This is a Sri Lanka Government website
+                </span>
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/nara-web-73384.firebasestorage.app/o/sri%20lankan%20goverment%2Fsl-flag-1.png?alt=media&token=cf422533-b8df-4d92-a08f-978704d34124"
+                  alt="Flag of Sri Lanka"
+                  className="h-8 w-11 object-cover rounded-sm ring-1 ring-cyan-300/40"
+                  loading="lazy"
+                />
               </div>
+
+              {/* Line 2: Legal Links & Compliance */}
+              <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-slate-400 border-y border-slate-800/50 py-4">
+                <a href="#" className="hover:text-cyan-300 transition-colors">
+                  Privacy &amp; Data Ethics
+                </a>
+                <span className="text-slate-700">•</span>
+                <a href="#" className="hover:text-cyan-300 transition-colors">
+                  Terms of Collaboration
+                </a>
+                <span className="text-slate-700">•</span>
+                <a href="#" className="hover:text-cyan-300 transition-colors">
+                  Transparency Portal
+                </a>
+                <span className="text-slate-700">•</span>
+                <span className="flex items-center gap-2 text-slate-500">
+                  <Icons.ShieldCheck className="w-4 h-4" />
+                  ISO 27001 | GovCERT SL Aligned
+                </span>
+              </div>
+
+              {/* Line 3: Social Media Icons */}
+              <div className="flex items-center justify-center gap-4">
+                {[Icons.Twitter, Icons.Facebook, Icons.Linkedin, Icons.Youtube].map((IconComponent, index) => (
+                  <a
+                    key={index}
+                    href="#"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-700/60 bg-slate-950/40 text-slate-400 transition-all hover:border-cyan-400/60 hover:text-cyan-200 hover:bg-slate-800/60 hover:scale-110"
+                  >
+                    <IconComponent className="w-5 h-5" />
+                  </a>
+                ))}
+              </div>
+
+              {/* Line 4: Copyright */}
+              <p className="text-sm text-slate-500 pt-3">
+                © 2025 National Aquatic Resources Research & Development Agency. 
+                <br className="sm:hidden" />
+                <span className="hidden sm:inline"> </span>
+                Crafted by <a href="https://www.safenetcreations.com" className="text-cyan-300 hover:text-cyan-100 transition-colors font-medium" target="_blank" rel="noopener noreferrer">www.safenetcreations.com</a>
+              </p>
+
             </div>
           </div>
 
