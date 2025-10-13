@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FileText,
@@ -30,6 +30,7 @@ import {
   MapPin
 } from 'lucide-react';
 import { ProcurementAuthProvider, useProcurementAuth } from '../../contexts/ProcurementAuthContext';
+import { useTranslation } from 'react-i18next';
 import {
   procurementService,
   recruitmentService,
@@ -45,6 +46,12 @@ const ProcurementRecruitmentPortal = () => (
 );
 
 const PortalExperience = () => {
+  const { t } = useTranslation('procurement');
+  const translate = useCallback(
+    (key, defaultValue, options = {}) => t(key, { defaultValue, ...options }),
+    [t]
+  );
+
   const {
     user,
     isAuthenticated,
@@ -252,42 +259,67 @@ const PortalExperience = () => {
   const heroMetrics = useMemo(() => ([
     {
       icon: FileText,
-      label: 'Open Procurement RFPs',
+      label: translate('hero.metrics.procurement.label', 'Open procurement RFPs'),
       value: procurementNotices?.length || 0,
-      hint: procurementClosingSoonCount ? `${procurementClosingSoonCount} closing within 7 days` : 'Fresh tenders added daily'
+      hint: procurementClosingSoonCount
+        ? translate('hero.metrics.procurement.hint', '{{count}} closing within 7 days', {
+            count: procurementClosingSoonCount
+          })
+        : translate('hero.metrics.procurement.hintFallback', 'Fresh tenders added daily')
     },
     {
       icon: Users,
-      label: 'Active Career Roles',
+      label: translate('hero.metrics.recruitment.label', 'Active career roles'),
       value: jobPostings?.length || 0,
-      hint: recruitmentClosingSoonCount ? `${recruitmentClosingSoonCount} closing soon` : 'Multidisciplinary teams'
+      hint: recruitmentClosingSoonCount
+        ? translate('hero.metrics.recruitment.hint', '{{count}} closing soon', {
+            count: recruitmentClosingSoonCount
+          })
+        : translate('hero.metrics.recruitment.hintFallback', 'Multidisciplinary teams')
     },
     {
       icon: BarChart3,
-      label: 'Average Review Time',
-      value: dashboardData?.statistics?.average_review_time || '12 days',
-      hint: 'Streamlined evaluation workflow'
+      label: translate('hero.metrics.review.label', 'Average review time'),
+      value:
+        dashboardData?.statistics?.average_review_time ||
+        translate('hero.metrics.review.valueFallback', '12 days'),
+      hint: translate('hero.metrics.review.hint', 'Streamlined evaluation workflow')
     },
     {
       icon: Shield,
-      label: 'Registered Partners',
-      value: dashboardData?.statistics?.registered_vendors || '1.2K+',
-      hint: 'Pre-qualified national vendors'
+      label: translate('hero.metrics.partners.label', 'Registered partners'),
+      value:
+        dashboardData?.statistics?.registered_vendors ||
+        translate('hero.metrics.partners.valueFallback', '1.2K+'),
+      hint: translate('hero.metrics.partners.hint', 'Pre-qualified national vendors')
     }
-  ]), [procurementNotices, jobPostings, dashboardData, procurementClosingSoonCount, recruitmentClosingSoonCount]);
+  ]), [
+    procurementNotices,
+    jobPostings,
+    dashboardData,
+    procurementClosingSoonCount,
+    recruitmentClosingSoonCount,
+    translate
+  ]);
 
   const navigationTabs = useMemo(() => {
     const base = [
       {
         key: 'procurement',
-        label: 'Procurement Exchange',
-        description: 'Submit proposals, download briefs, and track tender milestones.',
+        label: translate('navigation.procurement.label', 'Procurement Exchange'),
+        description: translate(
+          'navigation.procurement.description',
+          'Submit proposals, download briefs, and track tender milestones.'
+        ),
         icon: FileText
       },
       {
         key: 'recruitment',
-        label: 'Talent Hub',
-        description: 'Explore technical and scientific career opportunities at NARA.',
+        label: translate('navigation.recruitment.label', 'Talent Hub'),
+        description: translate(
+          'navigation.recruitment.description',
+          'Explore technical and scientific career opportunities at NARA.'
+        ),
         icon: Users
       }
     ];
@@ -295,14 +327,17 @@ const PortalExperience = () => {
     if (isAuthenticated) {
       base.push({
         key: 'dashboard',
-        label: 'My Workspace',
-        description: 'View application progress, notifications, and secure documents.',
+        label: translate('navigation.dashboard.label', 'My Workspace'),
+        description: translate(
+          'navigation.dashboard.description',
+          'View application progress, notifications, and secure documents.'
+        ),
         icon: Settings
       });
     }
 
     return base;
-  }, [isAuthenticated]);
+  }, [isAuthenticated, translate]);
 
   const activeTabMeta = navigationTabs.find((tab) => tab.key === activeTab) || navigationTabs[0];
 
@@ -1767,14 +1802,19 @@ const PortalExperience = () => {
             <div className="space-y-8">
               <span className="inline-flex items-center gap-2 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-4 py-2 text-xs font-medium uppercase tracking-[0.35em] text-cyan-200">
                 <Sparkles className="h-4 w-4" />
-                NARA Digital Procurement & Recruitment
+                {translate('hero.badge', 'NARA Digital Procurement & Recruitment')}
               </span>
               <h1 className="text-4xl font-semibold leading-tight text-white md:text-6xl">
-                Seamless tenders & talent journeys for Sri Lanka’s ocean innovation hub
+                {translate(
+                  'hero.title',
+                  'Seamless tenders & talent journeys for Sri Lanka’s ocean innovation hub'
+                )}
               </h1>
               <p className="text-lg text-slate-300 md:text-xl">
-                Manage procurement submissions, collaborate with evaluators, and apply to multidisciplinary
-                roles—all in one secure digital workspace governed by NARA.
+                {translate(
+                  'hero.description',
+                  'Manage procurement submissions, collaborate with evaluators, and apply to multidisciplinary roles—all in one secure digital workspace governed by NARA.'
+                )}
               </p>
               <div className="flex flex-wrap gap-3">
                 <button
@@ -1786,7 +1826,7 @@ const PortalExperience = () => {
                   }`}
                 >
                   <FileText className="h-4 w-4" />
-                  Browse procurement
+                  {translate('hero.actions.procurement', 'Browse procurement')}
                 </button>
                 <button
                   onClick={() => setActiveTab('recruitment')}
@@ -1797,7 +1837,7 @@ const PortalExperience = () => {
                   }`}
                 >
                   <Users className="h-4 w-4" />
-                  View career roles
+                  {translate('hero.actions.recruitment', 'View career roles')}
                 </button>
                 {!isAuthenticated && (
                   <button
@@ -1805,7 +1845,7 @@ const PortalExperience = () => {
                     className="flex items-center gap-2 rounded-full border border-slate-700 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:border-slate-500"
                   >
                     <ArrowRight className="h-4 w-4" />
-                    Create account
+                    {translate('hero.actions.createAccount', 'Create account')}
                   </button>
                 )}
               </div>
@@ -1813,11 +1853,15 @@ const PortalExperience = () => {
               <div className="flex flex-wrap items-center gap-6 text-sm text-slate-400">
                 <div className="flex items-center gap-3">
                   <Shield className="h-4 w-4 text-cyan-300" />
-                  <span>GovTech security & transparent audit trails</span>
+                  <span>
+                    {translate('hero.highlights.security', 'GovTech security & transparent audit trails')}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Globe2 className="h-4 w-4 text-emerald-300" />
-                  <span>Integrated with national procurement policy</span>
+                  <span>
+                    {translate('hero.highlights.policy', 'Integrated with national procurement policy')}
+                  </span>
                 </div>
               </div>
             </div>
@@ -1828,13 +1872,15 @@ const PortalExperience = () => {
 
               <div className="relative space-y-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs uppercase tracking-[0.3em] text-slate-400">Live timeline</span>
+                  <span className="text-xs uppercase tracking-[0.3em] text-slate-400">
+                    {translate('hero.timeline.title', 'Live timeline')}
+                  </span>
                   <button
                     onClick={handleManualRefresh}
                     className="inline-flex items-center gap-2 rounded-full border border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-cyan-400 hover:text-cyan-300"
                   >
                     <RefreshCw className="h-3.5 w-3.5" />
-                    Refresh data
+                    {translate('hero.timeline.refresh', 'Refresh data')}
                   </button>
                 </div>
 
@@ -1842,22 +1888,46 @@ const PortalExperience = () => {
                   <div className="flex items-start gap-3">
                     <div className="mt-1 h-2 w-2 rounded-full bg-cyan-400" />
                     <div>
-                      <p className="font-medium text-slate-100">Digital tender submissions rated in under 12 days</p>
-                      <p className="text-xs text-slate-400">Average evaluation cycle across Q1 2024</p>
+                      <p className="font-medium text-slate-100">
+                        {translate(
+                          'hero.timeline.items.0.title',
+                          'Digital tender submissions rated in under 12 days'
+                        )}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {translate('hero.timeline.items.0.subtitle', 'Average evaluation cycle across Q1 2024')}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="mt-1 h-2 w-2 rounded-full bg-emerald-400" />
                     <div>
-                      <p className="font-medium text-slate-100">Trusted vendor network powering coastal modernization</p>
-                      <p className="text-xs text-slate-400">1,200+ pre-qualified partners nationwide</p>
+                      <p className="font-medium text-slate-100">
+                        {translate(
+                          'hero.timeline.items.1.title',
+                          'Trusted vendor network powering coastal modernization'
+                        )}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {translate('hero.timeline.items.1.subtitle', '1,200+ pre-qualified partners nationwide')}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="mt-1 h-2 w-2 rounded-full bg-purple-400" />
                     <div>
-                      <p className="font-medium text-slate-100">Scholarship-backed research fellowships live now</p>
-                      <p className="text-xs text-slate-400">Work alongside NARA scientists on ocean intelligence</p>
+                      <p className="font-medium text-slate-100">
+                        {translate(
+                          'hero.timeline.items.2.title',
+                          'Scholarship-backed research fellowships live now'
+                        )}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {translate(
+                          'hero.timeline.items.2.subtitle',
+                          'Work alongside NARA scientists on ocean intelligence'
+                        )}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1866,27 +1936,31 @@ const PortalExperience = () => {
                   <div className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
                     <div className="flex items-center gap-3">
                       <Loader className="h-4 w-4 animate-spin text-cyan-300" />
-                      <span>Checking your secure session…</span>
+                      <span>{translate('hero.auth.loading', 'Checking your secure session…')}</span>
                     </div>
                   </div>
                 ) : isAuthenticated ? (
                   <div className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
                     <div className="flex items-center gap-3">
                       <CheckCircle className="h-4 w-4 text-cyan-300" />
-                      <span>Welcome back, {user?.first_name || user?.email}.</span>
+                      <span>
+                        {translate('hero.auth.welcome', 'Welcome back, {{name}}.', {
+                          name: user?.first_name || user?.email || translate('hero.auth.visitor', 'partner')
+                        })}
+                      </span>
                     </div>
                     <div className="mt-3 flex flex-wrap items-center gap-3">
                       <button
                         onClick={() => setActiveTab('dashboard')}
                         className="inline-flex items-center gap-2 rounded-full border border-cyan-400 px-4 py-2 text-xs font-semibold text-cyan-200 transition hover:bg-cyan-500/10"
                       >
-                        Go to workspace
+                        {translate('hero.auth.goToWorkspace', 'Go to workspace')}
                       </button>
                       <button
                         onClick={logout}
                         className="inline-flex items-center gap-2 rounded-full border border-red-400 px-4 py-2 text-xs font-semibold text-red-200 transition hover:bg-red-500/10"
                       >
-                        Logout
+                        {translate('hero.auth.logout', 'Logout')}
                       </button>
                     </div>
                   </div>
@@ -1894,13 +1968,18 @@ const PortalExperience = () => {
                   <div className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
                     <div className="flex items-center gap-3">
                       <User className="h-4 w-4 text-cyan-300" />
-                      <span>Already registered? Secure login for vendors & candidates.</span>
+                      <span>
+                        {translate(
+                          'hero.auth.prompt',
+                          'Already registered? Secure login for vendors & candidates.'
+                        )}
+                      </span>
                     </div>
                     <button
                       onClick={() => setShowLoginModal(true)}
                       className="mt-3 inline-flex items-center gap-2 rounded-full border border-cyan-400 px-4 py-2 text-xs font-semibold text-cyan-200 transition hover:bg-cyan-500/10"
                     >
-                      Launch login
+                      {translate('hero.auth.launchLogin', 'Launch login')}
                     </button>
                     {authError && (
                       <div className="mt-3 rounded-lg border border-red-400/40 bg-red-500/10 px-3 py-2 text-xs text-red-200">
