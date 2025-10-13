@@ -52,6 +52,187 @@ const PortalExperience = () => {
     [t]
   );
 
+  const modalCopy = useMemo(
+    () => ({
+      login: {
+        badge: translate('modals.login.badge', 'Secure login'),
+        title: translate('modals.login.title', 'Access your NARA workspace'),
+        description: translate(
+          'modals.login.description',
+          'Sign in to continue submitting tenders and tracking applications.'
+        ),
+        emailLabel: translate('modals.login.emailLabel', 'Email address'),
+        emailPlaceholder: translate('modals.login.emailPlaceholder', 'name@company.lk'),
+        passwordLabel: translate('modals.login.passwordLabel', 'Password'),
+        passwordPlaceholder: translate('modals.login.passwordPlaceholder', '••••••••'),
+        submit: translate('modals.login.submit', 'Login'),
+        submitting: translate('modals.login.submitting', 'Authenticating…'),
+        switchPrompt: translate('modals.login.switchPrompt', 'New to the portal?'),
+        switchCta: translate('modals.login.switchCta', 'Create a vendor or talent account')
+      },
+      registration: {
+        badge: translate('modals.registration.badge', 'Create account'),
+        title: translate('modals.registration.title', 'Join the NARA Partner Network'),
+        description: translate(
+          'modals.registration.description',
+          'Register once to access both procurement notices and recruitment opportunities.'
+        ),
+        firstNameLabel: translate('modals.registration.firstNameLabel', 'First name'),
+        lastNameLabel: translate('modals.registration.lastNameLabel', 'Last name'),
+        emailLabel: translate('modals.registration.emailLabel', 'Email address'),
+        phoneLabel: translate('modals.registration.phoneLabel', 'Phone number'),
+        organizationLabel: translate('modals.registration.organizationLabel', 'Organization'),
+        nicLabel: translate('modals.registration.nicLabel', 'NIC / Registration'),
+        accountTypeLabel: translate('modals.registration.accountTypeLabel', 'Account type'),
+        accountOptions: {
+          vendor: translate('modals.registration.accountOptions.vendor', 'Vendor / Supplier'),
+          consultant: translate('modals.registration.accountOptions.consultant', 'Consultant'),
+          individual: translate('modals.registration.accountOptions.individual', 'Individual applicant')
+        },
+        passwordLabel: translate('modals.registration.passwordLabel', 'Password'),
+        passwordPlaceholder: translate(
+          'modals.registration.passwordPlaceholder',
+          'Create a secure password'
+        ),
+        submit: translate('modals.registration.submit', 'Create account'),
+        submitting: translate('modals.registration.submitting', 'Creating account…')
+      },
+      application: {
+        uploading: translate('modals.application.uploading', 'Uploading supporting documents…'),
+        shared: {
+          cancel: translate('modals.application.shared.cancel', 'Cancel'),
+          submitProposal: translate('modals.application.shared.submitProposal', 'Submit proposal'),
+          submitApplication: translate(
+            'modals.application.shared.submitApplication',
+            'Submit application'
+          ),
+          submitting: translate('modals.application.shared.submitting', 'Submitting…'),
+          upload: translate('modals.application.shared.upload', 'Upload'),
+          separator: translate('modals.application.shared.separator', '•'),
+          filesSuffix: translate('modals.application.shared.filesSuffix', 'files'),
+          summaryDeadlineLabel: translate('modals.application.shared.summary.deadline', 'Deadline'),
+          summaryDeadlineFallback: translate(
+            'modals.application.shared.summary.deadlineFallback',
+            'Refer notice'
+          )
+        },
+        procurement: {
+          summaryValueLabel: translate(
+            'modals.application.procurement.summary.valueLabel',
+            'Estimated value'
+          ),
+          summaryValueFallback: translate(
+            'modals.application.procurement.summary.valueFallback',
+            'Upon request'
+          ),
+          fields: {
+            companyName: translate('modals.application.procurement.fields.companyName', 'Company name'),
+            deliveryTimeline: translate(
+              'modals.application.procurement.fields.deliveryTimeline',
+              'Delivery timeline (weeks)'
+            ),
+            technical: translate('modals.application.procurement.fields.technical', 'Technical proposal'),
+            financial: translate(
+              'modals.application.procurement.fields.financial',
+              'Financial proposal (LKR)'
+            ),
+            warranty: translate(
+              'modals.application.procurement.fields.warranty',
+              'Warranty period (months)'
+            ),
+            paymentTerms: translate(
+              'modals.application.procurement.fields.paymentTerms',
+              'Payment terms'
+            ),
+            additionalInformation: translate(
+              'modals.application.procurement.fields.additionalInformation',
+              'Additional information'
+            )
+          },
+          placeholders: {
+            technical: translate(
+              'modals.application.procurement.placeholders.technical',
+              'Outline methodology, deployment schedule, equipment specifications, and compliance measures.'
+            ),
+            paymentTerms: translate(
+              'modals.application.procurement.placeholders.paymentTerms',
+              'e.g., 30% advance, balance on commissioning'
+            ),
+            additionalInformation: translate(
+              'modals.application.procurement.placeholders.additionalInformation',
+              'Certifications, local partners, or clarifications'
+            )
+          },
+          uploadLabel: translate(
+            'modals.application.procurement.uploadLabel',
+            'Upload required documents'
+          ),
+          fallbackDocuments: [
+            translate(
+              'modals.application.procurement.fallbackDocuments.companyProfile',
+              'Company profile'
+            ),
+            translate(
+              'modals.application.procurement.fallbackDocuments.financialStatements',
+              'Financial statements'
+            )
+          ]
+        },
+        recruitment: {
+          summaryDepartmentLabel: translate(
+            'modals.application.recruitment.summary.departmentLabel',
+            'Department'
+          ),
+          summaryDepartmentFallback: translate(
+            'modals.application.recruitment.summary.departmentFallback',
+            'NARA'
+          ),
+          summaryDeadlineLabel: translate(
+            'modals.application.recruitment.summary.deadlineLabel',
+            'Deadline'
+          ),
+          summaryDeadlineFallback: translate(
+            'modals.application.recruitment.summary.deadlineFallback',
+            'Refer notice'
+          ),
+          fields: {
+            fullName: translate('modals.application.recruitment.fields.fullName', 'Full name'),
+            email: translate('modals.application.recruitment.fields.email', 'Email address'),
+            phone: translate('modals.application.recruitment.fields.phone', 'Phone number'),
+            coverLetter: translate('modals.application.recruitment.fields.coverLetter', 'Cover letter'),
+            portfolio: translate(
+              'modals.application.recruitment.fields.portfolio',
+              'LinkedIn profile / Portfolio'
+            )
+          },
+          placeholders: {
+            coverLetter: translate(
+              'modals.application.recruitment.placeholders.coverLetter',
+              'Share your motivation, expertise, and alignment with NARA’s mission.'
+            ),
+            portfolio: translate('modals.application.recruitment.placeholders.portfolio', 'https://')
+          },
+          uploadLabel: translate(
+            'modals.application.recruitment.uploadLabel',
+            'Upload supporting documents'
+          ),
+          fallbackDocuments: [
+            translate('modals.application.recruitment.fallbackDocuments.cv', 'Curriculum Vitae'),
+            translate(
+              'modals.application.recruitment.fallbackDocuments.transcripts',
+              'Academic transcripts'
+            ),
+            translate(
+              'modals.application.recruitment.fallbackDocuments.certifications',
+              'Professional certifications'
+            )
+          ]
+        }
+      }
+    }),
+    [translate]
+  );
+
   const {
     user,
     isAuthenticated,
@@ -502,16 +683,20 @@ const PortalExperience = () => {
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div className="max-w-2xl">
           <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
-            Procurement Exchange
+            {translate('procurement.heading', 'Procurement Exchange')}
           </h2>
           <p className="text-slate-300">
-            Access live tenders, download technical briefs, and submit proposals that advance Sri Lanka’s
-            blue-economy infrastructure.
+            {translate(
+              'procurement.description',
+              'Access live tenders, download technical briefs, and submit proposals that advance Sri Lanka’s blue-economy infrastructure.'
+            )}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-4 bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
           <div className="flex flex-col">
-            <span className="text-xs uppercase tracking-wider text-slate-400">Filter by scope</span>
+            <span className="text-xs uppercase tracking-wider text-slate-400">
+              {translate('procurement.filters.scopeLabel', 'Filter by scope')}
+            </span>
             <select
               value={procurementCategory}
               onChange={(event) => setProcurementCategory(event.target.value)}
@@ -519,21 +704,31 @@ const PortalExperience = () => {
             >
               {procurementCategoryOptions.map((option) => (
                 <option key={option} value={option} className="bg-slate-900">
-                  {option === 'all' ? 'All notices' : option}
+                  {option === 'all'
+                    ? translate('procurement.filters.allOption', 'All notices')
+                    : option}
                 </option>
               ))}
             </select>
           </div>
           <div className="flex flex-col">
-            <span className="text-xs uppercase tracking-wider text-slate-400">Sort</span>
+            <span className="text-xs uppercase tracking-wider text-slate-400">
+              {translate('procurement.filters.sortLabel', 'Sort')}
+            </span>
             <select
               value={procurementSort}
               onChange={(event) => setProcurementSort(event.target.value)}
               className="mt-1 rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
             >
-              <option value="deadline">Closing soon</option>
-              <option value="value">Highest value</option>
-              <option value="recent">Recently published</option>
+              <option value="deadline">
+                {translate('procurement.filters.options.deadline', 'Closing soon')}
+              </option>
+              <option value="value">
+                {translate('procurement.filters.options.value', 'Highest value')}
+              </option>
+              <option value="recent">
+                {translate('procurement.filters.options.recent', 'Recently published')}
+              </option>
             </select>
           </div>
         </div>
@@ -544,17 +739,19 @@ const PortalExperience = () => {
           <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-6">
             <div className="flex items-center gap-3 text-cyan-300">
               <Sparkles className="h-5 w-5" />
-              <span className="text-sm uppercase tracking-[0.2em]">Opportunity Pulse</span>
+              <span className="text-sm uppercase tracking-[0.2em]">
+                {translate('procurement.sidebar.title', 'Opportunity Pulse')}
+              </span>
             </div>
             <div className="mt-6 space-y-4 text-sm text-slate-300">
               <div className="flex items-center justify-between">
-                <span>Closing within 7 days</span>
+                <span>{translate('procurement.sidebar.closingSoon', 'Closing within 7 days')}</span>
                 <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-cyan-300">
                   {procurementClosingSoonCount}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span>Average tender value</span>
+                <span>{translate('procurement.sidebar.averageValue', 'Average tender value')}</span>
                 <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-cyan-300">
                   {(() => {
                     const values = (procurementNotices || [])
@@ -567,19 +764,24 @@ const PortalExperience = () => {
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span>Registered vendors</span>
+                <span>{translate('procurement.sidebar.registeredVendors', 'Registered vendors')}</span>
                 <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-cyan-300">
-                  {dashboardData?.statistics?.registered_vendors || '1.2K+'}
+                  {dashboardData?.statistics?.registered_vendors ||
+                    translate('procurement.sidebar.vendorFallback', '1.2K+')}
                 </span>
               </div>
             </div>
           </div>
 
           <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-6">
-            <h3 className="text-lg font-semibold text-white">Procurement Support</h3>
+            <h3 className="text-lg font-semibold text-white">
+              {translate('procurement.sidebar.support.title', 'Procurement Support')}
+            </h3>
             <p className="mt-3 text-sm text-slate-400">
-              Dedicated procurement officers are available for clarifications on documentation, site
-              visits, and compliance requirements.
+              {translate(
+                'procurement.sidebar.support.description',
+                'Dedicated procurement officers are available for clarifications on documentation, site visits, and compliance requirements.'
+              )}
             </p>
             <div className="mt-5 space-y-3 text-sm text-slate-300">
               <div className="flex items-center gap-2">
@@ -588,7 +790,9 @@ const PortalExperience = () => {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-cyan-300" />
-                <span>Procurement Unit, NARA HQ</span>
+                <span>
+                  {translate('procurement.sidebar.support.location', 'Procurement Unit, NARA HQ')}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Globe2 className="h-4 w-4 text-cyan-300" />
@@ -602,7 +806,10 @@ const PortalExperience = () => {
           {filteredProcurementNotices?.length === 0 ? (
             <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-12 text-center text-slate-300">
               <FileText className="mx-auto mb-4 h-10 w-10 text-slate-500" />
-              No active procurement notices match your filters right now.
+              {translate(
+                'procurement.empty',
+                'No active procurement notices match your filters right now.'
+              )}
             </div>
           ) : (
             filteredProcurementNotices.map((notice) => {
@@ -624,10 +831,12 @@ const PortalExperience = () => {
                       <div>
                         <div className="flex items-center gap-3">
                           <span className="rounded-full bg-cyan-500/15 px-3 py-1 text-xs font-medium uppercase tracking-wider text-cyan-300">
-                            {notice?.category || notice?.notice_type || 'Procurement'}
+                            {notice?.category ||
+                              notice?.notice_type ||
+                              translate('procurement.cards.categoryFallback', 'Procurement')}
                           </span>
                           <span className="rounded-full border border-slate-700 px-3 py-1 text-xs uppercase tracking-wider text-slate-300">
-                            {notice?.status || 'Active'}
+                            {notice?.status || translate('procurement.cards.statusFallback', 'Active')}
                           </span>
                         </div>
                         <h3 className="mt-3 text-2xl font-semibold text-white">
@@ -638,9 +847,11 @@ const PortalExperience = () => {
                         </p>
                       </div>
                       <div className="rounded-2xl border border-slate-700 bg-slate-950/80 px-5 py-4 text-right">
-                        <span className="block text-xs uppercase tracking-wider text-slate-400">Deadline</span>
+                        <span className="block text-xs uppercase tracking-wider text-slate-400">
+                          {translate('procurement.cards.deadlineLabel', 'Deadline')}
+                        </span>
                         <span className="text-lg font-semibold text-white">
-                          {notice?.submission_deadline || 'TBC'}
+                          {notice?.submission_deadline || translate('procurement.cards.tbc', 'TBC')}
                         </span>
                         {daysLeft !== null && (
                           <span className={`mt-1 block text-xs font-medium ${
@@ -650,7 +861,11 @@ const PortalExperience = () => {
                                 ? 'text-amber-300'
                                 : 'text-cyan-300'
                           }`}>
-                            {daysLeft < 0 ? 'Closed' : `${daysLeft} days remaining`}
+                            {daysLeft < 0
+                              ? translate('procurement.cards.closed', 'Closed')
+                              : translate('procurement.cards.daysRemaining', '{{count}} days remaining', {
+                                  count: daysLeft
+                                })}
                           </span>
                         )}
                       </div>
@@ -660,22 +875,36 @@ const PortalExperience = () => {
                       <div className="flex items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-3">
                         <Briefcase className="h-4 w-4 text-cyan-300" />
                         <div>
-                          <p className="text-xs uppercase tracking-wider text-slate-400">Department</p>
-                          <p className="text-slate-200">{notice?.department || 'NARA Procurement'}</p>
+                          <p className="text-xs uppercase tracking-wider text-slate-400">
+                            {translate('procurement.cards.department', 'Department')}
+                          </p>
+                          <p className="text-slate-200">
+                            {notice?.department || translate('procurement.cards.departmentFallback', 'NARA Procurement')}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-3">
                         <Building className="h-4 w-4 text-cyan-300" />
                         <div>
-                          <p className="text-xs uppercase tracking-wider text-slate-400">Estimated Value</p>
-                          <p className="text-slate-200">{notice?.estimated_value || 'Contact procurement'}</p>
+                          <p className="text-xs uppercase tracking-wider text-slate-400">
+                            {translate('procurement.cards.estimatedValue', 'Estimated value')}
+                          </p>
+                          <p className="text-slate-200">
+                            {notice?.estimated_value ||
+                              translate('procurement.cards.contact', 'Contact procurement')}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-3">
                         <Clock className="h-4 w-4 text-cyan-300" />
                         <div>
-                          <p className="text-xs uppercase tracking-wider text-slate-400">Bid Opening</p>
-                          <p className="text-slate-200">{notice?.bid_opening_date || 'Refer notice'}</p>
+                          <p className="text-xs uppercase tracking-wider text-slate-400">
+                            {translate('procurement.cards.bidOpening', 'Bid opening')}
+                          </p>
+                          <p className="text-slate-200">
+                            {notice?.bid_opening_date ||
+                              translate('procurement.cards.bidOpeningFallback', 'Refer notice')}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -686,7 +915,7 @@ const PortalExperience = () => {
                         className="flex items-center gap-2 rounded-full border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-cyan-400 hover:text-cyan-300"
                       >
                         <Eye className="h-4 w-4" />
-                        View requirements
+                        {translate('procurement.cards.viewRequirements', 'View requirements')}
                         <ChevronDown
                           className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                         />
@@ -696,7 +925,7 @@ const PortalExperience = () => {
                         className="flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-[1.01]"
                       >
                         <Send className="h-4 w-4" />
-                        Submit proposal
+                        {translate('procurement.cards.submitProposal', 'Submit proposal')}
                       </button>
                     </div>
 
@@ -712,7 +941,7 @@ const PortalExperience = () => {
                           <div className="grid gap-6 md:grid-cols-2">
                             <div>
                               <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-300">
-                                Submission checklist
+                                {translate('procurement.cards.checklist.title', 'Submission checklist')}
                               </h4>
                               {(() => {
                                 const docs = Array.isArray(notice?.documents_required)
@@ -722,7 +951,12 @@ const PortalExperience = () => {
                                 if (!docs.length) {
                                   return (
                                     <ul className="mt-3 space-y-2 text-sm text-slate-400">
-                                      <li>Refer to RFP for the full documentation list.</li>
+                                      <li>
+                                        {translate(
+                                          'procurement.cards.checklist.empty',
+                                          'Refer to RFP for the full documentation list.'
+                                        )}
+                                      </li>
                                     </ul>
                                   );
                                 }
@@ -741,24 +975,30 @@ const PortalExperience = () => {
                             </div>
                             <div>
                               <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-300">
-                                Key milestones
+                                {translate('procurement.cards.milestones.title', 'Key milestones')}
                               </h4>
                               <div className="mt-3 space-y-3 text-sm text-slate-300">
                                 <div className="flex items-center gap-3 rounded-xl border border-slate-800/80 bg-slate-900/60 px-4 py-3">
                                   <Calendar className="h-4 w-4 text-cyan-300" />
                                   <div>
-                                    <p className="font-medium text-slate-200">Clarifications window</p>
+                                    <p className="font-medium text-slate-200">
+                                      {translate('procurement.cards.milestones.clarifications', 'Clarifications window')}
+                                    </p>
                                     <p className="text-xs text-slate-400">
-                                      {notice?.clarification_deadline || 'Refer published notice'}
+                                      {notice?.clarification_deadline ||
+                                        translate('procurement.cards.milestones.clarificationsFallback', 'Refer published notice')}
                                     </p>
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-3 rounded-xl border border-slate-800/80 bg-slate-900/60 px-4 py-3">
                                   <Building className="h-4 w-4 text-cyan-300" />
                                   <div>
-                                    <p className="font-medium text-slate-200">Bid opening venue</p>
+                                    <p className="font-medium text-slate-200">
+                                      {translate('procurement.cards.milestones.venue', 'Bid opening venue')}
+                                    </p>
                                     <p className="text-xs text-slate-400">
-                                      {notice?.submission_venue || 'NARA Procurement Division'}
+                                      {notice?.submission_venue ||
+                                        translate('procurement.cards.milestones.venueFallback', 'NARA Procurement Division')}
                                     </p>
                                   </div>
                                 </div>
@@ -1210,12 +1450,10 @@ const PortalExperience = () => {
           >
             <div className="flex items-center gap-3 text-cyan-300">
               <User className="h-5 w-5" />
-              <span className="text-sm uppercase tracking-[0.3em]">Secure login</span>
+              <span className="text-sm uppercase tracking-[0.3em]">{modalCopy.login.badge}</span>
             </div>
-            <h3 className="mt-4 text-2xl font-semibold text-white">Access your NARA workspace</h3>
-            <p className="mt-2 text-sm text-slate-400">
-              Sign in to continue submitting tenders and tracking applications.
-            </p>
+            <h3 className="mt-4 text-2xl font-semibold text-white">{modalCopy.login.title}</h3>
+            <p className="mt-2 text-sm text-slate-400">{modalCopy.login.description}</p>
 
             {formErrors?.login && (
               <div className="mt-4 flex items-center gap-2 rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
@@ -1226,26 +1464,26 @@ const PortalExperience = () => {
 
             <form onSubmit={handleLogin} className="mt-6 space-y-5">
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider text-slate-400">Email address</label>
+                <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.login.emailLabel}</label>
                 <input
                   type="email"
                   required
                   value={loginForm?.email}
                   onChange={(event) => setLoginForm((prev) => ({ ...prev, email: event.target.value }))}
                   className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                  placeholder="name@company.lk"
+                  placeholder={modalCopy.login.emailPlaceholder}
                   disabled={submitting}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider text-slate-400">Password</label>
+                <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.login.passwordLabel}</label>
                 <input
                   type="password"
                   required
                   value={loginForm?.password}
                   onChange={(event) => setLoginForm((prev) => ({ ...prev, password: event.target.value }))}
                   className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                  placeholder="••••••••"
+                  placeholder={modalCopy.login.passwordPlaceholder}
                   disabled={submitting}
                 />
               </div>
@@ -1256,12 +1494,12 @@ const PortalExperience = () => {
                 className="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {submitting ? <Loader className="h-4 w-4 animate-spin" /> : null}
-                {submitting ? 'Authenticating…' : 'Login'}
+                {submitting ? modalCopy.login.submitting : modalCopy.login.submit}
               </button>
             </form>
 
             <div className="mt-6 rounded-2xl border border-slate-800 bg-slate-950/80 px-4 py-3 text-sm text-slate-300">
-              <span className="text-slate-400">New to the portal?</span>{' '}
+              <span className="text-slate-400">{modalCopy.login.switchPrompt}</span>{' '}
               <button
                 onClick={() => {
                   setShowLoginModal(false);
@@ -1270,7 +1508,7 @@ const PortalExperience = () => {
                 className="font-medium text-cyan-300 hover:text-cyan-200"
                 disabled={submitting}
               >
-                Create a vendor or talent account
+                {modalCopy.login.switchCta}
               </button>
             </div>
           </motion.div>
@@ -1299,12 +1537,10 @@ const PortalExperience = () => {
           >
             <div className="flex items-center gap-3 text-cyan-300">
               <Sparkles className="h-5 w-5" />
-              <span className="text-sm uppercase tracking-[0.3em]">Create account</span>
+              <span className="text-sm uppercase tracking-[0.3em]">{modalCopy.registration.badge}</span>
             </div>
-            <h3 className="mt-4 text-2xl font-semibold text-white">Join the NARA Partner Network</h3>
-            <p className="mt-2 text-sm text-slate-400">
-              Register once to access both procurement notices and recruitment opportunities.
-            </p>
+            <h3 className="mt-4 text-2xl font-semibold text-white">{modalCopy.registration.title}</h3>
+            <p className="mt-2 text-sm text-slate-400">{modalCopy.registration.description}</p>
 
             {formErrors?.registration && (
               <div className="mt-4 flex items-center gap-2 rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
@@ -1316,7 +1552,7 @@ const PortalExperience = () => {
             <form onSubmit={handleRegistration} className="mt-6 space-y-6">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-wider text-slate-400">First name</label>
+                  <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.firstNameLabel}</label>
                   <input
                     type="text"
                     required
@@ -1327,7 +1563,7 @@ const PortalExperience = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-wider text-slate-400">Last name</label>
+                  <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.lastNameLabel}</label>
                   <input
                     type="text"
                     required
@@ -1341,7 +1577,7 @@ const PortalExperience = () => {
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-wider text-slate-400">Email address</label>
+                  <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.emailLabel}</label>
                   <input
                     type="email"
                     required
@@ -1352,7 +1588,7 @@ const PortalExperience = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-wider text-slate-400">Phone number</label>
+                  <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.phoneLabel}</label>
                   <input
                     type="tel"
                     required
@@ -1366,7 +1602,7 @@ const PortalExperience = () => {
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-wider text-slate-400">Organization</label>
+                  <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.organizationLabel}</label>
                   <input
                     type="text"
                     value={registrationForm?.organization}
@@ -1376,7 +1612,7 @@ const PortalExperience = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-wider text-slate-400">NIC / Registration</label>
+                  <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.nicLabel}</label>
                   <input
                     type="text"
                     value={registrationForm?.nic_number}
@@ -1388,28 +1624,28 @@ const PortalExperience = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider text-slate-400">Account type</label>
+                <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.accountTypeLabel}</label>
                 <select
                   value={registrationForm?.user_type}
                   onChange={(event) => setRegistrationForm((prev) => ({ ...prev, user_type: event.target.value }))}
                   className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
                   disabled={submitting}
                 >
-                  <option value="vendor">Vendor / Supplier</option>
-                  <option value="consultant">Consultant</option>
-                  <option value="individual">Individual applicant</option>
+                  <option value="vendor">{modalCopy.registration.accountOptions.vendor}</option>
+                  <option value="consultant">{modalCopy.registration.accountOptions.consultant}</option>
+                  <option value="individual">{modalCopy.registration.accountOptions.individual}</option>
                 </select>
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider text-slate-400">Password</label>
+                <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.passwordLabel}</label>
                 <input
                   type="password"
                   required
                   value={registrationForm?.password}
                   onChange={(event) => setRegistrationForm((prev) => ({ ...prev, password: event.target.value }))}
                   className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                  placeholder="Create a secure password"
+                  placeholder={modalCopy.registration.passwordPlaceholder}
                   disabled={submitting}
                 />
               </div>
@@ -1420,7 +1656,7 @@ const PortalExperience = () => {
                 className="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {submitting ? <Loader className="h-4 w-4 animate-spin" /> : null}
-                {submitting ? 'Creating account…' : 'Create account'}
+                {submitting ? modalCopy.registration.submitting : modalCopy.registration.submit}
               </button>
             </form>
           </motion.div>
@@ -1481,7 +1717,7 @@ const PortalExperience = () => {
               {uploading && (
                 <div className="mb-4 flex items-center gap-2 rounded-2xl border border-cyan-500/40 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-200">
                   <Loader className="h-4 w-4 animate-spin" />
-                  Uploading supporting documents…
+                  {modalCopy.application.uploading}
                 </div>
               )}
 
@@ -1505,15 +1741,23 @@ const PortalExperience = () => {
                   <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 px-4 py-3 text-sm text-cyan-100">
                     <div className="font-medium text-cyan-200">{item?.title}</div>
                     <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-cyan-200/80">
-                      <span>Deadline: {item?.submission_deadline || 'Refer notice'}</span>
-                      <span>•</span>
-                      <span>Estimated value: {item?.estimated_value || 'Upon request'}</span>
+                      <span>
+                        {modalCopy.application.shared.summaryDeadlineLabel}:{' '}
+                        {item?.submission_deadline || modalCopy.application.shared.summaryDeadlineFallback}
+                      </span>
+                      <span>{modalCopy.application.shared.separator}</span>
+                      <span>
+                        {modalCopy.application.procurement.summaryValueLabel}:{' '}
+                        {item?.estimated_value || modalCopy.application.procurement.summaryValueFallback}
+                      </span>
                     </div>
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-wider text-slate-400">Company name</label>
+                      <label className="text-xs uppercase tracking-wider text-slate-400">
+                        {modalCopy.application.procurement.fields.companyName}
+                      </label>
                       <input
                         name="company_name"
                         type="text"
@@ -1523,7 +1767,9 @@ const PortalExperience = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-wider text-slate-400">Delivery timeline (weeks)</label>
+                      <label className="text-xs uppercase tracking-wider text-slate-400">
+                        {modalCopy.application.procurement.fields.deliveryTimeline}
+                      </label>
                       <input
                         name="delivery_timeline"
                         type="number"
@@ -1535,20 +1781,24 @@ const PortalExperience = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-wider text-slate-400">Technical proposal</label>
+                    <label className="text-xs uppercase tracking-wider text-slate-400">
+                      {modalCopy.application.procurement.fields.technical}
+                    </label>
                     <textarea
                       name="technical_proposal"
                       rows={6}
                       required
                       className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                      placeholder="Outline methodology, deployment schedule, equipment specifications, and compliance measures."
+                      placeholder={modalCopy.application.procurement.placeholders.technical}
                       disabled={submitting}
                     />
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-wider text-slate-400">Financial proposal (LKR)</label>
+                      <label className="text-xs uppercase tracking-wider text-slate-400">
+                        {modalCopy.application.procurement.fields.financial}
+                      </label>
                       <input
                         name="financial_proposal"
                         type="number"
@@ -1558,7 +1808,9 @@ const PortalExperience = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-wider text-slate-400">Warranty period (months)</label>
+                      <label className="text-xs uppercase tracking-wider text-slate-400">
+                        {modalCopy.application.procurement.fields.warranty}
+                      </label>
                       <input
                         name="warranty_period"
                         type="number"
@@ -1569,31 +1821,37 @@ const PortalExperience = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-wider text-slate-400">Payment terms</label>
+                    <label className="text-xs uppercase tracking-wider text-slate-400">
+                      {modalCopy.application.procurement.fields.paymentTerms}
+                    </label>
                     <input
                       name="payment_terms"
                       type="text"
                       className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                      placeholder="e.g., 30% advance, balance on commissioning"
+                      placeholder={modalCopy.application.procurement.placeholders.paymentTerms}
                       disabled={submitting}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-wider text-slate-400">Additional information</label>
+                    <label className="text-xs uppercase tracking-wider text-slate-400">
+                      {modalCopy.application.procurement.fields.additionalInformation}
+                    </label>
                     <textarea
                       name="additional_information"
                       rows={3}
                       className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                      placeholder="Certifications, local partners, or clarifications"
+                      placeholder={modalCopy.application.procurement.placeholders.additionalInformation}
                       disabled={submitting}
                     />
                   </div>
 
                   <div className="space-y-4">
-                    <label className="text-xs uppercase tracking-wider text-slate-400">Upload required documents</label>
+                    <label className="text-xs uppercase tracking-wider text-slate-400">
+                      {modalCopy.application.procurement.uploadLabel}
+                    </label>
                     <div className="grid gap-3">
-                      {(item?.documents_required || ['Company profile', 'Financial statements']).map((doc, index) => (
+                      {(item?.documents_required || modalCopy.application.procurement.fallbackDocuments).map((doc, index) => (
                         <div
                           key={`${doc}-${index}`}
                           className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-3 text-sm text-slate-200"
@@ -1615,7 +1873,9 @@ const PortalExperience = () => {
                               className="inline-flex items-center gap-2 rounded-full border border-cyan-400 px-4 py-2 text-sm font-medium text-cyan-300 transition hover:bg-cyan-500/10"
                             >
                               <Upload className="h-4 w-4" />
-                              {uploadedFiles?.[doc]?.length ? `${uploadedFiles[doc].length} files` : 'Upload'}
+                              {uploadedFiles?.[doc]?.length
+                                ? `${uploadedFiles[doc].length} ${modalCopy.application.shared.filesSuffix}`
+                                : modalCopy.application.shared.upload}
                             </label>
                           </div>
                         </div>
@@ -1633,7 +1893,7 @@ const PortalExperience = () => {
                       className="rounded-full border border-slate-700 px-5 py-2 text-sm font-medium text-slate-300 transition hover:border-slate-500"
                       disabled={submitting || uploading}
                     >
-                      Cancel
+                      {modalCopy.application.shared.cancel}
                     </button>
                     <button
                       type="submit"
@@ -1641,7 +1901,9 @@ const PortalExperience = () => {
                       className="flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       {submitting ? <Loader className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                      {submitting ? 'Submitting…' : 'Submit proposal'}
+                      {submitting
+                        ? modalCopy.application.shared.submitting
+                        : modalCopy.application.shared.submitProposal}
                     </button>
                   </div>
                 </form>
@@ -1663,14 +1925,22 @@ const PortalExperience = () => {
                   <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-100">
                     <div className="font-medium text-emerald-200">{item?.title}</div>
                     <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-emerald-200/80">
-                      <span>Department: {item?.department || 'NARA'}</span>
-                      <span>•</span>
-                      <span>Deadline: {item?.application_deadline || 'Refer notice'}</span>
+                      <span>
+                        {modalCopy.application.recruitment.summaryDepartmentLabel}:{' '}
+                        {item?.department || modalCopy.application.recruitment.summaryDepartmentFallback}
+                      </span>
+                      <span>{modalCopy.application.shared.separator}</span>
+                      <span>
+                        {modalCopy.application.recruitment.summaryDeadlineLabel}:{' '}
+                        {item?.application_deadline || modalCopy.application.recruitment.summaryDeadlineFallback}
+                      </span>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-wider text-slate-400">Full name</label>
+                    <label className="text-xs uppercase tracking-wider text-slate-400">
+                      {modalCopy.application.recruitment.fields.fullName}
+                    </label>
                     <input
                       name="full_name"
                       type="text"
@@ -1682,7 +1952,9 @@ const PortalExperience = () => {
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-wider text-slate-400">Email address</label>
+                      <label className="text-xs uppercase tracking-wider text-slate-400">
+                        {modalCopy.application.recruitment.fields.email}
+                      </label>
                       <input
                         name="email"
                         type="email"
@@ -1692,7 +1964,9 @@ const PortalExperience = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-wider text-slate-400">Phone number</label>
+                      <label className="text-xs uppercase tracking-wider text-slate-400">
+                        {modalCopy.application.recruitment.fields.phone}
+                      </label>
                       <input
                         name="phone"
                         type="tel"
@@ -1704,32 +1978,38 @@ const PortalExperience = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-wider text-slate-400">Cover letter</label>
+                    <label className="text-xs uppercase tracking-wider text-slate-400">
+                      {modalCopy.application.recruitment.fields.coverLetter}
+                    </label>
                     <textarea
                       name="cover_letter"
                       rows={6}
                       required
                       className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-emerald-400 focus:outline-none"
-                      placeholder="Share your motivation, expertise, and alignment with NARA’s mission."
+                      placeholder={modalCopy.application.recruitment.placeholders.coverLetter}
                       disabled={submitting}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-wider text-slate-400">LinkedIn profile / Portfolio</label>
+                    <label className="text-xs uppercase tracking-wider text-slate-400">
+                      {modalCopy.application.recruitment.fields.portfolio}
+                    </label>
                     <input
                       name="linkedin_profile"
                       type="url"
                       className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-emerald-400 focus:outline-none"
-                      placeholder="https://"
+                      placeholder={modalCopy.application.recruitment.placeholders.portfolio}
                       disabled={submitting}
                     />
                   </div>
 
                   <div className="space-y-4">
-                    <label className="text-xs uppercase tracking-wider text-slate-400">Upload supporting documents</label>
+                    <label className="text-xs uppercase tracking-wider text-slate-400">
+                      {modalCopy.application.recruitment.uploadLabel}
+                    </label>
                     <div className="grid gap-3">
-                      {['Curriculum Vitae', 'Academic transcripts', 'Professional certifications'].map((doc, index) => (
+                      {(item?.documents_required || modalCopy.application.recruitment.fallbackDocuments).map((doc, index) => (
                         <div
                           key={`${doc}-${index}`}
                           className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-3 text-sm text-slate-200"
@@ -1750,7 +2030,9 @@ const PortalExperience = () => {
                               className="inline-flex items-center gap-2 rounded-full border border-emerald-400 px-4 py-2 text-sm font-medium text-emerald-300 transition hover:bg-emerald-500/10"
                             >
                               <Upload className="h-4 w-4" />
-                              {uploadedFiles?.[doc]?.length ? `${uploadedFiles[doc].length} files` : 'Upload'}
+                              {uploadedFiles?.[doc]?.length
+                                ? `${uploadedFiles[doc].length} ${modalCopy.application.shared.filesSuffix}`
+                                : modalCopy.application.shared.upload}
                             </label>
                           </div>
                         </div>
@@ -1768,7 +2050,7 @@ const PortalExperience = () => {
                       className="rounded-full border border-slate-700 px-5 py-2 text-sm font-medium text-slate-300 transition hover:border-slate-500"
                       disabled={submitting || uploading}
                     >
-                      Cancel
+                      {modalCopy.application.shared.cancel}
                     </button>
                     <button
                       type="submit"
@@ -1776,7 +2058,9 @@ const PortalExperience = () => {
                       className="flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       {submitting ? <Loader className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                      {submitting ? 'Submitting…' : 'Submit application'}
+                      {submitting
+                        ? modalCopy.application.shared.submitting
+                        : modalCopy.application.shared.submitApplication}
                     </button>
                   </div>
                 </form>

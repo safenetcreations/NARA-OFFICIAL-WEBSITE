@@ -1,8 +1,8 @@
 import React from 'react';
-import ResearchExcellenceRedesign from './ResearchExcellenceRedesign';
+import EnhancedResearchPortal from './EnhancedResearchPortal';
 
 const ResearchExcellencePortal = () => {
-  return <ResearchExcellenceRedesign />;
+  return <EnhancedResearchPortal />;
 };
 
 export default ResearchExcellencePortal;

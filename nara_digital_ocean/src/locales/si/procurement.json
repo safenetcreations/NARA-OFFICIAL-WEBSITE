@@ -1,0 +1,221 @@
+{
+  "hero": {
+    "badge": "NARA ඩිජිටල් මිලදී ගැනීම හා බඳවා ගැනීම",
+    "title": "ශ්‍රී ලංකාවේ සාගර නව්‍යතා මධ්‍යස්ථානය සඳහා නිර්වින්දාහී ටෙන්ඩර් සහ දක්ෂතා ගමන් මාර්ග",
+    "description": "ට්‍රෙන්ඩර් ඉදිරිපත් කිරීම් කළමනාකරණය කරන්න, ඇගයීම් කමිටු සමඟ හවුල් වන්න, සහ බහුවිධ රැකියා සඳහා NARA පාලනය කරන සුරක්ෂිත ඩිජිටල් වැඩ අවකාශයකින්ම අයදුම් කරන්න.",
+    "actions": {
+      "procurement": "මිලදී ගැනීම් බලන්න",
+      "recruitment": "රැකියා භූමිකා බලන්න",
+      "createAccount": "ගිණුමක් සාදන්න"
+    },
+    "highlights": {
+      "security": "රජයේ තාක්ෂණ ආරක්ෂාව සහ විවෘත විගණන සටහන්",
+      "policy": "ජාතික මිලදී ගැනීම් ප්‍රතිපත්තිය සමඟ ඒකාබද්ධ"
+    },
+    "timeline": {
+      "title": "සජීව කාලරේඛාව",
+      "refresh": "දත්ත යාවත්කාලීන කරන්න",
+      "items": [
+        {
+          "title": "දින 12කට අඩු කාලයකින් ඩිජිටල් ටෙන්ඩර් අගයීම්",
+          "subtitle": "2024 Q1 කාලය පුරා සමාන්‍ය ඇගයීම් චක්‍රය"
+        },
+        {
+          "title": "වෙරළ නව්‍යතාවයට බලය ගෙනෙන විශ්වාසදායී සැපයුම්කරුවන්ගේ ජාලය",
+          "subtitle": "රට පුරා තහවුරු කල සපයුම්කරුවන් 1,200ක පිරිස"
+        },
+        {
+          "title": "අන්දින වෘත්තීයවේදීන්ට පාඨමාලා සහිත ගවේෂණ සිසුභවතා",
+          "subtitle": "NARA විද්‍යාඥයන් සමඟ සාගර බුද්ධිමත් වැඩ සඳහා එක්වන්න"
+        }
+      ]
+    },
+    "auth": {
+      "loading": "ඔබේ සුරක්ෂිත සැසිය පරීක්ෂා කරමින්…",
+      "welcome": "නැවත සාදරයෙන් පිළිගනිමු, {{name}}.",
+      "visitor": "හවුල්කරු",
+      "goToWorkspace": "වැඩ අවකාශයට යන්න",
+      "logout": "පිටවන්න",
+      "prompt": "දැනටමත් ලියාපදිංචිද? සැපයුම්කරුවන් සහ අපේක්ෂකයන් සඳහා සුරක්ෂිත පිවිසුම.",
+      "launchLogin": "පිවිසුම අරඹන්න"
+    },
+    "metrics": {
+      "procurement": {
+        "label": "විවෘත මිලදී ගැනීම් RFP",
+        "hint": "දින 7ක් ඇතුළත {{count}} අවසන් වේ",
+        "hintFallback": "සෑමදාම නව ටෙන්ඩර්"
+      },
+      "recruitment": {
+        "label": "සක්‍රීය රැකියා භූමිකා",
+        "hint": "{{count}} දින කිහිපයක් ඇතුළත අවසන් වේ",
+        "hintFallback": "බහු අංශ කණ්ඩායම්"
+      },
+      "review": {
+        "label": "සාමාන්‍ය ඇගයීමේ කාලය",
+        "valueFallback": "දින 12ක්",
+        "hint": "ගතික ඇගයීමේ ක්‍රියාවලිය"
+      },
+      "partners": {
+        "label": "ලියාපදිංචි හවුල්කරුවන්",
+        "valueFallback": "1.2K+",
+        "hint": "රටපුරා තහවුරු කළ සැපයුම්කරුවන්"
+      }
+    }
+  },
+  "procurement": {
+    "heading": "මිලදී ගැනීම් හුවමාරුව",
+    "description": "සජීව ටෙන්ඩර් ලබාගන්න, තාක්ෂණික සාරාංශ බාගන්න, සහ ශ්‍රී ලංකාවේ නිල් ආර්ථික ව්‍යාපෘති ඉදිරියට ගෙන යාමට යෝජනාවන් ඉදිරිපත් කරන්න.",
+    "filters": {
+      "scopeLabel": "ප්‍රමාණය අනුව පෙරහන කරන්න",
+      "allOption": "සියළු දැන්වීම්",
+      "sortLabel": "වර්ග කරන්න",
+      "options": {
+        "deadline": "ශීඝ්‍රයෙන් අවසන්",
+        "value": "උසස් වටිනාකම",
+        "recent": "නවතම දැන්වීම්"
+      }
+    },
+    "sidebar": {
+      "title": "අවස්ථා මෙහෙයුම",
+      "closingSoon": "දින 7ක් ඇතුළත අවසන්",
+      "averageValue": "සාමාන්‍ය ටෙන්ඩර් වටිනාකම",
+      "registeredVendors": "ලියාපදිංචි සැපයුම්කරුවන්",
+      "vendorFallback": "1.2K+",
+      "support": {
+        "title": "මිලදී ගැනීම් සහය",
+        "description": "ලේඛන, ස්ථල පරීක්ෂණ සහ අනුකූලතා අවශ්‍යතා පිළිබඳ පැහැදිලි කිරීම් සඳහා කැප වූ නිලධාරීන් සූදානම් ඇත.",
+        "location": "මිලදී ගැනීම් ඒකකය, NARA ප්‍රධාන කාර්යාලය"
+      }
+    },
+    "empty": "ඔබේ පෙරහන් වලට ගැළපෙන ක්‍රියාකාරී මිලදී ගැනීම් දැන්වීම් දැනට නොමැත.",
+    "cards": {
+      "deadlineLabel": "අවසන් දිනය",
+      "tbc": "ඉදිරිපත් වෙමින්",
+      "closed": "අවසන්",
+      "daysRemaining": "තව {{count}} දින",
+      "department": "අංශය",
+      "departmentFallback": "NARA මිලදී ගැනීම",
+      "estimatedValue": "ආකල්න අගය",
+      "contact": "මිලදී ගැනීම් ඒකකය අමතන්න",
+      "bidOpening": "බිඩ් විවෘත කිරීම",
+      "bidOpeningFallback": "දැන්වීම බලන්න",
+      "viewRequirements": "අවශ්‍යතා බලන්න",
+      "submitProposal": "යෝජනාව ඉදිරිපත් කරන්න",
+      "checklist": {
+        "title": "ඉදිරිපත් කිරීමේ පිරිපත් ලැයිස්තුව",
+        "empty": "සම්පූර්ණ ලේඛන ලැයිස්තුව සඳහා RFP බලන්න."
+      },
+      "milestones": {
+        "title": "ප්‍රධාන සංධිස්ථාන",
+        "clarifications": "විස්තර ඉල්ලීම් කාලය",
+        "clarificationsFallback": "ප්‍රකාශිත දැන්වීම බලන්න",
+        "venue": "බිඩ් විවෘත කිරීමේ ස්ථානය",
+        "venueFallback": "NARA මිලදී ගැනීම් අංශය"
+      },
+      "categoryFallback": "මිලදී ගැනීම",
+      "statusFallback": "සක්‍රීය"
+    }
+  },
+  "modals": {
+    "login": {
+      "badge": "සුරක්ෂිත පිවිසුම",
+      "title": "ඔබගේ NARA වැඩ අවකාශයට පිවිසෙන්න",
+      "description": "ටෙන්ඩර් ඉදිරිපත් කිරීම හා අයදුම් අධීක්ෂණය දිගටම කරගෙන යාමට පුරනය වන්න.",
+      "emailLabel": "ඊතැපැල් ලිපිනය",
+      "emailPlaceholder": "name@company.lk",
+      "passwordLabel": "මුරපදය",
+      "passwordPlaceholder": "••••••••",
+      "submit": "පිවිසෙන්න",
+      "submitting": "සත්‍යාපනය වෙමින්…",
+      "switchPrompt": "පෝර්ටලයට නවකද?",
+      "switchCta": "සැපයුම්කරු හෝ දක්ෂතා ගිණුමක් සාදන්න"
+    },
+    "registration": {
+      "badge": "ගිණුමක් සාදන්න",
+      "title": "NARA හවුල් ජාලයට එක්වන්න",
+      "description": "මිලදී ගැනීම් දැන්වීම් සහ බඳවා ගැනීම් අවස්ථා දෙකම වෙත ප්‍රවේශ වීමට එක් වරක් ලියාපදිංචි වන්න.",
+      "firstNameLabel": "මුල් නම",
+      "lastNameLabel": "අවසන් නම",
+      "emailLabel": "ඊතැපැල් ලිපිනය",
+      "phoneLabel": "දුරකථන අංකය",
+      "organizationLabel": "ආයතනය",
+      "nicLabel": "ජා.හැ.ක / ලියාපදිංචිය",
+      "accountTypeLabel": "ගිණුම් වර්ගය",
+      "accountOptions": {
+        "vendor": "සැපයුම්කරු",
+        "consultant": "උපදේශක",
+        "individual": "පුද්ගලික අයදුම්කරු"
+      },
+      "passwordLabel": "මුරපදය",
+      "passwordPlaceholder": "ආරක්ෂිත මුරපදයක් සාදන්න",
+      "submit": "ගිණුමක් සාදන්න",
+      "submitting": "ගිණුම සකස් වෙමින්…"
+    },
+    "application": {
+      "uploading": "සහයක ලේඛන උඩුගත වෙමින්…",
+      "shared": {
+        "cancel": "අවලංගු කරන්න",
+        "submitProposal": "යෝජනාව ඉදිරිපත් කරන්න",
+        "submitApplication": "අයදුම ඉදිරිපත් කරන්න",
+        "submitting": "ඉදිරිපත් වෙමින්…",
+        "upload": "උඩුගත කරන්න",
+        "separator": "•",
+        "filesSuffix": "ගොනු",
+        "summary": {
+          "deadline": "අවසන් දිනය",
+          "deadlineFallback": "දැන්වීම බලන්න"
+        }
+      },
+      "procurement": {
+        "summary": {
+          "valueLabel": "ආකල්න අගය",
+          "valueFallback": "ඉල්ලීම මත"
+        },
+        "fields": {
+          "companyName": "සමාගම් නාමය",
+          "deliveryTimeline": "බෙදාහැරීමේ කාලය (සති)",
+          "technical": "තාක්ෂණික යෝජනාව",
+          "financial": "මුදල් යෝජනාව (LKR)",
+          "warranty": "වරන්ත කාලය (මාස)",
+          "paymentTerms": "ගෙවීම් කොන්දේසි",
+          "additionalInformation": "අමතර තොරතුරු"
+        },
+        "placeholders": {
+          "technical": "ක්‍රමවේදය, අපගත කාලසටහන්, උපකරණ විස්තර සහ අනුකූලතා ක්‍රියාමාර්ග වටහාදීමට",
+          "paymentTerms": "උදා: 30% ආරම්භක, ඉතිරි වාරිකය විධිමත් කිරීමේදී",
+          "additionalInformation": "සහතික, දේශීය හවුල්කරුවන් හෝ පැහැදිලි කිරීම්"
+        },
+        "uploadLabel": "අවශ්‍ය ලේඛන උඩුගත කරන්න",
+        "fallbackDocuments": {
+          "companyProfile": "සමාගම් පැතිකඩ",
+          "financialStatements": "මූල්‍ය ප්‍රකාශන"
+        }
+      },
+      "recruitment": {
+        "summary": {
+          "departmentLabel": "අංශය",
+          "departmentFallback": "NARA",
+          "deadlineLabel": "අවසන් දිනය",
+          "deadlineFallback": "දැන්වීම බලන්න"
+        },
+        "fields": {
+          "fullName": "සම්පූර්ණ නම",
+          "email": "ඊතැපැල් ලිපිනය",
+          "phone": "දුරකථන අංකය",
+          "coverLetter": "කවර ලිපිය",
+          "portfolio": "LinkedIn පැතිකඩ / පෝර්ට්ෆෝලියෝ"
+        },
+        "placeholders": {
+          "coverLetter": "ඔබේ ප්‍රේරණය, පළපුරුද්ද, සහ NARA මෙහෙයුමට ගැළපීම බෙදාහදා ගන්න.",
+          "portfolio": "https://"
+        },
+        "uploadLabel": "සහයක ලේඛන උඩුගත කරන්න",
+        "fallbackDocuments": {
+          "cv": "ජීව දත්ත පත්‍රය",
+          "transcripts": "අධ්‍යාපන ප්‍රකාශන",
+          "certifications": "වෘත්තීය සහතික"
+        }
+      }
+    }
+  }
+}
