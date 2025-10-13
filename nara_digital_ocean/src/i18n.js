@@ -6,19 +6,25 @@ import enHome from './locales/en/home.json';
 import enAbout from './locales/en/about.json';
 import enResearch from './locales/en/research.json';
 import enCollaboration from './locales/en/collaboration.json';
+import enNews from './locales/en/news.json';
 import enProcurement from './locales/en/procurement.json';
+import enResearchEnhanced from './locales/en/researchEnhanced.json';
 import taCommon from './locales/ta/common.json';
 import taHome from './locales/ta/home.json';
 import taAbout from './locales/ta/about.json';
 import taResearch from './locales/ta/research.json';
 import taCollaboration from './locales/ta/collaboration.json';
+import taNews from './locales/ta/news.json';
 import taProcurement from './locales/ta/procurement.json';
+import taResearchEnhanced from './locales/ta/researchEnhanced.json';
 import siCommon from './locales/si/common.json';
 import siHome from './locales/si/home.json';
 import siAbout from './locales/si/about.json';
 import siResearch from './locales/si/research.json';
 import siCollaboration from './locales/si/collaboration.json';
+import siNews from './locales/si/news.json';
 import siProcurement from './locales/si/procurement.json';
+import siResearchEnhanced from './locales/si/researchEnhanced.json';
 
 const resources = {
   en: {
@@ -27,7 +33,9 @@ const resources = {
     about: enAbout,
     research: enResearch,
     collaboration: enCollaboration,
-    procurement: enProcurement
+    procurement: enProcurement,
+    news: enNews,
+    researchEnhanced: enResearchEnhanced
   },
   ta: {
     common: taCommon,
@@ -35,7 +43,9 @@ const resources = {
     about: taAbout,
     research: taResearch,
     collaboration: taCollaboration,
-    procurement: taProcurement
+    procurement: taProcurement,
+    news: taNews,
+    researchEnhanced: taResearchEnhanced
   },
   si: {
     common: siCommon,
@@ -43,7 +53,9 @@ const resources = {
     about: siAbout,
     research: siResearch,
     collaboration: siCollaboration,
-    procurement: siProcurement
+    procurement: siProcurement,
+    news: siNews,
+    researchEnhanced: siResearchEnhanced
   }
 };
 
@@ -71,7 +83,7 @@ i18n
     resources,
     lng: getStoredLanguage(),
     fallbackLng: 'en',
-    ns: ['common', 'home', 'about', 'research', 'collaboration', 'procurement'],
+    ns: ['common', 'home', 'about', 'research', 'collaboration', 'procurement', 'news', 'researchEnhanced'],
     defaultNS: 'common',
     interpolation: {
       escapeValue: false

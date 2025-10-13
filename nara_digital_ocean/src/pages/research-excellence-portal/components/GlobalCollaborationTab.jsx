@@ -1,10 +1,320 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Globe, MapPin, Users, FileText, TrendingUp, ExternalLink,
   Award, BookOpen, Handshake, Building, Mail, Phone,
   Calendar, CheckCircle, Clock, Target, Sparkles
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
+const ICON_MAP = {
+  Globe,
+  MapPin,
+  Users,
+  FileText,
+  TrendingUp,
+  ExternalLink,
+  Award,
+  BookOpen,
+  Handshake,
+  Building,
+  Mail,
+  Phone,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Target,
+  Sparkles
+};
+
+const resolveIcon = (iconName, fallback) => {
+  if (iconName && ICON_MAP[iconName]) {
+    return ICON_MAP[iconName];
+  }
+  if (fallback && ICON_MAP[fallback]) {
+    return ICON_MAP[fallback];
+  }
+  return Globe;
+};
+
+const createFallbackMap = (items, key = 'id') => items.reduce((acc, item) => {
+  acc[item[key]] = item;
+  return acc;
+}, {});
+
+const GLOBAL_STATS_FALLBACK = [
+  {
+    id: 'countries',
+    label: 'Countries',
+    value: 42,
+    icon: 'Globe',
+    color: 'from-cyan-400 to-blue-600'
+  },
+  {
+    id: 'institutions',
+    label: 'Partner Institutions',
+    value: 89,
+    icon: 'Building',
+    color: 'from-purple-400 to-pink-600'
+  },
+  {
+    id: 'publications',
+    label: 'Joint Publications',
+    value: 456,
+    icon: 'FileText',
+    color: 'from-green-400 to-emerald-600'
+  },
+  {
+    id: 'researchers',
+    label: 'Collaborating Researchers',
+    value: 723,
+    icon: 'Users',
+    color: 'from-amber-400 to-orange-600'
+  }
+];
+
+const REGIONS_FALLBACK = [
+  {
+    id: 'asia-pacific',
+    name: 'Asia-Pacific',
+    countries: 18,
+    institutions: 34,
+    publications: 234,
+    researchers: 312,
+    color: 'cyan',
+    highlights: ['Leading collaboration hub', 'Most joint publications'],
+    topCountries: ['Japan', 'Australia', 'Singapore', 'India', 'China']
+  },
+  {
+    id: 'europe',
+    name: 'Europe',
+    countries: 12,
+    institutions: 28,
+    publications: 156,
+    researchers: 245,
+    color: 'blue',
+    highlights: ['Strong research networks', 'EU-funded projects'],
+    topCountries: ['UK', 'Germany', 'Netherlands', 'France', 'Norway']
+  },
+  {
+    id: 'north-america',
+    name: 'North America',
+    countries: 3,
+    institutions: 18,
+    publications: 98,
+    researchers: 134,
+    color: 'purple',
+    highlights: ['High-impact collaborations', 'Advanced technology'],
+    topCountries: ['USA', 'Canada', 'Mexico']
+  },
+  {
+    id: 'africa',
+    name: 'Africa',
+    countries: 5,
+    institutions: 6,
+    publications: 34,
+    researchers: 45,
+    color: 'green',
+    highlights: ['Growing partnerships', 'Capacity building'],
+    topCountries: ['South Africa', 'Kenya', 'Tanzania', 'Mauritius']
+  },
+  {
+    id: 'latin-america',
+    name: 'Latin America',
+    countries: 4,
+    institutions: 3,
+    publications: 21,
+    researchers: 28,
+    color: 'amber',
+    highlights: ['Emerging collaborations', 'Marine biodiversity'],
+    topCountries: ['Brazil', 'Chile', 'Peru', 'Argentina']
+  }
+];
+
+const PARTNERS_FALLBACK = [
+  {
+    id: 1,
+    name: 'National Oceanic and Atmospheric Administration (NOAA)',
+    country: 'United States',
+    type: 'Government Agency',
+    region: 'North America',
+    joinedYear: 2015,
+    status: 'active',
+    collaborationType: ['Research', 'Data Sharing', 'Training'],
+    jointPublications: 42,
+    activeProjects: 5,
+    mou: true,
+    contact: {
+      name: 'Dr. Sarah Johnson',
+      email: 'sarah.johnson@noaa.gov',
+      phone: '+1 301 555 0123'
+    },
+    focusAreas: ['Climate Change', 'Oceanography', 'Marine Ecosystems'],
+    achievements: [
+      'Joint ocean monitoring network',
+      '15 co-authored papers',
+      'Technology transfer program'
+    ]
+  },
+  {
+    id: 2,
+    name: 'CSIRO Oceans and Atmosphere',
+    country: 'Australia',
+    type: 'Research Organization',
+    region: 'Asia-Pacific',
+    joinedYear: 2017,
+    status: 'active',
+    collaborationType: ['Research', 'Student Exchange', 'Equipment Sharing'],
+    jointPublications: 38,
+    activeProjects: 4,
+    mou: true,
+    contact: {
+      name: 'Prof. Michael Chen',
+      email: 'm.chen@csiro.au',
+      phone: '+61 3 9545 8000'
+    },
+    focusAreas: ['Marine Biology', 'Climate Science', 'Fisheries'],
+    achievements: [
+      'Joint research vessels program',
+      '12 PhD student exchanges',
+      'Shared laboratory facilities'
+    ]
+  },
+  {
+    id: 3,
+    name: 'University of Tokyo - Ocean Research Institute',
+    country: 'Japan',
+    type: 'University',
+    region: 'Asia-Pacific',
+    joinedYear: 2016,
+    status: 'active',
+    collaborationType: ['Research', 'Student Exchange', 'Conferences'],
+    jointPublications: 34,
+    activeProjects: 3,
+    mou: true,
+    contact: {
+      name: 'Prof. Hiroshi Tanaka',
+      email: 'h.tanaka@ori.u-tokyo.ac.jp',
+      phone: '+81 3 5841 6500'
+    },
+    focusAreas: ['Oceanography', 'Marine Technology', 'Biodiversity'],
+    achievements: [
+      'Annual joint symposium',
+      '8 joint research cruises',
+      'Technology innovation awards'
+    ]
+  },
+  {
+    id: 4,
+    name: 'GEOMAR Helmholtz Centre',
+    country: 'Germany',
+    type: 'Research Institute',
+    region: 'Europe',
+    joinedYear: 2018,
+    status: 'active',
+    collaborationType: ['Research', 'Data Sharing', 'Training'],
+    jointPublications: 28,
+    activeProjects: 3,
+    mou: true,
+    contact: {
+      name: 'Dr. Klaus Schmidt',
+      email: 'k.schmidt@geomar.de',
+      phone: '+49 431 600 0'
+    },
+    focusAreas: ['Marine Geology', 'Ocean Dynamics', 'Climate'],
+    achievements: [
+      'Deep-sea research collaboration',
+      'Equipment sharing agreement',
+      'Joint PhD program'
+    ]
+  },
+  {
+    id: 5,
+    name: 'Scripps Institution of Oceanography',
+    country: 'United States',
+    type: 'Research Institute',
+    region: 'North America',
+    joinedYear: 2014,
+    status: 'active',
+    collaborationType: ['Research', 'Student Exchange', 'Data Sharing'],
+    jointPublications: 31,
+    activeProjects: 4,
+    mou: true,
+    contact: {
+      name: 'Dr. Maria Rodriguez',
+      email: 'm.rodriguez@ucsd.edu',
+      phone: '+1 858 534 3624'
+    },
+    focusAreas: ['Ocean Science', 'Climate Research', 'Marine Biology'],
+    achievements: [
+      'Decade-long partnership',
+      '20+ joint expeditions',
+      'Major grant collaborations'
+    ]
+  },
+  {
+    id: 6,
+    name: 'National University of Singapore',
+    country: 'Singapore',
+    type: 'University',
+    region: 'Asia-Pacific',
+    joinedYear: 2019,
+    status: 'active',
+    collaborationType: ['Research', 'Student Exchange', 'Joint Programs'],
+    jointPublications: 24,
+    activeProjects: 2,
+    mou: true,
+    contact: {
+      name: 'Prof. Wei Lin',
+      email: 'wei.lin@nus.edu.sg',
+      phone: '+65 6516 6666'
+    },
+    focusAreas: ['Marine Biotechnology', 'Aquaculture', 'Conservation'],
+    achievements: [
+      'Joint masters program',
+      'Innovation lab established',
+      'Start-up incubation'
+    ]
+  }
+];
+
+const OPPORTUNITIES_FALLBACK = [
+  {
+    id: 1,
+    title: 'ASEAN Marine Science Network - Research Fellowship',
+    type: 'Fellowship',
+    deadline: '2025-03-15',
+    region: 'Asia-Pacific',
+    value: '$50,000',
+    duration: '12 months',
+    description: 'Fellowship for joint research projects in marine science across ASEAN countries'
+  },
+  {
+    id: 2,
+    title: 'EU Horizon - Blue Economy Innovation Call',
+    type: 'Grant',
+    deadline: '2025-04-30',
+    region: 'Europe',
+    value: '€2.5M',
+    duration: '36 months',
+    description: 'Large-scale collaborative projects on sustainable blue economy'
+  },
+  {
+    id: 3,
+    title: 'Indian Ocean Research Exchange Program',
+    type: 'Exchange',
+    deadline: '2025-02-28',
+    region: 'Asia-Pacific',
+    value: '$25,000',
+    duration: '6 months',
+    description: 'Researcher exchange program for Indian Ocean coastal states'
+  }
+];
+
+const GLOBAL_STATS_FALLBACK_MAP = createFallbackMap(GLOBAL_STATS_FALLBACK);
+const REGIONS_FALLBACK_MAP = createFallbackMap(REGIONS_FALLBACK);
+const PARTNERS_FALLBACK_MAP = createFallbackMap(PARTNERS_FALLBACK);
+const OPPORTUNITIES_FALLBACK_MAP = createFallbackMap(OPPORTUNITIES_FALLBACK);
 
 const GlobalCollaborationTab = () => {
   const [selectedRegion, setSelectedRegion] = useState(null);

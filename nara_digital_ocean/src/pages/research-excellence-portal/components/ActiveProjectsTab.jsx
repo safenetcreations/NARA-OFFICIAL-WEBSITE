@@ -6,8 +6,10 @@ import {
   FileText, ExternalLink, ChevronDown, ChevronRight, 
   GitBranch, Layers, Sparkles, Eye, Filter
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const ActiveProjectsTab = () => {
+  const { t } = useTranslation('researchEnhanced');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [expandedProject, setExpandedProject] = useState(null);
@@ -15,28 +17,56 @@ const ActiveProjectsTab = () => {
 
   // Project Categories
   const categories = [
-    { id: 'all', name: 'All Projects', count: 156 },
-    { id: 'marine-biology', name: 'Marine Biology', count: 42 },
-    { id: 'climate', name: 'Climate Research', count: 38 },
-    { id: 'fisheries', name: 'Fisheries', count: 31 },
-    { id: 'conservation', name: 'Conservation', count: 27 },
-    { id: 'policy', name: 'Policy & Governance', count: 18 }
+    { id: 'all', name: t('projects.filters.categories.all', 'All Projects'), count: 156 },
+    { id: 'marine-biology', name: t('projects.filters.categories.marineBiology', 'Marine Biology'), count: 42 },
+    { id: 'climate', name: t('projects.filters.categories.climate', 'Climate Research'), count: 38 },
+    { id: 'fisheries', name: t('projects.filters.categories.fisheries', 'Fisheries'), count: 31 },
+    { id: 'conservation', name: t('projects.filters.categories.conservation', 'Conservation'), count: 27 },
+    { id: 'policy', name: t('projects.filters.categories.policy', 'Policy & Governance'), count: 18 }
   ];
 
   // Project Status
   const statusOptions = [
-    { id: 'all', name: 'All Status', color: 'slate' },
-    { id: 'active', name: 'Active', color: 'green' },
-    { id: 'planning', name: 'Planning', color: 'blue' },
-    { id: 'completing', name: 'Completing', color: 'amber' },
-    { id: 'completed', name: 'Completed', color: 'purple' }
+    { id: 'all', name: t('projects.filters.status.all', 'All Status'), color: 'slate' },
+    { id: 'active', name: t('projects.statusLabels.active', 'Active'), color: 'green' },
+    { id: 'planning', name: t('projects.statusLabels.planning', 'Planning'), color: 'blue' },
+    { id: 'completing', name: t('projects.statusLabels.completing', 'Completing'), color: 'amber' },
+    { id: 'completed', name: t('projects.statusLabels.completed', 'Completed'), color: 'purple' }
   ];
+
+  const statusLabels = {
+    active: t('projects.statusLabels.active', 'Active'),
+    planning: t('projects.statusLabels.planning', 'Planning'),
+    completing: t('projects.statusLabels.completing', 'Completing'),
+    completed: t('projects.statusLabels.completed', 'Completed'),
+    upcoming: t('projects.statusLabels.upcoming', 'Upcoming')
+  };
+
+  const labels = {
+    category: t('projects.labels.category', 'Category'),
+    status: t('projects.labels.status', 'Status'),
+    progress: t('projects.labels.progress', 'Progress'),
+    budget: t('projects.labels.budget', 'Budget'),
+    spent: t('projects.labels.spent', 'Spent:'),
+    team: t('projects.labels.team', 'Team'),
+    members: t('projects.labels.members', 'Members'),
+    output: t('projects.labels.output', 'Output'),
+    papers: t('projects.labels.papers', 'Papers'),
+    objectives: t('projects.labels.objectives', 'Objectives:'),
+    outcomes: t('projects.labels.outcomes', 'Key Outcomes:'),
+    partners: t('projects.labels.partners', 'Partners:'),
+    timeline: t('projects.labels.timeline', 'Timeline:'),
+    viewDetails: t('projects.actions.viewDetails', 'View Details'),
+    showLess: t('projects.actions.showLess', 'Show Less'),
+    projectPage: t('projects.actions.projectPage', 'Project Page'),
+    pi: t('projects.labels.pi', 'PI:')
+  };
 
   // Sample Projects Data
   const projects = [
     {
-      id: 1,
-      title: 'Indian Ocean Microplastic Monitoring Network',
+      id: 'microplastic-network',
+      title: t('projects.items.microplasticNetwork.title', 'Indian Ocean Microplastic Monitoring Network'),
       category: 'marine-biology',
       status: 'active',
       duration: '2023-2026',
@@ -46,23 +76,23 @@ const ActiveProjectsTab = () => {
       pi: 'Dr. Priya Fernando',
       team: 12,
       partners: ['NOAA', 'CSIRO', 'University of Tokyo'],
-      description: 'Establishing a comprehensive network of monitoring stations across the Indian Ocean to track microplastic pollution patterns and develop predictive models.',
+      description: t('projects.items.microplasticNetwork.description', 'Establishing a comprehensive network of monitoring stations across the Indian Ocean to track microplastic pollution patterns and develop predictive models.'),
       objectives: [
-        'Deploy 50 monitoring stations across the Indian Ocean',
-        'Develop AI-powered microplastic detection system',
-        'Create predictive pollution dispersion models',
-        'Publish comprehensive ocean health reports'
+        t('projects.items.microplasticNetwork.objectives.0', 'Deploy 50 monitoring stations across the Indian Ocean'),
+        t('projects.items.microplasticNetwork.objectives.1', 'Develop AI-powered microplastic detection system'),
+        t('projects.items.microplasticNetwork.objectives.2', 'Create predictive pollution dispersion models'),
+        t('projects.items.microplasticNetwork.objectives.3', 'Publish comprehensive ocean health reports')
       ],
       milestones: [
-        { name: 'Station Deployment Phase 1', date: '2023-06', status: 'completed' },
-        { name: 'AI Model Development', date: '2024-03', status: 'completed' },
-        { name: 'Data Collection & Analysis', date: '2024-12', status: 'active' },
-        { name: 'Final Report & Publication', date: '2026-06', status: 'upcoming' }
+        { name: t('projects.items.microplasticNetwork.milestones.0', 'Station Deployment Phase 1'), date: '2023-06', status: 'completed' },
+        { name: t('projects.items.microplasticNetwork.milestones.1', 'AI Model Development'), date: '2024-03', status: 'completed' },
+        { name: t('projects.items.microplasticNetwork.milestones.2', 'Data Collection & Analysis'), date: '2024-12', status: 'active' },
+        { name: t('projects.items.microplasticNetwork.milestones.3', 'Final Report & Publication'), date: '2026-06', status: 'upcoming' }
       ],
       outcomes: [
-        '32 stations deployed',
-        '2 papers published',
-        '45,000+ data points collected'
+        t('projects.items.microplasticNetwork.outcomes.0', '32 stations deployed'),
+        t('projects.items.microplasticNetwork.outcomes.1', '2 papers published'),
+        t('projects.items.microplasticNetwork.outcomes.2', '45,000+ data points collected')
       ],
       fundingSource: 'National Science Foundation',
       publications: 2,
@@ -70,8 +100,8 @@ const ActiveProjectsTab = () => {
       image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&h=400&fit=crop'
     },
     {
-      id: 2,
-      title: 'Sri Lankan Coral Reef Restoration Initiative',
+      id: 'coral-restoration',
+      title: t('projects.items.coralRestoration.title', 'Sri Lankan Coral Reef Restoration Initiative'),
       category: 'conservation',
       status: 'active',
       duration: '2022-2025',
@@ -81,23 +111,23 @@ const ActiveProjectsTab = () => {
       pi: 'Dr. Nimal Perera',
       team: 8,
       partners: ['WWF', 'Coral Triangle Initiative', 'Local Communities'],
-      description: 'Large-scale coral reef restoration using innovative coral gardening techniques and community engagement programs.',
+      description: t('projects.items.coralRestoration.description', 'Large-scale coral reef restoration using innovative coral gardening techniques and community engagement programs.'),
       objectives: [
-        'Restore 10 hectares of degraded coral reefs',
-        'Train 100 community members in coral gardening',
-        'Establish 5 coral nurseries',
-        'Monitor long-term ecosystem recovery'
+        t('projects.items.coralRestoration.objectives.0', 'Restore 10 hectares of degraded coral reefs'),
+        t('projects.items.coralRestoration.objectives.1', 'Train 100 community members in coral gardening'),
+        t('projects.items.coralRestoration.objectives.2', 'Establish 5 coral nurseries'),
+        t('projects.items.coralRestoration.objectives.3', 'Monitor long-term ecosystem recovery')
       ],
       milestones: [
-        { name: 'Site Assessment', date: '2022-08', status: 'completed' },
-        { name: 'Nursery Establishment', date: '2023-03', status: 'completed' },
-        { name: 'Coral Transplantation', date: '2024-06', status: 'active' },
-        { name: 'Impact Evaluation', date: '2025-12', status: 'upcoming' }
+        { name: t('projects.items.coralRestoration.milestones.0', 'Site Assessment'), date: '2022-08', status: 'completed' },
+        { name: t('projects.items.coralRestoration.milestones.1', 'Nursery Establishment'), date: '2023-03', status: 'completed' },
+        { name: t('projects.items.coralRestoration.milestones.2', 'Coral Transplantation'), date: '2024-06', status: 'active' },
+        { name: t('projects.items.coralRestoration.milestones.3', 'Impact Evaluation'), date: '2025-12', status: 'upcoming' }
       ],
       outcomes: [
-        '7.8 hectares restored',
-        '85 community members trained',
-        '15,000+ coral fragments transplanted'
+        t('projects.items.coralRestoration.outcomes.0', '7.8 hectares restored'),
+        t('projects.items.coralRestoration.outcomes.1', '85 community members trained'),
+        t('projects.items.coralRestoration.outcomes.2', '15,000+ coral fragments transplanted')
       ],
       fundingSource: 'Global Environment Facility',
       publications: 3,
@@ -105,8 +135,8 @@ const ActiveProjectsTab = () => {
       image: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=600&h=400&fit=crop'
     },
     {
-      id: 3,
-      title: 'AI-Powered Fish Stock Assessment System',
+      id: 'ai-stock-assessment',
+      title: t('projects.items.aiStockAssessment.title', 'AI-Powered Fish Stock Assessment System'),
       category: 'fisheries',
       status: 'active',
       duration: '2024-2027',
@@ -116,23 +146,23 @@ const ActiveProjectsTab = () => {
       pi: 'Dr. Ayesha Khan',
       team: 15,
       partners: ['FAO', 'Microsoft AI', 'Regional Fisheries Agencies'],
-      description: 'Developing machine learning models for real-time fish stock assessment using satellite imagery, acoustic data, and environmental parameters.',
+      description: t('projects.items.aiStockAssessment.description', 'Developing machine learning models for real-time fish stock assessment using satellite imagery, acoustic data, and environmental parameters.'),
       objectives: [
-        'Deploy AI models across 12 fishing zones',
-        'Improve stock assessment accuracy by 40%',
-        'Create real-time monitoring dashboard',
-        'Train 500 fisheries officers'
+        t('projects.items.aiStockAssessment.objectives.0', 'Deploy AI models across 12 fishing zones'),
+        t('projects.items.aiStockAssessment.objectives.1', 'Improve stock assessment accuracy by 40%'),
+        t('projects.items.aiStockAssessment.objectives.2', 'Create real-time monitoring dashboard'),
+        t('projects.items.aiStockAssessment.objectives.3', 'Train 500 fisheries officers')
       ],
       milestones: [
-        { name: 'Data Collection & Labeling', date: '2024-06', status: 'completed' },
-        { name: 'Model Training & Validation', date: '2024-12', status: 'active' },
-        { name: 'System Deployment', date: '2025-09', status: 'upcoming' },
-        { name: 'Nationwide Rollout', date: '2027-03', status: 'upcoming' }
+        { name: t('projects.items.aiStockAssessment.milestones.0', 'Data Collection & Labeling'), date: '2024-06', status: 'completed' },
+        { name: t('projects.items.aiStockAssessment.milestones.1', 'Model Training & Validation'), date: '2024-12', status: 'active' },
+        { name: t('projects.items.aiStockAssessment.milestones.2', 'System Deployment'), date: '2025-09', status: 'upcoming' },
+        { name: t('projects.items.aiStockAssessment.milestones.3', 'Nationwide Rollout'), date: '2027-03', status: 'upcoming' }
       ],
       outcomes: [
-        'AI model 87% accurate',
-        '3 pilot zones deployed',
-        '120 officers trained'
+        t('projects.items.aiStockAssessment.outcomes.0', 'AI model 87% accurate'),
+        t('projects.items.aiStockAssessment.outcomes.1', '3 pilot zones deployed'),
+        t('projects.items.aiStockAssessment.outcomes.2', '120 officers trained')
       ],
       fundingSource: 'World Bank Blue Economy Fund',
       publications: 1,
@@ -140,8 +170,8 @@ const ActiveProjectsTab = () => {
       image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&h=400&fit=crop'
     },
     {
-      id: 4,
-      title: 'Blue Carbon Sequestration Valuation Study',
+      id: 'blue-carbon-valuation',
+      title: t('projects.items.blueCarbonValuation.title', 'Blue Carbon Sequestration Valuation Study'),
       category: 'climate',
       status: 'completing',
       duration: '2022-2024',
@@ -151,23 +181,23 @@ const ActiveProjectsTab = () => {
       pi: 'Dr. Sunil Wickramasinghe',
       team: 6,
       partners: ['IUCN', 'Conservation International', 'Ministry of Environment'],
-      description: 'Comprehensive economic valuation of carbon sequestration services provided by Sri Lankan mangrove and seagrass ecosystems.',
+      description: t('projects.items.blueCarbonValuation.description', 'Comprehensive economic valuation of carbon sequestration services provided by Sri Lankan mangrove and seagrass ecosystems.'),
       objectives: [
-        'Map all coastal blue carbon ecosystems',
-        'Quantify carbon sequestration rates',
-        'Calculate economic value',
-        'Develop carbon credit framework'
+        t('projects.items.blueCarbonValuation.objectives.0', 'Map all coastal blue carbon ecosystems'),
+        t('projects.items.blueCarbonValuation.objectives.1', 'Quantify carbon sequestration rates'),
+        t('projects.items.blueCarbonValuation.objectives.2', 'Calculate economic value'),
+        t('projects.items.blueCarbonValuation.objectives.3', 'Develop carbon credit framework')
       ],
       milestones: [
-        { name: 'Ecosystem Mapping', date: '2022-12', status: 'completed' },
-        { name: 'Field Measurements', date: '2023-08', status: 'completed' },
-        { name: 'Economic Analysis', date: '2024-03', status: 'completed' },
-        { name: 'Policy Recommendations', date: '2024-12', status: 'active' }
+        { name: t('projects.items.blueCarbonValuation.milestones.0', 'Ecosystem Mapping'), date: '2022-12', status: 'completed' },
+        { name: t('projects.items.blueCarbonValuation.milestones.1', 'Field Measurements'), date: '2023-08', status: 'completed' },
+        { name: t('projects.items.blueCarbonValuation.milestones.2', 'Economic Analysis'), date: '2024-03', status: 'completed' },
+        { name: t('projects.items.blueCarbonValuation.milestones.3', 'Policy Recommendations'), date: '2024-12', status: 'active' }
       ],
       outcomes: [
-        '$45M/year carbon value identified',
-        '12,000 hectares mapped',
-        '4 papers published'
+        t('projects.items.blueCarbonValuation.outcomes.0', '$45M/year carbon value identified'),
+        t('projects.items.blueCarbonValuation.outcomes.1', '12,000 hectares mapped'),
+        t('projects.items.blueCarbonValuation.outcomes.2', '4 papers published')
       ],
       fundingSource: 'Green Climate Fund',
       publications: 4,
@@ -175,8 +205,8 @@ const ActiveProjectsTab = () => {
       image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&h=400&fit=crop'
     },
     {
-      id: 5,
-      title: 'Ocean Acidification Impact on Marine Life',
+      id: 'ocean-acidification',
+      title: t('projects.items.oceanAcidification.title', 'Ocean Acidification Impact on Marine Life'),
       category: 'climate',
       status: 'planning',
       duration: '2025-2028',
@@ -186,23 +216,23 @@ const ActiveProjectsTab = () => {
       pi: 'Dr. Lakshmi Dissanayake',
       team: 10,
       partners: ['Scripps Institution', 'GEOMAR', 'National University Singapore'],
-      description: 'Long-term study examining the impacts of ocean acidification on Sri Lankan marine biodiversity and ecosystem services.',
+      description: t('projects.items.oceanAcidification.description', 'Long-term study examining the impacts of ocean acidification on Sri Lankan marine biodiversity and ecosystem services.'),
       objectives: [
-        'Establish 8 ocean pH monitoring stations',
-        'Conduct controlled acidification experiments',
-        'Assess impacts on 50 key species',
-        'Develop adaptation strategies'
+        t('projects.items.oceanAcidification.objectives.0', 'Establish 8 ocean pH monitoring stations'),
+        t('projects.items.oceanAcidification.objectives.1', 'Conduct controlled acidification experiments'),
+        t('projects.items.oceanAcidification.objectives.2', 'Assess impacts on 50 key species'),
+        t('projects.items.oceanAcidification.objectives.3', 'Develop adaptation strategies')
       ],
       milestones: [
-        { name: 'Equipment Procurement', date: '2025-03', status: 'active' },
-        { name: 'Station Installation', date: '2025-09', status: 'upcoming' },
-        { name: 'Data Collection Phase', date: '2026-03', status: 'upcoming' },
-        { name: 'Final Assessment', date: '2028-12', status: 'upcoming' }
+        { name: t('projects.items.oceanAcidification.milestones.0', 'Equipment Procurement'), date: '2025-03', status: 'active' },
+        { name: t('projects.items.oceanAcidification.milestones.1', 'Station Installation'), date: '2025-09', status: 'upcoming' },
+        { name: t('projects.items.oceanAcidification.milestones.2', 'Data Collection Phase'), date: '2026-03', status: 'upcoming' },
+        { name: t('projects.items.oceanAcidification.milestones.3', 'Final Assessment'), date: '2028-12', status: 'upcoming' }
       ],
       outcomes: [
-        'Planning phase 85% complete',
-        'Partners secured',
-        'Equipment ordered'
+        t('projects.items.oceanAcidification.outcomes.0', 'Planning phase 85% complete'),
+        t('projects.items.oceanAcidification.outcomes.1', 'Partners secured'),
+        t('projects.items.oceanAcidification.outcomes.2', 'Equipment ordered')
       ],
       fundingSource: 'EU Horizon Programme',
       publications: 0,
@@ -210,8 +240,8 @@ const ActiveProjectsTab = () => {
       image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&h=400&fit=crop'
     },
     {
-      id: 6,
-      title: 'Sustainable Fishing Technology Innovation',
+      id: 'fishing-technology',
+      title: t('projects.items.fishingTechnology.title', 'Sustainable Fishing Technology Innovation'),
       category: 'fisheries',
       status: 'active',
       duration: '2023-2026',
@@ -221,23 +251,23 @@ const ActiveProjectsTab = () => {
       pi: 'Dr. Ravi Kumar',
       team: 11,
       partners: ['FAO', 'Local Fishing Cooperatives', 'Tech Startups'],
-      description: 'Developing and testing innovative fishing technologies that reduce bycatch and improve selectivity while maintaining economic viability.',
+      description: t('projects.items.fishingTechnology.description', 'Developing and testing innovative fishing technologies that reduce bycatch and improve selectivity while maintaining economic viability.'),
       objectives: [
-        'Design 3 new gear types',
-        'Conduct field trials with 100 vessels',
-        'Reduce bycatch by 60%',
-        'Create technology adoption framework'
+        t('projects.items.fishingTechnology.objectives.0', 'Design 3 new gear types'),
+        t('projects.items.fishingTechnology.objectives.1', 'Conduct field trials with 100 vessels'),
+        t('projects.items.fishingTechnology.objectives.2', 'Reduce bycatch by 60%'),
+        t('projects.items.fishingTechnology.objectives.3', 'Create technology adoption framework')
       ],
       milestones: [
-        { name: 'Technology Design', date: '2023-09', status: 'completed' },
-        { name: 'Prototype Testing', date: '2024-06', status: 'completed' },
-        { name: 'Field Trials', date: '2025-03', status: 'active' },
-        { name: 'Commercialization', date: '2026-12', status: 'upcoming' }
+        { name: t('projects.items.fishingTechnology.milestones.0', 'Technology Design'), date: '2023-09', status: 'completed' },
+        { name: t('projects.items.fishingTechnology.milestones.1', 'Prototype Testing'), date: '2024-06', status: 'completed' },
+        { name: t('projects.items.fishingTechnology.milestones.2', 'Field Trials'), date: '2025-03', status: 'active' },
+        { name: t('projects.items.fishingTechnology.milestones.3', 'Commercialization'), date: '2026-12', status: 'upcoming' }
       ],
       outcomes: [
-        '2 gear types field-tested',
-        '45% bycatch reduction achieved',
-        '45 vessels participating'
+        t('projects.items.fishingTechnology.outcomes.0', '2 gear types field-tested'),
+        t('projects.items.fishingTechnology.outcomes.1', '45% bycatch reduction achieved'),
+        t('projects.items.fishingTechnology.outcomes.2', '45 vessels participating')
       ],
       fundingSource: 'Asian Development Bank',
       publications: 2,
@@ -283,7 +313,7 @@ const ActiveProjectsTab = () => {
         >
           <div className="flex items-center gap-3 mb-2">
             <PlayCircle className="w-5 h-5 text-green-400" />
-            <span className="text-sm text-green-300">Active</span>
+            <span className="text-sm text-green-300">{statusLabels.active}</span>
           </div>
           <div className="text-3xl font-bold text-white">89</div>
         </motion.div>
@@ -296,7 +326,7 @@ const ActiveProjectsTab = () => {
         >
           <div className="flex items-center gap-3 mb-2">
             <Clock className="w-5 h-5 text-blue-400" />
-            <span className="text-sm text-blue-300">Planning</span>
+            <span className="text-sm text-blue-300">{statusLabels.planning}</span>
           </div>
           <div className="text-3xl font-bold text-white">24</div>
         </motion.div>
@@ -309,7 +339,7 @@ const ActiveProjectsTab = () => {
         >
           <div className="flex items-center gap-3 mb-2">
             <AlertCircle className="w-5 h-5 text-amber-400" />
-            <span className="text-sm text-amber-300">Completing</span>
+            <span className="text-sm text-amber-300">{statusLabels.completing}</span>
           </div>
           <div className="text-3xl font-bold text-white">18</div>
         </motion.div>
@@ -322,7 +352,7 @@ const ActiveProjectsTab = () => {
         >
           <div className="flex items-center gap-3 mb-2">
             <CheckCircle className="w-5 h-5 text-purple-400" />
-            <span className="text-sm text-purple-300">Completed</span>
+            <span className="text-sm text-purple-300">{statusLabels.completed}</span>
           </div>
           <div className="text-3xl font-bold text-white">25</div>
         </motion.div>
@@ -333,7 +363,7 @@ const ActiveProjectsTab = () => {
         <div className="flex flex-col md:flex-row gap-4">
           {/* Category Filter */}
           <div className="flex-1">
-            <label className="block text-sm text-slate-400 mb-2">Category</label>
+            <label className="block text-sm text-slate-400 mb-2">{labels.category}</label>
             <div className="flex gap-2 overflow-x-auto pb-2">
               {categories.map((cat) => (
                 <button
@@ -354,7 +384,7 @@ const ActiveProjectsTab = () => {
 
           {/* Status Filter */}
           <div className="w-full md:w-48">
-            <label className="block text-sm text-slate-400 mb-2">Status</label>
+            <label className="block text-sm text-slate-400 mb-2">{labels.status}</label>
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
@@ -390,7 +420,7 @@ const ActiveProjectsTab = () => {
                   <div className="flex items-center gap-2 mb-3">
                     <span className={`px-3 py-1 rounded-full bg-${getStatusColor(project.status)}-500/20 border border-${getStatusColor(project.status)}-500/30 text-${getStatusColor(project.status)}-300 text-xs font-semibold uppercase flex items-center gap-1`}>
                       <StatusIcon className="w-3 h-3" />
-                      {project.status}
+                      {statusLabels[project.status] || project.status}
                     </span>
                     <span className="text-xs text-slate-400">{project.duration}</span>
                   </div>
@@ -400,7 +430,7 @@ const ActiveProjectsTab = () => {
                   </h3>
                   
                   <p className="text-slate-400 text-sm mb-3">
-                    PI: {project.pi}
+                    {labels.pi} {project.pi}
                   </p>
                 </div>
               </div>
@@ -408,7 +438,7 @@ const ActiveProjectsTab = () => {
               {/* Progress Bar */}
               <div className="mb-4">
                 <div className="flex items-center justify-between text-sm mb-2">
-                  <span className="text-slate-400">Progress</span>
+                  <span className="text-slate-400">{labels.progress}</span>
                   <span className="text-cyan-400 font-semibold">{project.progress}%</span>
                 </div>
                 <div className="h-2 bg-white/5 rounded-full overflow-hidden">
@@ -426,28 +456,28 @@ const ActiveProjectsTab = () => {
                 <div className="p-3 rounded-lg bg-white/5 border border-white/10">
                   <div className="flex items-center gap-2 mb-1">
                     <DollarSign className="w-3 h-3 text-green-400" />
-                    <span className="text-xs text-slate-400">Budget</span>
+                    <span className="text-xs text-slate-400">{labels.budget}</span>
                   </div>
                   <div className="text-sm font-semibold text-white">{project.budget}</div>
-                  <div className="text-xs text-slate-500">Spent: {project.spent}</div>
+                  <div className="text-xs text-slate-500">{labels.spent} {project.spent}</div>
                 </div>
 
                 <div className="p-3 rounded-lg bg-white/5 border border-white/10">
                   <div className="flex items-center gap-2 mb-1">
                     <Users className="w-3 h-3 text-cyan-400" />
-                    <span className="text-xs text-slate-400">Team</span>
+                    <span className="text-xs text-slate-400">{labels.team}</span>
                   </div>
                   <div className="text-sm font-semibold text-white">{project.team}</div>
-                  <div className="text-xs text-slate-500">Members</div>
+                  <div className="text-xs text-slate-500">{labels.members}</div>
                 </div>
 
                 <div className="p-3 rounded-lg bg-white/5 border border-white/10">
                   <div className="flex items-center gap-2 mb-1">
                     <FileText className="w-3 h-3 text-purple-400" />
-                    <span className="text-xs text-slate-400">Output</span>
+                    <span className="text-xs text-slate-400">{labels.output}</span>
                   </div>
                   <div className="text-sm font-semibold text-white">{project.publications}</div>
-                  <div className="text-xs text-slate-500">Papers</div>
+                  <div className="text-xs text-slate-500">{labels.papers}</div>
                 </div>
               </div>
 
@@ -467,7 +497,7 @@ const ActiveProjectsTab = () => {
                   >
                     {/* Objectives */}
                     <div>
-                      <h4 className="text-sm font-semibold text-cyan-400 mb-2">Objectives:</h4>
+                      <h4 className="text-sm font-semibold text-cyan-400 mb-2">{labels.objectives}</h4>
                       <ul className="space-y-1">
                         {project.objectives.map((obj, idx) => (
                           <li key={idx} className="flex items-start gap-2 text-slate-300 text-sm">
@@ -480,7 +510,7 @@ const ActiveProjectsTab = () => {
 
                     {/* Key Outcomes */}
                     <div>
-                      <h4 className="text-sm font-semibold text-green-400 mb-2">Key Outcomes:</h4>
+                      <h4 className="text-sm font-semibold text-green-400 mb-2">{labels.outcomes}</h4>
                       <ul className="space-y-1">
                         {project.outcomes.map((outcome, idx) => (
                           <li key={idx} className="flex items-start gap-2 text-slate-300 text-sm">
@@ -493,7 +523,7 @@ const ActiveProjectsTab = () => {
 
                     {/* Partners */}
                     <div>
-                      <h4 className="text-sm font-semibold text-purple-400 mb-2">Partners:</h4>
+                      <h4 className="text-sm font-semibold text-purple-400 mb-2">{labels.partners}</h4>
                       <div className="flex flex-wrap gap-2">
                         {project.partners.map((partner, idx) => (
                           <span key={idx} className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs">
@@ -505,7 +535,7 @@ const ActiveProjectsTab = () => {
 
                     {/* Milestones */}
                     <div>
-                      <h4 className="text-sm font-semibold text-amber-400 mb-3">Timeline:</h4>
+                      <h4 className="text-sm font-semibold text-amber-400 mb-3">{labels.timeline}</h4>
                       <div className="space-y-2">
                         {project.milestones.map((milestone, idx) => (
                           <div key={idx} className="flex items-center gap-3">
@@ -523,7 +553,7 @@ const ActiveProjectsTab = () => {
                               milestone.status === 'active' ? 'bg-cyan-500/20 text-cyan-300' :
                               'bg-slate-700 text-slate-400'
                             }`}>
-                              {milestone.status}
+                              {statusLabels[milestone.status] || milestone.status}
                             </span>
                           </div>
                         ))}
@@ -540,12 +570,12 @@ const ActiveProjectsTab = () => {
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 transition-all text-sm"
                 >
                   <Eye className="w-4 h-4" />
-                  {isExpanded ? 'Show Less' : 'View Details'}
+                  {isExpanded ? labels.showLess : labels.viewDetails}
                 </button>
                 
                 <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:shadow-lg hover:shadow-cyan-500/30 transition-all text-sm">
                   <ExternalLink className="w-4 h-4" />
-                  Project Page
+                  {labels.projectPage}
                 </button>
               </div>
             </motion.div>

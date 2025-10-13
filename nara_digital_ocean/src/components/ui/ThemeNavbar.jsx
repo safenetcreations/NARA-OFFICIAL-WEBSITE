@@ -55,7 +55,8 @@ const ThemeNavbar = () => {
       titleKey: 'navbar.menu.about.title',
       icon: Icons.Info,
       dropdown: [
-        { labelKey: 'navbar.menu.about.links.ourStory', path: '/about-nara-our-story', icon: Icons.Heart }
+        { labelKey: 'navbar.menu.about.links.ourStory', path: '/about-nara-our-story', icon: Icons.Heart },
+        { labelKey: 'navbar.menu.about.links.mediaGallery', path: '/media-gallery', icon: Icons.Image }
       ]
     },
     {

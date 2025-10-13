@@ -47,6 +47,7 @@
         "title": "About",
         "links": {
           "ourStory": "Our Story",
+          "mediaGallery": "Media Gallery",
           "newsUpdates": "News & Updates",
           "procurement": "Procurement"
         }

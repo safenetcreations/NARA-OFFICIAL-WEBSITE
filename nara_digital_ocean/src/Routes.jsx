@@ -27,6 +27,7 @@ const ProcurementRecruitmentPortal = lazy(() => import("./pages/procurement-recr
 const ContactUs = lazy(() => import("./pages/contact-us"));
 const FirebaseAdminAuthenticationPortal = lazy(() => import('./pages/firebase-admin-authentication-portal'));
 const FirebaseAdminDashboardControlCenter = lazy(() => import('./pages/firebase-admin-dashboard-control-center'));
+const MediaGallery = lazy(() => import('./pages/media-gallery'));
 
 // Legal & Compliance Pages
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy'));
@@ -43,6 +44,13 @@ const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const ContentManager = lazy(() => import('./pages/admin/ContentManager'));
 
+// Research Data Admin
+const ResearchAdminLogin = lazy(() => import('./pages/admin/ResearchAdminLogin'));
+const ResearchDataAdmin = lazy(() => import('./pages/admin/ResearchDataAdmin'));
+
+// Media Admin
+const MediaAdmin = lazy(() => import('./pages/admin/MediaAdmin'));
+
 // Layout component with header and footer
 function Layout({ children }) {
   const location = useLocation();
@@ -54,6 +62,9 @@ function Layout({ children }) {
     '/admin/login',
     '/admin/dashboard',
     '/admin/content',
+    '/admin/research-login',
+    '/admin/research-data',
+    '/admin/media',
     '/admin'
   ];
   
@@ -100,6 +111,7 @@ function Routes() {
               <Route path="/government-services-portal" element={<GovernmentServicesPortal />} />
               <Route path="/integration-systems-platform" element={<IntegrationSystemsPlatform />} />
               <Route path="/about-nara-our-story" element={<AboutNARAStoryPage />} />
+              <Route path="/media-gallery" element={<MediaGallery />} />
               <Route path="/nara-news-updates-center" element={<NARANewsUpdatesCenter />} />
               <Route path="/procurement-recruitment-portal" element={<ProcurementRecruitmentPortal />} />
               <Route path="/contact-us" element={<ContactUs />} />
@@ -130,6 +142,13 @@ function Routes() {
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="content" element={<ContentManager />} />
               </Route>
+
+              {/* Research Data Admin Routes */}
+              <Route path="/admin/research-login" element={<ResearchAdminLogin />} />
+              <Route path="/admin/research-data" element={<ResearchDataAdmin />} />
+
+              {/* Media Admin Route */}
+              <Route path="/admin/media" element={<MediaAdmin />} />
             </RouterRoutes>
             </Layout>
           </Suspense>

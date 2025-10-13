@@ -5,10 +5,38 @@ import {
   Globe, FileText, Users, Download, Eye, Star, MapPin,
   Calendar, ArrowUpRight, ArrowDownRight, Minus
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const ImpactAnalyticsTab = () => {
+  const { t } = useTranslation('researchEnhanced');
   const [timeRange, setTimeRange] = useState('year');
   const [activeChart, setActiveChart] = useState('citations');
+
+  const rangeLabels = {
+    month: t('impactAnalytics.range.month', 'Month'),
+    quarter: t('impactAnalytics.range.quarter', 'Quarter'),
+    year: t('impactAnalytics.range.year', 'Year'),
+    all: t('impactAnalytics.range.all', 'All')
+  };
+
+  const labels = {
+    heading: t('impactAnalytics.heading', 'Impact Analytics'),
+    citationGrowth: t('impactAnalytics.citationGrowth.heading', 'Citation Growth'),
+    citationSubheading: t('impactAnalytics.citationGrowth.subheading', '5-year trend analysis'),
+    collaborationStatSuffix: t('impactAnalytics.stats.suffix', 'this year'),
+    downloadHeading: t('impactAnalytics.downloads.heading', 'Monthly Downloads'),
+    downloadSubheading: t('impactAnalytics.downloads.subheading', 'User access trend'),
+    downloadSectionHeading: t('impactAnalytics.downloads.sectionHeading', 'Publication Downloads'),
+    downloadSectionSubheading: t('impactAnalytics.downloads.sectionSubheading', 'Monthly trend for 2024'),
+    impactByAreaHeading: t('impactAnalytics.impactByArea.heading', 'Impact by Research Area'),
+    publicationTypesHeading: t('impactAnalytics.publicationTypes.heading', 'Publications by Type'),
+    publicationTypesTotal: t('impactAnalytics.publicationTypes.total', 'Total: 1,247 publications'),
+    topPublicationsHeading: t('impactAnalytics.topPublications.heading', 'Top Cited Publications'),
+    topPublicationsSubheading: t('impactAnalytics.topPublications.subheading', 'Top 5 by citation count'),
+    geographicHeading: t('impactAnalytics.geographic.heading', 'Global Reach'),
+    activeChartCitations: t('impactAnalytics.tabs.citations', 'Citations'),
+    activeChartDownloads: t('impactAnalytics.tabs.downloads', 'Downloads')
+  };
 
   // Citation Growth Data (Last 5 years)
   const citationData = [
@@ -21,21 +49,21 @@ const ImpactAnalyticsTab = () => {
 
   // Publications by Type
   const publicationTypes = [
-    { type: 'Journal Articles', count: 847, percentage: 67.9, color: 'cyan' },
-    { type: 'Conference Papers', count: 234, percentage: 18.8, color: 'blue' },
-    { type: 'Technical Reports', count: 89, percentage: 7.1, color: 'purple' },
-    { type: 'Book Chapters', count: 45, percentage: 3.6, color: 'green' },
-    { type: 'Datasets', count: 32, percentage: 2.6, color: 'amber' }
+    { type: t('impactAnalytics.publicationTypes.journalArticles', 'Journal Articles'), count: 847, percentage: 67.9, color: 'cyan' },
+    { type: t('impactAnalytics.publicationTypes.conferencePapers', 'Conference Papers'), count: 234, percentage: 18.8, color: 'blue' },
+    { type: t('impactAnalytics.publicationTypes.technicalReports', 'Technical Reports'), count: 89, percentage: 7.1, color: 'purple' },
+    { type: t('impactAnalytics.publicationTypes.bookChapters', 'Book Chapters'), count: 45, percentage: 3.6, color: 'green' },
+    { type: t('impactAnalytics.publicationTypes.datasets', 'Datasets'), count: 32, percentage: 2.6, color: 'amber' }
   ];
 
   // Research Impact by Area
   const impactByArea = [
-    { area: 'Marine Biology', publications: 342, citations: 8921, hIndex: 34, color: 'cyan' },
-    { area: 'Climate Change', publications: 218, citations: 7234, hIndex: 29, color: 'blue' },
-    { area: 'Fisheries', publications: 189, citations: 4567, hIndex: 24, color: 'green' },
-    { area: 'Oceanography', publications: 167, citations: 3892, hIndex: 22, color: 'purple' },
-    { area: 'Conservation', publications: 143, citations: 3125, hIndex: 19, color: 'pink' },
-    { area: 'Policy', publications: 98, citations: 1700, hIndex: 15, color: 'amber' }
+    { area: t('impactAnalytics.impactByArea.labels.marineBiology', 'Marine Biology'), publications: 342, citations: 8921, hIndex: 34, color: 'cyan' },
+    { area: t('impactAnalytics.impactByArea.labels.climateChange', 'Climate Change'), publications: 218, citations: 7234, hIndex: 29, color: 'blue' },
+    { area: t('impactAnalytics.impactByArea.labels.fisheries', 'Fisheries'), publications: 189, citations: 4567, hIndex: 24, color: 'green' },
+    { area: t('impactAnalytics.impactByArea.labels.oceanography', 'Oceanography'), publications: 167, citations: 3892, hIndex: 22, color: 'purple' },
+    { area: t('impactAnalytics.impactByArea.labels.conservation', 'Conservation'), publications: 143, citations: 3125, hIndex: 19, color: 'pink' },
+    { area: t('impactAnalytics.impactByArea.labels.policy', 'Policy'), publications: 98, citations: 1700, hIndex: 15, color: 'amber' }
   ];
 
   // Top Cited Publications
@@ -79,34 +107,34 @@ const ImpactAnalyticsTab = () => {
 
   // Geographic Distribution
   const geographicData = [
-    { region: 'Asia-Pacific', citations: 10234, percentage: 36, institutions: 234 },
-    { region: 'Europe', citations: 8921, percentage: 31, institutions: 189 },
-    { region: 'North America', citations: 5678, percentage: 20, institutions: 156 },
-    { region: 'Rest of World', citations: 3606, percentage: 13, institutions: 98 }
+    { region: t('impactAnalytics.geographic.regions.asiaPacific', 'Asia-Pacific'), citations: 10234, percentage: 36, institutions: 234 },
+    { region: t('impactAnalytics.geographic.regions.europe', 'Europe'), citations: 8921, percentage: 31, institutions: 189 },
+    { region: t('impactAnalytics.geographic.regions.northAmerica', 'North America'), citations: 5678, percentage: 20, institutions: 156 },
+    { region: t('impactAnalytics.geographic.regions.restOfWorld', 'Rest of World'), citations: 3606, percentage: 13, institutions: 98 }
   ];
 
   // Collaboration Network Stats
   const collaborationStats = [
-    { metric: 'Partner Institutions', value: 89, change: 12, trend: 'up' },
-    { metric: 'Countries', value: 42, change: 5, trend: 'up' },
-    { metric: 'Joint Publications', value: 456, change: 67, trend: 'up' },
-    { metric: 'International Co-authors', value: 723, change: 89, trend: 'up' }
+    { metric: t('impactAnalytics.stats.partnerInstitutions', 'Partner Institutions'), value: 89, change: 12, trend: 'up' },
+    { metric: t('impactAnalytics.stats.countries', 'Countries'), value: 42, change: 5, trend: 'up' },
+    { metric: t('impactAnalytics.stats.jointPublications', 'Joint Publications'), value: 456, change: 67, trend: 'up' },
+    { metric: t('impactAnalytics.stats.internationalCoauthors', 'International Co-authors'), value: 723, change: 89, trend: 'up' }
   ];
 
   // Downloads Statistics
   const downloadStats = [
-    { month: 'Jan', downloads: 12340 },
-    { month: 'Feb', downloads: 13890 },
-    { month: 'Mar', downloads: 15234 },
-    { month: 'Apr', downloads: 14567 },
-    { month: 'May', downloads: 16789 },
-    { month: 'Jun', downloads: 18234 },
-    { month: 'Jul', downloads: 19456 },
-    { month: 'Aug', downloads: 21234 },
-    { month: 'Sep', downloads: 20123 },
-    { month: 'Oct', downloads: 22456 },
-    { month: 'Nov', downloads: 23789 },
-    { month: 'Dec', downloads: 25123 }
+    { month: t('impactAnalytics.downloads.months.jan', 'Jan'), downloads: 12340 },
+    { month: t('impactAnalytics.downloads.months.feb', 'Feb'), downloads: 13890 },
+    { month: t('impactAnalytics.downloads.months.mar', 'Mar'), downloads: 15234 },
+    { month: t('impactAnalytics.downloads.months.apr', 'Apr'), downloads: 14567 },
+    { month: t('impactAnalytics.downloads.months.may', 'May'), downloads: 16789 },
+    { month: t('impactAnalytics.downloads.months.jun', 'Jun'), downloads: 18234 },
+    { month: t('impactAnalytics.downloads.months.jul', 'Jul'), downloads: 19456 },
+    { month: t('impactAnalytics.downloads.months.aug', 'Aug'), downloads: 21234 },
+    { month: t('impactAnalytics.downloads.months.sep', 'Sep'), downloads: 20123 },
+    { month: t('impactAnalytics.downloads.months.oct', 'Oct'), downloads: 22456 },
+    { month: t('impactAnalytics.downloads.months.nov', 'Nov'), downloads: 23789 },
+    { month: t('impactAnalytics.downloads.months.dec', 'Dec'), downloads: 25123 }
   ];
 
   const maxCitations = Math.max(...citationData.map(d => d.citations));
@@ -122,7 +150,7 @@ const ImpactAnalyticsTab = () => {
     <div className="space-y-6">
       {/* Time Range Selector */}
       <div className="flex items-center justify-between">
-        <h3 className="text-2xl font-bold text-white">Impact Analytics</h3>
+        <h3 className="text-2xl font-bold text-white">{labels.heading}</h3>
         <div className="flex gap-2">
           {['month', 'quarter', 'year', 'all'].map((range) => (
             <button
@@ -134,7 +162,7 @@ const ImpactAnalyticsTab = () => {
                   : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10'
               }`}
             >
-              {range.charAt(0).toUpperCase() + range.slice(1)}
+              {rangeLabels[range]}
             </button>
           ))}
         </div>
@@ -160,7 +188,7 @@ const ImpactAnalyticsTab = () => {
               stat.trend === 'down' ? 'text-red-400' : 
               'text-slate-400'
             }`}>
-              +{stat.change} this year
+              +{stat.change} {labels.collaborationStatSuffix}
             </div>
           </motion.div>
         ))}
@@ -175,8 +203,8 @@ const ImpactAnalyticsTab = () => {
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h4 className="text-lg font-bold text-white mb-1">Citation Growth</h4>
-              <p className="text-sm text-slate-400">5-year trend analysis</p>
+              <h4 className="text-lg font-bold text-white mb-1">{labels.citationGrowth}</h4>
+              <p className="text-sm text-slate-400">{labels.citationSubheading}</p>
             </div>
             <div className="p-3 rounded-xl bg-cyan-500/20">
               <TrendingUp className="w-6 h-6 text-cyan-400" />
@@ -214,8 +242,8 @@ const ImpactAnalyticsTab = () => {
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h4 className="text-lg font-bold text-white mb-1">Publications by Type</h4>
-              <p className="text-sm text-slate-400">Total: 1,247 publications</p>
+              <h4 className="text-lg font-bold text-white mb-1">{labels.publicationTypesHeading}</h4>
+              <p className="text-sm text-slate-400">{labels.publicationTypesTotal}</p>
             </div>
             <div className="p-3 rounded-xl bg-purple-500/20">
               <PieChart className="w-6 h-6 text-purple-400" />
@@ -254,8 +282,8 @@ const ImpactAnalyticsTab = () => {
       >
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h4 className="text-lg font-bold text-white mb-1">Research Impact by Area</h4>
-            <p className="text-sm text-slate-400">Publications, citations, and h-index</p>
+            <h4 className="text-lg font-bold text-white mb-1">{labels.impactByAreaHeading}</h4>
+            <p className="text-sm text-slate-400">{t('impactAnalytics.impactByArea.subheading', 'Publications, citations, and h-index')}</p>
           </div>
           <div className="p-3 rounded-xl bg-blue-500/20">
             <BarChart3 className="w-6 h-6 text-blue-400" />
@@ -274,15 +302,15 @@ const ImpactAnalyticsTab = () => {
               <h5 className={`text-${area.color}-400 font-semibold mb-3`}>{area.area}</h5>
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-400">Publications</span>
+                  <span className="text-slate-400">{t('impactAnalytics.impactByArea.metrics.publications', 'Publications')}</span>
                   <span className="text-white font-bold">{area.publications}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-400">Citations</span>
+                  <span className="text-slate-400">{t('impactAnalytics.impactByArea.metrics.citations', 'Citations')}</span>
                   <span className="text-white font-bold">{area.citations.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-400">H-Index</span>
+                  <span className="text-slate-400">{t('impactAnalytics.impactByArea.metrics.hIndex', 'H-Index')}</span>
                   <span className="text-white font-bold">{area.hIndex}</span>
                 </div>
               </div>
@@ -300,8 +328,8 @@ const ImpactAnalyticsTab = () => {
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h4 className="text-lg font-bold text-white mb-1">Most Cited Publications</h4>
-              <p className="text-sm text-slate-400">Top 5 by citation count</p>
+              <h4 className="text-lg font-bold text-white mb-1">{labels.topPublicationsHeading}</h4>
+              <p className="text-sm text-slate-400">{labels.topPublicationsSubheading}</p>
             </div>
             <div className="p-3 rounded-xl bg-amber-500/20">
               <Award className="w-6 h-6 text-amber-400" />
@@ -321,12 +349,12 @@ const ImpactAnalyticsTab = () => {
                   <div className="flex items-center gap-3 text-xs text-slate-400">
                     <span>{pub.year}</span>
                     <span>•</span>
-                    <span className="text-cyan-400 font-semibold">{pub.citations} citations</span>
+                    <span className="text-cyan-400 font-semibold">{t('impactAnalytics.topPublications.citations', '{{count}} citations', { count: pub.citations })}</span>
                   </div>
                   <span className={`text-xs font-semibold ${
                     pub.trend === 'up' ? 'text-green-400' : 'text-slate-400'
                   }`}>
-                    +{pub.growth}% growth
+                    {t('impactAnalytics.topPublications.growth', '+{{value}}% growth', { value: pub.growth })}
                   </span>
                 </div>
               </div>
@@ -342,8 +370,8 @@ const ImpactAnalyticsTab = () => {
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h4 className="text-lg font-bold text-white mb-1">Global Reach</h4>
-              <p className="text-sm text-slate-400">Citations by region</p>
+              <h4 className="text-lg font-bold text-white mb-1">{labels.geographicHeading}</h4>
+              <p className="text-sm text-slate-400">{t('impactAnalytics.geographic.subheading', 'Citations by region')}</p>
             </div>
             <div className="p-3 rounded-xl bg-green-500/20">
               <Globe className="w-6 h-6 text-green-400" />
@@ -363,7 +391,7 @@ const ImpactAnalyticsTab = () => {
                       {region.citations.toLocaleString()}
                     </div>
                     <div className="text-xs text-slate-400">
-                      {region.institutions} institutions
+                      {t('impactAnalytics.geographic.institutions', '{{count}} institutions', { count: region.institutions })}
                     </div>
                   </div>
                 </div>
@@ -389,8 +417,8 @@ const ImpactAnalyticsTab = () => {
       >
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h4 className="text-lg font-bold text-white mb-1">Publication Downloads</h4>
-            <p className="text-sm text-slate-400">Monthly trend for 2024</p>
+            <h4 className="text-lg font-bold text-white mb-1">{labels.downloadSectionHeading}</h4>
+            <p className="text-sm text-slate-400">{labels.downloadSectionSubheading}</p>
           </div>
           <div className="p-3 rounded-xl bg-purple-500/20">
             <Download className="w-6 h-6 text-purple-400" />

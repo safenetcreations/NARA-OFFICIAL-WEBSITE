@@ -19,7 +19,8 @@ const ContentManager = () => {
     { id: 'regional', name: 'Regional Impact', icon: Icons.Globe },
     { id: 'maritime', name: 'Maritime Services', icon: Icons.Ship },
     { id: 'knowledge', name: 'Knowledge Center', icon: Icons.BookOpen },
-    { id: 'partnership', name: 'Partnership Gateway', icon: Icons.Handshake }
+    { id: 'partnership', name: 'Partnership Gateway', icon: Icons.Handshake },
+    { id: 'nara-news-updates-center', name: 'News & Updates Center', icon: Icons.Newspaper }
   ];
 
   useEffect(() => {

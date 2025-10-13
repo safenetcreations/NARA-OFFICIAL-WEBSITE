@@ -1,0 +1,107 @@
+{
+  "hero": {
+    "badge": "ජාතික ජල බුද්ධිය",
+    "title": "නාරා පුවත් හා යාවත්කාලීන මධ්‍යස්ථානය",
+    "subtitle": "ශ්‍රී ලංකාවේ නවතම සාගර පර්යේෂණ සොයාගැනීම්, කුසලතා සහභාගිතාවන් සහ වෙරළ සංරක්ෂණ වැඩසටහන් ගැන වහාම දැනගන්න.",
+    "description": "මෙම පුවත් මධ්‍යස්ථානය නාරා පරිපාලන පාලන මධ්‍යස්ථානයෙන් සම්භන්ධිත විස්වාසනීය දත්ත එකතු කර විද්‍යාත්මක ක්ෂේත්‍ර සටහන්, නීති ප්‍රකාශ සහ ප්‍රාදේශීය බලපෑම් කතා මගින් බැඳී සිටින වාර්තා ලබා දෙයි.",
+    "badges": [
+      { "id": "marine", "label": "සාගර විද්‍යා සාරාංශ" },
+      { "id": "innovation", "label": "නව්‍යත්ව නිරීක්ෂණය" }
+    ],
+    "ctas": [
+      { "id": "explore", "label": "සියලුම පුවත් බලන්න", "href": "#latest", "variant": "primary" },
+      { "id": "alerts", "label": "දැනුම්දීම් සඳහා ලියාපදිංචි වන්න", "href": "/contact-us", "variant": "secondary", "icon": "play" }
+    ],
+    "ctaDefault": "තවදුරටත් ඉදිරියට",
+    "stats": {
+      "minutesSuffix": "විනා",
+      "minsFallback": "—",
+      "noReadTime": "සැකසෙමින් පවතී",
+      "totalArticles": "ප්‍රකාශිත පුවත්",
+      "totalViews": "පාඨක ප්‍රවේශය",
+      "totalCategories": "අංශ ගණන",
+      "averageReadTime": "සාමාන්‍ය කියවුම් වේලාව"
+    },
+    "ticker": {
+      "label": "ජීවත් යාවත්කාලීන විකාශය",
+      "heading": "නවතම බුද්ධි රෙඛා",
+      "subheading": "අද {{count}} තේරූ යාවත්කාලීන",
+      "live": "ජීවත්ව",
+      "genericCategory": "විශේෂ",
+      "noDate": "දිනය සටහන් කලේ නැත",
+      "noSummary": "සම්පූර්ණ තොරතුරු එකතු කරමින් ඇත. කෙටි වේලාවකින් නැවත බලන්න.",
+      "openStory": "පුවත විවෘත කරන්න",
+      "loading": "ජීවත් යාවත්කාලීන පූරණය වෙමින්…",
+      "empty": "දැනට ජීවත් යාවත්කාලීන නොමැත. සමහරකින් නැවත සොයන්න."
+    }
+  },
+  "filters": {
+    "sectionTitle": "නවතම පුවත් සහ යාවත්කාලීන",
+    "advanced": "උසස් පෙරහන්",
+    "clearAll": "සියල්ල නිෂ්ක්‍රිය කරන්න",
+    "searchPlaceholder": "පුවත්, කර්තෘවරු, ස්ථාන හෝ ටැග් සොයන්න…",
+    "allCategories": "සියලුම ප්‍රවර්ග",
+    "sortLabel": "පුවත් මෙසේ අනුපිළිවෙලට සකස් කරන්න",
+    "sortOptions": {
+      "dateDesc": "නවතමයෙන් පළමුව",
+      "dateAsc": "ජ්‍යෙෂ්ඨයෙන් පළමුව",
+      "viewsDesc": "වැඩිම දසුන්",
+      "sharesDesc": "වැඩිම බෙදාගැනීම්",
+      "titleAsc": "මාතෘකාව A–Z",
+      "titleDesc": "මාතෘකාව Z–A",
+      "categoryAsc": "ප්‍රවර්ගය A–Z"
+    },
+    "dateFrom": "ආරම්භ දිනය",
+    "dateTo": "අවසන් දිනය"
+  },
+  "results": {
+    "summary": "පුවත් {{total}} එකකින් {{count}} පෙන්වයි",
+    "categorySuffix": "“{{category}}” තුළ",
+    "searchSuffix": "“{{term}}” සමඟ වින්දනය",
+    "dateRangeLabel": "දිනයේ පෙරහන්",
+    "emptyTitle": "පුවත් සොයාගත නොහැකි විය",
+    "emptyDescription": "පෙරහන් වෙනස් කර බලන්න හෝ සියලුම ප්‍රවර්ග පිරික්සා නවතම නාරා යාවත්කාලීන සොයාගන්න.",
+    "emptyResetButton": "පෙරහන් යළි සකසන්න",
+    "dataSource": {
+      "error": "ජීවත් පුවත් මධ්‍යස්ථානය වෙත සම්බන්ධ විය නොහැකි විය. ඉවත් වූ නවතම යාවත්කාලීන පමණක් පෙන්වයි.",
+      "localFallback": "දැන් රැස්කළ දත්ත පෙන්වයි. ජීවත් යාවත්කාලීන සඳහා පරිපාලන පුවරුව සම්බන්ධ කරන්න."
+    }
+  },
+  "articles": {
+    "featured": "විශේෂිත",
+    "readTimeShort": "{{minutes}} විනාඩි කියවීම",
+    "moreTags": "+තවත් {{count}}",
+    "datePending": "දිනය අපේක්ෂිතය"
+  },
+  "modal": {
+    "highlightsTitle": "ප්‍රධාන අවධාන්‍ය",
+    "stats": {
+      "views": "දැක්වීම්",
+      "shares": "බෙදාගැනීම්",
+      "readTime": "කියවීමේ කාලය (විනාඩි)",
+      "tags": "ටැග්"
+    },
+    "relatedTopics": "ബന്ധිත මාතෘකා",
+    "noTags": "ටැග් නොමැත",
+    "publishedBy": "{{author}} විසින් ප්‍රකාශිත",
+    "defaultAuthor": "නාරා සන්නිවේදනය",
+    "publishedOn": "{{date}} දින ප්‍රකාශිතයි"
+  },
+  "categories": {
+    "education-outreach": "අධ්‍යාපන හා ප්‍රවර්ධන",
+    "research-development": "පර්යේෂණ හා සංවර්ධන",
+    "policy-management": "නීති හා කළමනාකරණය",
+    "technology-innovation": "තාක්ෂණ හා නව්‍යතාව",
+    "environmental-initiatives": "පරිසර වේගයන්",
+    "conservation-awareness": "සංරක්ෂණ ඇඟවීම්",
+    "community-development": "සංසද සංවර්ධනය",
+    "capacity-building": "ශක්තිමත් කිරීම",
+    "technology-integration": "තාක්ෂණ ඒකාබද්ධතාව",
+    "international-cooperation": "ජාත්‍යන්තර සහයෝගිතාව",
+    "industry-support": "කර්මාන්ත සහය",
+    "industry-development": "කර්මාන්ත සංවර්ධනය",
+    "cultural-events": "සංස්කෘතික වැඩසටහන්",
+    "institutional-milestones": "ආයතනික සීමා",
+    "conservation-partnerships": "සංරක්ෂණ හවුල්කරුවන්"
+  }
+}

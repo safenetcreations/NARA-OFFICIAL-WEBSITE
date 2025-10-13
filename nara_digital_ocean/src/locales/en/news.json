@@ -1,0 +1,107 @@
+{
+  "hero": {
+    "badge": "National aquatic intelligence",
+    "title": "NARA News & Updates Center",
+    "subtitle": "Stay informed about Sri Lanka’s latest marine research breakthroughs, strategic partnerships, and coastal stewardship initiatives.",
+    "description": "This newsroom curates verified insights from the NARA admin command center, blending scientific field notes, policy briefings, and community impact stories so every stakeholder can respond with confidence.",
+    "badges": [
+      { "id": "marine", "label": "Marine science briefings" },
+      { "id": "innovation", "label": "Innovation watch" }
+    ],
+    "ctas": [
+      { "id": "explore", "label": "Explore all stories", "href": "#latest", "variant": "primary" },
+      { "id": "alerts", "label": "Subscribe to alerts", "href": "/contact-us", "variant": "secondary", "icon": "play" }
+    ],
+    "ctaDefault": "Discover more",
+    "stats": {
+      "minutesSuffix": "mins",
+      "minsFallback": "—",
+      "noReadTime": "Updating soon",
+      "totalArticles": "Published stories",
+      "totalViews": "Reader reach",
+      "totalCategories": "Coverage areas",
+      "averageReadTime": "Avg. read time"
+    },
+    "ticker": {
+      "label": "Live update feed",
+      "heading": "Latest intelligence briefings",
+      "subheading": "{{count}} curated updates today",
+      "live": "Live now",
+      "genericCategory": "Featured",
+      "noDate": "Date pending",
+      "noSummary": "We are gathering the full story. Check back shortly.",
+      "openStory": "Open story",
+      "loading": "Loading live updates…",
+      "empty": "No live updates yet. Check back soon."
+    }
+  },
+  "filters": {
+    "sectionTitle": "Latest News & Updates",
+    "advanced": "Advanced filters",
+    "clearAll": "Clear all filters",
+    "searchPlaceholder": "Search articles, authors, locations, or tags…",
+    "allCategories": "All categories",
+    "sortLabel": "Sort articles by",
+    "sortOptions": {
+      "dateDesc": "Newest first",
+      "dateAsc": "Oldest first",
+      "viewsDesc": "Most viewed",
+      "sharesDesc": "Most shared",
+      "titleAsc": "Title A–Z",
+      "titleDesc": "Title Z–A",
+      "categoryAsc": "Category A–Z"
+    },
+    "dateFrom": "Date from",
+    "dateTo": "Date to"
+  },
+  "results": {
+    "summary": "Showing {{count}} of {{total}} articles",
+    "categorySuffix": "in “{{category}}”",
+    "searchSuffix": "matching “{{term}}”",
+    "dateRangeLabel": "Date filter",
+    "emptyTitle": "No articles found",
+    "emptyDescription": "Try adjusting your filters or browse all categories to discover the latest NARA intelligence.",
+    "emptyResetButton": "Reset filters",
+    "dataSource": {
+      "error": "We couldn’t reach the live newsroom. Displaying the latest cached updates instead.",
+      "localFallback": "Showing cached newsroom data. Connect the admin panel to publish live updates."
+    }
+  },
+  "articles": {
+    "featured": "Featured",
+    "readTimeShort": "{{minutes}} min read",
+    "moreTags": "+{{count}} more",
+    "datePending": "Date pending"
+  },
+  "modal": {
+    "highlightsTitle": "Key highlights",
+    "stats": {
+      "views": "Views",
+      "shares": "Shares",
+      "readTime": "Read time (min)",
+      "tags": "Tags"
+    },
+    "relatedTopics": "Related topics",
+    "noTags": "No tags available",
+    "publishedBy": "Published by {{author}}",
+    "defaultAuthor": "NARA Communications",
+    "publishedOn": "Published on {{date}}"
+  },
+  "categories": {
+    "education-outreach": "Education & Outreach",
+    "research-development": "Research & Development",
+    "policy-management": "Policy & Management",
+    "technology-innovation": "Technology & Innovation",
+    "environmental-initiatives": "Environmental Initiatives",
+    "conservation-awareness": "Conservation & Awareness",
+    "community-development": "Community Development",
+    "capacity-building": "Capacity Building",
+    "technology-integration": "Technology Integration",
+    "international-cooperation": "International Cooperation",
+    "industry-support": "Industry Support",
+    "industry-development": "Industry Development",
+    "cultural-events": "Cultural Events",
+    "institutional-milestones": "Institutional Milestones",
+    "conservation-partnerships": "Conservation Partnerships"
+  }
+}
