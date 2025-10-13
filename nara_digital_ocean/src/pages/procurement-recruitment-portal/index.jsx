@@ -233,6 +233,172 @@ const PortalExperience = () => {
     [translate]
   );
 
+  const supportingDocumentLabel = translate(
+    'modals.application.documents.supporting',
+    'Supporting Document'
+  );
+
+  const recruitmentCopy = useMemo(
+    () => ({
+      heading: translate('recruitment.heading', 'Talent Hub'),
+      description: translate(
+        'recruitment.description',
+        'Join multidisciplinary teams advancing ocean science, climate resilience, and digital innovation across Sri Lanka’s maritime economy.'
+      ),
+      filters: {
+        focusLabel: translate('recruitment.filters.focusLabel', 'Focus area'),
+        allOption: translate('recruitment.filters.allOption', 'All roles'),
+        sortLabel: translate('recruitment.filters.sortLabel', 'Sort'),
+        options: {
+          deadline: translate('recruitment.filters.options.deadline', 'Closing soon'),
+          salary: translate('recruitment.filters.options.salary', 'Highest salary'),
+          recent: translate('recruitment.filters.options.recent', 'Recently posted')
+        }
+      },
+      sidebar: {
+        title: translate('recruitment.sidebar.title', 'Career Insights'),
+        closingSoon: translate('recruitment.sidebar.closingSoon', 'Roles closing soon'),
+        hybrid: translate('recruitment.sidebar.hybrid', 'Hybrid / remote options'),
+        scholarship: translate('recruitment.sidebar.scholarship', 'Scholarship-linked positions'),
+        support: {
+          title: translate('recruitment.sidebar.support.title', 'Talent Concierge'),
+          description: translate(
+            'recruitment.sidebar.support.description',
+            'Our HR team guides shortlisted candidates through assessments, interviews, and relocation logistics.'
+          ),
+          phone: translate('recruitment.sidebar.support.phone', '+94 11 234 5680'),
+          location: translate('recruitment.sidebar.support.location', 'People & Culture Division'),
+          email: translate('recruitment.sidebar.support.email', 'careers@nara.gov.lk')
+        }
+      },
+      empty: translate('recruitment.empty', 'No active roles match your filters right now.'),
+      cards: {
+        categoryFallback: translate('recruitment.cards.categoryFallback', 'Career role'),
+        statusFallback: translate('recruitment.cards.statusFallback', 'Open'),
+        applyBy: translate('recruitment.cards.applyBy', 'Apply by'),
+        tbc: translate('recruitment.cards.tbc', 'TBC'),
+        closed: translate('recruitment.cards.closed', 'Closed'),
+        daysRemaining: translate('recruitment.cards.daysRemaining', '{{count}} days remaining'),
+        department: translate('recruitment.cards.department', 'Department'),
+        departmentFallback: translate('recruitment.cards.departmentFallback', 'NARA'),
+        qualifications: translate('recruitment.cards.qualifications', 'Qualifications'),
+        qualificationsFallback: translate('recruitment.cards.qualificationsFallback', 'See full brief'),
+        salary: translate('recruitment.cards.salary', 'Salary band'),
+        salaryFallback: translate('recruitment.cards.salaryFallback', 'Aligned with NARA scales'),
+        overviewCta: translate('recruitment.cards.buttons.overview', 'Role overview'),
+        applyCta: translate('recruitment.cards.buttons.apply', 'Submit application'),
+        responsibilities: translate('recruitment.cards.responsibilities.title', 'Responsibilities'),
+        responsibilitiesEmpty: translate(
+          'recruitment.cards.responsibilities.empty',
+          'Refer to the job description for detailed responsibilities.'
+        ),
+        candidateProfile: translate('recruitment.cards.profile.title', 'Candidate profile'),
+        experience: translate('recruitment.cards.profile.experience', 'Experience'),
+        experienceFallback: translate(
+          'recruitment.cards.profile.experienceFallback',
+          'Graduate to senior levels considered'
+        ),
+        contractType: translate('recruitment.cards.profile.contractType', 'Contract type'),
+        contractFallback: translate('recruitment.cards.profile.contractFallback', 'Full-time')
+      }
+    }),
+    [translate]
+  );
+
+  const dashboardCopy = useMemo(
+    () => ({
+      heading: translate('dashboard.heading', 'My Workspace'),
+      description: translate(
+        'dashboard.description',
+        'Track every procurement proposal and career application with live status updates, notifications, and secure document management.'
+      ),
+      metrics: {
+        submitted: translate('dashboard.metrics.submitted', 'Submitted applications'),
+        underReview: translate('dashboard.metrics.underReview', 'Under review'),
+        awaiting: translate('dashboard.metrics.awaiting', 'Awaiting documents'),
+        unread: translate('dashboard.metrics.unread', 'Unread notifications')
+      },
+      recent: {
+        title: translate('dashboard.recent.title', 'Recent submissions'),
+        subtitle: translate('dashboard.recent.subtitle', 'Last 10 records'),
+        types: {
+          procurement: translate('dashboard.recent.types.procurement', 'Procurement'),
+          recruitment: translate('dashboard.recent.types.recruitment', 'Career')
+        },
+        empty: translate(
+          'dashboard.recent.empty',
+          'No submissions yet. Start by applying to a tender or role.'
+        ),
+        separator: translate('dashboard.recent.separator', '•'),
+        status: {
+          generic: translate('dashboard.recent.status.generic', '{{status}}')
+        }
+      },
+      notifications: {
+        title: translate('dashboard.notifications.title', 'Notifications'),
+        empty: translate('dashboard.notifications.empty', 'You are all caught up!')
+      },
+      support: {
+        title: translate('dashboard.support.title', 'Need assistance?'),
+        description: translate(
+          'dashboard.support.description',
+          'Our digital support desk can help with account access, submission troubleshooting, and document uploads.'
+        ),
+        cta: translate('dashboard.support.cta', 'Contact support')
+      },
+      loading: {
+        fetching: translate('dashboard.loading.fetching', 'Loading your workspace...'),
+        empty: translate(
+          'dashboard.loading.empty',
+          'Dashboard data will appear after submitting applications.'
+        )
+      }
+    }),
+    [translate]
+  );
+
+  const dashboardStatusLabels = useMemo(
+    () => ({
+      under_review: translate('dashboard.recent.status.under_review', 'Under review'),
+      submitted: translate('dashboard.recent.status.submitted', 'Submitted'),
+      approved: translate('dashboard.recent.status.approved', 'Approved'),
+      shortlisted: translate('dashboard.recent.status.shortlisted', 'Shortlisted'),
+      awarded: translate('dashboard.recent.status.awarded', 'Awarded'),
+      rejected: translate('dashboard.recent.status.rejected', 'Rejected')
+    }),
+    [translate]
+  );
+
+  const loadingCopy = useMemo(
+    () => ({
+      fetching: translate('loading.fetching', 'Fetching the latest updates…')
+    }),
+    [translate]
+  );
+
+  const footerCopy = useMemo(
+    () => ({
+      heading: translate('footer.heading', 'Co-create Sri Lanka’s ocean future with NARA'),
+      description: translate(
+        'footer.description',
+        'Collaborate with us on maritime surveillance, climate-resilient fisheries, digital infrastructure, and community impact programmes across the island.'
+      ),
+      procurementCta: translate('footer.cta.procurement', 'Explore all procurement notices'),
+      recruitmentCta: translate('footer.cta.recruitment', 'Meet the teams hiring now')
+    }),
+    [translate]
+  );
+
+  const alertsCopy = useMemo(
+    () => ({
+      applicationSuccess: translate(
+        'alerts.applicationSuccess',
+        'Application submitted successfully!'
+      )
+    }),
+    [translate]
+  );
+
   const {
     user,
     isAuthenticated,
@@ -622,7 +788,7 @@ const PortalExperience = () => {
         if (input?.files?.length) {
           Array.from(input.files).forEach((file) => {
             filesToUpload.push(file);
-            documentTypes.push(input?.dataset?.documentType || 'Supporting Document');
+            documentTypes.push(input?.dataset?.documentType || supportingDocumentLabel);
           });
         }
       });
@@ -639,7 +805,7 @@ const PortalExperience = () => {
       setShowApplicationModal(false);
       setSelectedNotice(null);
       setError(null);
-      alert('Application submitted successfully!');
+      alert(alertsCopy.applicationSuccess);
     } catch (err) {
       const apiError = handleApiError(err);
       setFormErrors({ application: apiError?.message });
@@ -1030,16 +1196,17 @@ const PortalExperience = () => {
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div className="max-w-2xl">
           <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
-            Talent Hub
+            {recruitmentCopy.heading}
           </h2>
           <p className="text-slate-300">
-            Join multidisciplinary teams advancing ocean science, climate resilience, and digital
-            innovation across Sri Lanka’s maritime economy.
+            {recruitmentCopy.description}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-4 bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
           <div className="flex flex-col">
-            <span className="text-xs uppercase tracking-wider text-slate-400">Focus area</span>
+            <span className="text-xs uppercase tracking-wider text-slate-400">
+              {recruitmentCopy.filters.focusLabel}
+            </span>
             <select
               value={jobCategory}
               onChange={(event) => setJobCategory(event.target.value)}
@@ -1047,21 +1214,23 @@ const PortalExperience = () => {
             >
               {recruitmentCategoryOptions.map((option) => (
                 <option key={option} value={option} className="bg-slate-900">
-                  {option === 'all' ? 'All roles' : option}
+                  {option === 'all' ? recruitmentCopy.filters.allOption : option}
                 </option>
               ))}
             </select>
           </div>
           <div className="flex flex-col">
-            <span className="text-xs uppercase tracking-wider text-slate-400">Sort</span>
+            <span className="text-xs uppercase tracking-wider text-slate-400">
+              {recruitmentCopy.filters.sortLabel}
+            </span>
             <select
               value={jobSort}
               onChange={(event) => setJobSort(event.target.value)}
               className="mt-1 rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-slate-100 focus:border-emerald-400 focus:outline-none"
             >
-              <option value="deadline">Closing soon</option>
-              <option value="salary">Highest salary</option>
-              <option value="recent">Recently posted</option>
+              <option value="deadline">{recruitmentCopy.filters.options.deadline}</option>
+              <option value="salary">{recruitmentCopy.filters.options.salary}</option>
+              <option value="recent">{recruitmentCopy.filters.options.recent}</option>
             </select>
           </div>
         </div>
@@ -1072,23 +1241,25 @@ const PortalExperience = () => {
           <div className="rounded-3xl border border-emerald-500/20 bg-slate-900/60 p-6">
             <div className="flex items-center gap-3 text-emerald-300">
               <Sparkles className="h-5 w-5" />
-              <span className="text-sm uppercase tracking-[0.2em]">Career Insights</span>
+              <span className="text-sm uppercase tracking-[0.2em]">
+                {recruitmentCopy.sidebar.title}
+              </span>
             </div>
             <div className="mt-6 space-y-4 text-sm text-slate-300">
               <div className="flex items-center justify-between">
-                <span>Roles closing soon</span>
+                <span>{recruitmentCopy.sidebar.closingSoon}</span>
                 <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-emerald-300">
                   {recruitmentClosingSoonCount}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span>Hybrid / remote options</span>
+                <span>{recruitmentCopy.sidebar.hybrid}</span>
                 <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-emerald-300">
                   {(jobPostings || []).filter((job) => job?.work_mode?.toLowerCase?.() === 'hybrid').length || '—'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span>Scholarship-linked positions</span>
+                <span>{recruitmentCopy.sidebar.scholarship}</span>
                 <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-emerald-300">
                   {(jobPostings || []).filter((job) => job?.benefits?.toLowerCase?.().includes?.('scholarship')).length || '—'}
                 </span>
@@ -1097,23 +1268,24 @@ const PortalExperience = () => {
           </div>
 
           <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-6">
-            <h3 className="text-lg font-semibold text-white">Talent Concierge</h3>
+            <h3 className="text-lg font-semibold text-white">
+              {recruitmentCopy.sidebar.support.title}
+            </h3>
             <p className="mt-3 text-sm text-slate-400">
-              Our HR team guides shortlisted candidates through assessments, interviews, and relocation
-              logistics.
+              {recruitmentCopy.sidebar.support.description}
             </p>
             <div className="mt-5 space-y-3 text-sm text-slate-300">
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-emerald-400" />
-                <span>+94 11 234 5680</span>
+                <span>{recruitmentCopy.sidebar.support.phone}</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-emerald-400" />
-                <span>People & Culture Division</span>
+                <span>{recruitmentCopy.sidebar.support.location}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Globe2 className="h-4 w-4 text-emerald-400" />
-                <span>careers@nara.gov.lk</span>
+                <span>{recruitmentCopy.sidebar.support.email}</span>
               </div>
             </div>
           </div>
@@ -1123,7 +1295,7 @@ const PortalExperience = () => {
           {filteredJobPostings?.length === 0 ? (
             <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-12 text-center text-slate-300">
               <Users className="mx-auto mb-4 h-10 w-10 text-slate-500" />
-              No active roles match your filters right now.
+              {recruitmentCopy.empty}
             </div>
           ) : (
             filteredJobPostings.map((job) => {
@@ -1145,10 +1317,10 @@ const PortalExperience = () => {
                       <div>
                         <div className="flex items-center gap-3">
                           <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-medium uppercase tracking-wider text-emerald-300">
-                            {job?.category || 'Career role'}
+                            {job?.category || recruitmentCopy.cards.categoryFallback}
                           </span>
                           <span className="rounded-full border border-slate-700 px-3 py-1 text-xs uppercase tracking-wider text-slate-300">
-                            {job?.status || 'Open'}
+                            {job?.status || recruitmentCopy.cards.statusFallback}
                           </span>
                         </div>
                         <h3 className="mt-3 text-2xl font-semibold text-white">
@@ -1159,9 +1331,11 @@ const PortalExperience = () => {
                         </p>
                       </div>
                       <div className="rounded-2xl border border-slate-700 bg-slate-950/80 px-5 py-4 text-right">
-                        <span className="block text-xs uppercase tracking-wider text-slate-400">Apply by</span>
+                        <span className="block text-xs uppercase tracking-wider text-slate-400">
+                          {recruitmentCopy.cards.applyBy}
+                        </span>
                         <span className="text-lg font-semibold text-white">
-                          {job?.application_deadline || 'TBC'}
+                          {job?.application_deadline || recruitmentCopy.cards.tbc}
                         </span>
                         {daysLeft !== null && (
                           <span className={`mt-1 block text-xs font-medium ${
@@ -1171,7 +1345,11 @@ const PortalExperience = () => {
                                 ? 'text-amber-300'
                                 : 'text-emerald-300'
                           }`}>
-                            {daysLeft < 0 ? 'Closed' : `${daysLeft} days remaining`}
+                            {daysLeft < 0
+                              ? recruitmentCopy.cards.closed
+                              : translate('recruitment.cards.daysRemaining', recruitmentCopy.cards.daysRemaining, {
+                                  count: daysLeft
+                                })}
                           </span>
                         )}
                       </div>
@@ -1181,25 +1359,35 @@ const PortalExperience = () => {
                       <div className="flex items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-3">
                         <Building className="h-4 w-4 text-emerald-300" />
                         <div>
-                          <p className="text-xs uppercase tracking-wider text-slate-400">Department</p>
-                          <p className="text-slate-200">{job?.department || 'NARA'}</p>
+                          <p className="text-xs uppercase tracking-wider text-slate-400">
+                            {recruitmentCopy.cards.department}
+                          </p>
+                          <p className="text-slate-200">
+                            {job?.department || recruitmentCopy.cards.departmentFallback}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-3">
                         <Award className="h-4 w-4 text-emerald-300" />
                         <div>
-                          <p className="text-xs uppercase tracking-wider text-slate-400">Qualifications</p>
-                          <p className="text-slate-200">{job?.qualifications_required || 'See full brief'}</p>
+                          <p className="text-xs uppercase tracking-wider text-slate-400">
+                            {recruitmentCopy.cards.qualifications}
+                          </p>
+                          <p className="text-slate-200">
+                            {job?.qualifications_required || recruitmentCopy.cards.qualificationsFallback}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-3">
                         <Briefcase className="h-4 w-4 text-emerald-300" />
                         <div>
-                          <p className="text-xs uppercase tracking-wider text-slate-400">Salary Band</p>
+                          <p className="text-xs uppercase tracking-wider text-slate-400">
+                            {recruitmentCopy.cards.salary}
+                          </p>
                           <p className="text-slate-200">
                             {job?.salary_range_min && job?.salary_range_max
                               ? `LKR ${job.salary_range_min} - ${job.salary_range_max}`
-                              : job?.salary_range || 'Aligned with NARA scales'}
+                              : job?.salary_range || recruitmentCopy.cards.salaryFallback}
                           </p>
                         </div>
                       </div>
@@ -1211,7 +1399,7 @@ const PortalExperience = () => {
                         className="flex items-center gap-2 rounded-full border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-emerald-400 hover:text-emerald-300"
                       >
                         <Eye className="h-4 w-4" />
-                        Role overview
+                        {recruitmentCopy.cards.overviewCta}
                         <ChevronDown className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                       </button>
                       <button
@@ -1219,7 +1407,7 @@ const PortalExperience = () => {
                         className="flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:scale-[1.01]"
                       >
                         <Send className="h-4 w-4" />
-                        Submit application
+                        {recruitmentCopy.cards.applyCta}
                       </button>
                     </div>
 
@@ -1235,7 +1423,7 @@ const PortalExperience = () => {
                           <div className="grid gap-6 md:grid-cols-2">
                             <div>
                               <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-300">
-                                Responsibilities
+                                {recruitmentCopy.cards.responsibilities}
                               </h4>
                               {(() => {
                                 const responsibilities = Array.isArray(job?.responsibilities)
@@ -1245,7 +1433,7 @@ const PortalExperience = () => {
                                 if (!responsibilities.length) {
                                   return (
                                     <ul className="mt-3 space-y-2 text-sm text-slate-400">
-                                      <li>Refer to the job description for detailed responsibilities.</li>
+                                      <li>{recruitmentCopy.cards.responsibilitiesEmpty}</li>
                                     </ul>
                                   );
                                 }
@@ -1264,16 +1452,22 @@ const PortalExperience = () => {
                             </div>
                             <div>
                               <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-300">
-                                Candidate profile
+                                {recruitmentCopy.cards.candidateProfile}
                               </h4>
                               <div className="mt-3 space-y-3 text-sm text-slate-300">
                                 <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 px-4 py-3">
-                                  <span className="block text-xs uppercase tracking-wider text-slate-400">Experience</span>
-                                  <span>{job?.experience_required || 'Graduate to senior levels considered'}</span>
+                                  <span className="block text-xs uppercase tracking-wider text-slate-400">
+                                    {recruitmentCopy.cards.experience}
+                                  </span>
+                                  <span>
+                                    {job?.experience_required || recruitmentCopy.cards.experienceFallback}
+                                  </span>
                                 </div>
                                 <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 px-4 py-3">
-                                  <span className="block text-xs uppercase tracking-wider text-slate-400">Contract type</span>
-                                  <span>{job?.employment_type || 'Full-time'}</span>
+                                  <span className="block text-xs uppercase tracking-wider text-slate-400">
+                                    {recruitmentCopy.cards.contractType}
+                                  </span>
+                                  <span>{job?.employment_type || recruitmentCopy.cards.contractFallback}</span>
                                 </div>
                               </div>
                             </div>
@@ -1303,12 +1497,9 @@ const PortalExperience = () => {
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div className="max-w-2xl">
           <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
-            My Workspace
+            {dashboardCopy.heading}
           </h2>
-          <p className="text-slate-300">
-            Track every procurement proposal and career application with live status updates,
-            notifications, and secure document management.
-          </p>
+          <p className="text-slate-300">{dashboardCopy.description}</p>
         </div>
       </div>
 
@@ -1317,25 +1508,25 @@ const PortalExperience = () => {
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             <DashboardMetric
               icon={FileText}
-              label="Submitted applications"
+              label={dashboardCopy.metrics.submitted}
               primary={dashboardData?.statistics?.submitted_applications || 0}
               accent="from-cyan-500 to-blue-600"
             />
             <DashboardMetric
               icon={CheckCircle}
-              label="Under review"
+              label={dashboardCopy.metrics.underReview}
               primary={dashboardData?.statistics?.under_review_applications || 0}
               accent="from-emerald-500 to-teal-500"
             />
             <DashboardMetric
               icon={Clock}
-              label="Awaiting documents"
+              label={dashboardCopy.metrics.awaiting}
               primary={dashboardData?.statistics?.pending_documents || 0}
               accent="from-amber-500 to-orange-500"
             />
             <DashboardMetric
               icon={Bell}
-              label="Unread notifications"
+              label={dashboardCopy.metrics.unread}
               primary={dashboardData?.notifications?.length || 0}
               accent="from-purple-500 to-pink-500"
             />
@@ -1345,8 +1536,10 @@ const PortalExperience = () => {
             <div className="lg:col-span-3 space-y-6">
               <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-semibold text-white">Recent submissions</h3>
-                  <span className="text-xs uppercase tracking-wider text-slate-400">Last 10 records</span>
+                  <h3 className="text-xl font-semibold text-white">{dashboardCopy.recent.title}</h3>
+                  <span className="text-xs uppercase tracking-wider text-slate-400">
+                    {dashboardCopy.recent.subtitle}
+                  </span>
                 </div>
                 <div className="mt-4 space-y-3">
                   {dashboardData?.recent_applications?.length ? (
@@ -1359,9 +1552,11 @@ const PortalExperience = () => {
                           <p className="text-sm font-medium text-slate-200">{application?.title}</p>
                           <div className="flex items-center gap-3 text-xs text-slate-400">
                             <span>{application?.submitted_on || application?.submission_date}</span>
-                            <span>•</span>
+                            <span>{dashboardCopy.recent.separator}</span>
                             <span>
-                              {application?.application_type === 'procurement' ? 'Procurement' : 'Career'}
+                              {application?.application_type === 'procurement'
+                                ? dashboardCopy.recent.types.procurement
+                                : dashboardCopy.recent.types.recruitment}
                             </span>
                           </div>
                         </div>
@@ -1371,16 +1566,28 @@ const PortalExperience = () => {
                               ? 'bg-amber-500/10 text-amber-300'
                               : application?.status === 'submitted'
                                 ? 'bg-cyan-500/10 text-cyan-300'
-                                : 'bg-emerald-500/10 text-emerald-300'
+                              : 'bg-emerald-500/10 text-emerald-300'
                           }`}
                         >
-                          {(application?.status || 'submitted').replace('_', ' ')}
+                          {(() => {
+                            const normalizedStatus = (application?.status || '').toLowerCase();
+                            return (
+                              dashboardStatusLabels[normalizedStatus] ||
+                              translate(
+                                'dashboard.recent.status.generic',
+                                dashboardCopy.recent.status.generic,
+                                {
+                                  status: (application?.status || 'submitted').replace('_', ' ')
+                                }
+                              )
+                            );
+                          })()}
                         </span>
                       </div>
                     ))
                   ) : (
                     <div className="rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-6 text-center text-slate-400">
-                      No submissions yet. Start by applying to a tender or role.
+                      {dashboardCopy.recent.empty}
                     </div>
                   )}
                 </div>
@@ -1389,7 +1596,7 @@ const PortalExperience = () => {
 
             <div className="lg:col-span-2 space-y-6">
               <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-6">
-                <h3 className="text-xl font-semibold text-white">Notifications</h3>
+                <h3 className="text-xl font-semibold text-white">{dashboardCopy.notifications.title}</h3>
                 <div className="mt-4 space-y-3">
                   {dashboardData?.notifications?.length ? (
                     dashboardData?.notifications?.map((notification, index) => (
@@ -1401,21 +1608,18 @@ const PortalExperience = () => {
                     ))
                   ) : (
                     <div className="rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-6 text-center text-slate-400">
-                      You are all caught up!
+                      {dashboardCopy.notifications.empty}
                     </div>
                   )}
                 </div>
               </div>
 
               <div className="rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-6">
-                <h3 className="text-xl font-semibold text-white">Need assistance?</h3>
-                <p className="mt-3 text-sm text-slate-300">
-                  Our digital support desk can help with account access, submission troubleshooting, and
-                  document uploads.
-                </p>
+                <h3 className="text-xl font-semibold text-white">{dashboardCopy.support.title}</h3>
+                <p className="mt-3 text-sm text-slate-300">{dashboardCopy.support.description}</p>
                 <button className="mt-5 inline-flex items-center gap-2 rounded-full border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-cyan-400 hover:text-cyan-300">
                   <Phone className="h-4 w-4" />
-                  Contact support
+                  {dashboardCopy.support.cta}
                 </button>
               </div>
             </div>
@@ -1424,7 +1628,7 @@ const PortalExperience = () => {
       ) : (
         <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-12 text-center text-slate-300">
           <Settings className="mx-auto mb-4 h-10 w-10 text-slate-500" />
-          {loading ? 'Loading your workspace...' : 'Dashboard data will appear after submitting applications.'}
+          {loading ? dashboardCopy.loading.fetching : dashboardCopy.loading.empty}
         </div>
       )}
     </motion.section>
@@ -2349,7 +2553,7 @@ const PortalExperience = () => {
         {loading && (
           <div className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-slate-800 bg-slate-900/60 px-6 py-16 text-center text-slate-300">
             <Loader className="h-8 w-8 animate-spin text-cyan-300" />
-            <p>Fetching the latest updates…</p>
+            <p>{loadingCopy.fetching}</p>
           </div>
         )}
 
@@ -2362,25 +2566,22 @@ const PortalExperience = () => {
 
       <footer className="border-t border-slate-800 bg-slate-950/80 py-16">
         <div className="mx-auto max-w-6xl space-y-8 px-4 text-center md:px-6">
-          <h2 className="text-3xl font-semibold text-white">Co-create Sri Lanka’s ocean future with NARA</h2>
-          <p className="mx-auto max-w-3xl text-lg text-slate-300">
-            Collaborate with us on maritime surveillance, climate-resilient fisheries, digital
-            infrastructure, and community impact programmes across the island.
-          </p>
+          <h2 className="text-3xl font-semibold text-white">{footerCopy.heading}</h2>
+          <p className="mx-auto max-w-3xl text-lg text-slate-300">{footerCopy.description}</p>
           <div className="flex flex-wrap justify-center gap-3">
             <button
               onClick={() => setActiveTab('procurement')}
               className="flex items-center gap-2 rounded-full border border-cyan-400 px-6 py-3 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-500/10"
             >
               <FileText className="h-4 w-4" />
-              Explore all procurement notices
+              {footerCopy.procurementCta}
             </button>
             <button
               onClick={() => setActiveTab('recruitment')}
               className="flex items-center gap-2 rounded-full border border-emerald-400 px-6 py-3 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-500/10"
             >
               <Users className="h-4 w-4" />
-              Meet the teams hiring now
+              {footerCopy.recruitmentCta}
             </button>
           </div>
         </div>

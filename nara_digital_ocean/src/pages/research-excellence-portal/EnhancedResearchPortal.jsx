@@ -6,9 +6,15 @@ import {
   ChevronDown, ChevronRight, Eye, Heart, Star, Zap, Target,
   Database, BarChart3, Network, MapPin, DollarSign, Clock,
   GraduationCap, Microscope, Waves, Fish, Sparkles, BookOpen,
-  Code, GitBranch, LineChart, PieChart, Activity, ArrowUpRight
+  Code, GitBranch, LineChart, PieChart, Activity, ArrowUpRight, SlidersHorizontal
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+// Phase 2 Components
+import ActiveProjectsTab from './components/ActiveProjectsTab';
+import ImpactAnalyticsTab from './components/ImpactAnalyticsTab';
+import GlobalCollaborationTab from './components/GlobalCollaborationTab';
+import AdvancedSearch from './components/AdvancedSearch';
 
 const EnhancedResearchPortal = () => {
   const [activeTab, setActiveTab] = useState('publications');
@@ -22,6 +28,7 @@ const EnhancedResearchPortal = () => {
   const [sortBy, setSortBy] = useState('citations');
   const [expandedPublication, setExpandedPublication] = useState(null);
   const [bookmarked, setBookmarked] = useState([]);
+  const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -372,8 +379,8 @@ const EnhancedResearchPortal = () => {
               <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
                 <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
                   {/* Search */}
-                  <div className="lg:col-span-2">
-                    <div className="relative">
+                  <div className="lg:col-span-2 flex gap-2">
+                    <div className="relative flex-1">
                       <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                       <input
                         type="text"
@@ -383,6 +390,13 @@ const EnhancedResearchPortal = () => {
                         className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                       />
                     </div>
+                    <button
+                      onClick={() => setShowAdvancedSearch(true)}
+                      className="px-4 py-3 rounded-xl bg-purple-500/20 border border-purple-500/30 text-purple-300 hover:bg-purple-500/30 transition-all flex items-center gap-2 whitespace-nowrap"
+                    >
+                      <SlidersHorizontal className="w-4 h-4" />
+                      <span className="hidden md:inline">Advanced</span>
+                    </button>
                   </div>
 
                   {/* Filters */}
@@ -606,8 +620,57 @@ const EnhancedResearchPortal = () => {
               ))}
             </motion.div>
           )}
+
+          {/* Phase 2: Active Projects Tab */}
+          {activeTab === 'projects' && (
+            <motion.div
+              key="projects"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <ActiveProjectsTab />
+            </motion.div>
+          )}
+
+          {/* Phase 2: Impact Analytics Tab */}
+          {activeTab === 'impact' && (
+            <motion.div
+              key="impact"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <ImpactAnalyticsTab />
+            </motion.div>
+          )}
+
+          {/* Phase 2: Global Collaboration Tab */}
+          {activeTab === 'collaboration' && (
+            <motion.div
+              key="collaboration"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <GlobalCollaborationTab />
+            </motion.div>
+          )}
         </AnimatePresence>
       </section>
+
+      {/* Advanced Search Modal */}
+      <AnimatePresence>
+        {showAdvancedSearch && (
+          <AdvancedSearch
+            onSearch={(criteria) => {
+              console.log('Search criteria:', criteria);
+              // Handle search logic here
+            }}
+            onClose={() => setShowAdvancedSearch(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -215,7 +215,123 @@
           "transcripts": "Academic transcripts",
           "certifications": "Professional certifications"
         }
+      },
+      "documents": {
+        "supporting": "Supporting Document"
       }
     }
+  },
+  "recruitment": {
+    "heading": "Talent Hub",
+    "description": "Join multidisciplinary teams advancing ocean science, climate resilience, and digital innovation across Sri Lanka’s maritime economy.",
+    "filters": {
+      "focusLabel": "Focus area",
+      "allOption": "All roles",
+      "sortLabel": "Sort",
+      "options": {
+        "deadline": "Closing soon",
+        "salary": "Highest salary",
+        "recent": "Recently posted"
+      }
+    },
+    "sidebar": {
+      "title": "Career Insights",
+      "closingSoon": "Roles closing soon",
+      "hybrid": "Hybrid / remote options",
+      "scholarship": "Scholarship-linked positions",
+      "support": {
+        "title": "Talent Concierge",
+        "description": "Our HR team guides shortlisted candidates through assessments, interviews, and relocation logistics.",
+        "phone": "+94 11 234 5680",
+        "location": "People & Culture Division",
+        "email": "careers@nara.gov.lk"
+      }
+    },
+    "empty": "No active roles match your filters right now.",
+    "cards": {
+      "categoryFallback": "Career role",
+      "statusFallback": "Open",
+      "applyBy": "Apply by",
+      "tbc": "TBC",
+      "closed": "Closed",
+      "daysRemaining": "{{count}} days remaining",
+      "department": "Department",
+      "departmentFallback": "NARA",
+      "qualifications": "Qualifications",
+      "qualificationsFallback": "See full brief",
+      "salary": "Salary band",
+      "salaryFallback": "Aligned with NARA scales",
+      "buttons": {
+        "overview": "Role overview",
+        "apply": "Submit application"
+      },
+      "responsibilities": {
+        "title": "Responsibilities",
+        "empty": "Refer to the job description for detailed responsibilities."
+      },
+      "profile": {
+        "title": "Candidate profile",
+        "experience": "Experience",
+        "experienceFallback": "Graduate to senior levels considered",
+        "contractType": "Contract type",
+        "contractFallback": "Full-time"
+      }
+    }
+  },
+  "dashboard": {
+    "heading": "My Workspace",
+    "description": "Track every procurement proposal and career application with live status updates, notifications, and secure document management.",
+    "metrics": {
+      "submitted": "Submitted applications",
+      "underReview": "Under review",
+      "awaiting": "Awaiting documents",
+      "unread": "Unread notifications"
+    },
+    "recent": {
+      "title": "Recent submissions",
+      "subtitle": "Last 10 records",
+      "separator": "•",
+      "types": {
+        "procurement": "Procurement",
+        "recruitment": "Career"
+      },
+      "empty": "No submissions yet. Start by applying to a tender or role.",
+      "status": {
+        "generic": "{{status}}",
+        "under_review": "Under review",
+        "submitted": "Submitted",
+        "approved": "Approved",
+        "shortlisted": "Shortlisted",
+        "awarded": "Awarded",
+        "rejected": "Rejected"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "empty": "You are all caught up!"
+    },
+    "support": {
+      "title": "Need assistance?",
+      "description": "Our digital support desk can help with account access, submission troubleshooting, and document uploads.",
+      "cta": "Contact support"
+    },
+    "loading": {
+      "fetching": "Loading your workspace...",
+      "empty": "Dashboard data will appear after submitting applications."
+    }
+  },
+  "loading": {
+    "fetching": "Fetching the latest updates…"
+  },
+  "footer": {
+    "heading": "Co-create Sri Lanka’s ocean future with NARA",
+    "description": "Collaborate with us on maritime surveillance, climate-resilient fisheries, digital infrastructure, and community impact programmes across the island.",
+    "cta": {
+      "procurement": "Explore all procurement notices",
+      "recruitment": "Meet the teams hiring now"
+    }
+  },
+  "alerts": {
+    "applicationSuccess": "Application submitted successfully!"
   }
 }
