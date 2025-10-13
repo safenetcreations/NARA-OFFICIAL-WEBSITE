@@ -1,11 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Search, Filter, X, Calendar, User, FileText, Building,
-  Tag, TrendingUp, Download, Star, ChevronDown, Plus, Minus
+  Tag, TrendingUp, Star, Plus, Minus
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
+const RESEARCH_AREAS_FALLBACK = [
+  'Marine Biology',
+  'Climate Change',
+  'Fisheries Management',
+  'Oceanography',
+  'Conservation',
+  'Marine Policy',
+  'Aquaculture',
+  'Coastal Engineering',
+  'Marine Biotechnology',
+  'Ocean Modeling'
+];
+
+const PUBLICATION_TYPES_FALLBACK = [
+  'Journal Article',
+  'Conference Paper',
+  'Technical Report',
+  'Book Chapter',
+  'Dataset',
+  'Thesis/Dissertation',
+  'Review Article',
+  'Policy Brief'
+];
+
+const LANGUAGES_FALLBACK = [
+  { value: 'all', label: 'All Languages' },
+  { value: 'en', label: 'English' },
+  { value: 'si', label: 'Sinhala' },
+  { value: 'ta', label: 'Tamil' }
+];
 
 const AdvancedSearch = ({ onSearch, onClose }) => {
+  const { t } = useTranslation('researchEnhanced');
   const [searchCriteria, setSearchCriteria] = useState({
     keywords: '',
     title: '',
@@ -23,36 +56,55 @@ const AdvancedSearch = ({ onSearch, onClose }) => {
     language: 'all'
   });
 
-  const researchAreas = [
-    'Marine Biology',
-    'Climate Change',
-    'Fisheries Management',
-    'Oceanography',
-    'Conservation',
-    'Marine Policy',
-    'Aquaculture',
-    'Coastal Engineering',
-    'Marine Biotechnology',
-    'Ocean Modeling'
-  ];
+  const researchAreas = useMemo(() => {
+    const translated = t('advancedSearch.researchAreas', { returnObjects: true, defaultValue: RESEARCH_AREAS_FALLBACK });
+    return Array.isArray(translated) && translated.length ? translated : RESEARCH_AREAS_FALLBACK;
+  }, [t]);
 
-  const publicationTypes = [
-    'Journal Article',
-    'Conference Paper',
-    'Technical Report',
-    'Book Chapter',
-    'Dataset',
-    'Thesis/Dissertation',
-    'Review Article',
-    'Policy Brief'
-  ];
+  const publicationTypes = useMemo(() => {
+    const translated = t('advancedSearch.publicationTypes', { returnObjects: true, defaultValue: PUBLICATION_TYPES_FALLBACK });
+    return Array.isArray(translated) && translated.length ? translated : PUBLICATION_TYPES_FALLBACK;
+  }, [t]);
 
-  const languages = [
-    { value: 'all', label: 'All Languages' },
-    { value: 'en', label: 'English' },
-    { value: 'si', label: 'Sinhala' },
-    { value: 'ta', label: 'Tamil' }
-  ];
+  const languages = useMemo(() => {
+    const translated = t('advancedSearch.languages', { returnObjects: true, defaultValue: LANGUAGES_FALLBACK });
+    return Array.isArray(translated) && translated.length ? translated : LANGUAGES_FALLBACK;
+  }, [t]);
+
+  const copy = useMemo(() => ({
+    title: t('advancedSearch.title', 'Advanced Search'),
+    headerDefault: t('advancedSearch.header.default', 'Search across 1,247 publications'),
+    textHeading: t('advancedSearch.sections.text.heading', 'Text Search'),
+    keywordsLabel: t('advancedSearch.sections.text.fields.keywords.label', 'Keywords (any field)'),
+    keywordsPlaceholder: t('advancedSearch.sections.text.fields.keywords.placeholder', 'e.g., coral reef, microplastic'),
+    titleLabel: t('advancedSearch.sections.text.fields.title.label', 'Title'),
+    titlePlaceholder: t('advancedSearch.sections.text.fields.title.placeholder', 'Publication title'),
+    authorLabel: t('advancedSearch.sections.text.fields.author.label', 'Author'),
+    authorPlaceholder: t('advancedSearch.sections.text.fields.author.placeholder', 'Author name'),
+    institutionLabel: t('advancedSearch.sections.text.fields.institution.label', 'Institution'),
+    institutionPlaceholder: t('advancedSearch.sections.text.fields.institution.placeholder', 'Institution name'),
+    dateHeading: t('advancedSearch.sections.date.heading', 'Publication Date'),
+    fromYear: t('advancedSearch.sections.date.fields.fromYear', 'From Year'),
+    toYear: t('advancedSearch.sections.date.fields.toYear', 'To Year'),
+    researchAreasHeading: t('advancedSearch.sections.areas.heading', 'Research Areas'),
+    publicationTypeHeading: t('advancedSearch.sections.types.heading', 'Publication Type'),
+    impactHeading: t('advancedSearch.sections.impact.heading', 'Impact Metrics'),
+    minCitations: t('advancedSearch.sections.impact.fields.minCitations', 'Min. Citations'),
+    maxCitations: t('advancedSearch.sections.impact.fields.maxCitations', 'Max. Citations'),
+    minImpact: t('advancedSearch.sections.impact.fields.minImpact', 'Min. Impact Factor'),
+    minCitationsPlaceholder: t('advancedSearch.sections.impact.fields.minCitationsPlaceholder', 'e.g., 10'),
+    maxCitationsPlaceholder: t('advancedSearch.sections.impact.fields.maxCitationsPlaceholder', 'e.g., 1000'),
+    minImpactPlaceholder: t('advancedSearch.sections.impact.fields.minImpactPlaceholder', 'e.g., 5.0'),
+    additionalHeading: t('advancedSearch.sections.additional.heading', 'Additional Filters'),
+    openAccessOnly: t('advancedSearch.sections.additional.openAccess.label', 'Open Access Only'),
+    openAccessDescription: t('advancedSearch.sections.additional.openAccess.description', 'Show only freely available publications'),
+    hasDataset: t('advancedSearch.sections.additional.dataset.label', 'Has Dataset'),
+    hasDatasetDescription: t('advancedSearch.sections.additional.dataset.description', 'Publications with linked datasets'),
+    languageLabel: t('advancedSearch.sections.additional.language.label', 'Language'),
+    reset: t('advancedSearch.actions.reset', 'Reset All'),
+    cancel: t('advancedSearch.actions.cancel', 'Cancel'),
+    search: t('advancedSearch.actions.search', 'Search')
+  }), [t]);
 
   const toggleArrayValue = (array, value) => {
     if (array.includes(value)) {
@@ -91,6 +143,10 @@ const AdvancedSearch = ({ onSearch, onClose }) => {
     return value !== '' && value !== 'all';
   }).length;
 
+  const headerSubtitle = activeFiltersCount > 0
+    ? t('advancedSearch.header.activeFilters', '{{count}} filters active', { count: activeFiltersCount })
+    : copy.headerDefault;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -114,10 +170,8 @@ const AdvancedSearch = ({ onSearch, onClose }) => {
                 <Filter className="w-6 h-6 text-cyan-400" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-white">Advanced Search</h2>
-                <p className="text-sm text-slate-400">
-                  {activeFiltersCount > 0 ? `${activeFiltersCount} filters active` : 'Search across 1,247 publications'}
-                </p>
+                <h2 className="text-2xl font-bold text-white">{copy.title}</h2>
+                <p className="text-sm text-slate-400">{headerSubtitle}</p>
               </div>
             </div>
             <button
@@ -134,55 +188,55 @@ const AdvancedSearch = ({ onSearch, onClose }) => {
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               <Search className="w-5 h-5 text-cyan-400" />
-              Text Search
+              {copy.textHeading}
             </h3>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm text-slate-400 mb-2">Keywords (any field)</label>
+                <label className="block text-sm text-slate-400 mb-2">{copy.keywordsLabel}</label>
                 <input
                   type="text"
                   value={searchCriteria.keywords}
                   onChange={(e) => setSearchCriteria({...searchCriteria, keywords: e.target.value})}
-                  placeholder="e.g., coral reef, microplastic"
+                  placeholder={copy.keywordsPlaceholder}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-slate-400 mb-2">Title</label>
+                <label className="block text-sm text-slate-400 mb-2">{copy.titleLabel}</label>
                 <input
                   type="text"
                   value={searchCriteria.title}
                   onChange={(e) => setSearchCriteria({...searchCriteria, title: e.target.value})}
-                  placeholder="Publication title"
+                  placeholder={copy.titlePlaceholder}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-slate-400 mb-2">Author</label>
+                <label className="block text-sm text-slate-400 mb-2">{copy.authorLabel}</label>
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
                     type="text"
                     value={searchCriteria.author}
                     onChange={(e) => setSearchCriteria({...searchCriteria, author: e.target.value})}
-                    placeholder="Author name"
+                    placeholder={copy.authorPlaceholder}
                     className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm text-slate-400 mb-2">Institution</label>
+                <label className="block text-sm text-slate-400 mb-2">{copy.institutionLabel}</label>
                 <div className="relative">
                   <Building className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
                     type="text"
                     value={searchCriteria.institution}
                     onChange={(e) => setSearchCriteria({...searchCriteria, institution: e.target.value})}
-                    placeholder="Institution name"
+                    placeholder={copy.institutionPlaceholder}
                     className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   />
                 </div>
@@ -194,12 +248,12 @@ const AdvancedSearch = ({ onSearch, onClose }) => {
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               <Calendar className="w-5 h-5 text-blue-400" />
-              Publication Date
+              {copy.dateHeading}
             </h3>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm text-slate-400 mb-2">From Year</label>
+                <label className="block text-sm text-slate-400 mb-2">{copy.fromYear}</label>
                 <input
                   type="number"
                   value={searchCriteria.yearFrom}
@@ -212,7 +266,7 @@ const AdvancedSearch = ({ onSearch, onClose }) => {
               </div>
 
               <div>
-                <label className="block text-sm text-slate-400 mb-2">To Year</label>
+                <label className="block text-sm text-slate-400 mb-2">{copy.toYear}</label>
                 <input
                   type="number"
                   value={searchCriteria.yearTo}
@@ -230,7 +284,7 @@ const AdvancedSearch = ({ onSearch, onClose }) => {
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               <Tag className="w-5 h-5 text-purple-400" />
-              Research Areas
+              {copy.researchAreasHeading}
             </h3>
 
             <div className="flex flex-wrap gap-2">
@@ -262,7 +316,7 @@ const AdvancedSearch = ({ onSearch, onClose }) => {
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               <FileText className="w-5 h-5 text-green-400" />
-              Publication Type
+              {copy.publicationTypeHeading}
             </h3>
 
             <div className="flex flex-wrap gap-2">
@@ -294,41 +348,41 @@ const AdvancedSearch = ({ onSearch, onClose }) => {
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-amber-400" />
-              Impact Metrics
+              {copy.impactHeading}
             </h3>
 
             <div className="grid md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm text-slate-400 mb-2">Min. Citations</label>
+                <label className="block text-sm text-slate-400 mb-2">{copy.minCitations}</label>
                 <input
                   type="number"
                   value={searchCriteria.minCitations}
                   onChange={(e) => setSearchCriteria({...searchCriteria, minCitations: e.target.value})}
-                  placeholder="e.g., 10"
+                  placeholder={copy.minCitationsPlaceholder}
                   min="0"
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-slate-400 mb-2">Max. Citations</label>
+                <label className="block text-sm text-slate-400 mb-2">{copy.maxCitations}</label>
                 <input
                   type="number"
                   value={searchCriteria.maxCitations}
                   onChange={(e) => setSearchCriteria({...searchCriteria, maxCitations: e.target.value})}
-                  placeholder="e.g., 1000"
+                  placeholder={copy.maxCitationsPlaceholder}
                   min="0"
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-slate-400 mb-2">Min. Impact Factor</label>
+                <label className="block text-sm text-slate-400 mb-2">{copy.minImpact}</label>
                 <input
                   type="number"
                   value={searchCriteria.minImpactFactor}
                   onChange={(e) => setSearchCriteria({...searchCriteria, minImpactFactor: e.target.value})}
-                  placeholder="e.g., 5.0"
+                  placeholder={copy.minImpactPlaceholder}
                   step="0.1"
                   min="0"
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
@@ -341,7 +395,7 @@ const AdvancedSearch = ({ onSearch, onClose }) => {
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               <Star className="w-5 h-5 text-cyan-400" />
-              Additional Filters
+              {copy.additionalHeading}
             </h3>
 
             <div className="grid md:grid-cols-2 gap-4">
@@ -353,8 +407,8 @@ const AdvancedSearch = ({ onSearch, onClose }) => {
                   className="w-5 h-5 rounded bg-white/10 border-white/20 text-cyan-500 focus:ring-2 focus:ring-cyan-500"
                 />
                 <div>
-                  <div className="text-white font-medium">Open Access Only</div>
-                  <div className="text-xs text-slate-400">Show only freely available publications</div>
+                  <div className="text-white font-medium">{copy.openAccessOnly}</div>
+                  <div className="text-xs text-slate-400">{copy.openAccessDescription}</div>
                 </div>
               </label>
 
@@ -366,14 +420,14 @@ const AdvancedSearch = ({ onSearch, onClose }) => {
                   className="w-5 h-5 rounded bg-white/10 border-white/20 text-cyan-500 focus:ring-2 focus:ring-cyan-500"
                 />
                 <div>
-                  <div className="text-white font-medium">Has Dataset</div>
-                  <div className="text-xs text-slate-400">Publications with linked datasets</div>
+                  <div className="text-white font-medium">{copy.hasDataset}</div>
+                  <div className="text-xs text-slate-400">{copy.hasDatasetDescription}</div>
                 </div>
               </label>
             </div>
 
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Language</label>
+              <label className="block text-sm text-slate-400 mb-2">{copy.languageLabel}</label>
               <select
                 value={searchCriteria.language}
                 onChange={(e) => setSearchCriteria({...searchCriteria, language: e.target.value})}
@@ -394,7 +448,7 @@ const AdvancedSearch = ({ onSearch, onClose }) => {
               onClick={handleReset}
               className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 transition-all font-medium"
             >
-              Reset All
+              {copy.reset}
             </button>
 
             <div className="flex gap-3">
@@ -402,14 +456,14 @@ const AdvancedSearch = ({ onSearch, onClose }) => {
                 onClick={onClose}
                 className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 transition-all font-medium"
               >
-                Cancel
+                {copy.cancel}
               </button>
               <button
                 onClick={handleSearch}
                 className="px-8 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold hover:shadow-lg hover:shadow-cyan-500/30 transition-all flex items-center gap-2"
               >
                 <Search className="w-5 h-5" />
-                Search
+                {copy.search}
                 {activeFiltersCount > 0 && (
                   <span className="px-2 py-0.5 rounded-full bg-white/20 text-xs">
                     {activeFiltersCount}

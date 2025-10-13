@@ -1,40 +1,15 @@
-// Supabase is disabled in this project. This file provides a safe, awaitable stub
-// so any legacy imports won't crash the app while we migrate to Firebase-only.
-// All operations resolve to empty data structures.
+import { createClient } from '@supabase/supabase-js';
 
-const createBuilder = () => {
-  const builder = {
-    // Make this object awaitable: `await builder` resolves to { data, error }
-    then: (resolve) => resolve({ data: [], error: null }),
-    select: () => builder,
-    insert: () => builder,
-    update: () => builder,
-    delete: () => builder,
-    order: () => builder,
-    eq: () => builder,
-    gte: () => builder,
-    lte: () => builder,
-    in: () => builder,
-    limit: () => builder,
-    single: () => builder
-  };
-  return builder;
-};
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = {
-  auth: {
-    getUser: async () => ({ data: { user: null } })
-  },
-  from: () => createBuilder(),
-  storage: {
-    from: () => ({
-      upload: async () => ({ data: { path: '' }, error: null }),
-      createSignedUrl: async () => ({ data: { signedUrl: '' }, error: null }),
-      download: async () => ({ data: null, error: null }),
-      list: async () => ({ data: [], error: null }),
-      remove: async () => ({ data: null, error: null })
-    })
-  }
-};
+let client = null;
 
-export default supabase;
+if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+  client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else if (typeof console !== 'undefined' && console.warn) {
+  console.warn('[supabase] VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is not set. Supabase features are disabled.');
+}
+
+export const supabase = client;
+export const isSupabaseConfigured = Boolean(client);

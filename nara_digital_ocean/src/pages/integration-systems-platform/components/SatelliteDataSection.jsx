@@ -16,6 +16,7 @@ import {
   Calendar,
   Download
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { satelliteDataService } from '../../../services/integrationService';
 
 const SatelliteDataSection = () => {
@@ -42,6 +43,8 @@ const SatelliteDataSection = () => {
     processing_type: '',
     input_parameters: {}
   });
+  const { t } = useTranslation('integration');
+  const strings = t('satellite', { returnObjects: true });
 
   useEffect(() => {
     loadData();
@@ -180,8 +183,8 @@ const SatelliteDataSection = () => {
         <div className="flex items-center">
           <Satellite className="w-6 h-6 text-blue-600 mr-3" />
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Satellite Data Processing</h2>
-            <p className="text-sm text-gray-600">Real-time satellite feeds, automated data ingestion, and AI-powered analysis</p>
+            <h2 className="text-xl font-semibold text-gray-900">{strings?.title}</h2>
+            <p className="text-sm text-gray-600">{strings?.subtitle}</p>
           </div>
         </div>
         <div className="flex items-center space-x-3">
@@ -193,7 +196,7 @@ const SatelliteDataSection = () => {
             className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
           >
             <Play className="w-4 h-4 mr-2" />
-            New Job
+            {strings?.actions?.newJob}
           </button>
           <button
             onClick={() => {
@@ -203,7 +206,7 @@ const SatelliteDataSection = () => {
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Source
+            {strings?.actions?.addSource}
           </button>
         </div>
       </div>

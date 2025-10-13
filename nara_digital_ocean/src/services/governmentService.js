@@ -1,436 +1,649 @@
-import { supabase } from '../lib/supabase.js';
+import {
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  limit,
+  serverTimestamp
+} from 'firebase/firestore';
+import { db } from '../firebase';
 
-// EIA Management Services
+// ============================================
+// EIA (Environmental Impact Assessment) Service
+// ============================================
 export const eiaService = {
-  // Create new EIA submission
-  async create(eiaData) {
+  /**
+   * Create new EIA application
+   */
+  create: async (eiaData) => {
     try {
-      const { data, error } = await supabase?.from('eia_submissions')?.insert([{
-          ...eiaData,
-          submitter_id: (await supabase?.auth?.getUser())?.data?.user?.id
-        }])?.select()?.single();
-      
-      if (error) throw error;
-      return { data, error: null };
+      const docRef = await addDoc(collection(db, 'government_eia_applications'), {
+        ...eiaData,
+        status: 'draft',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      return { data: { id: docRef.id, ...eiaData }, error: null };
     } catch (error) {
-      return { data: null, error: error?.message };
+      console.error('Error creating EIA:', error);
+      return { data: null, error: error.message };
     }
   },
 
-  // Get user's EIA submissions
-  async getUserSubmissions() {
+  /**
+   * Get user's EIA submissions
+   */
+  getUserSubmissions: async (userId) => {
     try {
-      const { data, error } = await supabase?.from('eia_submissions')?.select(`
-          *,
-          reviewer:user_profiles!eia_submissions_reviewer_id_fkey(full_name, email)
-        `)?.order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return { data, error: null };
+      const q = query(
+        collection(db, 'government_eia_applications'),
+        where('userId', '==', userId),
+        orderBy('createdAt', 'desc')
+      );
+      const snapshot = await getDocs(q);
+      const submissions = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      return { data: submissions, error: null };
     } catch (error) {
-      return { data: null, error: error?.message };
+      console.error('Error fetching submissions:', error);
+      return { data: [], error: error.message };
     }
   },
 
-  // Update EIA submission
-  async update(id, updates) {
+  /**
+   * Get all EIA applications (admin)
+   */
+  getAll: async (filters = {}) => {
     try {
-      const { data, error } = await supabase?.from('eia_submissions')?.update({ ...updates, updated_at: new Date()?.toISOString() })?.eq('id', id)?.select()?.single();
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
+      let q = collection(db, 'government_eia_applications');
 
-  // Submit EIA (change status to submitted)
-  async submit(id) {
-    try {
-      const { data, error } = await supabase?.from('eia_submissions')?.update({ 
-          status: 'submitted',
-          submission_date: new Date()?.toISOString(),
-          updated_at: new Date()?.toISOString()
-        })?.eq('id', id)?.select()?.single();
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  }
-};
-
-// Digital Licensing Services
-export const licensingService = {
-  // Create license application
-  async create(licenseData) {
-    try {
-      const { data, error } = await supabase?.from('license_applications')?.insert([{
-          ...licenseData,
-          applicant_id: (await supabase?.auth?.getUser())?.data?.user?.id
-        }])?.select()?.single();
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Get user's license applications
-  async getUserApplications() {
-    try {
-      const { data, error } = await supabase?.from('license_applications')?.select('*')?.order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Update application
-  async update(id, updates) {
-    try {
-      const { data, error } = await supabase?.from('license_applications')?.update({ ...updates, updated_at: new Date()?.toISOString() })?.eq('id', id)?.select()?.single();
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Process payment
-  async processPayment(id, paymentData) {
-    try {
-      const { data, error } = await supabase?.from('license_applications')?.update({ 
-          fee_paid: true,
-          status: 'submitted',
-          updated_at: new Date()?.toISOString()
-        })?.eq('id', id)?.select()?.single();
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  }
-};
-
-// Compliance Monitoring Services
-export const complianceService = {
-  // Get user's compliance records
-  async getUserRecords() {
-    try {
-      const { data, error } = await supabase?.from('compliance_records')?.select(`*,inspector:user_profiles!compliance_records_inspector_id_fkey(full_name, email)`)?.order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Update compliance status
-  async updateStatus(id, updates) {
-    try {
-      const { data, error } = await supabase?.from('compliance_records')?.update({ ...updates, updated_at: new Date()?.toISOString() })?.eq('id', id)?.select()?.single();
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Get compliance analytics
-  async getAnalytics() {
-    try {
-      const { data, error } = await supabase?.from('compliance_records')?.select('compliance_score, compliance_type, created_at')?.order('created_at', { ascending: false })?.limit(50);
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  }
-};
-
-// Emergency Response Services
-export const emergencyService = {
-  // Report emergency incident
-  async reportIncident(incidentData) {
-    try {
-      const { data, error } = await supabase?.from('emergency_incidents')?.insert([{
-          ...incidentData,
-          reporter_id: (await supabase?.auth?.getUser())?.data?.user?.id
-        }])?.select()?.single();
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Get user's reported incidents
-  async getUserIncidents() {
-    try {
-      const { data, error } = await supabase?.from('emergency_incidents')?.select('*')?.order('reported_at', { ascending: false });
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Update incident status
-  async updateStatus(id, updates) {
-    try {
-      const { data, error } = await supabase?.from('emergency_incidents')?.update({ ...updates, updated_at: new Date()?.toISOString() })?.eq('id', id)?.select()?.single();
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Get active incidents
-  async getActiveIncidents() {
-    try {
-      const { data, error } = await supabase?.from('emergency_incidents')?.select('*')?.eq('status', 'active')?.order('reported_at', { ascending: false });
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  }
-};
-
-// Inter-Agency Collaboration Services
-export const collaborationService = {
-  // Create workspace
-  async createWorkspace(workspaceData) {
-    try {
-      const { data, error } = await supabase?.from('collaboration_workspaces')?.insert([{
-          ...workspaceData,
-          created_by: (await supabase?.auth?.getUser())?.data?.user?.id
-        }])?.select()?.single();
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Get user's workspaces
-  async getUserWorkspaces() {
-    try {
-      const { data, error } = await supabase?.from('collaboration_workspaces')?.select(`
-          *,
-          creator:user_profiles!collaboration_workspaces_created_by_fkey(full_name, email),
-          members:workspace_members(
-            id,
-            role,
-            joined_at,
-            member:user_profiles(full_name, email)
-          )
-        `)?.order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Add workspace member
-  async addMember(workspaceId, memberId, role = 'member') {
-    try {
-      const { data, error } = await supabase?.from('workspace_members')?.insert([{
-          workspace_id: workspaceId,
-          member_id: memberId,
-          role: role
-        }])?.select()?.single();
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Get workspace tasks
-  async getWorkspaceTasks(workspaceId) {
-    try {
-      const { data, error } = await supabase?.from('workspace_tasks')?.select(`
-          *,
-          assignee:user_profiles!workspace_tasks_assigned_to_fkey(full_name, email),
-          creator:user_profiles!workspace_tasks_created_by_fkey(full_name, email)
-        `)?.eq('workspace_id', workspaceId)?.order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Create task
-  async createTask(taskData) {
-    try {
-      const { data, error } = await supabase?.from('workspace_tasks')?.insert([{
-          ...taskData,
-          created_by: (await supabase?.auth?.getUser())?.data?.user?.id
-        }])?.select()?.single();
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Update task
-  async updateTask(id, updates) {
-    try {
-      const { data, error } = await supabase?.from('workspace_tasks')?.update({ ...updates, updated_at: new Date()?.toISOString() })?.eq('id', id)?.select()?.single();
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Get workspace messages
-  async getMessages(workspaceId) {
-    try {
-      const { data, error } = await supabase?.from('workspace_messages')?.select(`
-          *,
-          sender:user_profiles!workspace_messages_sender_id_fkey(full_name, email)
-        `)?.eq('workspace_id', workspaceId)?.order('sent_at', { ascending: true });
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  },
-
-  // Send message
-  async sendMessage(messageData) {
-    try {
-      const { data, error } = await supabase?.from('workspace_messages')?.insert([{
-          ...messageData,
-          sender_id: (await supabase?.auth?.getUser())?.data?.user?.id
-        }])?.select(`
-          *,
-          sender:user_profiles!workspace_messages_sender_id_fkey(full_name, email)
-        `)?.single();
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error?.message };
-    }
-  }
-};
-
-// Document Management Services
-export const documentService = {
-  // Upload document to private storage
-  async upload(file, documentType, relatedId = null) {
-    try {
-      const user = (await supabase?.auth?.getUser())?.data?.user;
-      if (!user) throw new Error('User not authenticated');
-
-      const fileName = `${Date.now()}-${file?.name}`;
-      const filePath = `${user?.id}/${documentType}/${fileName}`;
-
-      // Upload to storage
-      const { data: uploadData, error: uploadError } = await supabase?.storage?.from('government-documents')?.upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      // Record in database
-      const documentData = {
-        uploader_id: user?.id,
-        document_type: documentType,
-        file_name: file?.name,
-        file_path: filePath,
-        file_size: file?.size,
-        access_level: 'restricted'
-      };
-
-      // Add related IDs based on type
-      if (relatedId) {
-        if (documentType === 'eia_report') {
-          documentData.related_application_id = relatedId;
-        } else if (documentType === 'incident_report') {
-          documentData.related_incident_id = relatedId;
-        } else if (documentType === 'collaboration_agreement') {
-          documentData.related_workspace_id = relatedId;
-        }
+      if (filters.status) {
+        q = query(q, where('status', '==', filters.status));
       }
 
-      const { data, error } = await supabase?.from('government_documents')?.insert([documentData])?.select()?.single();
+      q = query(q, orderBy('createdAt', 'desc'));
 
-      if (error) throw error;
-      return { data, error: null };
+      if (filters.limit) {
+        q = query(q, limit(filters.limit));
+      }
+
+      const snapshot = await getDocs(q);
+      const applications = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      return { data: applications, error: null };
     } catch (error) {
-      return { data: null, error: error?.message };
+      console.error('Error fetching all EIAs:', error);
+      return { data: [], error: error.message };
     }
   },
 
-  // Get user's documents
-  async getUserDocuments() {
+  /**
+   * Update EIA application
+   */
+  update: async (eiaId, updates) => {
     try {
-      const { data, error } = await supabase?.from('government_documents')?.select('*')?.order('uploaded_at', { ascending: false });
-      
-      if (error) throw error;
-      return { data, error: null };
+      const docRef = doc(db, 'government_eia_applications', eiaId);
+      await updateDoc(docRef, {
+        ...updates,
+        updatedAt: serverTimestamp()
+      });
+      return { data: { id: eiaId, ...updates }, error: null };
     } catch (error) {
-      return { data: null, error: error?.message };
+      console.error('Error updating EIA:', error);
+      return { data: null, error: error.message };
     }
   },
 
-  // Get signed URL for private document
-  async getDocumentUrl(filePath) {
+  /**
+   * Submit EIA for review
+   */
+  submit: async (eiaId) => {
     try {
-      const { data, error } = await supabase?.storage?.from('government-documents')?.createSignedUrl(filePath, 3600); // 1 hour expiry
-
-      if (error) throw error;
-      return { data: data?.signedUrl, error: null };
+      const docRef = doc(db, 'government_eia_applications', eiaId);
+      await updateDoc(docRef, {
+        status: 'submitted',
+        submittedAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      return { data: { id: eiaId, status: 'submitted' }, error: null };
     } catch (error) {
-      return { data: null, error: error?.message };
+      console.error('Error submitting EIA:', error);
+      return { data: null, error: error.message };
     }
   },
 
-  // Download document
-  async download(filePath) {
+  /**
+   * Delete EIA application
+   */
+  delete: async (eiaId) => {
     try {
-      const { data, error } = await supabase?.storage?.from('government-documents')?.download(filePath);
-
-      if (error) throw error;
-      return { data, error: null };
+      await deleteDoc(doc(db, 'government_eia_applications', eiaId));
+      return { data: { id: eiaId }, error: null };
     } catch (error) {
-      return { data: null, error: error?.message };
+      console.error('Error deleting EIA:', error);
+      return { data: null, error: error.message };
     }
   }
 };
 
-export default {
-  eia: eiaService,
-  licensing: licensingService,
-  compliance: complianceService,
-  emergency: emergencyService,
-  collaboration: collaborationService,
-  documents: documentService
+// ============================================
+// Document Service
+// ============================================
+export const documentService = {
+  /**
+   * Upload document metadata (actual file upload handled separately)
+   */
+  upload: async (documentData) => {
+    try {
+      const docRef = await addDoc(collection(db, 'government_documents'), {
+        ...documentData,
+        uploadedAt: serverTimestamp()
+      });
+      return { data: { id: docRef.id, ...documentData }, error: null };
+    } catch (error) {
+      console.error('Error uploading document:', error);
+      return { data: null, error: error.message };
+    }
+  },
+
+  /**
+   * Get document metadata
+   */
+  getMetadata: async (documentId) => {
+    try {
+      const docRef = doc(db, 'government_documents', documentId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        return { data: { id: docSnap.id, ...docSnap.data() }, error: null };
+      }
+      return { data: null, error: 'Document not found' };
+    } catch (error) {
+      console.error('Error fetching document:', error);
+      return { data: null, error: error.message };
+    }
+  },
+
+  /**
+   * Get documents by reference (e.g., for a specific EIA or license)
+   */
+  getByReference: async (referenceType, referenceId) => {
+    try {
+      const q = query(
+        collection(db, 'government_documents'),
+        where('referenceType', '==', referenceType),
+        where('referenceId', '==', referenceId)
+      );
+      const snapshot = await getDocs(q);
+      const documents = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      return { data: documents, error: null };
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+      return { data: [], error: error.message };
+    }
+  }
+};
+
+// ============================================
+// Licensing Service
+// ============================================
+export const licensingService = {
+  /**
+   * Create new license application
+   */
+  create: async (licenseData) => {
+    try {
+      const docRef = await addDoc(collection(db, 'government_licenses'), {
+        ...licenseData,
+        status: 'pending',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      return { data: { id: docRef.id, ...licenseData }, error: null };
+    } catch (error) {
+      console.error('Error creating license:', error);
+      return { data: null, error: error.message };
+    }
+  },
+
+  /**
+   * Get user's license applications
+   */
+  getUserApplications: async (userId) => {
+    try {
+      const q = query(
+        collection(db, 'government_licenses'),
+        where('userId', '==', userId),
+        orderBy('createdAt', 'desc')
+      );
+      const snapshot = await getDocs(q);
+      const applications = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      return { data: applications, error: null };
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+      return { data: [], error: error.message };
+    }
+  },
+
+  /**
+   * Get all license applications (admin)
+   */
+  getAll: async (filters = {}) => {
+    try {
+      let q = collection(db, 'government_licenses');
+
+      if (filters.status) {
+        q = query(q, where('status', '==', filters.status));
+      }
+
+      if (filters.type) {
+        q = query(q, where('type', '==', filters.type));
+      }
+
+      q = query(q, orderBy('createdAt', 'desc'));
+
+      if (filters.limit) {
+        q = query(q, limit(filters.limit));
+      }
+
+      const snapshot = await getDocs(q);
+      const licenses = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      return { data: licenses, error: null };
+    } catch (error) {
+      console.error('Error fetching all licenses:', error);
+      return { data: [], error: error.message };
+    }
+  },
+
+  /**
+   * Update license application
+   */
+  update: async (licenseId, updates) => {
+    try {
+      const docRef = doc(db, 'government_licenses', licenseId);
+      await updateDoc(docRef, {
+        ...updates,
+        updatedAt: serverTimestamp()
+      });
+      return { data: { id: licenseId, ...updates }, error: null };
+    } catch (error) {
+      console.error('Error updating license:', error);
+      return { data: null, error: error.message };
+    }
+  },
+
+  /**
+   * Delete license application
+   */
+  delete: async (licenseId) => {
+    try {
+      await deleteDoc(doc(db, 'government_licenses', licenseId));
+      return { data: { id: licenseId }, error: null };
+    } catch (error) {
+      console.error('Error deleting license:', error);
+      return { data: null, error: error.message };
+    }
+  }
+};
+
+// ============================================
+// Compliance Service
+// ============================================
+export const complianceService = {
+  /**
+   * Get compliance records
+   */
+  getRecords: async (filters = {}) => {
+    try {
+      let q = collection(db, 'government_compliance_records');
+
+      if (filters.entityId) {
+        q = query(q, where('entityId', '==', filters.entityId));
+      }
+
+      if (filters.status) {
+        q = query(q, where('status', '==', filters.status));
+      }
+
+      q = query(q, orderBy('createdAt', 'desc'));
+
+      if (filters.limit) {
+        q = query(q, limit(filters.limit));
+      }
+
+      const snapshot = await getDocs(q);
+      const records = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      return { data: records, error: null };
+    } catch (error) {
+      console.error('Error fetching compliance records:', error);
+      return { data: [], error: error.message };
+    }
+  },
+
+  /**
+   * Create compliance record
+   */
+  create: async (recordData) => {
+    try {
+      const docRef = await addDoc(collection(db, 'government_compliance_records'), {
+        ...recordData,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      return { data: { id: docRef.id, ...recordData }, error: null };
+    } catch (error) {
+      console.error('Error creating compliance record:', error);
+      return { data: null, error: error.message };
+    }
+  },
+
+  /**
+   * Update compliance record
+   */
+  update: async (recordId, updates) => {
+    try {
+      const docRef = doc(db, 'government_compliance_records', recordId);
+      await updateDoc(docRef, {
+        ...updates,
+        updatedAt: serverTimestamp()
+      });
+      return { data: { id: recordId, ...updates }, error: null };
+    } catch (error) {
+      console.error('Error updating compliance record:', error);
+      return { data: null, error: error.message };
+    }
+  },
+
+  /**
+   * Get compliance statistics
+   */
+  getStatistics: async () => {
+    try {
+      const snapshot = await getDocs(collection(db, 'government_compliance_records'));
+      const records = snapshot.docs.map(doc => doc.data());
+
+      const stats = {
+        total: records.length,
+        compliant: records.filter(r => r.status === 'compliant').length,
+        nonCompliant: records.filter(r => r.status === 'non-compliant').length,
+        pending: records.filter(r => r.status === 'pending-review').length
+      };
+
+      return { data: stats, error: null };
+    } catch (error) {
+      console.error('Error fetching statistics:', error);
+      return { data: null, error: error.message };
+    }
+  }
+};
+
+// ============================================
+// Emergency Service
+// ============================================
+export const emergencyService = {
+  /**
+   * Get emergency incidents
+   */
+  getIncidents: async (filters = {}) => {
+    try {
+      let q = collection(db, 'government_emergency_incidents');
+
+      if (filters.status) {
+        q = query(q, where('status', '==', filters.status));
+      }
+
+      if (filters.severity) {
+        q = query(q, where('severity', '==', filters.severity));
+      }
+
+      q = query(q, orderBy('createdAt', 'desc'));
+
+      if (filters.limit) {
+        q = query(q, limit(filters.limit));
+      }
+
+      const snapshot = await getDocs(q);
+      const incidents = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      return { data: incidents, error: null };
+    } catch (error) {
+      console.error('Error fetching incidents:', error);
+      return { data: [], error: error.message };
+    }
+  },
+
+  /**
+   * Create emergency incident
+   */
+  create: async (incidentData) => {
+    try {
+      const docRef = await addDoc(collection(db, 'government_emergency_incidents'), {
+        ...incidentData,
+        status: 'active',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      return { data: { id: docRef.id, ...incidentData }, error: null };
+    } catch (error) {
+      console.error('Error creating incident:', error);
+      return { data: null, error: error.message };
+    }
+  },
+
+  /**
+   * Update emergency incident
+   */
+  update: async (incidentId, updates) => {
+    try {
+      const docRef = doc(db, 'government_emergency_incidents', incidentId);
+      await updateDoc(docRef, {
+        ...updates,
+        updatedAt: serverTimestamp()
+      });
+      return { data: { id: incidentId, ...updates }, error: null };
+    } catch (error) {
+      console.error('Error updating incident:', error);
+      return { data: null, error: error.message };
+    }
+  },
+
+  /**
+   * Get active incidents count
+   */
+  getActiveCount: async () => {
+    try {
+      const q = query(
+        collection(db, 'government_emergency_incidents'),
+        where('status', '==', 'active')
+      );
+      const snapshot = await getDocs(q);
+      return { data: snapshot.size, error: null };
+    } catch (error) {
+      console.error('Error fetching active count:', error);
+      return { data: 0, error: error.message };
+    }
+  }
+};
+
+// ============================================
+// Collaboration Service
+// ============================================
+export const collaborationService = {
+  /**
+   * Get workspaces
+   */
+  getWorkspaces: async (userId) => {
+    try {
+      const q = query(
+        collection(db, 'government_collaboration_workspaces'),
+        where('members', 'array-contains', userId),
+        orderBy('createdAt', 'desc')
+      );
+      const snapshot = await getDocs(q);
+      const workspaces = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      return { data: workspaces, error: null };
+    } catch (error) {
+      console.error('Error fetching workspaces:', error);
+      return { data: [], error: error.message };
+    }
+  },
+
+  /**
+   * Get all workspaces (admin)
+   */
+  getAll: async (filters = {}) => {
+    try {
+      let q = collection(db, 'government_collaboration_workspaces');
+
+      if (filters.status) {
+        q = query(q, where('status', '==', filters.status));
+      }
+
+      q = query(q, orderBy('createdAt', 'desc'));
+
+      if (filters.limit) {
+        q = query(q, limit(filters.limit));
+      }
+
+      const snapshot = await getDocs(q);
+      const workspaces = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      return { data: workspaces, error: null };
+    } catch (error) {
+      console.error('Error fetching all workspaces:', error);
+      return { data: [], error: error.message };
+    }
+  },
+
+  /**
+   * Create workspace
+   */
+  create: async (workspaceData) => {
+    try {
+      const docRef = await addDoc(collection(db, 'government_collaboration_workspaces'), {
+        ...workspaceData,
+        status: 'active',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      return { data: { id: docRef.id, ...workspaceData }, error: null };
+    } catch (error) {
+      console.error('Error creating workspace:', error);
+      return { data: null, error: error.message };
+    }
+  },
+
+  /**
+   * Join workspace
+   */
+  join: async (workspaceId, userId) => {
+    try {
+      const docRef = doc(db, 'government_collaboration_workspaces', workspaceId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const members = docSnap.data().members || [];
+        if (!members.includes(userId)) {
+          await updateDoc(docRef, {
+            members: [...members, userId],
+            updatedAt: serverTimestamp()
+          });
+        }
+        return { data: { id: workspaceId, userId }, error: null };
+      }
+      return { data: null, error: 'Workspace not found' };
+    } catch (error) {
+      console.error('Error joining workspace:', error);
+      return { data: null, error: error.message };
+    }
+  },
+
+  /**
+   * Update workspace
+   */
+  update: async (workspaceId, updates) => {
+    try {
+      const docRef = doc(db, 'government_collaboration_workspaces', workspaceId);
+      await updateDoc(docRef, {
+        ...updates,
+        updatedAt: serverTimestamp()
+      });
+      return { data: { id: workspaceId, ...updates }, error: null };
+    } catch (error) {
+      console.error('Error updating workspace:', error);
+      return { data: null, error: error.message };
+    }
+  }
+};
+
+// ============================================
+// Dashboard Service
+// ============================================
+export const dashboardService = {
+  /**
+   * Get dashboard statistics
+   */
+  getStatistics: async () => {
+    try {
+      const [eiaStats, licenseStats, complianceStats, emergencyStats] = await Promise.all([
+        eiaService.getAll({ limit: 1000 }),
+        licensingService.getAll({ limit: 1000 }),
+        complianceService.getStatistics(),
+        emergencyService.getActiveCount()
+      ]);
+
+      const stats = {
+        eia: {
+          total: eiaStats.data?.length || 0,
+          pending: eiaStats.data?.filter(e => e.status === 'submitted').length || 0,
+          approved: eiaStats.data?.filter(e => e.status === 'approved').length || 0,
+          rejected: eiaStats.data?.filter(e => e.status === 'rejected').length || 0
+        },
+        licenses: {
+          total: licenseStats.data?.length || 0,
+          active: licenseStats.data?.filter(l => l.status === 'active').length || 0,
+          pending: licenseStats.data?.filter(l => l.status === 'pending').length || 0,
+          expired: licenseStats.data?.filter(l => l.status === 'expired').length || 0
+        },
+        compliance: complianceStats.data || {},
+        emergencies: {
+          active: emergencyStats.data || 0
+        }
+      };
+
+      return { data: stats, error: null };
+    } catch (error) {
+      console.error('Error fetching dashboard statistics:', error);
+      return { data: null, error: error.message };
+    }
+  }
 };

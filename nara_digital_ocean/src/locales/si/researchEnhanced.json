@@ -423,6 +423,456 @@
       }
     }
   },
+  "advancedSearch": {
+    "title": "උසස් සෙවීම",
+    "header": {
+      "default": "ප්‍රකාශන 1,247 පුරා සොයන්න",
+      "activeFilters": "ක්‍රියාත්මක පෙරහන් {{count}}"
+    },
+    "researchAreas": [
+      "මුහුදු ජීව විද්‍යාව",
+      "කාලගුණ විපර්යාසය",
+      "මාළුපිටි කළමනාකරණය",
+      "මුහුදු විද්‍යාව",
+      "ආරක්ෂාව",
+      "මුහුදු ප්‍රතිපත්ති",
+      "අක්වාකල්චර්",
+      "වෙරළ ඉංජිනේරුකම",
+      "මුහුදු ජෛව තාක්ෂණය",
+      "මුහුදු ආදර්ශකරණය"
+    ],
+    "publicationTypes": [
+      "ජර්නල් ලිපිය",
+      "සම්මන්ත්‍රණ ලිපිය",
+      "තාක්ෂණික වාර්තාව",
+      "පොත් පරිච්ඡේදය",
+      "දත්ත කට්ටලය",
+      "නිබන්ධනය/ප්‍රබන්ධය",
+      "සංශෝධන ලිපිය",
+      "ප්‍රතිපත්ති සාරාංශය"
+    ],
+    "languages": [
+      { "value": "all", "label": "සියලු භාෂා" },
+      { "value": "en", "label": "ඉංග්‍රීසි" },
+      { "value": "si", "label": "සිංහල" },
+      { "value": "ta", "label": "දෙමළ" }
+    ],
+    "sections": {
+      "text": {
+        "heading": "පෙළ සෙවීම",
+        "fields": {
+          "keywords": {
+            "label": "මූලප දේ (ඕනෑම ක්ෂේත්‍රයක)",
+            "placeholder": "උදා., පවල් පරා, මයික්‍රෝප්ලාස්ටික්"
+          },
+          "title": {
+            "label": "මාතෘකාව",
+            "placeholder": "ප්‍රකාශන මාතෘකාව"
+          },
+          "author": {
+            "label": "කර්තෘ",
+            "placeholder": "කර්තෘ නාමය"
+          },
+          "institution": {
+            "label": "ආයතනය",
+            "placeholder": "ආයතන නාමය"
+          }
+        }
+      },
+      "date": {
+        "heading": "ප්‍රකාශන දිනය",
+        "fields": {
+          "fromYear": "ආරම්භක වසර",
+          "toYear": "අවසන් වසර"
+        }
+      },
+      "areas": {
+        "heading": "ගවේෂණ ක්ෂේත්‍ර"
+      },
+      "types": {
+        "heading": "ප්‍රකාශන වර්ගය"
+      },
+      "impact": {
+        "heading": "බලපෑම් දර්ශක",
+        "fields": {
+          "minCitations": "අවම උපුටා දැක්වීම්",
+          "maxCitations": "උපරිම උපුටා දැක්වීම්",
+          "minImpact": "අවම බලපෑම් සාපේක්ෂය",
+          "minCitationsPlaceholder": "උදා., 10",
+          "maxCitationsPlaceholder": "උදා., 1000",
+          "minImpactPlaceholder": "උදා., 5.0"
+        }
+      },
+      "additional": {
+        "heading": "අමතර පෙරහන්",
+        "openAccess": {
+          "label": "විවෘත ප්‍රවේශය පමණි",
+          "description": "නිදහස්ව ලබාගත හැකි ප්‍රකාශන පමණක් පෙන්වන්න"
+        },
+        "dataset": {
+          "label": "දත්ත කට්ටලය ඇත",
+          "description": "දත්ත කට්ටල සහිත ප්‍රකාශන"
+        },
+        "language": {
+          "label": "භාෂාව"
+        }
+      }
+    },
+    "actions": {
+      "reset": "සියලුම නැවත සකසන්න",
+      "cancel": "අවලංගු කරන්න",
+      "search": "සොයන්න"
+    }
+  },
+  "collaboration": {
+    "map": {
+      "title": "ගෝලීය හවුල්කාරිත්ව ජාලය",
+      "description": "හවුල්කාරිත්වය බැලීමට ප්‍රදේශයක් තෝරන්න",
+      "empty": "ගෝලීය හවුල්කාරිත්වය පෙන්වන අන්තර්ක්‍රියාකාරී සිතියම",
+      "subtitle": "{{institutions}} ආයතන {{countries}} රටවල"
+    },
+    "stats": {
+      "items": [
+        {
+          "id": "countries",
+          "label": "රටවල්",
+          "value": 42,
+          "icon": "Globe",
+          "color": "from-cyan-400 to-blue-600"
+        },
+        {
+          "id": "institutions",
+          "label": "හවුල් ආයතන",
+          "value": 89,
+          "icon": "Building",
+          "color": "from-purple-400 to-pink-600"
+        },
+        {
+          "id": "publications",
+          "label": "සමවු ප්‍රකාශන",
+          "value": 456,
+          "icon": "FileText",
+          "color": "from-green-400 to-emerald-600"
+        },
+        {
+          "id": "researchers",
+          "label": "සහකාර පර්යේෂකයින්",
+          "value": 723,
+          "icon": "Users",
+          "color": "from-amber-400 to-orange-600"
+        }
+      ]
+    },
+    "region": {
+      "metrics": {
+        "countries": "රටවල්",
+        "institutions": "ආයතන",
+        "publications": "ප්‍රකාශන",
+        "researchers": "පර්යේෂකයින්"
+      },
+      "labels": {
+        "highlights": "ප්‍රධාන විශේෂාංග:",
+        "topCountries": "ප්‍රධාන රටවල්:"
+      }
+    },
+    "regions": {
+      "items": [
+        {
+          "id": "asia-pacific",
+          "name": "ආසියා-ප්‍රශාන්ත",
+          "countries": 18,
+          "institutions": 34,
+          "publications": 234,
+          "researchers": 312,
+          "color": "cyan",
+          "highlights": [
+            "ප්‍රමුඛ හවුල් මධ්‍යස්ථානය",
+            "උඩුම සමවු ප්‍රකාශන"
+          ],
+          "topCountries": ["ජපානය", "ඔස්ට්‍රේලියාව", "සිංගප්පූරුව", "ඉන්දියාව", "චීනය"]
+        },
+        {
+          "id": "europe",
+          "name": "යුරෝපා",
+          "countries": 12,
+          "institutions": 28,
+          "publications": 156,
+          "researchers": 245,
+          "color": "blue",
+          "highlights": [
+            "ශක්තිමත් ගවේෂණ ජාල",
+            "යුරෝපීය සංගම අරමුදල් ව්‍යාපෘති"
+          ],
+          "topCountries": ["එක්සත් රාජධානිය", "ජර්මනිය", "නෙදර්ලන්තය", "ප්‍රංශය", "නෝර්වේ"]
+        },
+        {
+          "id": "north-america",
+          "name": "උතුරු ඇමෙරිකාව",
+          "countries": 3,
+          "institutions": 18,
+          "publications": 98,
+          "researchers": 134,
+          "color": "purple",
+          "highlights": [
+            "ඉහළ බලපෑම් ඇති හවුල්කාරිත්ව",
+            "උසස් තාක්ෂණය"
+          ],
+          "topCountries": ["එක්සත් ජනපදය", "කානඩාව", "මෙක්සිකෝව"]
+        },
+        {
+          "id": "africa",
+          "name": "අප්‍රිකාව",
+          "countries": 5,
+          "institutions": 6,
+          "publications": 34,
+          "researchers": 45,
+          "color": "green",
+          "highlights": [
+            "වැඩෙන හවුල්කාරිත්ව",
+            "ධාරිතා සංවර්ධනය"
+          ],
+          "topCountries": ["දකුණු අප්‍රිකාව", "කෙන්යාව", "ටැන්සනියාව", "මොරිෂස්"]
+        },
+        {
+          "id": "latin-america",
+          "name": "ලැටින් ඇමෙරිකාව",
+          "countries": 4,
+          "institutions": 3,
+          "publications": 21,
+          "researchers": 28,
+          "color": "amber",
+          "highlights": [
+            "ආරම්භ වන හවුල්කාරිත්ව",
+            "මුහුදු ජීව විවිධත්වය"
+          ],
+          "topCountries": ["බ්‍රසීලය", "චිලිය", "පේරු", "ආර්ජෙන්ටිනාව"]
+        }
+      ]
+    },
+    "partners": {
+      "heading": "හවුල් ආයතන",
+      "cta": "හවුල්කාරයා වන්න",
+      "metrics": {
+        "publications": "ප්‍රකාශන",
+        "projects": "ව්‍යාපෘති",
+        "mou": "ගිවිසුම",
+        "since": "{{year}} සිට"
+      },
+      "labels": {
+        "focusAreas": "අවධානයේ ක්ෂේත්‍ර:",
+        "achievements": "ප්‍රධාන ප්‍රතිඵල:",
+        "contact": "සම්බන්ධතා:"
+      },
+      "actions": {
+        "viewDetails": "විස්තර බලන්න",
+        "hideDetails": "විස්තර සඟවන්න"
+      },
+      "items": [
+        {
+          "id": 1,
+          "name": "ජාතික සාගර හා වායුගෝල පාලකය (NOAA)",
+          "country": "එක්සත් ජනපදය",
+          "type": "රජයේ ආයතනය",
+          "region": "උතුරු ඇමෙරිකාව",
+          "joinedYear": 2015,
+          "status": "active",
+          "collaborationType": ["ගවේෂණය", "දත්ත බෙදාහැරීම", "පුහුණුව"],
+          "jointPublications": 42,
+          "activeProjects": 5,
+          "mou": true,
+          "contact": {
+            "name": "Dr. Sarah Johnson",
+            "email": "sarah.johnson@noaa.gov",
+            "phone": "+1 301 555 0123"
+          },
+          "focusAreas": ["කාලගුණ විපර්යාසය", "මුහුදු විද්‍යාව", "මුහුදු පාරිසරික පද්ධති"],
+          "achievements": [
+            "සමවු මුහුදු මොනිටරින් ජාලය",
+            "සම-රචිත කඩදාසි 15",
+            "තාක්ෂණ හුවමාරු වැඩසටහන"
+          ]
+        },
+        {
+          "id": 2,
+          "name": "CSIRO Ocean සහ Atmosphere",
+          "country": "ඕස්ට්‍රේලියාව",
+          "type": "ගවේෂණ ආයතනය",
+          "region": "ආසියා-ප්‍රශාන්ත",
+          "joinedYear": 2017,
+          "status": "active",
+          "collaborationType": ["ගවේෂණය", "ශිෂ්‍ය හුවමාරුව", "උපාංග බෙදාගැනීම"],
+          "jointPublications": 38,
+          "activeProjects": 4,
+          "mou": true,
+          "contact": {
+            "name": "Prof. Michael Chen",
+            "email": "m.chen@csiro.au",
+            "phone": "+61 3 9545 8000"
+          },
+          "focusAreas": ["මුහුදු ජීව විද්‍යාව", "කාලගුණ විද්‍යාව", "මාළුපිටි"],
+          "achievements": [
+            "සමවු ගවේෂණ නෞකා වැඩසටහන",
+            "PhD ශිෂ්‍ය හුවමාරු 12",
+            "බෙදාගත් ප්‍රයෝගශාලා පහසුකම්"
+          ]
+        },
+        {
+          "id": 3,
+          "name": "ටෝකියෝ විශ්වවිද්‍යාලය - මුහුදු ගවේෂණ ආයතනය",
+          "country": "ජපානය",
+          "type": "විශ්වවිද්‍යාලය",
+          "region": "ආසියා-ප්‍රශාන්ත",
+          "joinedYear": 2016,
+          "status": "active",
+          "collaborationType": ["ගවේෂණය", "ශිෂ්‍ය හුවමාරුව", "සම්මන්ත්‍රණ"],
+          "jointPublications": 34,
+          "activeProjects": 3,
+          "mou": true,
+          "contact": {
+            "name": "Prof. Hiroshi Tanaka",
+            "email": "h.tanaka@ori.u-tokyo.ac.jp",
+            "phone": "+81 3 5841 6500"
+          },
+          "focusAreas": ["මුහුදු විද්‍යාව", "මුහුදු තාක්ෂණය", "ජීව විවිධත්වය"],
+          "achievements": [
+            "වාර්ෂික සමවු සම්මන්ත්‍රණය",
+            "සමවු ගවේෂණ යාත්‍රා 8",
+            "තාක්ෂණ නවෝත්පාදන සම්මාන"
+          ]
+        },
+        {
+          "id": 4,
+          "name": "GEOMAR Helmholtz මධ්‍යස්ථානය",
+          "country": "ජර්මනිය",
+          "type": "ගවේෂණ ආයතනය",
+          "region": "යුරෝපා",
+          "joinedYear": 2018,
+          "status": "active",
+          "collaborationType": ["ගවේෂණය", "දත්ත බෙදාහැරීම", "පුහුණුව"],
+          "jointPublications": 28,
+          "activeProjects": 3,
+          "mou": true,
+          "contact": {
+            "name": "Dr. Klaus Schmidt",
+            "email": "k.schmidt@geomar.de",
+            "phone": "+49 431 600 0"
+          },
+          "focusAreas": ["මුහුදු භූවිද්‍යාව", "මුහුදු ගතිවිධිය", "කාලගුණය"],
+          "achievements": [
+            "ගැඹුරු මුහුදු ගවේෂණ හවුල්කාරිත්වය",
+            "උපාංග බෙදාගැනීමේ ගිවිසුම",
+            "සමවු PhD වැඩසටහන"
+          ]
+        },
+        {
+          "id": 5,
+          "name": "ස්ක්‍රිප්ස් මුහුදු විද්‍යා ආයතනය",
+          "country": "එක්සත් ජනපදය",
+          "type": "ගවේෂණ ආයතනය",
+          "region": "උතුරු ඇමෙරිකාව",
+          "joinedYear": 2014,
+          "status": "active",
+          "collaborationType": ["ගවේෂණය", "ශිෂ්‍ය හුවමාරුව", "දත්ත බෙදාහැරීම"],
+          "jointPublications": 31,
+          "activeProjects": 4,
+          "mou": true,
+          "contact": {
+            "name": "Dr. Maria Rodriguez",
+            "email": "m.rodriguez@ucsd.edu",
+            "phone": "+1 858 534 3624"
+          },
+          "focusAreas": ["මුහුදු විද්‍යාව", "කාලගුණ ගවේෂණය", "මුහුදු ජීව විද්‍යාව"],
+          "achievements": [
+            "දශකයක් පුරා පවතින හවුල්කාරිත්වය",
+            "සමවු ගවේෂණ ගමන් 20+",
+            "විශාල අරමුදල් හවුල් ව්‍යාපෘති"
+          ]
+        },
+        {
+          "id": 6,
+          "name": "සිංගප්පූර් ජාතික විශ්වවිද්‍යාලය",
+          "country": "සිංගප්පූරුව",
+          "type": "විශ්වවිද්‍යාලය",
+          "region": "ආසියා-ප්‍රශාන්ත",
+          "joinedYear": 2019,
+          "status": "active",
+          "collaborationType": ["ගවේෂණය", "ශිෂ්‍ය හුවමාරුව", "සමවු වැඩසටහන්"],
+          "jointPublications": 24,
+          "activeProjects": 2,
+          "mou": true,
+          "contact": {
+            "name": "Prof. Wei Lin",
+            "email": "wei.lin@nus.edu.sg",
+            "phone": "+65 6516 6666"
+          },
+          "focusAreas": ["මුහුදු ජෛව තාක්ෂණය", "අක්වාකල්චර්", "ආරක්ෂණය"],
+          "achievements": [
+            "සමවු උපාධි වැඩසටහන",
+            "නවෝත්පාදන පරීක්ෂණාගාරය පිහිටුවීම",
+            "ආරම්භක ව්‍යාපෘති හවුල්කාරිත්ව"
+          ]
+        }
+      ]
+    },
+    "partner": {
+      "metrics": {
+        "publications": "ප්‍රකාශන",
+        "projects": "ව්‍යාපෘති",
+        "mou": "ගිවිසුම",
+        "since": "{{year}} සිට"
+      },
+      "labels": {
+        "focusAreas": "අවධානයේ ක්ෂේත්‍ර:",
+        "achievements": "ප්‍රධාන ප්‍රතිඵල:",
+        "contact": "සම්බන්ධතා:"
+      },
+      "actions": {
+        "viewDetails": "විස්තර බලන්න",
+        "hideDetails": "විස්තර සඟවන්න"
+      }
+    },
+    "opportunities": {
+      "heading": "හවුල්කාරිත්ව අවස්ථාවන්",
+      "labels": {
+        "value": "මූල්‍ය අගය:",
+        "duration": "කාලය:",
+        "deadline": "අවසන් දිනය:"
+      },
+      "apply": "දැන් අයදුම් කරන්න",
+      "items": [
+        {
+          "id": 1,
+          "title": "ආසියාන් මුහුදු විද්‍යා ජාලය - ගවේෂණ ශිෂ්‍යත්වය",
+          "type": "ශිෂ්‍යත්වය",
+          "deadline": "2025-03-15",
+          "region": "ආසියා-ප්‍රශාන්ත",
+          "value": "$50,000",
+          "duration": "මාස 12",
+          "description": "ආසියාන් රටවල මුහුදු විද්‍යා සමවු ගවේෂණ ව්‍යාපෘති සඳහා ශිෂ්‍යත්වයක්"
+        },
+        {
+          "id": 2,
+          "title": "යුරෝපය Horizon - නිල් ආර්ථික නවෝත්පාදන කැඳවීම",
+          "type": "ධනසහය",
+          "deadline": "2025-04-30",
+          "region": "යුරෝපා",
+          "value": "€2.5M",
+          "duration": "මාස 36",
+          "description": "තිරසාර නිල් ආර්ථිකය මූලික කරගත් විශාල-පරිමාණ සමවු ව්‍යාපෘති"
+        },
+        {
+          "id": 3,
+          "title": "ඉන්දියන් මහ සමුද්‍ර ගවේෂණ හුවමාරු වැඩසටහන",
+          "type": "හුවමාරුව",
+          "deadline": "2025-02-28",
+          "region": "ආසියා-ප්‍රශාන්ත",
+          "value": "$25,000",
+          "duration": "මාස 6",
+          "description": "ඉන්දියන් මහ සමුද්‍ර වෙරළ රටවලට පර්යේෂක හුවමාරුවක්"
+        }
+      ]
+    }
+  },
   "impactAnalytics": {
     "heading": "බලපෑම් විශ්ලේෂණය",
     "range": {

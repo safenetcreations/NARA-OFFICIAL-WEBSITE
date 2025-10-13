@@ -1,96 +1,92 @@
-import React, { useState, useEffect } from 'react';
-import { Database, Globe, Satellite, Settings, Activity, AlertCircle, CheckCircle, Clock, TrendingUp, Shield, Zap, Users } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import {
+  Activity,
+  AlertCircle,
+  CheckCircle,
+  Database,
+  Globe,
+  Satellite,
+  Settings,
+  Shield,
+  Users,
+  Zap
+} from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import GovernmentDatabaseSection from './components/GovernmentDatabaseSection';
 import InternationalResearchSection from './components/InternationalResearchSection';
 import SatelliteDataSection from './components/SatelliteDataSection';
 import APIManagementSection from './components/APIManagementSection';
-import { integrationMonitoringService } from '../../services/integrationService';
+import usePageContent from '../../hooks/usePageContent';
+import useIntegrationDashboard from '../../hooks/useIntegrationDashboard';
+import IntegrationHero from './components/IntegrationHero';
 
 const IntegrationSystemsPlatform = () => {
+  const { t } = useTranslation('integration');
   const [activeTab, setActiveTab] = useState('government');
-  const [monitoringData, setMonitoringData] = useState([]);
-  const [systemStats, setSystemStats] = useState({
-    totalIntegrations: 0,
-    activeConnections: 0,
-    avgHealthScore: 0,
-    alertsCount: 0
+  const {
+    entries,
+    summary,
+    alerts,
+    lastUpdated,
+    isLoading,
+    error,
+    refresh
+  } = useIntegrationDashboard();
+
+  const heroFallback = useMemo(
+    () => ({
+      hero: t('hero.cmsFallback', { returnObjects: true })
+    }),
+    [t]
+  );
+
+  const { heroContent } = usePageContent('integration-systems-platform', {
+    fallbackContent: heroFallback
   });
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadMonitoringData();
-  }, []);
+  const tabTranslations = t('tabs', { returnObjects: true });
+  const tabIconMap = useMemo(
+    () => ({
+      government: Database,
+      research: Globe,
+      satellite: Satellite,
+      api: Settings
+    }),
+    []
+  );
 
-  const loadMonitoringData = async () => {
-    try {
-      const data = await integrationMonitoringService?.getDashboardData();
-      setMonitoringData(data || []);
-      
-      // Calculate system stats
-      const totalIntegrations = data?.length || 0;
-      const activeConnections = data?.filter(item => item?.status === 'active')?.length || 0;
-      const avgHealthScore = totalIntegrations > 0 
-        ? Math.round(data?.reduce((sum, item) => sum + (item?.health_score || 0), 0) / totalIntegrations)
-        : 0;
-      const alertsCount = data?.filter(item => item?.alert_threshold_breached)?.length || 0;
+  const tabs = useMemo(
+    () =>
+      ['government', 'research', 'satellite', 'api'].map((key) => ({
+        id: key,
+        icon: tabIconMap[key],
+        label: tabTranslations?.[key]?.label || '',
+        description: tabTranslations?.[key]?.description || ''
+      })),
+    [tabIconMap, tabTranslations]
+  );
 
-      setSystemStats({
-        totalIntegrations,
-        activeConnections,
-        avgHealthScore,
-        alertsCount
-      });
-    } catch (error) {
-      console.error('Error loading monitoring data:', error);
-      setSystemStats({
-        totalIntegrations: 0,
-        activeConnections: 0,
-        avgHealthScore: 0,
-        alertsCount: 0
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const guidelines = t('guidelines', { returnObjects: true });
+  const monitorTitle = t('monitor.heading');
+  const monitorEmpty = t('monitor.empty');
 
-  const tabs = [
-    {
-      id: 'government',
-      label: 'Government Database',
-      icon: Database,
-      description: 'API connectors for inter-governmental data sharing'
-    },
-    {
-      id: 'research',
-      label: 'Research Networks',
-      icon: Globe,
-      description: 'Global institution connections and collaborations'
-    },
-    {
-      id: 'satellite',
-      label: 'Satellite Data',
-      icon: Satellite,
-      description: 'Real-time satellite feeds and processing'
-    },
-    {
-      id: 'api',
-      label: 'API Management',
-      icon: Settings,
-      description: 'Third-party API gateway and monitoring'
-    }
-  ];
+  const renderStatusBadge = (statusRaw) => {
+    const status = (statusRaw || '').toLowerCase();
+    const label = t(`common.statuses.${status}`, { defaultValue: statusRaw || '—' });
+    const appearance = {
+      active: { Icon: CheckCircle, className: 'text-green-500' },
+      maintenance: { Icon: Clock, className: 'text-yellow-500' },
+      error: { Icon: AlertCircle, className: 'text-red-500' },
+      default: { Icon: Activity, className: 'text-gray-500' }
+    };
+    const { Icon, className } = appearance[status] || appearance.default;
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'active':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'error':
-        return <AlertCircle className="w-4 h-4 text-red-500" />;
-      case 'maintenance':
-        return <Clock className="w-4 h-4 text-yellow-500" />;
-      default:
-        return <Activity className="w-4 h-4 text-gray-500" />;
-    }
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-white/60 px-2 py-1 text-xs font-semibold text-slate-700">
+        <Icon className={`h-4 w-4 ${className}`} />
+        {label}
+      </span>
+    );
   };
 
   const renderTabContent = () => {
@@ -108,158 +104,116 @@ const IntegrationSystemsPlatform = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">
-              Integration Systems Platform
-            </h1>
-            <p className="text-xl text-blue-100 mb-8">
-              Centralized hub for managing external system connections through specialized integration modules
-            </p>
-            
-            {/* System Status Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-blue-100 text-sm">Total Integrations</p>
-                    <p className="text-2xl font-bold">{systemStats?.totalIntegrations || 0}</p>
-                  </div>
-                  <Shield className="w-8 h-8 text-blue-200" />
-                </div>
-              </div>
-              
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-blue-100 text-sm">Active Connections</p>
-                    <p className="text-2xl font-bold">{systemStats?.activeConnections || 0}</p>
-                  </div>
-                  <Zap className="w-8 h-8 text-green-300" />
-                </div>
-              </div>
-              
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-blue-100 text-sm">Avg Health Score</p>
-                    <p className="text-2xl font-bold">{systemStats?.avgHealthScore || 0}%</p>
-                  </div>
-                  <TrendingUp className="w-8 h-8 text-yellow-300" />
-                </div>
-              </div>
-              
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-blue-100 text-sm">Active Alerts</p>
-                    <p className="text-2xl font-bold">{systemStats?.alertsCount || 0}</p>
-                  </div>
-                  <AlertCircle className="w-8 h-8 text-red-300" />
-                </div>
-              </div>
-            </div>
+    <div className="min-h-screen bg-slate-50">
+      <IntegrationHero
+        heroContent={heroContent?.hero}
+        summary={summary}
+        alerts={alerts}
+        isLoading={isLoading}
+        lastUpdated={lastUpdated}
+        onRefresh={refresh}
+      />
+
+      <div className="mx-auto max-w-7xl px-4 py-10">
+        {error && (
+          <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {t('monitor.error')}
           </div>
-        </div>
-      </div>
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Integration Module Tabs */}
-        <div className="bg-white rounded-lg shadow-sm mb-8">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8" aria-label="Tabs">
-              {tabs?.map((tab) => {
-                const IconComponent = tab?.icon;
-                return (
-                  <button
-                    key={tab?.id}
-                    onClick={() => setActiveTab(tab?.id)}
-                    className={`${
-                      activeTab === tab?.id
-                        ? 'border-blue-500 text-blue-600' :'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    } whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm flex items-center space-x-2`}
-                  >
-                    <IconComponent className="w-5 h-5" />
-                    <div className="text-left">
-                      <div className="font-semibold">{tab?.label}</div>
-                      <div className="text-xs text-gray-500">{tab?.description}</div>
-                    </div>
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
+        )}
+
+        <div className="mb-8 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <nav className="flex flex-wrap gap-x-6" aria-label={t('tabs.ariaLabel')}>
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex flex-1 min-w-[200px] items-center gap-3 border-b-2 px-6 py-4 text-left transition ${
+                    isActive
+                      ? 'border-cyan-500 bg-cyan-50 text-cyan-700'
+                      : 'border-transparent text-slate-500 hover:border-slate-200 hover:bg-slate-50'
+                  }`}
+                  type="button"
+                >
+                  <Icon className={`h-5 w-5 ${isActive ? 'text-cyan-600' : 'text-slate-400'}`} />
+                  <div>
+                    <div className="font-semibold">{tab.label}</div>
+                    <p className="text-xs text-slate-500">{tab.description}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* System Health Monitor */}
-        {monitoringData?.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm mb-8 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <Activity className="w-5 h-5 text-blue-600 mr-2" />
-              System Health Monitor
+        <div className="mb-8 rounded-2xl bg-white p-6 shadow-sm">
+          <div className="mb-4 flex items-center justify-between gap-4">
+            <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+              <Activity className="h-5 w-5 text-cyan-600" />
+              {monitorTitle}
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {monitoringData?.slice(0, 6)?.map((item) => (
-                <div key={item?.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+          </div>
+
+          {entries.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">
+              {monitorEmpty}
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-3">
+              {entries.slice(0, 6).map((item) => (
+                <div
+                  key={item?.id}
+                  className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3"
+                >
                   <div>
-                    <p className="font-medium text-gray-900">{item?.integration_name}</p>
-                    <p className="text-sm text-gray-500 capitalize">{item?.integration_type?.replace('_', ' ')}</p>
+                    <p className="font-medium text-slate-900">{item?.name}</p>
+                    <p className="text-xs text-slate-500">{item?.system}</p>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    {getStatusIcon(item?.status)}
-                    <span className="text-sm font-medium">{item?.health_score || 0}%</span>
+                  <div className="flex items-center gap-2">
+                    {renderStatusBadge(item?.status)}
+                    <span className="text-sm font-semibold text-slate-700">
+                      {t('monitor.healthLabel', { value: item?.health_score ?? 0 })}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* Tab Content */}
-        <div className="bg-white rounded-lg shadow-sm">
-          {renderTabContent()}
+          )}
         </div>
 
-        {/* Integration Guidelines */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-blue-50 rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-blue-900 mb-3 flex items-center">
-              <Shield className="w-5 h-5 mr-2" />
-              Security Best Practices
+        <div className="rounded-2xl bg-white shadow-sm">{renderTabContent()}</div>
+
+        <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2">
+          <div className="rounded-2xl bg-blue-50 p-6">
+            <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-blue-900">
+              <Shield className="h-5 w-5" />
+              {guidelines?.security?.title}
             </h3>
             <ul className="space-y-2 text-sm text-blue-800">
-              <li>• All API connections use encrypted protocols (HTTPS/TLS)</li>
-              <li>• Role-based access controls for sensitive data streams</li>
-              <li>• Automated compliance monitoring for data sharing agreements</li>
-              <li>• Regular security audits and vulnerability assessments</li>
+              {(guidelines?.security?.items || []).map((item, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  <span>•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
             </ul>
           </div>
 
-          <div className="bg-green-50 rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-green-900 mb-3 flex items-center">
-              <Users className="w-5 h-5 mr-2" />
-              Collaboration Features
+          <div className="rounded-2xl bg-emerald-50 p-6">
+            <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-emerald-900">
+              <Users className="h-5 w-5" />
+              {guidelines?.collaboration?.title}
             </h3>
-            <ul className="space-y-2 text-sm text-green-800">
-              <li>• Real-time data synchronization across institutions</li>
-              <li>• Automated workflow triggers for joint research projects</li>
-              <li>• Centralized document sharing with version control</li>
-              <li>• Multi-language support for international partnerships</li>
+            <ul className="space-y-2 text-sm text-emerald-800">
+              {(guidelines?.collaboration?.items || []).map((item, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  <span>•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

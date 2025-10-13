@@ -16,6 +16,7 @@ import {
   ToggleRight,
   Filter
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { apiManagementService } from '../../../services/integrationService';
 
 const APIManagementSection = () => {
@@ -36,6 +37,8 @@ const APIManagementSection = () => {
     timeout_seconds: 30,
     integration_type: 'api_gateway'
   });
+  const { t } = useTranslation('integration');
+  const strings = t('api', { returnObjects: true });
 
   useEffect(() => {
     loadData();
@@ -186,8 +189,8 @@ const APIManagementSection = () => {
         <div className="flex items-center">
           <Settings className="w-6 h-6 text-blue-600 mr-3" />
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Third-Party API Management</h2>
-            <p className="text-sm text-gray-600">API gateway, authentication management, rate limiting, and monitoring dashboards</p>
+            <h2 className="text-xl font-semibold text-gray-900">{strings?.title}</h2>
+            <p className="text-sm text-gray-600">{strings?.subtitle}</p>
           </div>
         </div>
         <button
@@ -195,7 +198,7 @@ const APIManagementSection = () => {
           className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Add Endpoint
+          {strings?.actions?.addEndpoint}
         </button>
       </div>
       {/* Statistics Cards */}

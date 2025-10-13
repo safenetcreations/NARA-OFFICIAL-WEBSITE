@@ -13,6 +13,7 @@ import {
   ExternalLink,
   Award
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { researchInstitutionsService } from '../../../services/integrationService';
 
 const InternationalResearchSection = () => {
@@ -29,6 +30,9 @@ const InternationalResearchSection = () => {
     partnership_status: 'pending'
   });
   const [newResearchArea, setNewResearchArea] = useState('');
+  const { t } = useTranslation('integration');
+  const common = t('common', { returnObjects: true });
+  const strings = t('research', { returnObjects: true });
 
   useEffect(() => {
     loadInstitutions();
@@ -105,9 +109,21 @@ const InternationalResearchSection = () => {
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      'active': { color: 'bg-green-100 text-green-800', icon: CheckCircle, label: 'Active Partnership' },
-      'pending': { color: 'bg-yellow-100 text-yellow-800', icon: Clock, label: 'Pending' },
-      'inactive': { color: 'bg-gray-100 text-gray-800', icon: Users, label: 'Inactive' }
+      active: {
+        color: 'bg-green-100 text-green-800',
+        icon: CheckCircle,
+        label: strings?.statuses?.active
+      },
+      pending: {
+        color: 'bg-yellow-100 text-yellow-800',
+        icon: Clock,
+        label: strings?.statuses?.pending
+      },
+      inactive: {
+        color: 'bg-gray-100 text-gray-800',
+        icon: Users,
+        label: strings?.statuses?.inactive
+      }
     };
     
     const config = statusConfig?.[status] || statusConfig?.pending;
@@ -155,8 +171,8 @@ const InternationalResearchSection = () => {
         <div className="flex items-center">
           <Globe className="w-6 h-6 text-blue-600 mr-3" />
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">International Research Networks</h2>
-            <p className="text-sm text-gray-600">Global research institution connections and collaborative research platforms</p>
+            <h2 className="text-xl font-semibold text-gray-900">{strings?.title}</h2>
+            <p className="text-sm text-gray-600">{strings?.subtitle}</p>
           </div>
         </div>
         <button
@@ -164,7 +180,7 @@ const InternationalResearchSection = () => {
           className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Add Institution
+          {strings?.actions?.add}
         </button>
       </div>
       {/* Statistics Cards */}
@@ -173,7 +189,7 @@ const InternationalResearchSection = () => {
           <div className="flex items-center">
             <Globe className="w-8 h-8 text-blue-600 mr-3" />
             <div>
-              <p className="text-sm text-blue-600 font-medium">Total Institutions</p>
+              <p className="text-sm text-blue-600 font-medium">{strings?.stats?.total}</p>
               <p className="text-2xl font-bold text-blue-900">{institutions?.length || 0}</p>
             </div>
           </div>
@@ -183,7 +199,7 @@ const InternationalResearchSection = () => {
           <div className="flex items-center">
             <CheckCircle className="w-8 h-8 text-green-600 mr-3" />
             <div>
-              <p className="text-sm text-green-600 font-medium">Active Partnerships</p>
+              <p className="text-sm text-green-600 font-medium">{strings?.stats?.active}</p>
               <p className="text-2xl font-bold text-green-900">
                 {institutions?.filter(i => i?.partnership_status === 'active')?.length || 0}
               </p>
@@ -195,7 +211,7 @@ const InternationalResearchSection = () => {
           <div className="flex items-center">
             <Clock className="w-8 h-8 text-yellow-600 mr-3" />
             <div>
-              <p className="text-sm text-yellow-600 font-medium">Pending</p>
+              <p className="text-sm text-yellow-600 font-medium">{strings?.stats?.pending}</p>
               <p className="text-2xl font-bold text-yellow-900">
                 {institutions?.filter(i => i?.partnership_status === 'pending')?.length || 0}
               </p>
@@ -207,7 +223,7 @@ const InternationalResearchSection = () => {
           <div className="flex items-center">
             <MapPin className="w-8 h-8 text-purple-600 mr-3" />
             <div>
-              <p className="text-sm text-purple-600 font-medium">Countries</p>
+              <p className="text-sm text-purple-600 font-medium">{strings?.stats?.countries}</p>
               <p className="text-2xl font-bold text-purple-900">
                 {[...new Set(institutions?.map(i => i?.country))]?.length || 0}
               </p>
@@ -219,7 +235,7 @@ const InternationalResearchSection = () => {
       <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-6 mb-8">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Award className="w-5 h-5 text-indigo-600 mr-2" />
-          Research Areas Coverage
+          {strings?.researchAreas?.title}
         </h3>
         <div className="flex flex-wrap gap-2">
           {[...new Set(institutions?.flatMap(i => i?.research_areas || []))]?.map((area) => (
@@ -255,7 +271,9 @@ const InternationalResearchSection = () => {
                 
                 {/* Research Areas */}
                 <div className="mb-4">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Research Areas</p>
+                  <p className="text-sm font-medium text-gray-700 mb-2">
+                    {strings?.cards?.researchAreas}
+                  </p>
                   <div className="flex flex-wrap gap-1">
                     {institution?.research_areas?.slice(0, 3)?.map((area) => (
                       <span
@@ -267,7 +285,9 @@ const InternationalResearchSection = () => {
                     ))}
                     {institution?.research_areas?.length > 3 && (
                       <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-50 text-gray-600">
-                        +{institution?.research_areas?.length - 3} more
+                        {t('research.cards.moreAreas', {
+                          count: institution?.research_areas?.length - 3
+                        })}
                       </span>
                     )}
                   </div>
@@ -290,7 +310,7 @@ const InternationalResearchSection = () => {
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-800"
                       >
-                        Visit Website
+                        {strings?.links?.visit}
                       </a>
                     </p>
                   )}
@@ -312,13 +332,15 @@ const InternationalResearchSection = () => {
                     setShowAddModal(true);
                   }}
                   className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                  title="Edit Institution"
+                  title={strings?.actions?.edit}
+                  aria-label={strings?.actions?.edit}
                 >
                   <Edit className="w-4 h-4" />
                 </button>
                 <button
                   className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                  title="Remove Institution"
+                  title={strings?.actions?.delete}
+                  aria-label={strings?.actions?.delete}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -328,16 +350,19 @@ const InternationalResearchSection = () => {
             <div className="border-t border-gray-100 pt-4">
               <div className="flex items-center justify-between">
                 <div className="text-xs text-gray-500">
-                  {institution?.established_date && (
+                  {institution?.established_at && (
                     <p className="flex items-center">
                       <Calendar className="w-3 h-3 mr-1" />
-                      Partnership since: {new Date(institution.established_date)?.getFullYear()}
+                      {strings?.labels?.partnershipSince}{' '}
+                      {new Date(institution.established_at)?.getFullYear()}
                     </p>
                   )}
                   {institution?.data_sharing_agreements?.length > 0 && (
                     <p className="flex items-center mt-1">
                       <FileText className="w-3 h-3 mr-1" />
-                      {institution?.data_sharing_agreements?.length} agreement(s)
+                      {t('research.labels.agreements', {
+                        count: institution?.data_sharing_agreements?.length
+                      })}
                     </p>
                   )}
                 </div>
@@ -348,7 +373,7 @@ const InternationalResearchSection = () => {
                       onClick={() => handleStatusChange(institution?.id, 'active')}
                       className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs hover:bg-green-200 transition-colors"
                     >
-                      Approve
+                      {strings?.actions?.approve}
                     </button>
                   )}
                   {institution?.partnership_status === 'active' && (
@@ -356,7 +381,7 @@ const InternationalResearchSection = () => {
                       onClick={() => handleStatusChange(institution?.id, 'inactive')}
                       className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs hover:bg-gray-200 transition-colors"
                     >
-                      Suspend
+                      {strings?.actions?.suspend}
                     </button>
                   )}
                 </div>
@@ -368,14 +393,14 @@ const InternationalResearchSection = () => {
       {institutions?.length === 0 && (
         <div className="text-center py-12">
           <Globe className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No research institutions</h3>
-          <p className="text-gray-500 mb-4">Start building your international research network.</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{strings?.empty?.title}</h3>
+          <p className="text-gray-500 mb-4">{strings?.empty?.description}</p>
           <button
             onClick={() => setShowAddModal(true)}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Your First Institution
+            {strings?.empty?.cta}
           </button>
         </div>
       )}
@@ -384,79 +409,91 @@ const InternationalResearchSection = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              {editingInstitution ? 'Edit Institution' : 'Add Research Institution'}
+              {editingInstitution ? strings?.modal?.editTitle : strings?.modal?.createTitle}
             </h3>
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Institution Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {strings?.modal?.fields?.name}
+                </label>
                 <input
                   type="text"
                   required
                   value={formData?.name}
                   onChange={(e) => setFormData({...formData, name: e?.target?.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Marine Research Institute"
+                  placeholder={strings?.modal?.placeholders?.name}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {strings?.modal?.fields?.country}
+                </label>
                 <input
                   type="text"
                   required
                   value={formData?.country}
                   onChange={(e) => setFormData({...formData, country: e?.target?.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Iceland"
+                  placeholder={strings?.modal?.placeholders?.country}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Website URL</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {strings?.modal?.fields?.website}
+                </label>
                 <input
                   type="url"
                   value={formData?.website_url}
                   onChange={(e) => setFormData({...formData, website_url: e?.target?.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="https://www.mri.is"
+                  placeholder={strings?.modal?.placeholders?.website}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {strings?.modal?.fields?.email}
+                </label>
                 <input
                   type="email"
                   value={formData?.contact_email}
                   onChange={(e) => setFormData({...formData, contact_email: e?.target?.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="contact@mri.is"
+                  placeholder={strings?.modal?.placeholders?.email}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Partnership Status</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {strings?.modal?.fields?.status}
+                </label>
                 <select
                   value={formData?.partnership_status}
                   onChange={(e) => setFormData({...formData, partnership_status: e?.target?.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="pending">Pending</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
+                  <option value="pending">{strings?.statuses?.pending}</option>
+                  <option value="active">{strings?.statuses?.active}</option>
+                  <option value="inactive">{strings?.statuses?.inactive}</option>
                 </select>
               </div>
 
               {/* Research Areas */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Research Areas</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {strings?.modal?.fields?.areas}
+                </label>
                 <div className="flex space-x-2 mb-2">
                   <input
                     type="text"
                     value={newResearchArea}
                     onChange={(e) => setNewResearchArea(e?.target?.value)}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Marine Biology"
+                    placeholder={strings?.modal?.placeholders?.area}
                     onKeyPress={(e) => e?.key === 'Enter' && (e?.preventDefault(), addResearchArea())}
                   />
                   <button
@@ -464,7 +501,7 @@ const InternationalResearchSection = () => {
                     onClick={addResearchArea}
                     className="px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
                   >
-                    Add
+                    {common?.actions?.add}
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -492,13 +529,15 @@ const InternationalResearchSection = () => {
                   onClick={resetForm}
                   className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 >
-                  Cancel
+                  {common?.actions?.cancel}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  {editingInstitution ? 'Update' : 'Add'} Institution
+                  {editingInstitution
+                    ? strings?.modal?.actions?.update
+                    : strings?.modal?.actions?.create}
                 </button>
               </div>
             </form>

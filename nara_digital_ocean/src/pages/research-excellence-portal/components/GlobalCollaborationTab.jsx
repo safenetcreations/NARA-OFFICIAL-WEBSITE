@@ -317,287 +317,136 @@ const PARTNERS_FALLBACK_MAP = createFallbackMap(PARTNERS_FALLBACK);
 const OPPORTUNITIES_FALLBACK_MAP = createFallbackMap(OPPORTUNITIES_FALLBACK);
 
 const GlobalCollaborationTab = () => {
+  const { t } = useTranslation('researchEnhanced');
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [selectedPartner, setSelectedPartner] = useState(null);
 
-  // Global Statistics
-  const globalStats = [
-    {
-      id: 'countries',
-      label: 'Countries',
-      value: 42,
-      icon: Globe,
-      color: 'from-cyan-400 to-blue-600'
-    },
-    {
-      id: 'institutions',
-      label: 'Partner Institutions',
-      value: 89,
-      icon: Building,
-      color: 'from-purple-400 to-pink-600'
-    },
-    {
-      id: 'publications',
-      label: 'Joint Publications',
-      value: 456,
-      icon: FileText,
-      color: 'from-green-400 to-emerald-600'
-    },
-    {
-      id: 'researchers',
-      label: 'Collaborating Researchers',
-      value: 723,
-      icon: Users,
-      color: 'from-amber-400 to-orange-600'
-    }
-  ];
+  const globalStats = useMemo(() => {
+    const translated = t('collaboration.stats.items', { returnObjects: true, defaultValue: GLOBAL_STATS_FALLBACK });
+    const items = Array.isArray(translated) && translated.length ? translated : GLOBAL_STATS_FALLBACK;
+    return items.map((item) => {
+      const fallback = GLOBAL_STATS_FALLBACK_MAP[item.id] || GLOBAL_STATS_FALLBACK[0];
+      const iconName = item.icon || fallback.icon;
+      return {
+        ...fallback,
+        ...item,
+        icon: resolveIcon(iconName, fallback.icon),
+        label: item.label || fallback.label,
+        value: item.value ?? fallback.value,
+        color: item.color || fallback.color
+      };
+    });
+  }, [t]);
 
-  // Regional Distribution
-  const regions = [
-    {
-      id: 'asia-pacific',
-      name: 'Asia-Pacific',
-      countries: 18,
-      institutions: 34,
-      publications: 234,
-      researchers: 312,
-      color: 'cyan',
-      highlights: ['Leading collaboration hub', 'Most joint publications'],
-      topCountries: ['Japan', 'Australia', 'Singapore', 'India', 'China']
-    },
-    {
-      id: 'europe',
-      name: 'Europe',
-      countries: 12,
-      institutions: 28,
-      publications: 156,
-      researchers: 245,
-      color: 'blue',
-      highlights: ['Strong research networks', 'EU-funded projects'],
-      topCountries: ['UK', 'Germany', 'Netherlands', 'France', 'Norway']
-    },
-    {
-      id: 'north-america',
-      name: 'North America',
-      countries: 3,
-      institutions: 18,
-      publications: 98,
-      researchers: 134,
-      color: 'purple',
-      highlights: ['High-impact collaborations', 'Advanced technology'],
-      topCountries: ['USA', 'Canada', 'Mexico']
-    },
-    {
-      id: 'africa',
-      name: 'Africa',
-      countries: 5,
-      institutions: 6,
-      publications: 34,
-      researchers: 45,
-      color: 'green',
-      highlights: ['Growing partnerships', 'Capacity building'],
-      topCountries: ['South Africa', 'Kenya', 'Tanzania', 'Mauritius']
-    },
-    {
-      id: 'latin-america',
-      name: 'Latin America',
-      countries: 4,
-      institutions: 3,
-      publications: 21,
-      researchers: 28,
-      color: 'amber',
-      highlights: ['Emerging collaborations', 'Marine biodiversity'],
-      topCountries: ['Brazil', 'Chile', 'Peru', 'Argentina']
-    }
-  ];
+  const regions = useMemo(() => {
+    const translated = t('collaboration.regions.items', { returnObjects: true, defaultValue: REGIONS_FALLBACK });
+    const items = Array.isArray(translated) && translated.length ? translated : REGIONS_FALLBACK;
+    return items.map((region) => {
+      const fallback = REGIONS_FALLBACK_MAP[region.id] || REGIONS_FALLBACK[0];
+      return {
+        ...fallback,
+        ...region,
+        name: region.name || fallback.name,
+        countries: region.countries ?? fallback.countries,
+        institutions: region.institutions ?? fallback.institutions,
+        publications: region.publications ?? fallback.publications,
+        researchers: region.researchers ?? fallback.researchers,
+        color: region.color || fallback.color,
+        highlights: Array.isArray(region.highlights) && region.highlights.length ? region.highlights : fallback.highlights,
+        topCountries: Array.isArray(region.topCountries) && region.topCountries.length ? region.topCountries : fallback.topCountries
+      };
+    });
+  }, [t]);
 
-  // Top Partner Institutions
-  const partners = [
-    {
-      id: 1,
-      name: 'National Oceanic and Atmospheric Administration (NOAA)',
-      country: 'United States',
-      type: 'Government Agency',
-      region: 'North America',
-      joinedYear: 2015,
-      status: 'active',
-      collaborationType: ['Research', 'Data Sharing', 'Training'],
-      jointPublications: 42,
-      activeProjects: 5,
-      mou: true,
-      contact: {
-        name: 'Dr. Sarah Johnson',
-        email: 'sarah.johnson@noaa.gov',
-        phone: '+1 301 555 0123'
-      },
-      focusAreas: ['Climate Change', 'Oceanography', 'Marine Ecosystems'],
-      achievements: [
-        'Joint ocean monitoring network',
-        '15 co-authored papers',
-        'Technology transfer program'
-      ],
-      logo: 'https://via.placeholder.com/80x80'
-    },
-    {
-      id: 2,
-      name: 'CSIRO Oceans and Atmosphere',
-      country: 'Australia',
-      type: 'Research Organization',
-      region: 'Asia-Pacific',
-      joinedYear: 2017,
-      status: 'active',
-      collaborationType: ['Research', 'Student Exchange', 'Equipment Sharing'],
-      jointPublications: 38,
-      activeProjects: 4,
-      mou: true,
-      contact: {
-        name: 'Prof. Michael Chen',
-        email: 'm.chen@csiro.au',
-        phone: '+61 3 9545 8000'
-      },
-      focusAreas: ['Marine Biology', 'Climate Science', 'Fisheries'],
-      achievements: [
-        'Joint research vessels program',
-        '12 PhD student exchanges',
-        'Shared laboratory facilities'
-      ],
-      logo: 'https://via.placeholder.com/80x80'
-    },
-    {
-      id: 3,
-      name: 'University of Tokyo - Ocean Research Institute',
-      country: 'Japan',
-      type: 'University',
-      region: 'Asia-Pacific',
-      joinedYear: 2016,
-      status: 'active',
-      collaborationType: ['Research', 'Student Exchange', 'Conferences'],
-      jointPublications: 34,
-      activeProjects: 3,
-      mou: true,
-      contact: {
-        name: 'Prof. Hiroshi Tanaka',
-        email: 'h.tanaka@ori.u-tokyo.ac.jp',
-        phone: '+81 3 5841 6500'
-      },
-      focusAreas: ['Oceanography', 'Marine Technology', 'Biodiversity'],
-      achievements: [
-        'Annual joint symposium',
-        '8 joint research cruises',
-        'Technology innovation awards'
-      ],
-      logo: 'https://via.placeholder.com/80x80'
-    },
-    {
-      id: 4,
-      name: 'GEOMAR Helmholtz Centre',
-      country: 'Germany',
-      type: 'Research Institute',
-      region: 'Europe',
-      joinedYear: 2018,
-      status: 'active',
-      collaborationType: ['Research', 'Data Sharing', 'Training'],
-      jointPublications: 28,
-      activeProjects: 3,
-      mou: true,
-      contact: {
-        name: 'Dr. Klaus Schmidt',
-        email: 'k.schmidt@geomar.de',
-        phone: '+49 431 600 0'
-      },
-      focusAreas: ['Marine Geology', 'Ocean Dynamics', 'Climate'],
-      achievements: [
-        'Deep-sea research collaboration',
-        'Equipment sharing agreement',
-        'Joint PhD program'
-      ],
-      logo: 'https://via.placeholder.com/80x80'
-    },
-    {
-      id: 5,
-      name: 'Scripps Institution of Oceanography',
-      country: 'United States',
-      type: 'Research Institute',
-      region: 'North America',
-      joinedYear: 2014,
-      status: 'active',
-      collaborationType: ['Research', 'Student Exchange', 'Data Sharing'],
-      jointPublications: 31,
-      activeProjects: 4,
-      mou: true,
-      contact: {
-        name: 'Dr. Maria Rodriguez',
-        email: 'm.rodriguez@ucsd.edu',
-        phone: '+1 858 534 3624'
-      },
-      focusAreas: ['Ocean Science', 'Climate Research', 'Marine Biology'],
-      achievements: [
-        'Decade-long partnership',
-        '20+ joint expeditions',
-        'Major grant collaborations'
-      ],
-      logo: 'https://via.placeholder.com/80x80'
-    },
-    {
-      id: 6,
-      name: 'National University of Singapore',
-      country: 'Singapore',
-      type: 'University',
-      region: 'Asia-Pacific',
-      joinedYear: 2019,
-      status: 'active',
-      collaborationType: ['Research', 'Student Exchange', 'Joint Programs'],
-      jointPublications: 24,
-      activeProjects: 2,
-      mou: true,
-      contact: {
-        name: 'Prof. Wei Lin',
-        email: 'wei.lin@nus.edu.sg',
-        phone: '+65 6516 6666'
-      },
-      focusAreas: ['Marine Biotechnology', 'Aquaculture', 'Conservation'],
-      achievements: [
-        'Joint masters program',
-        'Innovation lab established',
-        'Start-up incubation'
-      ],
-      logo: 'https://via.placeholder.com/80x80'
-    }
-  ];
+  const partners = useMemo(() => {
+    const translated = t('collaboration.partners.items', { returnObjects: true, defaultValue: PARTNERS_FALLBACK });
+    const items = Array.isArray(translated) && translated.length ? translated : PARTNERS_FALLBACK;
+    return items.map((partner) => {
+      const fallback = PARTNERS_FALLBACK_MAP[partner.id] || PARTNERS_FALLBACK[0];
+      return {
+        ...fallback,
+        ...partner,
+        name: partner.name || fallback.name,
+        country: partner.country || fallback.country,
+        type: partner.type || fallback.type,
+        region: partner.region || fallback.region,
+        joinedYear: partner.joinedYear ?? fallback.joinedYear,
+        status: partner.status || fallback.status,
+        collaborationType: Array.isArray(partner.collaborationType) && partner.collaborationType.length ? partner.collaborationType : fallback.collaborationType,
+        jointPublications: partner.jointPublications ?? fallback.jointPublications,
+        activeProjects: partner.activeProjects ?? fallback.activeProjects,
+        mou: typeof partner.mou === 'boolean' ? partner.mou : fallback.mou,
+        contact: {
+          ...fallback.contact,
+          ...partner.contact
+        },
+        focusAreas: Array.isArray(partner.focusAreas) && partner.focusAreas.length ? partner.focusAreas : fallback.focusAreas,
+        achievements: Array.isArray(partner.achievements) && partner.achievements.length ? partner.achievements : fallback.achievements
+      };
+    });
+  }, [t]);
 
-  // Collaboration Opportunities
-  const opportunities = [
-    {
-      id: 1,
-      title: 'ASEAN Marine Science Network - Research Fellowship',
-      type: 'Fellowship',
-      deadline: '2025-03-15',
-      region: 'Asia-Pacific',
-      value: '$50,000',
-      duration: '12 months',
-      description: 'Fellowship for joint research projects in marine science across ASEAN countries'
+  const opportunities = useMemo(() => {
+    const translated = t('collaboration.opportunities.items', { returnObjects: true, defaultValue: OPPORTUNITIES_FALLBACK });
+    const items = Array.isArray(translated) && translated.length ? translated : OPPORTUNITIES_FALLBACK;
+    return items.map((opp) => {
+      const fallback = OPPORTUNITIES_FALLBACK_MAP[opp.id] || OPPORTUNITIES_FALLBACK[0];
+      return {
+        ...fallback,
+        ...opp,
+        title: opp.title || fallback.title,
+        type: opp.type || fallback.type,
+        deadline: opp.deadline || fallback.deadline,
+        region: opp.region || fallback.region,
+        value: opp.value || fallback.value,
+        duration: opp.duration || fallback.duration,
+        description: opp.description || fallback.description
+      };
+    });
+  }, [t]);
+
+  const countriesValue = globalStats.find((stat) => stat.id === 'countries')?.value ?? 0;
+  const institutionsValue = globalStats.find((stat) => stat.id === 'institutions')?.value ?? 0;
+
+  const copy = useMemo(() => ({
+    mapTitle: t('collaboration.map.title', 'Global Collaboration Network'),
+    mapDescription: t('collaboration.map.description', 'Click on a region to view partnerships'),
+    mapEmpty: t('collaboration.map.empty', 'Interactive map showing global partnerships'),
+    mapSubtitle: t('collaboration.map.subtitle', '{{institutions}} institutions across {{countries}} countries', {
+      institutions: institutionsValue,
+      countries: countriesValue
+    }),
+    partnersHeading: t('collaboration.partners.heading', 'Partner Institutions'),
+    partnerCta: t('collaboration.partners.cta', 'Become a Partner'),
+    opportunitiesHeading: t('collaboration.opportunities.heading', 'Collaboration Opportunities')
+  }), [t, institutionsValue, countriesValue]);
+
+  const labels = useMemo(() => ({
+    region: {
+      countries: t('collaboration.region.metrics.countries', 'Countries'),
+      institutions: t('collaboration.region.metrics.institutions', 'Institutions'),
+      publications: t('collaboration.region.metrics.publications', 'Publications'),
+      researchers: t('collaboration.region.metrics.researchers', 'Researchers'),
+      highlights: t('collaboration.region.labels.highlights', 'Highlights:'),
+      topCountries: t('collaboration.region.labels.topCountries', 'Top Countries:')
     },
-    {
-      id: 2,
-      title: 'EU Horizon - Blue Economy Innovation Call',
-      type: 'Grant',
-      deadline: '2025-04-30',
-      region: 'Europe',
-      value: '€2.5M',
-      duration: '36 months',
-      description: 'Large-scale collaborative projects on sustainable blue economy'
+    partner: {
+      publications: t('collaboration.partner.metrics.publications', 'Publications'),
+      projects: t('collaboration.partner.metrics.projects', 'Projects'),
+      mou: t('collaboration.partner.metrics.mou', 'MoU'),
+      focusAreas: t('collaboration.partner.labels.focusAreas', 'Focus Areas:'),
+      achievements: t('collaboration.partner.labels.achievements', 'Key Achievements:'),
+      contact: t('collaboration.partner.labels.contact', 'Contact:'),
+      viewDetails: t('collaboration.partner.actions.viewDetails', 'View Details'),
+      hideDetails: t('collaboration.partner.actions.hideDetails', 'Hide Details')
     },
-    {
-      id: 3,
-      title: 'Indian Ocean Research Exchange Program',
-      type: 'Exchange',
-      deadline: '2025-02-28',
-      region: 'Asia-Pacific',
-      value: '$25,000',
-      duration: '6 months',
-      description: 'Researcher exchange program for Indian Ocean coastal states'
+    opportunities: {
+      value: t('collaboration.opportunities.labels.value', 'Value:'),
+      duration: t('collaboration.opportunities.labels.duration', 'Duration:'),
+      deadline: t('collaboration.opportunities.labels.deadline', 'Deadline:'),
+      apply: t('collaboration.opportunities.apply', 'Apply Now')
     }
-  ];
+  }), [t]);
 
   return (
     <div className="space-y-6">
@@ -629,8 +478,8 @@ const GlobalCollaborationTab = () => {
       >
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-2xl font-bold text-white mb-2">Global Collaboration Network</h3>
-            <p className="text-slate-400">Click on a region to view partnerships</p>
+            <h3 className="text-2xl font-bold text-white mb-2">{copy.mapTitle}</h3>
+            <p className="text-slate-400">{copy.mapDescription}</p>
           </div>
           <div className="p-3 rounded-xl bg-cyan-500/20">
             <Globe className="w-8 h-8 text-cyan-400" />
@@ -642,8 +491,8 @@ const GlobalCollaborationTab = () => {
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <Globe className="w-24 h-24 text-cyan-400/30 mx-auto mb-4" />
-              <p className="text-slate-400 text-sm">Interactive map showing global partnerships</p>
-              <p className="text-slate-500 text-xs mt-2">89 institutions across 42 countries</p>
+              <p className="text-slate-400 text-sm">{copy.mapEmpty}</p>
+              <p className="text-slate-500 text-xs mt-2">{copy.mapSubtitle}</p>
             </div>
           </div>
         </div>
@@ -672,19 +521,19 @@ const GlobalCollaborationTab = () => {
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
                   <div className="text-2xl font-bold text-white">{region.countries}</div>
-                  <div className="text-xs text-slate-400">Countries</div>
+                  <div className="text-xs text-slate-400">{labels.region.countries}</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-white">{region.institutions}</div>
-                  <div className="text-xs text-slate-400">Institutions</div>
+                  <div className="text-xs text-slate-400">{labels.region.institutions}</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-white">{region.publications}</div>
-                  <div className="text-xs text-slate-400">Publications</div>
+                  <div className="text-xs text-slate-400">{labels.region.publications}</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-white">{region.researchers}</div>
-                  <div className="text-xs text-slate-400">Researchers</div>
+                  <div className="text-xs text-slate-400">{labels.region.researchers}</div>
                 </div>
               </div>
 
@@ -697,7 +546,7 @@ const GlobalCollaborationTab = () => {
                     className="border-t border-white/10 pt-4 mt-4 space-y-3"
                   >
                     <div>
-                      <div className="text-xs text-slate-400 mb-2">Highlights:</div>
+                      <div className="text-xs text-slate-400 mb-2">{labels.region.highlights}</div>
                       {region.highlights.map((highlight, idx) => (
                         <div key={idx} className="flex items-center gap-2 text-sm text-slate-300 mb-1">
                           <Sparkles className="w-3 h-3 text-cyan-400" />
@@ -706,7 +555,7 @@ const GlobalCollaborationTab = () => {
                       ))}
                     </div>
                     <div>
-                      <div className="text-xs text-slate-400 mb-2">Top Countries:</div>
+                      <div className="text-xs text-slate-400 mb-2">{labels.region.topCountries}</div>
                       <div className="flex flex-wrap gap-1">
                         {region.topCountries.map((country, idx) => (
                           <span key={idx} className="px-2 py-1 rounded-full bg-white/5 text-xs text-slate-300">
@@ -730,10 +579,10 @@ const GlobalCollaborationTab = () => {
         className="space-y-6"
       >
         <div className="flex items-center justify-between">
-          <h3 className="text-2xl font-bold text-white">Partner Institutions</h3>
+          <h3 className="text-2xl font-bold text-white">{copy.partnersHeading}</h3>
           <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:shadow-lg hover:shadow-cyan-500/30 transition-all">
             <Handshake className="w-4 h-4" />
-            Become a Partner
+            {copy.partnerCta}
           </button>
         </div>
 
@@ -760,22 +609,22 @@ const GlobalCollaborationTab = () => {
                     <span>•</span>
                     <span>{partner.type}</span>
                     <span>•</span>
-                    <span className="text-green-400">Since {partner.joinedYear}</span>
+                    <span className="text-green-400">{t('collaboration.partner.metrics.since', 'Since {{year}}', { year: partner.joinedYear })}</span>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3 mb-4">
                 <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="text-xs text-slate-400 mb-1">Publications</div>
+                  <div className="text-xs text-slate-400 mb-1">{labels.partner.publications}</div>
                   <div className="text-xl font-bold text-white">{partner.jointPublications}</div>
                 </div>
                 <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="text-xs text-slate-400 mb-1">Projects</div>
+                  <div className="text-xs text-slate-400 mb-1">{labels.partner.projects}</div>
                   <div className="text-xl font-bold text-white">{partner.activeProjects}</div>
                 </div>
                 <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="text-xs text-slate-400 mb-1">MoU</div>
+                  <div className="text-xs text-slate-400 mb-1">{labels.partner.mou}</div>
                   <div className="text-xl">
                     {partner.mou ? <CheckCircle className="w-6 h-6 text-green-400" /> : <Clock className="w-6 h-6 text-amber-400" />}
                   </div>
@@ -783,7 +632,7 @@ const GlobalCollaborationTab = () => {
               </div>
 
               <div className="mb-4">
-                <div className="text-xs text-slate-400 mb-2">Focus Areas:</div>
+                <div className="text-xs text-slate-400 mb-2">{labels.partner.focusAreas}</div>
                 <div className="flex flex-wrap gap-2">
                   {partner.focusAreas.map((area, idx) => (
                     <span key={idx} className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs">
@@ -797,7 +646,7 @@ const GlobalCollaborationTab = () => {
                 onClick={() => setSelectedPartner(partner.id === selectedPartner ? null : partner.id)}
                 className="w-full py-2 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 transition-all text-sm font-medium"
               >
-                {selectedPartner === partner.id ? 'Hide Details' : 'View Details'}
+                {selectedPartner === partner.id ? labels.partner.hideDetails : labels.partner.viewDetails}
               </button>
 
               <AnimatePresence>
@@ -809,7 +658,7 @@ const GlobalCollaborationTab = () => {
                     className="border-t border-white/10 pt-4 mt-4 space-y-4"
                   >
                     <div>
-                      <div className="text-xs text-slate-400 mb-2">Key Achievements:</div>
+                      <div className="text-xs text-slate-400 mb-2">{labels.partner.achievements}</div>
                       <ul className="space-y-1">
                         {partner.achievements.map((achievement, idx) => (
                           <li key={idx} className="flex items-start gap-2 text-sm text-slate-300">
@@ -821,7 +670,7 @@ const GlobalCollaborationTab = () => {
                     </div>
 
                     <div>
-                      <div className="text-xs text-slate-400 mb-2">Contact:</div>
+                      <div className="text-xs text-slate-400 mb-2">{labels.partner.contact}</div>
                       <div className="space-y-2 text-sm text-slate-300">
                         <div className="flex items-center gap-2">
                           <Users className="w-4 h-4 text-cyan-400" />
@@ -855,7 +704,7 @@ const GlobalCollaborationTab = () => {
       >
         <div className="flex items-center gap-3 mb-6">
           <Target className="w-6 h-6 text-amber-400" />
-          <h3 className="text-2xl font-bold text-white">Collaboration Opportunities</h3>
+          <h3 className="text-2xl font-bold text-white">{copy.opportunitiesHeading}</h3>
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
@@ -880,22 +729,22 @@ const GlobalCollaborationTab = () => {
 
               <div className="space-y-2 mb-4">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-400">Value:</span>
+                  <span className="text-slate-400">{labels.opportunities.value}</span>
                   <span className="text-green-400 font-semibold">{opp.value}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-400">Duration:</span>
+                  <span className="text-slate-400">{labels.opportunities.duration}</span>
                   <span className="text-white">{opp.duration}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-400">Deadline:</span>
+                  <span className="text-slate-400">{labels.opportunities.deadline}</span>
                   <span className="text-amber-400 font-semibold">{opp.deadline}</span>
                 </div>
               </div>
 
               <button className="w-full py-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold hover:shadow-lg hover:shadow-amber-500/30 transition-all text-sm flex items-center justify-center gap-2">
                 <ExternalLink className="w-4 h-4" />
-                Apply Now
+                {labels.opportunities.apply}
               </button>
             </motion.div>
           ))}

@@ -47,8 +47,24 @@
         "title": "අප ගැන",
         "links": {
           "ourStory": "අපේ කතාව",
+          "mediaGallery": "මාධ්‍ය ගැලරිය",
           "newsUpdates": "පුවත් හා යාවත්කාලීන",
           "procurement": "මිලදී ගැනීම්"
+        }
+      },
+      "divisions": {
+        "title": "අංශ",
+        "links": {
+          "allDivisions": "සියලු අංශ",
+          "fisheriesScience": "සමුද්‍ර සහ අභ්‍යන්තර මත්ස්‍ය විද්‍යාව",
+          "marineBiology": "සමුද්‍ර ජීව විද්‍යාව සහ පරිසර පද්ධති",
+          "aquaculture": "අභ්‍යන්තර ජලජ සම්පත් සහ ජලජීවී වගාව",
+          "fishingTechnology": "මසුන් ඇල්ලීමේ තාක්ෂණය",
+          "qualityAssurance": "පශ්චාත් අස්වනු සහ තත්ත්ව සහතික කිරීම",
+          "socioEconomics": "සමාජ-ආර්ථික විද්‍යාව සහ අලෙවිකරණය",
+          "hydrography": "ජල විද්‍යාව සහ නාවික සිතියම්",
+          "environmental": "පරිසර අධීක්ෂණය සහ උපදේශන",
+          "information": "තොරතුරු සහ ප්‍රචාරණය"
         }
       },
       "news": {
@@ -61,5 +77,34 @@
         }
       }
     }
-  }
+  },
+  "loading": "පූරණය වෙමින්...",
+  "pleaseLogin": "ඉදිරියට යාමට කරුණාකර ලොගින් වන්න",
+  "enrollmentSuccess": "පා course මාලාවට සාර්ථකව ලියාපදිංචි විය!",
+  "enrollmentError": "පා course මාලාවට ලියාපදිංචි වීමේ දෝෂයකි. කරුණාකර නැවත උත්සාහ කරන්න.",
+  "projectSubmitted": "ව්‍යාපෘතිය සාර්ථකව ඉදිරිපත් කරන ලදී!",
+  "projectError": "ව්‍යාපෘතිය ඉදිරිපත් කිරීමේ දෝෂයකි. කරුණාකර නැවත උත්සාහ කරන්න.",
+  "searchPlaceholder": "පා courses මාලා, පත්‍රිකා, ද්‍රව්‍ය සොයන්න...",
+  "search": "සොයන්න",
+  "allCategories": "සියලුම කාණ්ඩ",
+  "allLevels": "සියලුම මට්ටම්",
+  "beginner": "ආරම්භක",
+  "intermediate": "මැදි",
+  "advanced": "උසස්",
+  "mostPopular": "වඩාත් ජනප්‍රිය",
+  "highestRated": "ඉහළම ශ්‍රේණිගත",
+  "newest": "අලුත්ම",
+  "noCoursesFound": "පා courses මාලා හමු නොවීය",
+  "weeks": "සති",
+  "viewPaper": "පත්‍රිකාව බලන්න",
+  "download": "බාගන්න",
+  "cancel": "අවලංගු කරන්න",
+  "title": "මාතෘකාව",
+  "description": "විස්තරය",
+  "category": "කාණ්ඩය",
+  "selectCategory": "කාණ්ඩය තෝරන්න",
+  "attachFiles": "ගොනු ඇමුණුම් කරන්න",
+  "filesSelected": "ගොනු තෝරා ඇත",
+  "submitting": "ඉදිරිපත් කරමින්...",
+  "submit": "ඉදිරිපත් කරන්න"
 }

@@ -1,0 +1,122 @@
+{
+  "hero": {
+    "badge": "கற்றல் மற்றும் மேம்பாடு",
+    "title": "உங்கள் தொழில் வாழ்க்கையை முன்னேற்றவும்",
+    "titleHighlight": "கடல் அறிவியலில்",
+    "subtitle": "கடல் ஆராய்ச்சியாளர்கள் மற்றும் கடல்சார் நிபுணர்களுக்கான உலகத் தரம் வாய்ந்த பயிற்சி",
+    "cta": {
+      "primary": "படிப்புகளைப் பார்க்க",
+      "secondary": "தொழில் பாதைகள்"
+    },
+    "stats": {
+      "courses": { "value": "150+", "label": "படிப்புகள்" },
+      "students": { "value": "12,000+", "label": "மாணவர்கள்" },
+      "completion": { "value": "92%", "label": "நிறைவு விகிதம்" },
+      "satisfaction": { "value": "4.8/5", "label": "மதிப்பீடு" }
+    }
+  },
+  "categories": {
+    "title": "படிப்பு பிரிவுகள்",
+    "subtitle": "கடல் அறிவியலில் சிறப்பு பயிற்சி",
+    "items": {
+      "marineBiology": { "name": "கடல் உயிரியல்", "description": "கடல் உயிரினங்கள் ஆய்வு", "courses": "45 படிப்புகள்" },
+      "oceanography": { "name": "கடலியல்", "description": "கடல் செயல்முறைகள்", "courses": "38 படிப்புகள்" },
+      "fisheries": { "name": "மீன்வள மேலாண்மை", "description": "நிலையான மீன்பிடி", "courses": "32 படிப்புகள்" },
+      "conservation": { "name": "பாதுகாப்பு", "description": "கடல் பாதுகாப்பு", "courses": "28 படிப்புகள்" },
+      "technology": { "name": "கடல் தொழில்நுட்பம்", "description": "மேம்பட்ட கருவிகள்", "courses": "25 படிப்புகள்" },
+      "safety": { "name": "பாதுகாப்பு", "description": "அவசர பதில்", "courses": "22 படிப்புகள்" }
+    }
+  },
+  "featured": {
+    "title": "சிறப்பு படிப்புகள்",
+    "subtitle": "பிரபலமான திட்டங்கள்",
+    "viewAll": "அனைத்தையும் காண்க"
+  },
+  "course": {
+    "level": "நிலை",
+    "duration": "காலம்",
+    "language": "மொழி",
+    "format": "வடிவம்",
+    "enrolled": "பதிவு",
+    "rating": "மதிப்பீடு",
+    "instructor": "பயிற்றுவிப்பாளர்",
+    "startDate": "தொடக்கம்",
+    "certificate": "சான்றிதழ்",
+    "enroll": "பதிவு செய்க",
+    "viewDetails": "விவரங்கள்",
+    "ongoing": "நடக்கிறது",
+    "upcoming": "வரும்",
+    "completed": "முடிந்தது",
+    "levels": {
+      "beginner": "ஆரம்பம்",
+      "intermediate": "இடைநிலை",
+      "advanced": "மேம்பட்ட",
+      "expert": "நிபுணர்"
+    },
+    "formats": {
+      "online": "ஆன்லைன்",
+      "inPerson": "நேரில்",
+      "hybrid": "கலப்பின",
+      "selfPaced": "சுய வேகம்"
+    }
+  },
+  "certifications": {
+    "title": "தொழில்முறை சான்றிதழ்கள்",
+    "subtitle": "தொழில் சான்றுகள்"
+  },
+  "learningPaths": {
+    "title": "கற்றல் பாதைகள்",
+    "subtitle": "தொழில் இலக்குகள்",
+    "viewPath": "பாதையைக் காண்க",
+    "coursesIncluded": "படிப்புகள்",
+    "estimatedTime": "நிறைவு நேரம்"
+  },
+  "instructors": {
+    "title": "பயிற்றுவிப்பாளர்கள்",
+    "subtitle": "நிபுணர்களிடம் கற்க",
+    "experience": "அனுபவம்",
+    "students": "மாணவர்கள்",
+    "courses": "படிப்புகள்",
+    "rating": "மதிப்பீடு",
+    "viewProfile": "சுயவிவரம்"
+  },
+  "benefits": {
+    "title": "ஏன் NARA",
+    "subtitle": "நன்மைகள்"
+  },
+  "testimonials": {
+    "title": "வெற்றிக் கதைகள்",
+    "subtitle": "மாணவர் அனுபவங்கள்"
+  },
+  "enrollment": {
+    "title": "தயாரா?",
+    "subtitle": "இப்போது சேரவும்",
+    "cta": {
+      "browse": "படிப்புகள்",
+      "contact": "தொடர்பு"
+    }
+  },
+  "search": {
+    "placeholder": "தேடு...",
+    "filters": {
+      "all": "அனைத்தும்",
+      "category": "வகை",
+      "level": "நிலை",
+      "format": "வடிவம்",
+      "language": "மொழி",
+      "duration": "காலம்"
+    },
+    "results": "{{count}} கிடைத்தது",
+    "noResults": "எதுவும் இல்லை"
+  },
+  "dashboard": {
+    "title": "எனது கற்றல்",
+    "myCourses": "என் படிப்புகள்",
+    "progress": "முன்னேற்றம்",
+    "certificates": "சான்றிதழ்கள்",
+    "upcoming": "வரும்",
+    "completed": "{{percent}}% முடிந்தது",
+    "continuelearning": "தொடர்க",
+    "viewCertificate": "சான்றிதழ்"
+  }
+}

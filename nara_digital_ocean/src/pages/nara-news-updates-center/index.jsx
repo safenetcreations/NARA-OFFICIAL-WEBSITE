@@ -503,7 +503,7 @@ const NewsPage = () => {
       {/* Enhanced Articles Grid */}
       <section className="py-12 px-4">
         <div className="max-w-7xl mx-auto">
-          {loading ? (
+          {activeLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[...Array(6)]?.map((_, index) => (
                 <div key={index} className="bg-white rounded-2xl shadow-lg animate-pulse">

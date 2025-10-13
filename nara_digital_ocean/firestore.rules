@@ -3,91 +3,285 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // NARA Users Collection
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      allow read: if request.auth != null && 
-        resource.data.privacy.profile_visibility == 'public';
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
     }
     
-    // NARA News & Articles Collection
-    match /news/{newsId} {
-      allow read: if true; // Public read access for news
-      allow create, update, delete: if request.auth != null && 
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'editor']);
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
     }
     
-    // NARA Research Projects Collection
-    match /research_projects/{projectId} {
-      allow read: if resource.data.visibility == 'public' || 
-        (request.auth != null && request.auth.uid in resource.data.team_members);
-      allow write: if request.auth != null && 
-        (request.auth.uid == resource.data.principal_investigator ||
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
-    }
-    
-    // NARA Publications Collection
+    // Publications Collection
+    // Anyone can read, only admins can write
     match /publications/{publicationId} {
-      allow read: if resource.data.access_level == 'public' ||
-        (request.auth != null && resource.data.access_level == 'registered');
-      allow write: if request.auth != null && 
-        (request.auth.uid in resource.data.authors ||
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'researcher']);
+      allow read: if true;  // Public read access
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
     
-    // NARA Procurement Notices Collection
-    match /procurement_notices/{noticeId} {
-      allow read: if true; // Public read access
-      allow write: if request.auth != null && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'procurement_officer'];
+    // Projects Collection
+    // Anyone can read, only admins can write
+    match /projects/{projectId} {
+      allow read: if true;  // Public read access
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
     
-    // NARA Job Postings Collection
-    match /job_postings/{jobId} {
-      allow read: if true; // Public read access
-      allow write: if request.auth != null && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'hr_manager'];
+    // Partners Collection
+    // Anyone can read, only admins can write
+    match /partners/{partnerId} {
+      allow read: if true;  // Public read access
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
     
-    // NARA Applications Collection (Procurement & Job)
-    match /applications/{applicationId} {
-      allow read, write: if request.auth != null && 
-        (request.auth.uid == resource.data.applicant_id ||
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'hr_manager', 'procurement_officer']);
+    // Teams Collection
+    // Anyone can read, only admins can write
+    match /teams/{teamId} {
+      allow read: if true;  // Public read access
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
     
-    // NARA Events Collection
-    match /events/{eventId} {
-      allow read: if true; // Public read access for events
-      allow write: if request.auth != null && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'event_manager'];
+    // User Analytics (optional - for tracking user interactions)
+    match /analytics/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isAuthenticated() && request.auth.uid == userId;
     }
     
-    // NARA Comments/Feedback Collection
-    match /comments/{commentId} {
-      allow read: if true; // Public read for approved comments
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null && 
-        (request.auth.uid == resource.data.author_id ||
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'moderator']);
+    // Admin Logs (optional - for audit trail)
+    match /admin_logs/{logId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
     }
-    
-    // NARA Analytics Collection (Admin only)
-    match /analytics/{document} {
-      allow read, write: if request.auth != null && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+
+    // Media Images Collection
+    // Public can read approved images, only admins can write
+    match /media_images/{imageId} {
+      allow read: if true;  // Public read access (frontend filters approved items)
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
-    
-    // NARA Configuration Collection (Admin only)
-    match /configuration/{configId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+
+    // Media Videos Collection
+    // Public can read approved videos, only admins can write
+    match /media_videos/{videoId} {
+      allow read: if true;  // Public read access (frontend filters approved items)
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
-    
-    // Default deny rule
-    match /{document=**} {
-      allow read, write: if false;
+
+    // ============================================
+    // Government Services Portal Collections
+    // ============================================
+
+    // EIA Applications Collection
+    // Users can create and read their own, admins can read/write all
+    match /government_eia_applications/{applicationId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Government Licenses Collection
+    // Users can read their own licenses, admins can read/write all
+    match /government_licenses/{licenseId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Government Documents Collection
+    // Associated with EIA or licenses, readable by document owner and admin
+    match /government_documents/{documentId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Compliance Records Collection
+    // Admins can read/write all, authenticated users can read public compliance data
+    match /government_compliance_records/{recordId} {
+      allow read: if isAuthenticated();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Emergency Incidents Collection
+    // Public read for transparency, authenticated users can create, admins manage
+    match /government_emergency_incidents/{incidentId} {
+      allow read: if true;  // Public read for emergency awareness
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Emergency Response Network Intake Collections
+    match /emergency_incidents/{documentId} {
+      allow create: if true; // allow public submissions
+      allow read: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /non_emergency_support/{documentId} {
+      allow create: if true;
+      allow read: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /environmental_incidents/{documentId} {
+      allow create: if true;
+      allow read: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Collaboration Workspaces Collection
+    // Members can read their workspaces, admins can manage all
+    match /government_collaboration_workspaces/{workspaceId} {
+      allow read: if isAuthenticated() && (request.auth.uid in resource.data.members || isAdmin());
+      allow create: if isAdmin();
+      allow update: if isAuthenticated() && (request.auth.uid in resource.data.members || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // LDA Users Collection (for Learning Development Academy)
+    // Users can read/update their own profile, admins can read all
+    match /lda_users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow update: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // Maritime Services Collections
+    // ============================================
+
+    // Maritime Vessels Collection
+    // Public read for vessel tracking, only admins can write
+    match /maritime_vessels/{vesselId} {
+      allow read: if true;  // Public read access
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Maritime Ports Collection
+    // Public read for port information, only admins can write
+    match /maritime_ports/{portId} {
+      allow read: if true;  // Public read access
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Maritime Services Collection
+    // Public read for service listings, only admins can write
+    match /maritime_services/{serviceId} {
+      allow read: if true;  // Public read access
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Maritime Permits Collection
+    // Users can read their own permits, admins can read/write all
+    match /maritime_permits/{permitId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Maritime Alerts Collection
+    // Public read for safety alerts, only admins can write
+    match /maritime_alerts/{alertId} {
+      allow read: if true;  // Public read access
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Maritime Bookings Collection
+    // Users can read their own bookings, admins can read all
+    match /maritime_bookings/{bookingId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Maritime Safety Reports Collection
+    // Authenticated users can create, admins can read/manage
+    match /maritime_safety_reports/{reportId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Maritime Weather Data (single document)
+    // Public read for weather information, only admins can write
+    match /maritime_data/{documentId} {
+      allow read: if true;  // Public read access
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // Fish Advisory System Collections
+    // ============================================
+
+    // Fish Advisories Collection
+    // Public read for fish advisories, only admins can write
+    match /fish_advisories/{advisoryId} {
+      allow read: if true;  // Public read access for fishers and general public
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Fishing Zones Collection
+    // Public read for zone information, only admins can write
+    match /fishing_zones/{zoneId} {
+      allow read: if true;  // Public read access for zone information
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Fish Market Prices Collection
+    // Public read for market prices, only admins can write
+    match /fish_market_prices/{priceId} {
+      allow read: if true;  // Public read access for pricing information
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Seasonal Restrictions Collection
+    // Public read for seasonal restrictions, only admins can write
+    match /seasonal_restrictions/{restrictionId} {
+      allow read: if true;  // Public read access for fishing restrictions
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
   }
 }

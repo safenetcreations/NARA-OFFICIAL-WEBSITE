@@ -7,6 +7,23 @@ const UserPathways = () => {
   const pathways = [
     {
       id: 1,
+      title: "Fish Advisory System",
+      subtitle: "For Fishers & General Public",
+      description: "Real-time fish advisories, safe fishing zones, market prices, and seasonal restrictions to support sustainable fishing practices and fisher safety.",
+      icon: "Fish",
+      iconBg: "bg-cyan-600",
+      route: "/fish-advisory-system",
+      features: [
+        "Fish catch advisories",
+        "Safe fishing zones",
+        "Market price updates",
+        "Seasonal restrictions"
+      ],
+      cta: "View Advisories",
+      users: "8,000+ Fishers"
+    },
+    {
+      id: 2,
       title: "Real-Time Ocean Data",
       subtitle: "For Maritime Professionals",
       description: "Access live sea conditions, weather forecasts, fishing advisories, and shipping lane updates. Essential intelligence for safe and profitable maritime operations.",
@@ -23,7 +40,7 @@ const UserPathways = () => {
       users: "12,000+ Maritime Users"
     },
     {
-      id: 2,
+      id: 3,
       title: "Research Collaboration",
       subtitle: "For Scientists & Researchers",
       description: "Join Sri Lanka's premier ocean science network. Access datasets, collaborate on projects, and contribute to cutting-edge marine research initiatives.",
@@ -40,7 +57,7 @@ const UserPathways = () => {
       users: "500+ Research Partners"
     },
     {
-      id: 3,
+      id: 4,
       title: "Marine Services",
       subtitle: "For Industry & Business",
       description: "Professional maritime consulting, water quality testing, environmental assessments, and specialized services for aquaculture and marine industries.",
@@ -57,7 +74,7 @@ const UserPathways = () => {
       users: "800+ Business Clients"
     },
     {
-      id: 4,
+      id: 5,
       title: "Digital Marketplace",
       subtitle: "For Researchers & Students",
       description: "Purchase research publications, digital datasets, e-books, marine charts, and educational materials. Secure Sri Lankan payment methods supported.",

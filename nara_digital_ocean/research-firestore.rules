@@ -78,5 +78,144 @@ service cloud.firestore {
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
+
+    // Divisions Collection
+    // Anyone can read, only admins can write
+    match /divisions/{divisionId} {
+      allow read: if true;  // Public read access
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Division Projects Collection
+    // Anyone can read, only admins can write
+    match /division_projects/{projectId} {
+      allow read: if true;  // Public read access
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Division Team Members Collection
+    // Anyone can read, only admins can write
+    match /division_team/{memberId} {
+      allow read: if true;  // Public read access
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // LEARNING DEVELOPMENT ACADEMY COLLECTIONS
+    // ============================================
+
+    // LDA Courses Collection
+    // Anyone can read published courses, only admins can write
+    match /lda_courses/{courseId} {
+      allow read: if resource.data.published == true || isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // LDA Categories Collection
+    // Anyone can read, only admins can write
+    match /lda_categories/{categoryId} {
+      allow read: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // LDA Users Collection
+    // Users can read their own profile, admins can read all
+    match /lda_users/{userId} {
+      allow read: if request.auth.uid == userId || isAdmin();
+      allow create: if request.auth.uid == userId;
+      allow update: if request.auth.uid == userId || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // LDA Enrollments Collection
+    // Users can read/write their own enrollments
+    match /lda_enrollments/{enrollmentId} {
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // LDA User Progress Collection
+    // Users can read/write their own progress
+    match /lda_user_progress/{progressId} {
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // LDA Projects Collection
+    // Users can create and read their own, admins can read all
+    match /lda_projects/{projectId} {
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // LDA Papers Collection
+    // Anyone can read published papers, authenticated users can upload
+    match /lda_papers/{paperId} {
+      allow read: if resource.data.status == 'published' || isAuthenticated() || isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // LDA Training Materials Collection
+    // Anyone can read published materials, only admins can write
+    match /lda_training_materials/{materialId} {
+      allow read: if resource.data.status == 'published' || isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // LDA Certifications Collection
+    // Users can read their own certificates
+    match /lda_certifications/{certId} {
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // LDA Reviews Collection
+    // Users can write reviews for enrolled courses, anyone can read
+    match /lda_reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow delete: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+    }
+
+    // LDA Notifications Collection
+    // Users can only access their own notifications
+    match /lda_notifications/{notificationId} {
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create: if isAdmin();
+      allow update: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+
+    // LDA Analytics Collection
+    // Only admins can read analytics
+    match /lda_analytics/{analyticsId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
   }
 }

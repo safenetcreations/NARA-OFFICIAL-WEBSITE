@@ -52,6 +52,21 @@
           "procurement": "Procurement"
         }
       },
+      "divisions": {
+        "title": "Divisions",
+        "links": {
+          "allDivisions": "All Divisions",
+          "fisheriesScience": "Marine & Inland Fisheries Science",
+          "marineBiology": "Marine Biology & Ecosystems",
+          "aquaculture": "Inland Aquatic Resources & Aquaculture",
+          "fishingTechnology": "Fishing Technology",
+          "qualityAssurance": "Post-Harvest & Quality Assurance",
+          "socioEconomics": "Socio-Economics & Marketing",
+          "hydrography": "Hydrography & Nautical Charts",
+          "environmental": "Environmental Monitoring & Advisory",
+          "information": "Information & Outreach"
+        }
+      },
       "news": {
         "title": "News & Updates"
       },
@@ -62,5 +77,34 @@
         }
       }
     }
-  }
+  },
+  "loading": "Loading...",
+  "pleaseLogin": "Please login to continue",
+  "enrollmentSuccess": "Successfully enrolled in course!",
+  "enrollmentError": "Error enrolling in course. Please try again.",
+  "projectSubmitted": "Project submitted successfully!",
+  "projectError": "Error submitting project. Please try again.",
+  "searchPlaceholder": "Search courses, papers, materials...",
+  "search": "Search",
+  "allCategories": "All Categories",
+  "allLevels": "All Levels",
+  "beginner": "Beginner",
+  "intermediate": "Intermediate",
+  "advanced": "Advanced",
+  "mostPopular": "Most Popular",
+  "highestRated": "Highest Rated",
+  "newest": "Newest",
+  "noCoursesFound": "No courses found",
+  "weeks": "weeks",
+  "viewPaper": "View Paper",
+  "download": "Download",
+  "cancel": "Cancel",
+  "title": "Title",
+  "description": "Description",
+  "category": "Category",
+  "selectCategory": "Select Category",
+  "attachFiles": "Attach Files",
+  "filesSelected": "files selected",
+  "submitting": "Submitting...",
+  "submit": "Submit"
 }

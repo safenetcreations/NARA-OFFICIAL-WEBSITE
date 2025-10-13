@@ -4,6 +4,7 @@ import ScrollToTop from "components/ScrollToTop";
 import ErrorBoundary from "components/ErrorBoundary";
 import NotFound from "./pages/NotFound";
 import FirebaseAuthProvider from './contexts/FirebaseAuthContext';
+import { CartProvider } from './contexts/CartContext';
 import GovFooter from './components/compliance/GovFooter';
 import ThemeNavbar from './components/ui/ThemeNavbar';
 
@@ -51,6 +52,31 @@ const ResearchDataAdmin = lazy(() => import('./pages/admin/ResearchDataAdmin'));
 // Media Admin
 const MediaAdmin = lazy(() => import('./pages/admin/MediaAdmin'));
 
+// LDA Admin
+const LDAAdmin = lazy(() => import('./pages/admin/lda/LDAAdmin'));
+
+// Government Services Admin
+const GovernmentServicesAdmin = lazy(() => import('./pages/admin/GovernmentServicesAdmin'));
+
+// Maritime Admin
+const MaritimeAdmin = lazy(() => import('./pages/admin/MaritimeAdmin'));
+
+// Fish Advisory System
+const FishAdvisorySystem = lazy(() => import('./pages/fish-advisory-system'));
+const FishAdvisoryAdmin = lazy(() => import('./pages/admin/FishAdvisoryAdmin'));
+
+// LDA Auth Pages
+const LDARegister = lazy(() => import('./pages/lda-register'));
+const LDALogin = lazy(() => import('./pages/lda-login'));
+
+// Divisions Pages
+const DivisionsHub = lazy(() => import('./pages/nara-divisions-hub'));
+const DivisionPage = lazy(() => import('./pages/division-page'));
+
+// Checkout & Payment
+const CheckoutPage = lazy(() => import('./pages/checkout'));
+const PaymentReturn = lazy(() => import('./pages/payment-return'));
+
 // Layout component with header and footer
 function Layout({ children }) {
   const location = useLocation();
@@ -65,6 +91,10 @@ function Layout({ children }) {
     '/admin/research-login',
     '/admin/research-data',
     '/admin/media',
+    '/admin/lda',
+    '/admin/government-services',
+    '/admin/maritime',
+    '/admin/fish-advisory',
     '/admin'
   ];
   
@@ -84,9 +114,10 @@ function Layout({ children }) {
 function Routes() {
   return (
     <FirebaseAuthProvider>
-      <BrowserRouter>
-        <ErrorBoundary>
-          <ScrollToTop />
+      <CartProvider>
+        <BrowserRouter>
+          <ErrorBoundary>
+            <ScrollToTop />
           <Suspense
             fallback={
               <div className="min-h-screen flex items-center justify-center bg-black text-white">
@@ -100,6 +131,8 @@ function Routes() {
               <Route path="/research-excellence-portal" element={<ResearchExcellencePortal />} />
               <Route path="/emergency-response-network" element={<EmergencyResponseNetwork />} />
               <Route path="/learning-development-academy" element={<LearningDevelopmentAcademy />} />
+              <Route path="/lda-register" element={<LDARegister />} />
+              <Route path="/lda-login" element={<LDALogin />} />
               <Route path="/regional-impact-network" element={<RegionalImpactNetwork />} />
               <Route path="/maritime-services-hub" element={<MaritimeServicesHub />} />
               <Route path="/knowledge-discovery-center" element={<KnowledgeDiscoveryCenter />} />
@@ -107,6 +140,9 @@ function Routes() {
               <Route path="/digital-product-library" element={<DigitalProductLibrary />} />
               <Route path="/payment-gateway-hub" element={<PaymentGatewayHub />} />
               <Route path="/nara-digital-marketplace" element={<NARADigitalMarketplace />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/payment/return" element={<PaymentReturn />} />
+              <Route path="/payment/cancel" element={<PaymentReturn />} />
               <Route path="/research-collaboration-platform" element={<ResearchCollaborationPlatform />} />
               <Route path="/government-services-portal" element={<GovernmentServicesPortal />} />
               <Route path="/integration-systems-platform" element={<IntegrationSystemsPlatform />} />
@@ -115,7 +151,11 @@ function Routes() {
               <Route path="/nara-news-updates-center" element={<NARANewsUpdatesCenter />} />
               <Route path="/procurement-recruitment-portal" element={<ProcurementRecruitmentPortal />} />
               <Route path="/contact-us" element={<ContactUs />} />
-              
+
+              {/* Divisions Routes */}
+              <Route path="/divisions" element={<DivisionsHub />} />
+              <Route path="/divisions/:slug" element={<DivisionPage />} />
+
               {/* Legal & Compliance Routes */}
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/data-subject-rights" element={<DataSubjectRights />} />
@@ -149,11 +189,25 @@ function Routes() {
 
               {/* Media Admin Route */}
               <Route path="/admin/media" element={<MediaAdmin />} />
+
+              {/* LDA Admin Route */}
+              <Route path="/admin/lda" element={<LDAAdmin />} />
+
+              {/* Government Services Admin Route */}
+              <Route path="/admin/government-services" element={<GovernmentServicesAdmin />} />
+
+              {/* Maritime Admin Route */}
+              <Route path="/admin/maritime" element={<MaritimeAdmin />} />
+
+              {/* Fish Advisory System Routes */}
+              <Route path="/fish-advisory-system" element={<FishAdvisorySystem />} />
+              <Route path="/admin/fish-advisory" element={<FishAdvisoryAdmin />} />
             </RouterRoutes>
             </Layout>
           </Suspense>
         </ErrorBoundary>
       </BrowserRouter>
+      </CartProvider>
     </FirebaseAuthProvider>
   );
 }

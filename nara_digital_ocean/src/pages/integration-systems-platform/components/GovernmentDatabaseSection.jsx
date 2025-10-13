@@ -13,6 +13,7 @@ import {
   Shield,
   Zap
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { governmentConnectionsService } from '../../../services/integrationService';
 
 const GovernmentDatabaseSection = () => {
@@ -28,6 +29,9 @@ const GovernmentDatabaseSection = () => {
     security_level: 'internal',
     sync_frequency_hours: 24
   });
+  const { t } = useTranslation('integration');
+  const common = t('common', { returnObjects: true });
+  const strings = t('government', { returnObjects: true });
 
   useEffect(() => {
     loadConnections();
@@ -92,18 +96,26 @@ const GovernmentDatabaseSection = () => {
   };
 
   const getStatusIcon = (status) => {
-    switch (status) {
-      case 'active':
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case 'error':
-        return <AlertCircle className="w-5 h-5 text-red-500" />;
-      case 'maintenance':
-        return <Clock className="w-5 h-5 text-yellow-500" />;
-      case 'inactive':
-        return <Activity className="w-5 h-5 text-gray-500" />;
-      default:
-        return <Clock className="w-5 h-5 text-blue-500" />;
-    }
+    const normalized = (status || '').toLowerCase();
+    const labels = t('common.statuses', { returnObjects: true });
+    const options = {
+      active: { Icon: CheckCircle, className: 'text-green-500' },
+      error: { Icon: AlertCircle, className: 'text-red-500' },
+      maintenance: { Icon: Clock, className: 'text-yellow-500' },
+      inactive: { Icon: Activity, className: 'text-gray-500' },
+      pending: { Icon: Clock, className: 'text-blue-500' }
+    };
+    const { Icon, className } = options[normalized] || options.pending;
+    const label =
+      labels?.[normalized] ||
+      labels?.default ||
+      normalized.toUpperCase();
+
+    return (
+      <span className="inline-flex items-center justify-center rounded-full bg-slate-100 p-1.5" title={label} aria-label={label}>
+        <Icon className={`h-4 w-4 ${className}`} />
+      </span>
+    );
   };
 
   const getSecurityBadge = (level) => {
@@ -113,11 +125,16 @@ const GovernmentDatabaseSection = () => {
       'confidential': 'bg-yellow-100 text-yellow-800',
       'classified': 'bg-red-100 text-red-800'
     };
+    const securityLabels = t('common.securityLevels', { returnObjects: true });
+    const label =
+      securityLabels?.[level] ||
+      securityLabels?.default ||
+      level?.toUpperCase();
     
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors?.[level] || colors?.internal}`}>
         <Shield className="w-3 h-3 mr-1" />
-        {level?.toUpperCase()}
+        {label}
       </span>
     );
   };
@@ -139,8 +156,8 @@ const GovernmentDatabaseSection = () => {
         <div className="flex items-center">
           <Database className="w-6 h-6 text-blue-600 mr-3" />
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Government Database Connections</h2>
-            <p className="text-sm text-gray-600">Manage API connectors for inter-governmental data sharing with real-time synchronization</p>
+            <h2 className="text-xl font-semibold text-gray-900">{strings?.title}</h2>
+            <p className="text-sm text-gray-600">{strings?.subtitle}</p>
           </div>
         </div>
         <button
@@ -148,7 +165,7 @@ const GovernmentDatabaseSection = () => {
           className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Add Connection
+          {strings?.actions?.add}
         </button>
       </div>
       {/* Statistics Cards */}
@@ -156,8 +173,8 @@ const GovernmentDatabaseSection = () => {
         <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4">
           <div className="flex items-center">
             <Globe className="w-8 h-8 text-blue-600 mr-3" />
-            <div>
-              <p className="text-sm text-blue-600 font-medium">Total Connections</p>
+              <div>
+              <p className="text-sm text-blue-600 font-medium">{strings?.stats?.total}</p>
               <p className="text-2xl font-bold text-blue-900">{connections?.length || 0}</p>
             </div>
           </div>
@@ -167,7 +184,7 @@ const GovernmentDatabaseSection = () => {
           <div className="flex items-center">
             <CheckCircle className="w-8 h-8 text-green-600 mr-3" />
             <div>
-              <p className="text-sm text-green-600 font-medium">Active</p>
+              <p className="text-sm text-green-600 font-medium">{strings?.stats?.active}</p>
               <p className="text-2xl font-bold text-green-900">
                 {connections?.filter(c => c?.connection_status === 'active')?.length || 0}
               </p>
@@ -179,7 +196,7 @@ const GovernmentDatabaseSection = () => {
           <div className="flex items-center">
             <Clock className="w-8 h-8 text-yellow-600 mr-3" />
             <div>
-              <p className="text-sm text-yellow-600 font-medium">Pending</p>
+              <p className="text-sm text-yellow-600 font-medium">{strings?.stats?.pending}</p>
               <p className="text-2xl font-bold text-yellow-900">
                 {connections?.filter(c => c?.connection_status === 'pending')?.length || 0}
               </p>
@@ -191,7 +208,7 @@ const GovernmentDatabaseSection = () => {
           <div className="flex items-center">
             <Zap className="w-8 h-8 text-purple-600 mr-3" />
             <div>
-              <p className="text-sm text-purple-600 font-medium">Data Formats</p>
+              <p className="text-sm text-purple-600 font-medium">{strings?.stats?.formats}</p>
               <p className="text-2xl font-bold text-purple-900">
                 {[...new Set(connections?.map(c => c?.data_format))]?.length || 0}
               </p>
@@ -216,7 +233,7 @@ const GovernmentDatabaseSection = () => {
                     {connection?.data_format?.toUpperCase()}
                   </span>
                   <span className="text-gray-500">
-                    Sync: {connection?.sync_frequency_hours}h
+                    {t('common.labels.syncShort', { value: connection?.sync_frequency_hours })}
                   </span>
                 </div>
               </div>
@@ -236,14 +253,16 @@ const GovernmentDatabaseSection = () => {
                     setShowAddModal(true);
                   }}
                   className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                  title="Edit Connection"
+                  title={strings?.actions?.edit}
+                  aria-label={strings?.actions?.edit}
                 >
                   <Edit className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => handleDelete(connection?.id)}
                   className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                  title="Delete Connection"
+                  title={strings?.actions?.delete}
+                  aria-label={strings?.actions?.delete}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -253,9 +272,15 @@ const GovernmentDatabaseSection = () => {
             <div className="border-t border-gray-100 pt-4">
               <div className="flex items-center justify-between text-sm">
                 <div className="text-gray-500">
-                  <p>URL: {connection?.connection_url}</p>
+                  <p>
+                    {strings?.labels?.url}{' '}
+                    {connection?.connection_url}
+                  </p>
                   {connection?.last_sync_at && (
-                    <p className="mt-1">Last sync: {new Date(connection.last_sync_at)?.toLocaleDateString()}</p>
+                    <p className="mt-1">
+                      {strings?.labels?.lastSync}{' '}
+                      {new Date(connection.last_sync_at)?.toLocaleDateString()}
+                    </p>
                   )}
                 </div>
                 
@@ -265,7 +290,7 @@ const GovernmentDatabaseSection = () => {
                       onClick={() => handleStatusChange(connection?.id, 'inactive')}
                       className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs hover:bg-red-200 transition-colors"
                     >
-                      Deactivate
+                      {strings?.actions?.deactivate}
                     </button>
                   )}
                   {connection?.connection_status === 'inactive' && (
@@ -273,10 +298,14 @@ const GovernmentDatabaseSection = () => {
                       onClick={() => handleStatusChange(connection?.id, 'active')}
                       className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs hover:bg-green-200 transition-colors"
                     >
-                      Activate
+                      {strings?.actions?.activate}
                     </button>
                   )}
-                  <button className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+                  <button
+                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                    title={strings?.actions?.configure}
+                    aria-label={strings?.actions?.configure}
+                  >
                     <Settings className="w-4 h-4" />
                   </button>
                 </div>
@@ -288,14 +317,14 @@ const GovernmentDatabaseSection = () => {
       {connections?.length === 0 && (
         <div className="text-center py-12">
           <Database className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No database connections</h3>
-          <p className="text-gray-500 mb-4">Get started by adding your first government database connection.</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{strings?.empty?.title}</h3>
+          <p className="text-gray-500 mb-4">{strings?.empty?.description}</p>
           <button
             onClick={() => setShowAddModal(true)}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Your First Connection
+            {strings?.empty?.cta}
           </button>
         </div>
       )}
@@ -304,78 +333,88 @@ const GovernmentDatabaseSection = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              {editingConnection ? 'Edit Connection' : 'Add New Connection'}
+              {editingConnection ? strings?.modal?.editTitle : strings?.modal?.createTitle}
             </h3>
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {common?.fields?.name}
+                </label>
                 <input
                   type="text"
                   required
                   value={formData?.name}
                   onChange={(e) => setFormData({...formData, name: e?.target?.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="EPA Environmental Data Gateway"
+                  placeholder={strings?.modal?.placeholders?.name}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {common?.fields?.description}
+                </label>
                 <textarea
                   value={formData?.description}
                   onChange={(e) => setFormData({...formData, description: e?.target?.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   rows="3"
-                  placeholder="Real-time environmental monitoring data from EPA"
+                  placeholder={strings?.modal?.placeholders?.description}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">API URL</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {common?.fields?.apiUrl}
+                </label>
                 <input
                   type="url"
                   required
                   value={formData?.connection_url}
                   onChange={(e) => setFormData({...formData, connection_url: e?.target?.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="https://api.epa.gov/environmental-data"
+                  placeholder={strings?.modal?.placeholders?.apiUrl}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Data Format</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {common?.fields?.dataFormat}
+                  </label>
                   <select
                     value={formData?.data_format}
                     onChange={(e) => setFormData({...formData, data_format: e?.target?.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
-                    <option value="json">JSON</option>
-                    <option value="xml">XML</option>
-                    <option value="csv">CSV</option>
-                    <option value="binary">Binary</option>
+                    <option value="json">{common?.dataFormats?.json}</option>
+                    <option value="xml">{common?.dataFormats?.xml}</option>
+                    <option value="csv">{common?.dataFormats?.csv}</option>
+                    <option value="binary">{common?.dataFormats?.binary}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Security Level</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {common?.fields?.securityLevel}
+                  </label>
                   <select
                     value={formData?.security_level}
                     onChange={(e) => setFormData({...formData, security_level: e?.target?.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
-                    <option value="public">Public</option>
-                    <option value="internal">Internal</option>
-                    <option value="confidential">Confidential</option>
-                    <option value="classified">Classified</option>
+                    <option value="public">{common?.securityLevels?.public}</option>
+                    <option value="internal">{common?.securityLevels?.internal}</option>
+                    <option value="confidential">{common?.securityLevels?.confidential}</option>
+                    <option value="classified">{common?.securityLevels?.classified}</option>
                   </select>
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Sync Frequency (hours)
+                  {strings?.modal?.fields?.syncFrequency}
                 </label>
                 <input
                   type="number"
@@ -404,13 +443,13 @@ const GovernmentDatabaseSection = () => {
                   }}
                   className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 >
-                  Cancel
+                  {common?.actions?.cancel}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  {editingConnection ? 'Update' : 'Add'} Connection
+                  {editingConnection ? strings?.modal?.actions?.update : strings?.modal?.actions?.create}
                 </button>
               </div>
             </form>

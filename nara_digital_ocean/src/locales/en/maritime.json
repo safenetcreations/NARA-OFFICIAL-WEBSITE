@@ -1,0 +1,161 @@
+{
+  "meta": {
+    "title": "Maritime Services Hub - NARA Digital Ocean",
+    "description": "Comprehensive maritime services including vessel tracking, port operations, permits, licenses, and real-time weather updates for Sri Lankan waters",
+    "keywords": "maritime services, vessel tracking, port operations, fishing permits, marine licenses, Sri Lanka ports, weather updates"
+  },
+  "hero": {
+    "badge": "Maritime Operations Center",
+    "title": "Comprehensive Maritime",
+    "highlight": "Services Hub",
+    "subtitle": "Real-time vessel tracking, port operations, permits & licenses - all in one platform",
+    "primaryCta": "View Services",
+    "secondaryCta": "Track Vessels"
+  },
+  "stats": {
+    "vessels": { "label": "Active Vessels", "value": "127" },
+    "ports": { "label": "Operational Ports", "value": "24/7" },
+    "permits": { "label": "Permits Issued", "value": "1,450+" },
+    "uptime": { "label": "System Uptime", "value": "99.9%" }
+  },
+  "services": {
+    "title": "Maritime Services",
+    "subtitle": "Professional services for vessels, operators, and maritime businesses",
+    "inspection": {
+      "title": "Vessel Inspection",
+      "description": "Comprehensive safety and compliance inspections",
+      "duration": "2-3 hours",
+      "price": "LKR 15,000"
+    },
+    "permits": {
+      "title": "Fishing Permits",
+      "description": "Apply for commercial and recreational fishing licenses",
+      "duration": "5-7 days",
+      "price": "LKR 5,000"
+    },
+    "registration": {
+      "title": "Vessel Registration",
+      "description": "Register new vessels or renew existing registrations",
+      "duration": "3-5 days",
+      "price": "LKR 10,000"
+    },
+    "training": {
+      "title": "Safety Training",
+      "description": "Maritime safety and emergency response training",
+      "duration": "1 day",
+      "price": "LKR 8,000"
+    },
+    "certification": {
+      "title": "Crew Certification",
+      "description": "Certify crew members for commercial operations",
+      "duration": "2-3 days",
+      "price": "LKR 12,000"
+    },
+    "emergency": {
+      "title": "Emergency Response",
+      "description": "24/7 maritime emergency assistance",
+      "duration": "Immediate",
+      "price": "Free"
+    }
+  },
+  "tracking": {
+    "title": "Live Vessel Tracking",
+    "subtitle": "Real-time positions of vessels in Sri Lankan waters",
+    "filters": {
+      "all": "All Vessels",
+      "research": "Research Vessels",
+      "fishing": "Fishing Vessels",
+      "cargo": "Cargo Ships",
+      "passenger": "Passenger Ships"
+    },
+    "vessel": {
+      "status": "Status",
+      "speed": "Speed",
+      "heading": "Heading",
+      "crew": "Crew",
+      "mission": "Mission",
+      "eta": "ETA",
+      "lastUpdate": "Last Update"
+    }
+  },
+  "ports": {
+    "title": "Port Operations",
+    "subtitle": "Real-time status of major Sri Lankan ports",
+    "capacity": "Capacity",
+    "vessels": "Vessels",
+    "weather": "Weather",
+    "status": "Status",
+    "operational": "Operational",
+    "limited": "Limited Operations",
+    "closed": "Closed"
+  },
+  "weather": {
+    "title": "Maritime Weather",
+    "subtitle": "Current sea and weather conditions",
+    "temperature": "Temperature",
+    "windSpeed": "Wind Speed",
+    "waveHeight": "Wave Height",
+    "visibility": "Visibility",
+    "seaCondition": "Sea Condition",
+    "forecast": "7-Day Forecast"
+  },
+  "permits": {
+    "title": "Permits & Licenses",
+    "subtitle": "Apply for maritime permits online",
+    "apply": "Apply Now",
+    "track": "Track Application",
+    "download": "Download Certificate",
+    "status": {
+      "pending": "Pending Review",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "expired": "Expired"
+    },
+    "types": {
+      "fishing": "Fishing License",
+      "export": "Export Permit",
+      "vessel": "Vessel Registration",
+      "crew": "Crew Certification"
+    }
+  },
+  "alerts": {
+    "title": "Maritime Alerts",
+    "severity": {
+      "low": "Advisory",
+      "medium": "Caution",
+      "high": "Warning",
+      "critical": "Emergency"
+    },
+    "types": {
+      "weather": "Weather Alert",
+      "security": "Security Notice",
+      "navigation": "Navigation Warning",
+      "environmental": "Environmental"
+    },
+    "viewAll": "View All Alerts",
+    "dismiss": "Dismiss"
+  },
+  "booking": {
+    "title": "Book a Service",
+    "selectService": "Select Service",
+    "selectDate": "Select Date & Time",
+    "vesselDetails": "Vessel Details",
+    "contactInfo": "Contact Information",
+    "submit": "Submit Booking",
+    "success": "Booking submitted successfully!",
+    "confirmation": "You will receive a confirmation email shortly"
+  },
+  "safety": {
+    "title": "Safety & Compliance",
+    "reportIncident": "Report Incident",
+    "emergencyContact": "Emergency: +94 11 222 3333",
+    "safetyGuidelines": "Safety Guidelines",
+    "regulations": "Maritime Regulations"
+  },
+  "footer": {
+    "contact": "Contact Us",
+    "hours": "24/7 Operations",
+    "emergency": "Emergency Hotline",
+    "email": "maritime@nara.ac.lk"
+  }
+}

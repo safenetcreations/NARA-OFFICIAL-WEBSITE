@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import * as Icons from 'lucide-react';
+import { useCart } from '../../contexts/CartContext';
 
 const DigitalMarketplaceRedesign = () => {
+  const { t, i18n } = useTranslation(['marketplace', 'common']);
+  const currentLang = i18n.language || 'en';
+  const navigate = useNavigate();
+  const { cartItems, addToCart: addItemToCart, removeFromCart, updateQuantity, getCartTotal, getCartCount } = useCart();
+  
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [cartItems, setCartItems] = useState([]);
-  const [showCart, setShowCart] = useState(false);
+  const [showCartDrawer, setShowCartDrawer] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
 
   // Digital products data
   const products = [
@@ -31,8 +38,8 @@ const DigitalMarketplaceRedesign = () => {
       id: 2,
       title: "Marine Biodiversity Research Report 2024",
       category: "Publication",
-      price: 49.99,
-      originalPrice: 89.99,
+      price: 14900,
+      originalPrice: 26900,
       rating: 4.8,
       reviews: 156,
       downloads: 3256,
@@ -47,8 +54,8 @@ const DigitalMarketplaceRedesign = () => {
       id: 3,
       title: "Ocean Current Prediction Software v2.0",
       category: "Software",
-      price: 199.99,
-      originalPrice: 299.99,
+      price: 59700,
+      originalPrice: 89700,
       rating: 4.7,
       reviews: 89,
       downloads: 1247,
@@ -63,8 +70,8 @@ const DigitalMarketplaceRedesign = () => {
       id: 4,
       title: "Coral Reef Mapping Toolkit",
       category: "Software",
-      price: 149.99,
-      originalPrice: 249.99,
+      price: 44900,
+      originalPrice: 74700,
       rating: 4.9,
       reviews: 67,
       downloads: 892,
@@ -79,8 +86,8 @@ const DigitalMarketplaceRedesign = () => {
       id: 5,
       title: "Fishing Zone Analytics Dashboard",
       category: "Service",
-      price: 29.99,
-      originalPrice: 49.99,
+      price: 8900,
+      originalPrice: 14900,
       rating: 4.6,
       reviews: 312,
       downloads: 4521,
@@ -110,11 +117,11 @@ const DigitalMarketplaceRedesign = () => {
   ];
 
   const categories = [
-    { id: 'all', name: 'All Products', icon: Icons.Grid3x3 },
-    { id: 'dataset', name: 'Datasets', icon: Icons.Database },
-    { id: 'software', name: 'Software', icon: Icons.Monitor },
-    { id: 'publication', name: 'Publications', icon: Icons.BookOpen },
-    { id: 'service', name: 'Services', icon: Icons.Cloud }
+    { id: 'all', name: t('marketplace:filters.allCategories'), icon: Icons.Grid3x3 },
+    { id: 'dataset', name: t('marketplace:categories.items.datasets.name'), icon: Icons.Database },
+    { id: 'software', name: t('marketplace:categories.items.tools.name'), icon: Icons.Monitor },
+    { id: 'publication', name: t('marketplace:categories.items.reports.name'), icon: Icons.BookOpen },
+    { id: 'service', name: t('marketplace:categories.items.consulting.name'), icon: Icons.Cloud }
   ];
 
   const filteredProducts = products.filter(product => {
@@ -124,14 +131,10 @@ const DigitalMarketplaceRedesign = () => {
     return matchesCategory && matchesSearch;
   });
 
-  const addToCart = (product) => {
-    setCartItems([...cartItems, product]);
-    setShowCart(true);
-    setTimeout(() => setShowCart(false), 3000);
-  };
-
-  const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price, 0).toFixed(2);
+  const handleAddToCart = (product) => {
+    addItemToCart(product);
+    setShowNotification(true);
+    setTimeout(() => setShowNotification(false), 3000);
   };
 
   return (
@@ -197,7 +200,7 @@ const DigitalMarketplaceRedesign = () => {
               <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 p-1 rounded-2xl">
                 <div className="bg-black/80 backdrop-blur-xl px-6 py-3 rounded-2xl">
                   <span className="text-purple-400 font-space text-sm tracking-widest uppercase">
-                    Digital Commerce Hub
+                    {t('marketplace:hero.badge')}
                   </span>
                 </div>
               </div>
@@ -211,7 +214,7 @@ const DigitalMarketplaceRedesign = () => {
             className="text-6xl md:text-8xl font-bold font-space mb-4"
           >
             <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
-              Digital Marketplace
+              {t('marketplace:hero.title')} {t('marketplace:hero.titleHighlight')}
             </span>
           </motion.h1>
 
@@ -221,7 +224,7 @@ const DigitalMarketplaceRedesign = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-xl text-gray-300 max-w-3xl mx-auto mb-8"
           >
-            Access premium ocean research data, software, and publications
+            {t('marketplace:hero.subtitle')}
           </motion.p>
 
           {/* Stats */}
@@ -232,10 +235,10 @@ const DigitalMarketplaceRedesign = () => {
             className="grid grid-cols-2 md:grid-cols-4 gap-4"
           >
             {[
-              { value: "500+", label: "Products", icon: Icons.Package },
-              { value: "50K+", label: "Downloads", icon: Icons.Download },
-              { value: "15K+", label: "Users", icon: Icons.Users },
-              { value: "4.8", label: "Avg Rating", icon: Icons.Star }
+              { value: t('marketplace:hero.stats.products.value'), label: t('marketplace:hero.stats.products.label'), icon: Icons.Package },
+              { value: t('marketplace:hero.stats.customers.value'), label: t('marketplace:hero.stats.customers.label'), icon: Icons.Download },
+              { value: t('marketplace:hero.stats.revenue.value'), label: t('marketplace:hero.stats.revenue.label'), icon: Icons.Users },
+              { value: t('marketplace:hero.stats.rating.value'), label: t('marketplace:hero.stats.rating.label'), icon: Icons.Star }
             ].map((stat, index) => (
               <div key={index} className="bg-white/5 backdrop-blur-xl rounded-xl p-4 border border-white/10">
                 <stat.icon className="w-6 h-6 text-purple-400 mb-2 mx-auto" />
@@ -255,7 +258,7 @@ const DigitalMarketplaceRedesign = () => {
             <div className="flex-1 relative">
               <input
                 type="text"
-                placeholder="Search products, datasets, publications..."
+                placeholder={t('marketplace:filters.search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full px-12 py-3 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-all"
@@ -364,9 +367,9 @@ const DigitalMarketplaceRedesign = () => {
                               <span className="text-2xl font-bold text-green-400">Free</span>
                             ) : (
                               <div className="flex items-baseline gap-2">
-                                <span className="text-2xl font-bold text-white">${product.price}</span>
+                                <span className="text-2xl font-bold text-white">LKR {product.price.toLocaleString()}</span>
                                 {product.originalPrice > product.price && (
-                                  <span className="text-sm text-gray-400 line-through">${product.originalPrice}</span>
+                                  <span className="text-sm text-gray-400 line-through">LKR {product.originalPrice.toLocaleString()}</span>
                                 )}
                               </div>
                             )}
@@ -375,10 +378,10 @@ const DigitalMarketplaceRedesign = () => {
                         </div>
 
                         <button 
-                          onClick={() => addToCart(product)}
+                          onClick={() => handleAddToCart(product)}
                           className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg text-white font-medium hover:from-purple-700 hover:to-pink-700 transition-all"
                         >
-                          {product.price === 0 ? 'Download Free' : 'Add to Cart'}
+                          {product.price === 0 ? 'Download Free' : t('marketplace:product.addToCart')}
                         </button>
                       </div>
                     </div>
@@ -412,7 +415,7 @@ const DigitalMarketplaceRedesign = () => {
                   <h4 className="font-semibold text-white mb-2 line-clamp-2">{product.title}</h4>
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-lg font-bold text-white">
-                      {product.price === 0 ? 'Free' : `$${product.price}`}
+                      {product.price === 0 ? 'Free' : `LKR ${product.price.toLocaleString()}`}
                     </span>
                     <div className="flex items-center gap-1">
                       <Icons.Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
@@ -420,10 +423,10 @@ const DigitalMarketplaceRedesign = () => {
                     </div>
                   </div>
                   <button 
-                    onClick={() => addToCart(product)}
+                    onClick={() => handleAddToCart(product)}
                     className="w-full py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg text-white text-sm font-medium hover:from-purple-700 hover:to-pink-700 transition-all"
                   >
-                    {product.price === 0 ? 'Download' : 'Add to Cart'}
+                    {product.price === 0 ? 'Download' : t('marketplace:product.addToCart')}
                   </button>
                 </motion.div>
               ))}
@@ -432,20 +435,164 @@ const DigitalMarketplaceRedesign = () => {
         </div>
       </section>
 
-      {/* Shopping Cart Notification */}
+      {/* Floating Cart Button */}
+      <motion.button
+        onClick={() => setShowCartDrawer(true)}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className="fixed bottom-8 right-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full p-4 shadow-2xl z-40 hover:shadow-purple-500/50 transition-all"
+      >
+        <Icons.ShoppingCart className="w-6 h-6 text-white" />
+        {getCartCount() > 0 && (
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+            {getCartCount()}
+          </span>
+        )}
+      </motion.button>
+
+      {/* Cart Drawer */}
       <AnimatePresence>
-        {showCart && (
+        {showCartDrawer && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowCartDrawer(false)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
+            />
+            
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed right-0 top-0 h-full w-full md:w-[450px] bg-gradient-to-br from-gray-900 to-black border-l border-purple-500/30 z-50 flex flex-col"
+            >
+              {/* Header */}
+              <div className="p-6 border-b border-white/10">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                    <Icons.ShoppingCart className="w-6 h-6" />
+                    {t('marketplace:cart.title')}
+                  </h2>
+                  <button
+                    onClick={() => setShowCartDrawer(false)}
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    <Icons.X className="w-6 h-6" />
+                  </button>
+                </div>
+                <p className="text-gray-400 text-sm">
+                  {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'}
+                </p>
+              </div>
+
+              {/* Cart Items */}
+              <div className="flex-1 overflow-y-auto p-6">
+                {cartItems.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-center">
+                    <Icons.ShoppingBag className="w-16 h-16 text-gray-600 mb-4" />
+                    <p className="text-gray-400 mb-2">{t('marketplace:cart.empty')}</p>
+                    <button
+                      onClick={() => setShowCartDrawer(false)}
+                      className="text-purple-400 hover:text-purple-300 text-sm"
+                    >
+                      {t('marketplace:cart.continueShopping')}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {cartItems.map((item) => (
+                      <div key={item.id} className="bg-white/5 rounded-lg p-4 border border-white/10">
+                        <div className="flex gap-4">
+                          <div className="w-20 h-20 bg-gray-800 rounded-lg flex-shrink-0 overflow-hidden">
+                            <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-white font-medium text-sm mb-1 line-clamp-2">{item.title}</h3>
+                            <p className="text-purple-400 text-xs mb-2">{item.category}</p>
+                            <div className="flex items-center justify-between">
+                              <span className="text-white font-bold">
+                                LKR {(item.price * item.quantity).toLocaleString()}
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                  className="w-6 h-6 bg-white/10 hover:bg-white/20 rounded flex items-center justify-center transition-colors"
+                                >
+                                  <Icons.Minus className="w-3 h-3 text-white" />
+                                </button>
+                                <span className="text-white w-8 text-center">{item.quantity}</span>
+                                <button
+                                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                  className="w-6 h-6 bg-white/10 hover:bg-white/20 rounded flex items-center justify-center transition-colors"
+                                >
+                                  <Icons.Plus className="w-3 h-3 text-white" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            className="text-red-400 hover:text-red-300 transition-colors"
+                          >
+                            <Icons.Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              {cartItems.length > 0 && (
+                <div className="p-6 border-t border-white/10 bg-black/50">
+                  <div className="space-y-2 mb-4">
+                    <div className="flex justify-between text-gray-400">
+                      <span>{t('marketplace:cart.subtotal')}</span>
+                      <span>LKR {getCartTotal().toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-400">
+                      <span>{t('marketplace:cart.tax')} (5%)</span>
+                      <span>LKR {(getCartTotal() * 0.05).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-xl font-bold text-white pt-2 border-t border-white/10">
+                      <span>{t('marketplace:cart.total')}</span>
+                      <span className="text-purple-400">LKR {(getCartTotal() * 1.05).toLocaleString()}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => navigate('/checkout')}
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+                  >
+                    <Icons.CreditCard className="w-5 h-5" />
+                    {t('marketplace:cart.checkout')}
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Add to Cart Notification */}
+      <AnimatePresence>
+        {showNotification && (
           <motion.div
-            initial={{ x: 100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 100, opacity: 0 }}
-            className="fixed bottom-8 right-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-4 shadow-2xl z-50"
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="fixed bottom-24 right-8 bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl p-4 shadow-2xl z-40"
           >
             <div className="flex items-center gap-3">
-              <Icons.ShoppingCart className="w-6 h-6 text-white" />
+              <Icons.CheckCircle className="w-6 h-6 text-white" />
               <div>
                 <p className="text-white font-semibold">Added to cart!</p>
-                <p className="text-white/80 text-sm">{cartItems.length} items - ${getTotalPrice()}</p>
+                <p className="text-white/80 text-sm">{getCartCount()} items - LKR {getCartTotal().toLocaleString()}</p>
               </div>
             </div>
           </motion.div>

@@ -2,6 +2,8 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import enCommon from './locales/en/common.json';
+import enLda from './locales/en/lda.json';
+import enMarketplace from './locales/en/marketplace.json';
 import enHome from './locales/en/home.json';
 import enAbout from './locales/en/about.json';
 import enResearch from './locales/en/research.json';
@@ -9,7 +11,14 @@ import enCollaboration from './locales/en/collaboration.json';
 import enNews from './locales/en/news.json';
 import enProcurement from './locales/en/procurement.json';
 import enResearchEnhanced from './locales/en/researchEnhanced.json';
+import enDigitalLibrary from './locales/en/digitalLibrary.json';
+import enKnowledge from './locales/en/knowledge.json';
+import enMaritime from './locales/en/maritime.json';
+import enIntegration from './locales/en/integration.json';
+import enFishAdvisory from './locales/en/fishAdvisory.json';
 import taCommon from './locales/ta/common.json';
+import taLda from './locales/ta/lda.json';
+import taMarketplace from './locales/ta/marketplace.json';
 import taHome from './locales/ta/home.json';
 import taAbout from './locales/ta/about.json';
 import taResearch from './locales/ta/research.json';
@@ -17,7 +26,14 @@ import taCollaboration from './locales/ta/collaboration.json';
 import taNews from './locales/ta/news.json';
 import taProcurement from './locales/ta/procurement.json';
 import taResearchEnhanced from './locales/ta/researchEnhanced.json';
+import taDigitalLibrary from './locales/ta/digitalLibrary.json';
+import taKnowledge from './locales/ta/knowledge.json';
+import taMaritime from './locales/ta/maritime.json';
+import taIntegration from './locales/ta/integration.json';
+import taFishAdvisory from './locales/ta/fishAdvisory.json';
 import siCommon from './locales/si/common.json';
+import siLda from './locales/si/lda.json';
+import siMarketplace from './locales/si/marketplace.json';
 import siHome from './locales/si/home.json';
 import siAbout from './locales/si/about.json';
 import siResearch from './locales/si/research.json';
@@ -25,6 +41,11 @@ import siCollaboration from './locales/si/collaboration.json';
 import siNews from './locales/si/news.json';
 import siProcurement from './locales/si/procurement.json';
 import siResearchEnhanced from './locales/si/researchEnhanced.json';
+import siDigitalLibrary from './locales/si/digitalLibrary.json';
+import siKnowledge from './locales/si/knowledge.json';
+import siMaritime from './locales/si/maritime.json';
+import siIntegration from './locales/si/integration.json';
+import siFishAdvisory from './locales/si/fishAdvisory.json';
 
 const resources = {
   en: {
@@ -35,7 +56,14 @@ const resources = {
     collaboration: enCollaboration,
     procurement: enProcurement,
     news: enNews,
-    researchEnhanced: enResearchEnhanced
+    researchEnhanced: enResearchEnhanced,
+    digitalLibrary: enDigitalLibrary,
+    knowledge: enKnowledge,
+    lda: enLda,
+    marketplace: enMarketplace,
+    maritime: enMaritime,
+    integration: enIntegration,
+    fishAdvisory: enFishAdvisory
   },
   ta: {
     common: taCommon,
@@ -45,7 +73,14 @@ const resources = {
     collaboration: taCollaboration,
     procurement: taProcurement,
     news: taNews,
-    researchEnhanced: taResearchEnhanced
+    researchEnhanced: taResearchEnhanced,
+    digitalLibrary: taDigitalLibrary,
+    knowledge: taKnowledge,
+    lda: taLda,
+    marketplace: taMarketplace,
+    maritime: taMaritime,
+    integration: taIntegration,
+    fishAdvisory: taFishAdvisory
   },
   si: {
     common: siCommon,
@@ -55,7 +90,14 @@ const resources = {
     collaboration: siCollaboration,
     procurement: siProcurement,
     news: siNews,
-    researchEnhanced: siResearchEnhanced
+    researchEnhanced: siResearchEnhanced,
+    digitalLibrary: siDigitalLibrary,
+    knowledge: siKnowledge,
+    lda: siLda,
+    marketplace: siMarketplace,
+    maritime: siMaritime,
+    integration: siIntegration,
+    fishAdvisory: siFishAdvisory
   }
 };
 
@@ -83,7 +125,7 @@ i18n
     resources,
     lng: getStoredLanguage(),
     fallbackLng: 'en',
-    ns: ['common', 'home', 'about', 'research', 'collaboration', 'procurement', 'news', 'researchEnhanced'],
+    ns: ['common', 'home', 'about', 'research', 'collaboration', 'procurement', 'news', 'researchEnhanced', 'digitalLibrary', 'knowledge', 'lda', 'marketplace', 'maritime', 'integration', 'fishAdvisory'],
     defaultNS: 'common',
     interpolation: {
       escapeValue: false
@@ -95,9 +137,9 @@ i18n
   });
 
 export const AVAILABLE_LANGUAGES = [
-  { code: 'en', labelKey: 'language.english' },
+  { code: 'si', labelKey: 'language.sinhala' },
   { code: 'ta', labelKey: 'language.tamil' },
-  { code: 'si', labelKey: 'language.sinhala' }
+  { code: 'en', labelKey: 'language.english' }
 ];
 
 export default i18n;

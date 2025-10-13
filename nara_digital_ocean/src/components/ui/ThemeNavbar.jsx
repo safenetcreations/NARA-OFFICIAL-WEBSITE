@@ -60,6 +60,22 @@ const ThemeNavbar = () => {
       ]
     },
     {
+      titleKey: 'navbar.menu.divisions.title',
+      icon: Icons.Layers,
+      dropdown: [
+        { labelKey: 'navbar.menu.divisions.links.allDivisions', path: '/divisions', icon: Icons.Grid3x3 },
+        { labelKey: 'navbar.menu.divisions.links.fisheriesScience', path: '/divisions/marine-inland-fisheries-science', icon: Icons.Fish },
+        { labelKey: 'navbar.menu.divisions.links.marineBiology', path: '/divisions/marine-biology-ecosystems', icon: Icons.Waves },
+        { labelKey: 'navbar.menu.divisions.links.aquaculture', path: '/divisions/inland-aquatic-aquaculture', icon: Icons.Droplet },
+        { labelKey: 'navbar.menu.divisions.links.fishingTechnology', path: '/divisions/fishing-technology', icon: Icons.Anchor },
+        { labelKey: 'navbar.menu.divisions.links.qualityAssurance', path: '/divisions/post-harvest-quality', icon: Icons.FlaskConical },
+        { labelKey: 'navbar.menu.divisions.links.socioEconomics', path: '/divisions/socio-economics-marketing', icon: Icons.TrendingUp },
+        { labelKey: 'navbar.menu.divisions.links.hydrography', path: '/divisions/hydrography-nautical-charts', icon: Icons.Map },
+        { labelKey: 'navbar.menu.divisions.links.environmental', path: '/divisions/environmental-monitoring-advisory', icon: Icons.CloudRain },
+        { labelKey: 'navbar.menu.divisions.links.information', path: '/divisions/information-outreach', icon: Icons.BookOpen }
+      ]
+    },
+    {
       titleKey: 'navbar.menu.research.title',
       icon: Icons.Microscope,
       dropdown: [
@@ -211,7 +227,10 @@ const ThemeNavbar = () => {
                       minWidth: '240px',
                       borderRadius: '16px',
                       padding: '0.5rem',
-                      boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
+                      boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+                      background: 'rgba(255, 255, 255, 0.95)',
+                      backdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(0, 194, 255, 0.2)'
                     }}
                   >
                     {item.dropdown.map((subItem) => (
@@ -226,19 +245,33 @@ const ThemeNavbar = () => {
                           gap: '0.75rem',
                           padding: '0.75rem 1rem',
                           borderRadius: '12px',
-                          color: 'var(--text)',
+                          background: 'transparent',
                           textDecoration: 'none',
                           transition: 'all 0.2s ease'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'var(--hover)';
+                          e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0, 194, 255, 0.1), rgba(0, 229, 255, 0.1))';
+                          e.currentTarget.style.transform = 'translateX(4px)';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.background = 'transparent';
+                          e.currentTarget.style.transform = 'translateX(0)';
                         }}
                       >
-                        <subItem.icon className="w-4 h-4" style={{ color: 'var(--primary)' }} />
-                        <span style={{ fontSize: '0.9rem' }}>{t(subItem.labelKey)}</span>
+                        <subItem.icon className="w-4 h-4" style={{
+                          background: 'linear-gradient(135deg, #0088cc, #00c2ff)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          backgroundClip: 'text'
+                        }} />
+                        <span style={{
+                          fontSize: '0.9rem',
+                          fontWeight: 500,
+                          background: 'linear-gradient(135deg, #0088cc, #00c2ff)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          backgroundClip: 'text'
+                        }}>{t(subItem.labelKey)}</span>
                       </Link>
                     ))}
                   </motion.div>
