@@ -1,178 +1,409 @@
-import React, { useState, useEffect } from 'react';
-import { collection, query, getDocs, orderBy, limit } from 'firebase/firestore';
-import { db } from '../../firebase';
-import * as Icons from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  RefreshCw,
+  Download,
+  Bell,
+  Shield,
+  FileText,
+  Database,
+  Cloud,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+  ListChecks,
+  UploadCloud,
+  Loader,
+  Users,
+  Mail,
+  Target
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
+import {
+  dashboardService,
+  vacancyIntegrationService,
+  adminService,
+  handleApiError
+} from '../../services/procurementRecruitmentService';
 
 const AdminDashboard = () => {
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    totalPages: 0,
-    totalEmails: 0,
-    totalMedia: 0
-  });
-
-  const [recentActivity, setRecentActivity] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [workspaceStats, setWorkspaceStats] = useState(null);
+  const [vacancySummary, setVacancySummary] = useState(null);
+  const [vacancyArchive, setVacancyArchive] = useState([]);
+  const [isRefreshingVacancies, setIsRefreshingVacancies] = useState(false);
+  const [isExportingCsv, setIsExportingCsv] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchDashboardData();
+    const loadDashboard = async () => {
+      try {
+        const data = await dashboardService.getDashboardData();
+        setWorkspaceStats(data);
+      } catch (err) {
+        setError(handleApiError(err)?.message);
+      }
+    };
+
+    const loadVacancyData = async () => {
+      try {
+        const [summary, archive] = await Promise.all([
+          vacancyIntegrationService.getSyncSummary(),
+          vacancyIntegrationService.getArchive({ status: 'closed', limit: 10 })
+        ]);
+        setVacancySummary(summary?.summary || summary || null);
+
+        const archiveEntries = Array.isArray(archive?.archive)
+          ? archive.archive
+          : Array.isArray(archive?.jobs)
+            ? archive.jobs
+            : Array.isArray(archive)
+              ? archive
+              : [];
+        setVacancyArchive(archiveEntries);
+      } catch (err) {
+        setError(handleApiError(err)?.message);
+      }
+    };
+
+    loadDashboard();
+    loadVacancyData();
   }, []);
 
-  const fetchDashboardData = async () => {
+  const handleManualVacancyRefresh = async () => {
     try {
-      // Fetch stats from Firestore
-      const usersRef = collection(db, 'users');
-      const usersSnapshot = await getDocs(usersRef);
-      
-      setStats({
-        totalUsers: usersSnapshot.size,
-        totalPages: 15, // Update based on your pages
-        totalEmails: 0,
-        totalMedia: 0
-      });
-
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      setLoading(false);
+      setIsRefreshingVacancies(true);
+      setError(null);
+      const summary = await vacancyIntegrationService.getSyncSummary();
+      setVacancySummary(summary?.summary || summary || null);
+    } catch (err) {
+      setError(handleApiError(err)?.message);
+    } finally {
+      setIsRefreshingVacancies(false);
     }
   };
 
-  const statCards = [
-    { icon: Icons.Users, label: 'Total Users', value: stats.totalUsers, change: '+12%', color: 'cyan' },
-    { icon: Icons.FileText, label: 'Pages', value: stats.totalPages, change: '+3', color: 'blue' },
-    { icon: Icons.Mail, label: 'Emails Sent', value: stats.totalEmails, change: '+24', color: 'purple' },
-    { icon: Icons.Image, label: 'Media Files', value: stats.totalMedia, change: '+8', color: 'green' }
-  ];
+  const handleCsvExport = async () => {
+    try {
+      setIsExportingCsv(true);
+      setError(null);
+      const blob = await adminService.exportApplicantsCsv();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = downloadUrl;
+      anchor.download = `nara-applicants-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (err) {
+      setError(handleApiError(err)?.message);
+    } finally {
+      setIsExportingCsv(false);
+    }
+  };
 
-  const quickActions = [
-    { icon: Icons.FilePlus, label: 'Add New Page', path: '/admin/content/new', color: 'cyan' },
-    { icon: Icons.UserPlus, label: 'Add User', path: '/admin/users/new', color: 'blue' },
-    { icon: Icons.Mail, label: 'Send Email', path: '/admin/emails/compose', color: 'purple' },
-    { icon: Icons.Upload, label: 'Upload Media', path: '/admin/media/upload', color: 'green' }
+  const vacancyStats = useMemo(() => {
+    const summary = vacancySummary || {};
+    const open = summary.open_roles ?? summary.open ?? 0;
+    const review = summary.under_review ?? summary.in_review ?? summary.reviewing ?? 0;
+    const closed = summary.closed_roles ?? summary.closed ?? vacancyArchive.length;
+    const gazette = summary.gazette_backlog ?? summary.gazette_pending ?? 0;
+    const psc = summary.psc_links ?? summary.psc_backlog ?? 0;
+    const lastSynced = summary.last_synced_at || summary.last_sync || summary.generated_at || null;
+
+    return {
+      open,
+      review,
+      closed,
+      gazette,
+      psc,
+      lastSynced
+    };
+  }, [vacancyArchive.length, vacancySummary]);
+
+  const workspaceMetrics = useMemo(() => ({
+    totalUsers: workspaceStats?.statistics?.total_users ?? 0,
+    procurement: workspaceStats?.statistics?.procurement_requests ?? 0,
+    recruitment: workspaceStats?.statistics?.career_applications ?? 0,
+    averageReview: workspaceStats?.statistics?.average_review_time ?? '—'
+  }), [workspaceStats]);
+
+  const archivePreview = vacancyArchive.slice(0, 5);
+
+  return (
+    <div className="space-y-8">
+      <header className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-white">NARA Admin Console</h1>
+          <p className="text-slate-400 mt-1">
+            Manage procurement, recruitment, and digital operations from one secure workspace.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={handleManualVacancyRefresh}
+            disabled={isRefreshingVacancies}
+            className="flex items-center gap-2 rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-cyan-400 hover:text-cyan-300 disabled:cursor-not-allowed disabled:border-slate-800 disabled:text-slate-500"
+          >
+            {isRefreshingVacancies ? <Loader className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            Sync vacancies
+          </button>
+          <button
+            onClick={handleCsvExport}
+            disabled={isExportingCsv}
+            className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-cyan-500/30 transition hover:from-cyan-600 hover:to-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isExportingCsv ? <Loader className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            Export applicants CSV
+          </button>
+        </div>
+      </header>
+
+      {error && (
+        <div className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+          {error}
+        </div>
+      )}
+
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <DashboardStat icon={Database} label="Registered users" value={workspaceMetrics.totalUsers} accent="from-cyan-500 to-blue-600" />
+        <DashboardStat icon={FileText} label="Procurement submissions" value={workspaceMetrics.procurement} accent="from-blue-500 to-indigo-600" />
+        <DashboardStat icon={Users} label="Career applications" value={workspaceMetrics.recruitment} accent="from-emerald-500 to-teal-500" />
+        <DashboardStat icon={Clock} label="Average review time" value={workspaceMetrics.averageReview} accent="from-purple-500 to-pink-500" />
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-3">
+        <VacancySyncPanel stats={vacancyStats} isRefreshing={isRefreshingVacancies} />
+        <VacancyAutomationPanel stats={vacancyStats} archivePreview={archivePreview} />
+        <SystemStatusPanel />
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        <QuickActionsPanel />
+        <WorkspaceActivityPanel stats={workspaceStats} />
+      </section>
+    </div>
+  );
+};
+
+const DashboardStat = ({ icon: Icon, label, value, accent }) => (
+  <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+    <div className={`inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2 text-sm text-white shadow-inner shadow-slate-900/40 bg-gradient-to-r ${accent}`}>
+      <Icon className="h-4 w-4" />
+      <span className="uppercase tracking-[0.3em] text-xs text-white/80">{label}</span>
+    </div>
+    <p className="mt-4 text-3xl font-semibold text-white">{typeof value === 'number' ? value.toLocaleString() : value}</p>
+  </div>
+);
+
+const VacancySyncPanel = ({ stats, isRefreshing }) => {
+  const formatRelative = (value) => {
+    if (!value) return 'Awaiting sync';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return date.toLocaleString();
+  };
+
+  const statItems = [
+    { label: 'Open roles', value: stats.open, icon: Users, accent: 'from-emerald-500 to-teal-500' },
+    { label: 'Under review', value: stats.review, icon: CheckCircle, accent: 'from-amber-500 to-orange-500' },
+    { label: 'Closed roles', value: stats.closed, icon: FileText, accent: 'from-slate-500 to-slate-600' }
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Dashboard Overview</h1>
-          <p className="text-slate-400 mt-1">Welcome back, Admin! Here's what's happening today.</p>
-        </div>
-        <button className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white rounded-lg transition-all shadow-lg shadow-cyan-500/30 flex items-center gap-2">
-          <Icons.Download className="w-4 h-4" />
-          Export Report
-        </button>
+    <div className="col-span-2 rounded-2xl border border-emerald-500/20 bg-slate-900/70 p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold text-white">Vacancy sync</h2>
+        <span className="text-xs uppercase tracking-wider text-slate-500">
+          Last sync: {isRefreshing ? 'Refreshing...' : formatRelative(stats.lastSynced)}
+        </span>
       </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((stat, index) => (
-          <div
-            key={index}
-            className="bg-slate-900/50 backdrop-blur-xl rounded-xl border border-slate-800 p-6 hover:border-slate-700 transition-all group"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className={`w-12 h-12 bg-gradient-to-br from-${stat.color}-500 to-${stat.color}-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                <stat.icon className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-green-400 text-sm font-semibold">{stat.change}</span>
+      <div className="mt-5 grid gap-4 md:grid-cols-3">
+        {statItems.map((item) => (
+          <div key={item.label} className="rounded-xl border border-slate-800 bg-slate-950/80 p-4">
+            <div className={`inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-1 text-xs uppercase tracking-wider text-white bg-gradient-to-r ${item.accent}`}>
+              <item.icon className="h-4 w-4" />
+              <span>{item.label}</span>
             </div>
-            <h3 className="text-2xl font-bold text-white mb-1">{stat.value.toLocaleString()}</h3>
-            <p className="text-slate-400 text-sm">{stat.label}</p>
+            <p className="mt-4 text-2xl font-semibold text-white">{item.value}</p>
           </div>
         ))}
       </div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/80 px-4 py-3">
+          <Bell className="h-4 w-4 text-emerald-300" />
+          <div>
+            <p className="text-sm font-semibold text-white">Gazette backlog</p>
+            <p className="text-xs text-slate-400">{stats.gazette} flagged mentions require HR confirmation.</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/80 px-4 py-3">
+          <Shield className="h-4 w-4 text-emerald-300" />
+          <div>
+            <p className="text-sm font-semibold text-white">PSC link-backs</p>
+            <p className="text-xs text-slate-400">{stats.psc} pending PSC references to embed or archive.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-      {/* Quick Actions */}
-      <div className="bg-slate-900/50 backdrop-blur-xl rounded-xl border border-slate-800 p-6">
-        <h2 className="text-xl font-semibold text-white mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {quickActions.map((action, index) => (
-            <button
+const VacancyAutomationPanel = ({ stats, archivePreview }) => (
+  <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
+    <h2 className="text-lg font-semibold text-white mb-4">Automation insights</h2>
+    <ul className="space-y-3 text-sm text-slate-300">
+      <li className="flex items-center gap-2">
+        <UploadCloud className="h-4 w-4 text-cyan-300" />
+        HR feed powers <span className="font-semibold text-white">{stats.open}</span> active vacancies.
+      </li>
+      <li className="flex items-center gap-2">
+        <Bell className="h-4 w-4 text-cyan-300" />
+        Gazette watcher flagged <span className="font-semibold text-white">{stats.gazette}</span> mentions.
+      </li>
+      <li className="flex items-center gap-2">
+        <Shield className="h-4 w-4 text-cyan-300" />
+        PSC references pending: <span className="font-semibold text-white">{stats.psc}</span>.
+      </li>
+    </ul>
+
+    {archivePreview.length > 0 && (
+      <div className="mt-5">
+        <h3 className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-400">Archive snapshot</h3>
+        <div className="mt-3 space-y-3">
+          {archivePreview.map((entry, index) => (
+            <div
               key={index}
-              className="flex flex-col items-center justify-center p-6 bg-slate-800/50 hover:bg-slate-800 rounded-lg border border-slate-700 hover:border-slate-600 transition-all group"
+              className="flex items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-2 text-xs text-slate-300"
             >
-              <div className={`w-12 h-12 bg-gradient-to-br from-${action.color}-500 to-${action.color}-600 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
-                <action.icon className="w-6 h-6 text-white" />
+              <div>
+                <p className="font-semibold text-white">{entry?.title}</p>
+                <p className="text-slate-500">
+                  {entry?.department || entry?.division || 'NARA'} • {new Date(entry?.closed_at || entry?.updated_at || entry?.created_at || entry?.published_at || Date.now()).toLocaleDateString()}
+                </p>
               </div>
-              <span className="text-white font-medium">{action.label}</span>
-            </button>
+              <span className="inline-flex items-center gap-1 rounded-full border border-slate-700 px-3 py-1 text-[10px] uppercase tracking-wider text-slate-400">
+                Closed
+              </span>
+            </div>
           ))}
         </div>
       </div>
+    )}
+  </div>
+);
 
-      {/* Analytics Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Page Views Chart */}
-        <div className="bg-slate-900/50 backdrop-blur-xl rounded-xl border border-slate-800 p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Page Views (Last 7 Days)</h2>
-          <div className="h-64 flex items-end justify-between gap-2">
-            {[65, 82, 70, 95, 88, 92, 78].map((height, index) => (
-              <div key={index} className="flex-1 flex flex-col items-center gap-2">
-                <div
-                  className="w-full bg-gradient-to-t from-cyan-500 to-blue-600 rounded-t-lg transition-all hover:from-cyan-400 hover:to-blue-500"
-                  style={{ height: `${height}%` }}
-                ></div>
-                <span className="text-xs text-slate-500">
-                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][index]}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+const SystemStatusPanel = () => (
+  <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 space-y-4">
+    <h2 className="text-lg font-semibold text-white">System status</h2>
+    <div className="space-y-3 text-sm text-slate-300">
+      <StatusItem icon={Database} label="Database" status="Operational" accent="text-emerald-300" />
+      <StatusItem icon={Cloud} label="Cloud storage" status="Healthy" accent="text-emerald-300" />
+      <StatusItem icon={CheckCircle} label="API services" status="Online" accent="text-emerald-300" />
+    </div>
+  </div>
+);
 
-        {/* User Activity */}
-        <div className="bg-slate-900/50 backdrop-blur-xl rounded-xl border border-slate-800 p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Recent Activity</h2>
-          <div className="space-y-4">
-            {[
-              { action: 'New user registered', time: '2 minutes ago', icon: Icons.UserPlus, color: 'green' },
-              { action: 'Page content updated', time: '15 minutes ago', icon: Icons.FileEdit, color: 'blue' },
-              { action: 'Email campaign sent', time: '1 hour ago', icon: Icons.Mail, color: 'purple' },
-              { action: 'Media file uploaded', time: '2 hours ago', icon: Icons.Upload, color: 'cyan' }
-            ].map((activity, index) => (
-              <div key={index} className="flex items-center gap-4 p-3 bg-slate-800/30 rounded-lg hover:bg-slate-800/50 transition">
-                <div className={`w-10 h-10 bg-${activity.color}-500/20 rounded-lg flex items-center justify-center`}>
-                  <activity.icon className={`w-5 h-5 text-${activity.color}-400`} />
-                </div>
-                <div className="flex-1">
-                  <p className="text-white text-sm font-medium">{activity.action}</p>
-                  <p className="text-slate-500 text-xs">{activity.time}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+const StatusItem = ({ icon: Icon, label, status, accent }) => (
+  <div className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3">
+    <Icon className={`h-5 w-5 ${accent}`} />
+    <div>
+      <p className="text-sm font-semibold text-white">{label}</p>
+      <p className={`text-xs ${accent}`}>{status}</p>
+    </div>
+  </div>
+);
+
+const QuickActionsPanel = () => {
+  const actions = [
+    {
+      icon: FileText,
+      label: 'Publish tender',
+      description: 'Open the procurement & recruitment portal',
+      href: '/procurement-recruitment-portal'
+    },
+    {
+      icon: Users,
+      label: 'Publish vacancy',
+      description: 'Review auto-synced roles before publishing',
+      href: '/procurement-recruitment-portal#recruitment'
+    },
+    {
+      icon: UploadCloud,
+      label: 'Import gazette notice',
+      description: 'Upload and summarise gazette PDFs',
+      href: '/admin/dashboard'
+    },
+    {
+      icon: ListChecks,
+      label: 'PSC references',
+      description: 'Track pending PSC link-backs',
+      href: '/admin/dashboard'
+    },
+    {
+      icon: Target,
+      label: 'Audience hubs',
+      description: 'Preview public landing pages',
+      href: '/audiences/general-public'
+    }
+  ];
+
+  return (
+    <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
+      <h2 className="text-lg font-semibold text-white mb-4">Quick actions</h2>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {actions.map((action) => (
+          <QuickAction key={action.label} {...action} />
+        ))}
       </div>
+    </div>
+  );
+};
 
-      {/* System Status */}
-      <div className="bg-slate-900/50 backdrop-blur-xl rounded-xl border border-slate-800 p-6">
-        <h2 className="text-xl font-semibold text-white mb-4">System Status</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex items-center gap-3 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-            <Icons.CheckCircle className="w-6 h-6 text-green-400" />
-            <div>
-              <p className="text-white font-medium">Database</p>
-              <p className="text-green-400 text-sm">Operational</p>
-            </div>
+const QuickAction = ({ icon: Icon, label, description, href }) => (
+  <Link
+    to={href}
+    className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-left transition hover:border-cyan-400 hover:text-cyan-200"
+  >
+    <div className="rounded-lg border border-slate-700 bg-slate-900/80 p-3">
+      <Icon className="h-5 w-5 text-cyan-300" />
+    </div>
+    <div>
+      <p className="text-sm font-semibold text-white">{label}</p>
+      <p className="text-xs text-slate-400">{description}</p>
+    </div>
+  </Link>
+);
+
+const WorkspaceActivityPanel = ({ stats }) => {
+  const items = [
+    {
+      label: 'Unread notifications',
+      value: stats?.notifications?.unread ?? 0,
+      icon: Bell
+    },
+    {
+      label: 'Pending clarifications',
+      value: stats?.statistics?.pending_clarifications ?? 0,
+      icon: AlertTriangle
+    },
+    {
+      label: 'Emails dispatched',
+      value: stats?.statistics?.emails_sent ?? 0,
+      icon: Mail
+    }
+  ];
+
+  return (
+    <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
+      <h2 className="text-lg font-semibold text-white mb-4">Workspace activity</h2>
+      <div className="space-y-3">
+        {items.map((item) => (
+          <div key={item.label} className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-sm text-slate-300">
+            <item.icon className="h-4 w-4 text-cyan-300" />
+            <span className="flex-1">{item.label}</span>
+            <span className="font-semibold text-white">{item.value}</span>
           </div>
-          <div className="flex items-center gap-3 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-            <Icons.CheckCircle className="w-6 h-6 text-green-400" />
-            <div>
-              <p className="text-white font-medium">API Services</p>
-              <p className="text-green-400 text-sm">Online</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-            <Icons.CheckCircle className="w-6 h-6 text-green-400" />
-            <div>
-              <p className="text-white font-medium">Storage</p>
-              <p className="text-green-400 text-sm">75% Available</p>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

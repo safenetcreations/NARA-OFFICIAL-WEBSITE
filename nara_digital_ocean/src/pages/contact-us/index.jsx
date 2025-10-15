@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
+import { useTranslation } from 'react-i18next';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
+import MultilingualContent from '../../components/compliance/MultilingualContent';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -11,140 +13,143 @@ const ContactUs = () => {
     message: ''
   });
 
+  const { t, i18n } = useTranslation('contact');
+  const language = useMemo(() => (i18n.language || 'en').split('-')[0], [i18n.language]);
+  const sections = t('sections', { returnObjects: true });
+  const info = sections?.info || {};
+  const formSection = sections?.form || {};
+  const mapSection = sections?.map || {};
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission
     console.log('Contact form submitted:', formData);
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value
-    });
+    }));
   };
 
+  const renderLines = (lines = []) =>
+    lines.map((line, index) => (
+      <span key={`${line}-${index}`}>
+        {line}
+        {index !== lines.length - 1 && <br />}
+      </span>
+    ));
+
   return (
-    <>
+    <MultilingualContent language={language}>
       <Helmet>
-        <title>Contact Us - NARA Digital Ocean Platform</title>
-        <meta name="description" content="Get in touch with the National Aquatic Resources Research and Development Agency (NARA)" />
+        <title>{t('seo.title')}</title>
+        <meta name="description" content={t('seo.description')} />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
         {/* Hero Section */}
-        <section className="relative py-20 px-4 bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 text-white">
-          <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-5xl font-bold mb-6">Contact Us</h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              We're here to help. Reach out to NARA for inquiries, support, or collaboration opportunities.
-            </p>
+        <section className="relative bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 py-20 px-4 text-white">
+          <div className="mx-auto max-w-7xl text-center">
+            <h1 className="mb-6 text-5xl font-bold">{t('hero.title')}</h1>
+            <p className="mx-auto max-w-3xl text-xl text-blue-100">{t('hero.description')}</p>
           </div>
         </section>
 
         {/* Contact Information & Form */}
         <section className="py-16 px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-12">
-              
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-12 md:grid-cols-2">
               {/* Contact Information */}
               <div>
-                <h2 className="text-3xl font-bold text-slate-900 mb-8">Get In Touch</h2>
-                
-                {/* Main Office */}
-                <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-slate-200">
+                <h2 className="mb-8 text-3xl font-bold text-slate-900">{info.title}</h2>
+
+                <div className="mb-6 rounded-xl border border-slate-200 bg-white p-6 shadow-lg">
                   <div className="flex items-start space-x-4">
-                    <div className="p-3 bg-blue-100 rounded-lg">
+                    <div className="rounded-lg bg-blue-100 p-3">
                       <Icon name="MapPin" size={24} className="text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg text-slate-900 mb-2">Main Office</h3>
-                      <p className="text-slate-600">
-                        National Aquatic Resources Research and Development Agency<br />
-                        Crow Island, Colombo 15<br />
-                        Sri Lanka
-                      </p>
+                      <h3 className="mb-2 text-lg font-semibold text-slate-900">{info.office?.title}</h3>
+                      <p className="text-slate-600">{renderLines(info.office?.lines)}</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Phone */}
-                <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-slate-200">
+                <div className="mb-6 rounded-xl border border-slate-200 bg-white p-6 shadow-lg">
                   <div className="flex items-start space-x-4">
-                    <div className="p-3 bg-green-100 rounded-lg">
+                    <div className="rounded-lg bg-green-100 p-3">
                       <Icon name="Phone" size={24} className="text-green-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg text-slate-900 mb-2">Phone</h3>
-                      <p className="text-slate-600">
-                        +94 11 252 1000<br />
-                        +94 11 252 1100
-                      </p>
+                      <h3 className="mb-2 text-lg font-semibold text-slate-900">{info.phone?.title}</h3>
+                      <p className="text-slate-600">{renderLines(info.phone?.lines)}</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Email */}
-                <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-slate-200">
+                <div className="mb-6 rounded-xl border border-slate-200 bg-white p-6 shadow-lg">
                   <div className="flex items-start space-x-4">
-                    <div className="p-3 bg-purple-100 rounded-lg">
+                    <div className="rounded-lg bg-purple-100 p-3">
                       <Icon name="Mail" size={24} className="text-purple-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg text-slate-900 mb-2">Email</h3>
+                      <h3 className="mb-2 text-lg font-semibold text-slate-900">{info.email?.title}</h3>
                       <p className="text-slate-600">
-                        <a href="mailto:info@nara.gov.lk" className="text-blue-600 hover:underline">
-                          info@nara.gov.lk
-                        </a><br />
-                        <a href="mailto:director@nara.gov.lk" className="text-blue-600 hover:underline">
-                          director@nara.gov.lk
-                        </a>
+                        {info.email?.primary && (
+                          <>
+                            <a href={`mailto:${info.email.primary}`} className="text-blue-600 hover:underline">
+                              {info.email.primary}
+                            </a>
+                            <br />
+                          </>
+                        )}
+                        {info.email?.secondary && (
+                          <a href={`mailto:${info.email.secondary}`} className="text-blue-600 hover:underline">
+                            {info.email.secondary}
+                          </a>
+                        )}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Working Hours */}
-                <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-slate-200">
+                <div className="mb-6 rounded-xl border border-slate-200 bg-white p-6 shadow-lg">
                   <div className="flex items-start space-x-4">
-                    <div className="p-3 bg-amber-100 rounded-lg">
+                    <div className="rounded-lg bg-amber-100 p-3">
                       <Icon name="Clock" size={24} className="text-amber-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg text-slate-900 mb-2">Working Hours</h3>
+                      <h3 className="mb-2 text-lg font-semibold text-slate-900">{info.hours?.title}</h3>
                       <p className="text-slate-600">
-                        Monday - Friday: 8:30 AM - 4:15 PM<br />
-                        Saturday - Sunday: Closed<br />
-                        <span className="text-sm text-slate-500">(Except Public Holidays)</span>
+                        {(info.hours?.lines || []).map((line, index) => (
+                          <span
+                            key={`${line}-${index}`}
+                            className={index === (info.hours?.lines?.length || 0) - 1 ? 'text-sm text-slate-500' : ''}
+                          >
+                            {line}
+                            {index !== (info.hours?.lines?.length || 0) - 1 && <br />}
+                          </span>
+                        ))}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Quick Links */}
-                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200">
-                  <h3 className="font-semibold text-lg text-slate-900 mb-4">Quick Links</h3>
+                <div className="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-cyan-50 p-6">
+                  <h3 className="mb-4 text-lg font-semibold text-slate-900">{info.quickLinks?.title}</h3>
                   <div className="space-y-3">
-                    <a 
-                      href="/procurement-recruitment-portal" 
-                      className="flex items-center text-blue-600 hover:text-blue-700 transition-colors"
-                    >
+                    <a href="/procurement-recruitment-portal" className="flex items-center text-blue-600 transition-colors hover:text-blue-700">
                       <Icon name="Briefcase" size={18} className="mr-2" />
-                      Careers & Recruitment
+                      {info.quickLinks?.careers}
                     </a>
-                    <a 
-                      href="/nara-news-updates-center" 
-                      className="flex items-center text-blue-600 hover:text-blue-700 transition-colors"
-                    >
+                    <a href="/nara-news-updates-center" className="flex items-center text-blue-600 transition-colors hover:text-blue-700">
                       <Icon name="Newspaper" size={18} className="mr-2" />
-                      News & Updates
+                      {info.quickLinks?.news}
                     </a>
-                    <a 
-                      href="/emergency-response-network" 
-                      className="flex items-center text-red-600 hover:text-red-700 transition-colors"
-                    >
+                    <a href="/emergency-response-network" className="flex items-center text-red-600 transition-colors hover:text-red-700">
                       <Icon name="AlertTriangle" size={18} className="mr-2" />
-                      Emergency Hotline
+                      {info.quickLinks?.emergency}
                     </a>
                   </div>
                 </div>
@@ -152,12 +157,12 @@ const ContactUs = () => {
 
               {/* Contact Form */}
               <div>
-                <h2 className="text-3xl font-bold text-slate-900 mb-8">Send Us A Message</h2>
-                
-                <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg p-8 border border-slate-200">
+                <h2 className="mb-8 text-3xl font-bold text-slate-900">{formSection.title}</h2>
+
+                <form onSubmit={handleSubmit} className="rounded-xl border border-slate-200 bg-white p-8 shadow-lg">
                   <div className="mb-6">
-                    <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
-                      Full Name *
+                    <label htmlFor="name" className="mb-2 block text-sm font-medium text-slate-700">
+                      {formSection.fields?.name?.label} *
                     </label>
                     <input
                       type="text"
@@ -166,14 +171,14 @@ const ContactUs = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                      placeholder="Your name"
+                      className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                      placeholder={formSection.fields?.name?.placeholder}
                     />
                   </div>
 
                   <div className="mb-6">
-                    <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
-                      Email Address *
+                    <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
+                      {formSection.fields?.email?.label} *
                     </label>
                     <input
                       type="email"
@@ -182,14 +187,14 @@ const ContactUs = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                      placeholder="your.email@example.com"
+                      className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                      placeholder={formSection.fields?.email?.placeholder}
                     />
                   </div>
 
                   <div className="mb-6">
-                    <label htmlFor="subject" className="block text-sm font-medium text-slate-700 mb-2">
-                      Subject *
+                    <label htmlFor="subject" className="mb-2 block text-sm font-medium text-slate-700">
+                      {formSection.fields?.subject?.label} *
                     </label>
                     <input
                       type="text"
@@ -198,14 +203,14 @@ const ContactUs = () => {
                       value={formData.subject}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                      placeholder="How can we help you?"
+                      className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                      placeholder={formSection.fields?.subject?.placeholder}
                     />
                   </div>
 
                   <div className="mb-6">
-                    <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-2">
-                      Message *
+                    <label htmlFor="message" className="mb-2 block text-sm font-medium text-slate-700">
+                      {formSection.fields?.message?.label} *
                     </label>
                     <textarea
                       id="message"
@@ -214,44 +219,39 @@ const ContactUs = () => {
                       onChange={handleChange}
                       required
                       rows={6}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
-                      placeholder="Tell us more about your inquiry..."
+                      className="w-full resize-none rounded-lg border border-slate-300 px-4 py-3 outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                      placeholder={formSection.fields?.message?.placeholder}
                     />
                   </div>
 
-                  <Button
-                    type="submit"
-                    variant="default"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-medium"
-                  >
-                    <Icon name="Send" size={20} className="mr-2" />
-                    Send Message
+                  <Button type="submit" className="flex w-full items-center justify-center gap-2 bg-blue-600 py-3 text-lg font-medium text-white hover:bg-blue-700">
+                    <Icon name="Send" size={20} />
+                    {formSection.submit}
                   </Button>
 
-                  <p className="text-sm text-slate-500 mt-4 text-center">
-                    We'll respond to your inquiry within 1-2 business days
-                  </p>
+                  <p className="mt-4 text-center text-sm text-slate-500">{formSection.responseNotice}</p>
+                  <p className="mt-2 text-center text-xs text-slate-400">{formSection.disclaimer}</p>
                 </form>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Map Section (Optional - Add Google Maps integration later) */}
-        <section className="py-16 px-4 bg-slate-50">
-          <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">Find Us</h2>
-            <div className="bg-slate-200 rounded-xl h-96 flex items-center justify-center">
+        {/* Map Section */}
+        <section className="bg-slate-50 py-16 px-4">
+          <div className="mx-auto max-w-7xl">
+            <h2 className="mb-8 text-center text-3xl font-bold text-slate-900">{mapSection.title}</h2>
+            <div className="flex h-96 items-center justify-center rounded-xl bg-slate-200">
               <div className="text-center text-slate-600">
                 <Icon name="MapPin" size={48} className="mx-auto mb-4 text-slate-400" />
-                <p className="text-lg">Map integration coming soon</p>
-                <p className="text-sm">Crow Island, Colombo 15, Sri Lanka</p>
+                <p className="text-lg">{mapSection.comingSoon}</p>
+                <p className="text-sm">{mapSection.location}</p>
               </div>
             </div>
           </div>
         </section>
       </div>
-    </>
+    </MultilingualContent>
   );
 };
 

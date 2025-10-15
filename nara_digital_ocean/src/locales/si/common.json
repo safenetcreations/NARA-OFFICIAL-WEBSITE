@@ -22,7 +22,11 @@
           "researchExcellencePortal": "ගවේෂණ ශ්‍රේෂ්ඨත්ව ද්වාරය",
           "researchCollaboration": "ගවේෂණ සමාන්විතතාව",
           "knowledgeDiscovery": "දැනුම සොයාගැනීම",
-          "partnershipInnovation": "හවුල්කාරී නව්‍යත්වය"
+          "partnershipInnovation": "හවුල්කාරී නව්‍යත්වය",
+          "vesselBooking": "පර්යේෂණ නෞකා වෙන්කිරීම්",
+          "labResults": "රසායනාගාර ප්‍රතිඵල ද්වාරය",
+          "scientificEvidence": "විද්‍යාත්මක සාක්ෂි ගබඩාව",
+          "projectPipeline": "ව්‍යාපෘති නල මාර්ග ලුහුබැඳීම"
         }
       },
       "services": {
@@ -31,12 +35,16 @@
           "digitalMarketplace": "ඩිජිටල් වෙළඳ පොළ",
           "maritimeServices": "සාගරික සේවාවන්",
           "governmentServices": "රාජ්‍ය සේවාවන්",
-          "emergencyResponse": "හදිසි ප්‍රතිචාර"
+          "emergencyResponse": "හදිසි ප්‍රතිචාර",
+          "fishAdvisory": "මත්ස්‍ය උපදේශන පද්ධතිය",
+          "exportIntelligence": "අපනයන වෙළඳපල බුද්ධිමතාත්මක සේවාව",
+          "marineIncident": "සමුද්‍ර සිද්ධි ද්වාරය"
         }
       },
       "resources": {
         "title": "සාධන",
         "links": {
+          "libraryCatalogue": "පුස්තකාල නාමාවලිය",
           "digitalProductLibrary": "ඩිජිටල් නිෂ්පාදන පුස්තකාලය",
           "learningAcademy": "ඉගෙනීමේ අකැඩමිය",
           "regionalImpact": "ප්‍රාදේශීය බලපෑම",
@@ -68,7 +76,10 @@
         }
       },
       "news": {
-        "title": "පුවත් හා යාවත්කාලීන"
+        "title": "පුවත් හා යාවත්කාලීන",
+        "links": {
+          "mediaPressKit": "මාධ්‍ය ප්‍රචාරක මෙවලම්"
+        }
       },
       "contact": {
         "title": "සම්බන්ධ වන්න",
@@ -106,5 +117,11 @@
   "attachFiles": "ගොනු ඇමුණුම් කරන්න",
   "filesSelected": "ගොනු තෝරා ඇත",
   "submitting": "ඉදිරිපත් කරමින්...",
-  "submit": "ඉදිරිපත් කරන්න"
+  "submit": "ඉදිරිපත් කරන්න",
+  "admin": {
+    "csvExport": {
+      "success": "අයදුම්කරු CSV බාගත කර ඇත",
+      "error": "CSV නිර්යාත කිරීම අසාර්ථක විය. නැවත උත්සාහ කරන්න."
+    }
+  }
 }

@@ -1,0 +1,400 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { Helmet } from 'react-helmet';
+import { useTranslation } from 'react-i18next';
+import MultilingualContent from '../../components/compliance/MultilingualContent';
+import { motion, AnimatePresence } from 'framer-motion';
+import * as Icons from 'lucide-react';
+import {
+  marketPricesService,
+  tradeStatisticsService,
+  exportOpportunitiesService,
+  marketReportsService,
+  exportMarketDashboardService
+} from '../../services/exportMarketService';
+
+const formatCurrency = (value) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value);
+
+const formatNumber = (value) => new Intl.NumberFormat('en-US').format(value);
+
+const ExportMarketIntelligence = () => {
+  const { t, i18n } = useTranslation('exportMarket');
+  const language = useMemo(() => (i18n.language || 'en').split('-')[0], [i18n.language]);
+
+  const heroStrings = t('hero', { returnObjects: true });
+  const tabStrings = t('tabs', { returnObjects: true });
+  const dashboardStrings = t('dashboard', { returnObjects: true });
+  const pricesStrings = t('prices', { returnObjects: true });
+  const opportunitiesStrings = t('opportunities', { returnObjects: true });
+  const reportsStrings = t('reports', { returnObjects: true });
+
+  const [activeView, setActiveView] = useState('dashboard');
+  const [dashboardData, setDashboardData] = useState(null);
+  const [prices, setPrices] = useState([]);
+  const [opportunities, setOpportunities] = useState([]);
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedSpecies, setSelectedSpecies] = useState('all');
+  const [selectedMarket, setSelectedMarket] = useState('all');
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const [dashResult, pricesResult, oppsResult, reportsResult] = await Promise.all([
+          exportMarketDashboardService.getStatistics(),
+          marketPricesService.getAll({ limit: 100 }),
+          exportOpportunitiesService.getAll({ status: 'active', limit: 50 }),
+          marketReportsService.getAll({ limit: 20 })
+        ]);
+
+        if (dashResult.data) setDashboardData(dashResult.data);
+        if (pricesResult.data) setPrices(pricesResult.data);
+        if (oppsResult.data) setOpportunities(oppsResult.data);
+        if (reportsResult.data) setReports(reportsResult.data);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const navTabs = useMemo(
+    () => [
+      { id: 'dashboard', label: tabStrings.dashboard, icon: Icons.LayoutDashboard },
+      { id: 'prices', label: tabStrings.prices, icon: Icons.DollarSign },
+      { id: 'opportunities', label: tabStrings.opportunities, icon: Icons.TrendingUp },
+      { id: 'reports', label: tabStrings.reports, icon: Icons.FileText }
+    ],
+    [tabStrings]
+  );
+
+  const filteredPrices = useMemo(
+    () =>
+      prices.filter((p) => {
+        const matchesSpecies = selectedSpecies === 'all' || p.species === selectedSpecies;
+        const matchesMarket = selectedMarket === 'all' || p.market === selectedMarket;
+        return matchesSpecies && matchesMarket;
+      }),
+    [prices, selectedSpecies, selectedMarket]
+  );
+
+  const speciesOptions = useMemo(
+    () => ['all', ...new Set(prices.map((p) => p.species))],
+    [prices]
+  );
+
+  const marketOptions = useMemo(
+    () => ['all', ...new Set(prices.map((p) => p.market))],
+    [prices]
+  );
+
+  if (loading && !dashboardData) {
+    return (
+      <MultilingualContent language={language}>
+        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-emerald-50 to-blue-50">
+          <div className="text-xl text-emerald-900">{t('loading')}</div>
+        </div>
+      </MultilingualContent>
+    );
+  }
+
+  return (
+    <MultilingualContent language={language}>
+      <Helmet>
+        <title>{t('seo.title')}</title>
+        <meta name="description" content={t('seo.description')} />
+      </Helmet>
+
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-blue-50">
+        <section className="relative overflow-hidden bg-gradient-to-r from-emerald-900 via-teal-900 to-blue-900 py-20 text-white">
+          <div className="absolute inset-0 opacity-10">
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute"
+                initial={{ x: 0, y: Math.random() * 300 }}
+                animate={{ x: [0, Math.random() * 400 - 200], y: [null, Math.random() * 300] }}
+                transition={{ duration: 20 + Math.random() * 10, repeat: Infinity, repeatType: 'reverse' }}
+              >
+                <Icons.TrendingUp className="h-8 w-8" />
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="relative mx-auto max-w-7xl px-6 text-center">
+            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+              <div className="mx-auto mb-6 flex items-center justify-center gap-4">
+                <Icons.Globe className="h-16 w-16" />
+              </div>
+              <h1 className="mb-6 text-5xl font-bold md:text-6xl">{heroStrings.title}</h1>
+              <p className="mx-auto mb-4 max-w-3xl text-xl text-emerald-100">{heroStrings.subtitle}</p>
+              <p className="mx-auto max-w-3xl text-lg text-emerald-50">{heroStrings.description}</p>
+
+              {dashboardData && (
+                <div className="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-6 md:grid-cols-4">
+                  <div className="rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-lg">
+                    <div className="text-3xl font-bold">{formatCurrency(dashboardData.overview.totalExportValue)}</div>
+                    <div className="text-sm text-emerald-200">{heroStrings.stats.totalValue}</div>
+                  </div>
+                  <div className="rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-lg">
+                    <div className="text-3xl font-bold">{formatNumber(dashboardData.overview.totalExportVolume)} MT</div>
+                    <div className="text-sm text-emerald-200">{heroStrings.stats.totalVolume}</div>
+                  </div>
+                  <div className="rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-lg">
+                    <div className="text-3xl font-bold">{dashboardData.overview.activeOpportunities}</div>
+                    <div className="text-sm text-emerald-200">{heroStrings.stats.activeOpportunities}</div>
+                  </div>
+                  <div className="rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-lg">
+                    <div className="text-3xl font-bold">{dashboardData.overview.marketsCount}</div>
+                    <div className="text-sm text-emerald-200">{heroStrings.stats.globalMarkets}</div>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        </section>
+
+        <div className="sticky top-0 z-40 border-b border-gray-200 bg-white/90 shadow-lg backdrop-blur-xl">
+          <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-6">
+            {navTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveView(tab.id)}
+                className={`flex items-center gap-2 whitespace-nowrap px-6 py-4 font-medium transition-all ${
+                  activeView === tab.id ? 'border-b-4 border-emerald-600 bg-emerald-50 text-emerald-600' : 'text-gray-600 hover:bg-gray-50 hover:text-emerald-600'
+                }`}
+              >
+                <tab.icon className="h-5 w-5" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-7xl px-6 py-12">
+          <AnimatePresence mode="wait">
+            {activeView === 'dashboard' && dashboardData && (
+              <motion.div key="dashboard" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+                <div className="mb-8 grid gap-8 md:grid-cols-2">
+                  <div className="rounded-xl bg-white p-6 shadow-lg">
+                    <h3 className="mb-4 flex items-center gap-2 text-xl font-bold text-gray-900">
+                      <Icons.Fish className="h-6 w-6 text-emerald-600" />
+                      {dashboardStrings.topSpeciesTitle}
+                    </h3>
+                    <div className="space-y-3">
+                      {dashboardData.pricesBySpecies.slice(0, 5).map((item, idx) => (
+                        <div key={idx} className="flex items-center justify-between rounded-lg bg-emerald-50 p-3">
+                          <span className="font-medium text-gray-900">{item.species}</span>
+                          <span className="font-bold text-emerald-600">{formatCurrency(item.averagePrice)}/kg</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl bg-white p-6 shadow-lg">
+                    <h3 className="mb-4 flex items-center gap-2 text-xl font-bold text-gray-900">
+                      <Icons.MapPin className="h-6 w-6 text-blue-600" />
+                      {dashboardStrings.topMarketsTitle}
+                    </h3>
+                    <div className="space-y-3">
+                      {Object.values(dashboardData.tradeByCountry).slice(0, 5).map((country, idx) => (
+                        <div key={idx} className="flex items-center justify-between rounded-lg bg-blue-50 p-3">
+                          <span className="font-medium text-gray-900">{country.country}</span>
+                          <div className="text-right">
+                            <div className="font-bold text-blue-600">{formatCurrency(country.totalValue)}</div>
+                            <div className="text-xs text-gray-500">{formatNumber(country.totalVolume)} MT</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-8">
+                  <h3 className="mb-4 text-2xl font-bold text-gray-900">{dashboardStrings.recentOpportunitiesTitle}</h3>
+                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {dashboardData.activeOpportunities.map((opp) => (
+                      <div key={opp.id} className="rounded-xl bg-white p-6 shadow-lg transition-all hover:shadow-xl">
+                        <div className="mb-3 flex items-center gap-3">
+                          <div className="rounded-lg bg-emerald-100 p-2">
+                            <Icons.TrendingUp className="h-5 w-5 text-emerald-600" />
+                          </div>
+                          <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-800">
+                            {opp.targetMarket}
+                          </span>
+                        </div>
+                        <h4 className="mb-2 text-lg font-bold text-gray-900">{opp.title}</h4>
+                        <p className="mb-4 line-clamp-3 text-sm text-gray-600">{opp.description}</p>
+                        <button className="w-full rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white transition-colors hover:bg-emerald-700">
+                          {dashboardStrings.viewDetails}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeView === 'prices' && (
+              <motion.div key="prices" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+                <div className="mb-6 flex items-center justify-between">
+                  <h2 className="text-3xl font-bold text-gray-900">{pricesStrings.title}</h2>
+                  <div className="flex gap-3">
+                    <select
+                      value={selectedSpecies}
+                      onChange={(e) => setSelectedSpecies(e.target.value)}
+                      className="rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    >
+                      {speciesOptions.map((species) => (
+                        <option key={species} value={species}>
+                          {species === 'all' ? pricesStrings.speciesFilter : species}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      value={selectedMarket}
+                      onChange={(e) => setSelectedMarket(e.target.value)}
+                      className="rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    >
+                      {marketOptions.map((market) => (
+                        <option key={market} value={market}>
+                          {market === 'all' ? pricesStrings.marketFilter : market}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="overflow-hidden rounded-xl bg-white shadow-xl">
+                  <table className="w-full">
+                    <thead className="bg-emerald-600 text-white">
+                      <tr>
+                        <th className="px-6 py-4 text-left text-sm font-semibold">{pricesStrings.table.species}</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold">{pricesStrings.table.market}</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold">{pricesStrings.table.price}</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold">{pricesStrings.table.grade}</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold">{pricesStrings.table.date}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {filteredPrices.slice(0, 20).map((price) => (
+                        <tr key={price.id} className="transition-colors hover:bg-emerald-50">
+                          <td className="px-6 py-4 font-medium text-gray-900">{price.species}</td>
+                          <td className="px-6 py-4 text-gray-700">{price.market}</td>
+                          <td className="px-6 py-4 font-bold text-emerald-600">{formatCurrency(price.price)}</td>
+                          <td className="px-6 py-4 text-gray-700">{price.grade || 'N/A'}</td>
+                          <td className="px-6 py-4 text-sm text-gray-500">{price.recordDate?.toDate?.()?.toLocaleDateString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {filteredPrices.length === 0 && (
+                    <div className="py-12 text-center text-gray-500">{pricesStrings.noData}</div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+
+            {activeView === 'opportunities' && (
+              <motion.div key="opportunities" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+                <h2 className="mb-6 text-3xl font-bold text-gray-900">{opportunitiesStrings.title}</h2>
+                <div className="grid gap-6 md:grid-cols-2">
+                  {opportunities.map((opp) => (
+                    <div key={opp.id} className="rounded-xl bg-white p-6 shadow-lg transition-all hover:shadow-xl">
+                      <div className="mb-4 flex items-start justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="rounded-lg bg-emerald-100 p-3">
+                            <Icons.TrendingUp className="h-6 w-6 text-emerald-600" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">{opp.title}</h3>
+                            <span className="text-sm text-gray-500">{opp.targetMarket}</span>
+                          </div>
+                        </div>
+                        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">{opportunitiesStrings.activeBadge}</span>
+                      </div>
+                      <p className="mb-4 text-gray-600">{opp.description}</p>
+                      {opp.requirements && (
+                        <div className="mb-4">
+                          <div className="mb-2 text-sm font-semibold text-gray-700">{opportunitiesStrings.requirementsHeading}</div>
+                          <ul className="space-y-1 text-sm text-gray-600">
+                            {opp.requirements.slice(0, 3).map((req, i) => (
+                              <li key={i} className="flex items-start gap-2">
+                                <Icons.CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600" />
+                                {req}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+                        <div className="text-sm text-gray-500">
+                          {opportunitiesStrings.posted} {opp.postedDate?.toDate?.()?.toLocaleDateString()}
+                        </div>
+                        <button className="rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white transition-colors hover:bg-emerald-700">
+                          {opportunitiesStrings.learnMore}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {opportunities.length === 0 && (
+                  <div className="rounded-xl bg-white py-16 text-center text-gray-500">
+                    <Icons.TrendingUp className="mx-auto mb-4 h-16 w-16 opacity-30" />
+                    <p>{opportunitiesStrings.empty}</p>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {activeView === 'reports' && (
+              <motion.div key="reports" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+                <h2 className="mb-6 text-3xl font-bold text-gray-900">{reportsStrings.title}</h2>
+                <div className="grid gap-6 md:grid-cols-3">
+                  {reports.map((report) => (
+                    <div key={report.id} className="rounded-xl bg-white p-6 shadow-lg transition-all hover:shadow-xl">
+                      <div className="mb-4 flex items-center gap-3">
+                        <div className="rounded-lg bg-blue-100 p-3">
+                          <Icons.FileText className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
+                          {report.reportType?.replace('_', ' ')}
+                        </span>
+                      </div>
+                      <h3 className="mb-3 text-lg font-bold text-gray-900">{report.title}</h3>
+                      <p className="mb-4 line-clamp-3 text-sm text-gray-600">{report.summary}</p>
+                      <div className="mb-4 text-xs text-gray-500">
+                        {reportsStrings.published} {report.publishedDate?.toDate?.()?.toLocaleDateString()}
+                      </div>
+                      <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700">
+                        <Icons.Download className="h-4 w-4" />
+                        {reportsStrings.download}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                {reports.length === 0 && (
+                  <div className="rounded-xl bg-white py-16 text-center text-gray-500">
+                    <Icons.FileText className="mx-auto mb-4 h-16 w-16 opacity-30" />
+                    <p>{reportsStrings.empty}</p>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </MultilingualContent>
+  );
+};
+
+export default ExportMarketIntelligence;

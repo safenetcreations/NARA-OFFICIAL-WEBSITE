@@ -1,0 +1,347 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import * as Icons from 'lucide-react';
+import { catalogueService, circulationService, searchService } from '../../services/libraryService';
+import { useFirebaseAuth } from '../../contexts/FirebaseAuthContext';
+
+const ItemDetail = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useFirebaseAuth();
+  
+  const [item, setItem] = useState(null);
+  const [relatedItems, setRelatedItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [placingHold, setPlacingHold] = useState(false);
+
+  useEffect(() => {
+    loadItem();
+  }, [id]);
+
+  const loadItem = async () => {
+    try {
+      setLoading(true);
+      const response = await catalogueService.getItemById(id);
+      
+      if (response.success) {
+        setItem(response.data);
+        loadRelatedItems(id);
+      }
+    } catch (err) {
+      setError('Failed to load item details');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadRelatedItems = async (itemId) => {
+    try {
+      const response = await searchService.getRelatedItems(itemId, 4);
+      if (response.success) {
+        setRelatedItems(response.data);
+      }
+    } catch (err) {
+      console.error('Failed to load related items:', err);
+    }
+  };
+
+  const handlePlaceHold = async () => {
+    if (!user) {
+      navigate('/lda-login', { state: { returnTo: `/library/item/${id}` } });
+      return;
+    }
+
+    setPlacingHold(true);
+    try {
+      // Get patron ID from user
+      const response = await circulationService.placeHold(user.uid, id);
+      if (response.success) {
+        alert('Hold placed successfully! You will be notified when the item is available.');
+        loadItem();
+      }
+    } catch (err) {
+      alert('Failed to place hold. Please try again or contact library staff.');
+      console.error(err);
+    } finally {
+      setPlacingHold(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Icons.Loader2 className="w-8 h-8 animate-spin text-cyan-600" />
+      </div>
+    );
+  }
+
+  if (error || !item) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Icons.AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <p className="text-gray-600">{error || 'Item not found'}</p>
+          <button
+            onClick={() => navigate('/library')}
+            className="mt-4 px-6 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700"
+          >
+            Back to Catalogue
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Breadcrumb */}
+        <nav className="mb-8 flex items-center gap-2 text-sm text-gray-600">
+          <button onClick={() => navigate('/library')} className="hover:text-cyan-600">
+            Library
+          </button>
+          <Icons.ChevronRight className="w-4 h-4" />
+          <span className="text-gray-900">{item.title}</span>
+        </nav>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Cover Image */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-lg p-6 sticky top-24">
+              <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6 flex items-center justify-center overflow-hidden">
+                {item.cover_image_url ? (
+                  <img src={item.cover_image_url} alt={item.title} className="w-full h-full object-cover" />
+                ) : (
+                  <Icons.BookOpen className="w-24 h-24 text-gray-400" />
+                )}
+              </div>
+
+              {/* Availability Status */}
+              <div className="mb-6">
+                {item.available_copies > 0 ? (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 text-green-800 font-semibold mb-2">
+                      <Icons.CheckCircle className="w-5 h-5" />
+                      Available
+                    </div>
+                    <p className="text-sm text-green-700">
+                      {item.available_copies} of {item.total_copies} copies available
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 text-red-800 font-semibold mb-2">
+                      <Icons.XCircle className="w-5 h-5" />
+                      Checked Out
+                    </div>
+                    <p className="text-sm text-red-700 mb-3">
+                      All copies are currently checked out
+                    </p>
+                    <button
+                      onClick={handlePlaceHold}
+                      disabled={placingHold}
+                      className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {placingHold ? (
+                        <>
+                          <Icons.Loader2 className="w-4 h-4 animate-spin" />
+                          Placing Hold...
+                        </>
+                      ) : (
+                        <>
+                          <Icons.Bookmark className="w-4 h-4" />
+                          Place Hold
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Call Number */}
+              {item.call_number && (
+                <div className="mb-4">
+                  <label className="text-sm font-medium text-gray-700">Call Number</label>
+                  <p className="text-lg font-mono text-gray-900 mt-1">{item.call_number}</p>
+                </div>
+              )}
+
+              {/* Location */}
+              <div className="mb-4">
+                <label className="text-sm font-medium text-gray-700">Location</label>
+                <p className="text-gray-900 mt-1">{item.location}</p>
+                {item.shelf_location && (
+                  <p className="text-sm text-gray-600">Shelf: {item.shelf_location}</p>
+                )}
+              </div>
+
+              {/* Barcode */}
+              <div className="text-xs text-gray-500 mt-6">
+                Barcode: {item.barcode}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Details */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-lg p-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{item.title}</h1>
+              {item.subtitle && (
+                <p className="text-xl text-gray-600 mb-4">{item.subtitle}</p>
+              )}
+
+              <div className="flex flex-wrap gap-2 mb-6">
+                <span className="px-3 py-1 bg-cyan-100 text-cyan-800 rounded-full text-sm font-medium">
+                  {item.material_type_name}
+                </span>
+                {item.language && (
+                  <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">
+                    {item.language}
+                  </span>
+                )}
+              </div>
+
+              {/* Bibliographic Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                {item.author && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Author</label>
+                    <p className="text-gray-900 mt-1">{item.author}</p>
+                  </div>
+                )}
+
+                {item.publisher && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Publisher</label>
+                    <p className="text-gray-900 mt-1">{item.publisher}</p>
+                  </div>
+                )}
+
+                {item.publication_year && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Publication Year</label>
+                    <p className="text-gray-900 mt-1">{item.publication_year}</p>
+                  </div>
+                )}
+
+                {item.edition && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Edition</label>
+                    <p className="text-gray-900 mt-1">{item.edition}</p>
+                  </div>
+                )}
+
+                {item.isbn && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">ISBN</label>
+                    <p className="text-gray-900 mt-1 font-mono">{item.isbn}</p>
+                  </div>
+                )}
+
+                {item.issn && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">ISSN</label>
+                    <p className="text-gray-900 mt-1 font-mono">{item.issn}</p>
+                  </div>
+                )}
+
+                {item.pages && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Pages</label>
+                    <p className="text-gray-900 mt-1">{item.pages}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Abstract/Description */}
+              {item.abstract && (
+                <div className="mb-8">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-3">Abstract</h2>
+                  <p className="text-gray-700 leading-relaxed">{item.abstract}</p>
+                </div>
+              )}
+
+              {/* Subject Headings */}
+              {item.subject_headings && item.subject_headings.length > 0 && (
+                <div className="mb-8">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-3">Subjects</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {item.subject_headings.map((subject, index) => (
+                      <span key={index} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm">
+                        {subject}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Keywords */}
+              {item.keywords && item.keywords.length > 0 && (
+                <div className="mb-8">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-3">Keywords</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {item.keywords.map((keyword, index) => (
+                      <span key={index} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm">
+                        {keyword}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Additional Authors */}
+              {item.additional_authors && (
+                <div className="mb-8">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-3">Additional Authors</h2>
+                  <p className="text-gray-700">{item.additional_authors}</p>
+                </div>
+              )}
+
+              {/* Notes */}
+              {item.notes && (
+                <div className="mb-8">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-3">Notes</h2>
+                  <p className="text-gray-700">{item.notes}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Related Items */}
+            {relatedItems.length > 0 && (
+              <div className="mt-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Items</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {relatedItems.map((relatedItem) => (
+                    <div
+                      key={relatedItem.id}
+                      onClick={() => navigate(`/library/item/${relatedItem.id}`)}
+                      className="bg-white rounded-lg shadow-md hover:shadow-xl transition cursor-pointer p-4 flex gap-4"
+                    >
+                      <div className="w-20 h-28 bg-gradient-to-br from-gray-100 to-gray-200 rounded flex-shrink-0 flex items-center justify-center">
+                        {relatedItem.cover_image_url ? (
+                          <img src={relatedItem.cover_image_url} alt={relatedItem.title} className="w-full h-full object-cover rounded" />
+                        ) : (
+                          <Icons.BookOpen className="w-8 h-8 text-gray-400" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{relatedItem.title}</h3>
+                        <p className="text-sm text-gray-600 mb-2 line-clamp-1">{relatedItem.author}</p>
+                        <span className="text-xs text-gray-500">{relatedItem.material_type_name}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ItemDetail;
+

@@ -16,6 +16,14 @@ import enKnowledge from './locales/en/knowledge.json';
 import enMaritime from './locales/en/maritime.json';
 import enIntegration from './locales/en/integration.json';
 import enFishAdvisory from './locales/en/fishAdvisory.json';
+import enAudiences from './locales/en/audiences.json';
+import enContact from './locales/en/contact.json';
+import enPublicConsultation from './locales/en/publicConsultation.json';
+import enOpenData from './locales/en/openData.json';
+import enMarineIncident from './locales/en/marineIncident.json';
+import enExportMarket from './locales/en/exportMarket.json';
+import enMediaGallery from './locales/en/mediaGallery.json';
+import enVesselBooking from './locales/en/vesselBooking.json';
 import taCommon from './locales/ta/common.json';
 import taLda from './locales/ta/lda.json';
 import taMarketplace from './locales/ta/marketplace.json';
@@ -31,6 +39,14 @@ import taKnowledge from './locales/ta/knowledge.json';
 import taMaritime from './locales/ta/maritime.json';
 import taIntegration from './locales/ta/integration.json';
 import taFishAdvisory from './locales/ta/fishAdvisory.json';
+import taAudiences from './locales/ta/audiences.json';
+import taContact from './locales/ta/contact.json';
+import taPublicConsultation from './locales/ta/publicConsultation.json';
+import taOpenData from './locales/ta/openData.json';
+import taMarineIncident from './locales/ta/marineIncident.json';
+import taExportMarket from './locales/ta/exportMarket.json';
+import taMediaGallery from './locales/ta/mediaGallery.json';
+import taVesselBooking from './locales/ta/vesselBooking.json';
 import siCommon from './locales/si/common.json';
 import siLda from './locales/si/lda.json';
 import siMarketplace from './locales/si/marketplace.json';
@@ -46,6 +62,14 @@ import siKnowledge from './locales/si/knowledge.json';
 import siMaritime from './locales/si/maritime.json';
 import siIntegration from './locales/si/integration.json';
 import siFishAdvisory from './locales/si/fishAdvisory.json';
+import siAudiences from './locales/si/audiences.json';
+import siContact from './locales/si/contact.json';
+import siPublicConsultation from './locales/si/publicConsultation.json';
+import siOpenData from './locales/si/openData.json';
+import siMarineIncident from './locales/si/marineIncident.json';
+import siExportMarket from './locales/si/exportMarket.json';
+import siMediaGallery from './locales/si/mediaGallery.json';
+import siVesselBooking from './locales/si/vesselBooking.json';
 
 const resources = {
   en: {
@@ -63,7 +87,15 @@ const resources = {
     marketplace: enMarketplace,
     maritime: enMaritime,
     integration: enIntegration,
-    fishAdvisory: enFishAdvisory
+    fishAdvisory: enFishAdvisory,
+    audiences: enAudiences,
+    contact: enContact,
+    publicConsultation: enPublicConsultation,
+    openData: enOpenData,
+    marineIncident: enMarineIncident,
+    exportMarket: enExportMarket,
+    mediaGallery: enMediaGallery,
+    vesselBooking: enVesselBooking
   },
   ta: {
     common: taCommon,
@@ -80,7 +112,15 @@ const resources = {
     marketplace: taMarketplace,
     maritime: taMaritime,
     integration: taIntegration,
-    fishAdvisory: taFishAdvisory
+    fishAdvisory: taFishAdvisory,
+    audiences: taAudiences,
+    contact: taContact,
+    publicConsultation: taPublicConsultation,
+    openData: taOpenData,
+    marineIncident: taMarineIncident,
+    exportMarket: taExportMarket,
+    mediaGallery: taMediaGallery,
+    vesselBooking: taVesselBooking
   },
   si: {
     common: siCommon,
@@ -97,7 +137,15 @@ const resources = {
     marketplace: siMarketplace,
     maritime: siMaritime,
     integration: siIntegration,
-    fishAdvisory: siFishAdvisory
+    fishAdvisory: siFishAdvisory,
+    audiences: siAudiences,
+    contact: siContact,
+    publicConsultation: siPublicConsultation,
+    openData: siOpenData,
+    marineIncident: siMarineIncident,
+    exportMarket: siExportMarket,
+    mediaGallery: siMediaGallery,
+    vesselBooking: siVesselBooking
   }
 };
 
@@ -125,7 +173,7 @@ i18n
     resources,
     lng: getStoredLanguage(),
     fallbackLng: 'en',
-    ns: ['common', 'home', 'about', 'research', 'collaboration', 'procurement', 'news', 'researchEnhanced', 'digitalLibrary', 'knowledge', 'lda', 'marketplace', 'maritime', 'integration', 'fishAdvisory'],
+    ns: ['common', 'home', 'about', 'research', 'collaboration', 'procurement', 'news', 'researchEnhanced', 'digitalLibrary', 'knowledge', 'lda', 'marketplace', 'maritime', 'integration', 'fishAdvisory', 'audiences', 'contact', 'publicConsultation', 'openData', 'marineIncident', 'exportMarket', 'mediaGallery', 'vesselBooking'],
     defaultNS: 'common',
     interpolation: {
       escapeValue: false

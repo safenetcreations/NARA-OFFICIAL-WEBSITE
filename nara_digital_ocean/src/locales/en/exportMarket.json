@@ -1,0 +1,57 @@
+{
+  "seo": {
+    "title": "Export Market Intelligence - NARA",
+    "description": "Monitor global demand, prices, and opportunities for Sri Lanka's marine and fisheries exports."
+  },
+  "loading": "Loading market data...",
+  "hero": {
+    "title": "Export Market Intelligence",
+    "subtitle": "Real-time analytics for Sri Lanka's marine exports",
+    "description": "Access price trends, trade statistics, and verified opportunities to grow your export portfolio.",
+    "stats": {
+      "totalValue": "Total Export Value",
+      "totalVolume": "Total Volume",
+      "activeOpportunities": "Active Opportunities",
+      "globalMarkets": "Global Markets"
+    }
+  },
+  "tabs": {
+    "dashboard": "Dashboard",
+    "prices": "Market Prices",
+    "opportunities": "Export Opportunities",
+    "reports": "Market Reports"
+  },
+  "dashboard": {
+    "topSpeciesTitle": "Top Species by Average Price",
+    "topMarketsTitle": "Top Export Destinations",
+    "recentOpportunitiesTitle": "Recent Export Opportunities",
+    "viewDetails": "View Details"
+  },
+  "prices": {
+    "title": "Market Prices",
+    "speciesFilter": "All Species",
+    "marketFilter": "All Markets",
+    "table": {
+      "species": "Species",
+      "market": "Market",
+      "price": "Price (USD/kg)",
+      "grade": "Grade",
+      "date": "Date"
+    },
+    "noData": "No price data available"
+  },
+  "opportunities": {
+    "title": "Export Opportunities",
+    "activeBadge": "Active",
+    "requirementsHeading": "Requirements:",
+    "posted": "Posted:",
+    "learnMore": "Learn More",
+    "empty": "No active opportunities at the moment"
+  },
+  "reports": {
+    "title": "Market Reports",
+    "published": "Published:",
+    "download": "Download Report",
+    "empty": "No market reports available"
+  }
+}

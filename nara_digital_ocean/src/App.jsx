@@ -6,6 +6,7 @@ import AccessibilityToolbar from './components/compliance/AccessibilityToolbar';
 import './styles/variables.css';
 import './styles/theme-global.css';
 import './styles/academy-themes.css';
+import './styles/accessibility.css';
 
 function App() {
   const theme = useThemeStore((state) => state?.theme || 'normal');

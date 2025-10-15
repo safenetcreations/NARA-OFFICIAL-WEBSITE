@@ -223,11 +223,24 @@
   },
   "recruitment": {
     "heading": "දක්ෂතා මධ්‍යස්ථානය",
-    "description": "ශ්‍රී ලංකාවේ සාගර විද්‍යා, කාලගුණ ස්ථිතිශීලීකරණය සහ ඩිජිටල් නව්‍යතා පුළුල් කිරීම සඳහා බහු අංශ කණ්ඩායම් සමඟ එක්වන්න.",
+    "description": "ශ්‍රී ලංකාවේ සාගර විද්‍යා, කාලගුණ ස්ථිතිශීලීකරණය හා ඩිජිටල් නව්‍යතා වැඩිදියුණු කිරීම සඳහා බහු අංශ කණ්ඩායම් සමඟ එක්වන්න.",
     "filters": {
-      "focusLabel": "ඉලක්ක කලාපය අනුව පෙරහන් කරන්න",
+      "focusLabel": "ඉලක්ක කලාපය",
       "allOption": "සියළු භූමිකා",
+      "searchLabel": "සෙවීම",
+      "searchPlaceholder": "තනතුරු, අංශ හෝ යොමු පදයක් අනුව සොයන්න…",
+      "statusLabel": "තත්ත්වය",
+      "divisionLabel": "ආයතන ඒකකය",
+      "gradeLabel": "සේවා ශ්‍රේණිය",
+      "allDivisions": "සියලු ඒකක",
+      "allGrades": "සියලු ශ්‍රේණි",
       "sortLabel": "වර්ග කරන්න",
+      "statusOptions": {
+        "all": "සියලු තත්ත්ව",
+        "open": "විවෘත",
+        "review": "සමාලෝචනයේ",
+        "closed": "වසන ලදී"
+      },
       "options": {
         "deadline": "ශීඝ්‍රයෙන් අවසන්",
         "salary": "උසස් වැටුප්",
@@ -238,32 +251,47 @@
       "title": "වෘත්තීය අවබෝධ",
       "closingSoon": "ශීඝ්‍රයෙන් අවසන් වන භූමිකා",
       "hybrid": "හයිබ්‍රිඩ් / දුරස්ථ විකල්ප",
-      "scholarship": "පාඨමාලා සහිත පළිගැනීම",
+      "scholarship": "පාඨමාලා සහිත තනතුරු",
       "support": {
         "title": "දක්ෂතා උපදේශන සේවා",
-        "description": "වරණය කළ අපේක්ෂකයින්ට ඇගයීම්, සම්මුඛ පරීක්ෂණ සහ නැවත පදිංචි කිරීමේ ලෝජිස්ටික්ස් හරහා අපගේ මානව සම්පත් කණ්ඩායම මඟ පෙන්වයි.",
+        "description": "වරණය කරගත් අපේක්ෂකයින් සඳහා ඇගයීම්, සම්මුඛ පරීක්ෂණ හා නැවත පදිංචි කිරීම සඳහා අපගේ මානව සම්පත් කණ්ඩායම මඟ පෙන්වයි.",
         "phone": "+94 11 234 5680",
         "location": "ජන හා සංස්කෘතික අංශය",
         "email": "careers@nara.gov.lk"
       }
     },
-    "empty": "ඔබේ පෙරහන් වලට ගැළපෙන ක්‍රියාකාරී රැකියා දැන්වීම් දැනට නොමැත.",
+    "empty": "ඔබේ පෙරහන් වලට ගැලපෙන ක්‍රියාකාරී රැකියා දැන්වීම් දැනට නොමැත.",
     "cards": {
       "categoryFallback": "රැකියා භූමිකාව",
       "statusFallback": "විවෘත",
-      "applyBy": "අයදුම් කළ යුතු දිනය",
+      "statusLabels": {
+        "open": "විවෘත",
+        "review": "සමාලෝචනයේ",
+        "closed": "වසන ලදී"
+      },
+      "statusNotes": {
+        "open": "HR පද්ධතියෙන් ස්වයං යාවත්කාලීන",
+        "review": "කමිටු අයදුම්පත් සමාලෝචනය කරයි",
+        "closed": "RTI සදහා ලේඛන ගබඩා කර ඇත"
+      },
+      "applyBy": "අයදුම් කරන අවසන් දිනය",
       "tbc": "තීරණය වී නැත",
       "closed": "අවසන්",
       "daysRemaining": "තව {{count}} දින",
       "department": "අංශය",
       "departmentFallback": "NARA",
+      "grade": "සේවා ශ්‍රේණිය",
+      "gradeFallback": "NARA සේවා ශ්‍රේණිය",
       "qualifications": "සුදුසුකම්",
       "qualificationsFallback": "සම්පූර්ණ විස්තරය බලන්න",
-      "salary": "වැටුප් සීමාව",
+      "salary": "වැටුප් පරාසය",
       "salaryFallback": "NARA වැටුප් මට්ටම් අනුව",
       "buttons": {
         "overview": "භූමිකා සාරාංශය",
-        "apply": "අයදුම ඉදිරිපත් කරන්න"
+        "apply": "අයදුම් ඉදිරිපත් කරන්න",
+        "downloadPack": "ලේඛන කට්ටලය බාගන්න",
+        "closed": "අයදුම වසා ඇත",
+        "closedHint": "අයදුම් භාර නොගනී. විස්තර සඳහා HR අමතන්න."
       },
       "responsibilities": {
         "title": "පැවරීම්",
@@ -276,6 +304,44 @@
         "contractType": "ගිවිසුම් වර්ගය",
         "contractFallback": "සම්පූර්ණ කාලීන"
       }
+    },
+    "sync": {
+      "metrics": {
+        "open": "සජීවී රැකියා",
+        "review": "සමාලෝචනය යටතේ",
+        "closed": "මෙම තිමස අවසන්",
+        "lastSync": "අවසාන සමමුලාව"
+      },
+      "hints": {
+        "open": "Vacancy Manager හරහා ස්වයං පළකෙරේ",
+        "review": "HR / PSC අනුමත කිරීම් බලාපොරොත්තු",
+        "closed": "RTI සදහා ගබඩා කළ ලේඛන",
+        "auto": "HR feed + Gazette watcher"
+      },
+      "features": {
+        "cms": "Vacancy Manager",
+        "cmsDescription": "HR CMS හෝ Google Sheet feed හරහා රැකියා පාලනය කරයි.",
+        "gazette": "ගැසට් උපකාරකය",
+        "gazetteDescription": "ගැසට් PDF උඩුගත කර NARA සඳහන් කිරීම් HR මගින් තහවුරු කරයි.",
+        "backOffice": "පසුබිම් පාලනය",
+        "backOfficeDescription": "අනුමත කිරීම්, මතක් කිරීම්, CSV නිර්යාත හා RTI ලොග් සුරක්ෂිත කරයි.",
+        "gazettePending": "ගැසට් {{count}} HR තහවුරු බලාපොරොත්තුයි",
+        "pscPending": "PSC සබඳතා {{count}} ගබඩායි"
+      },
+      "relative": {
+        "never": "සංසන්දනය සඳහා බලාපොරොත්තුවෙන්",
+        "now": "දැන්ම",
+        "minutes": "මිනිත්තු {{count}} කලින්",
+        "hours": "පැය {{count}} කලින්",
+        "days": "දින {{count}} කලින්"
+      }
+    },
+    "archive": {
+      "title": "ගබඩා: වසා දැමූ තනතුරු",
+      "description": "RTI සහ පිරිසගේ නිරවුල්භාවයට ඉතිරි තනතුරු පෙන්වායි.",
+      "download": "දැනුම්දීම බාගන්න",
+      "moreHint": "සම්පූර්ණ ගබඩාව ඔබේ වැඩ අවකාශයෙන් බලන්න.",
+      "total": "වසා දැමූ තනතුරු {{count}}"
     }
   },
   "dashboard": {

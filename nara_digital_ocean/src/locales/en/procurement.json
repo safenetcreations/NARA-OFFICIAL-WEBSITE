@@ -227,7 +227,20 @@
     "filters": {
       "focusLabel": "Focus area",
       "allOption": "All roles",
+      "searchLabel": "Search",
+      "searchPlaceholder": "Search by title, division, or keyword…",
+      "statusLabel": "Status",
+      "divisionLabel": "Division",
+      "gradeLabel": "Grade",
+      "allDivisions": "All divisions",
+      "allGrades": "All grades",
       "sortLabel": "Sort",
+      "statusOptions": {
+        "all": "All statuses",
+        "open": "Open",
+        "review": "Under review",
+        "closed": "Closed"
+      },
       "options": {
         "deadline": "Closing soon",
         "salary": "Highest salary",
@@ -251,19 +264,34 @@
     "cards": {
       "categoryFallback": "Career role",
       "statusFallback": "Open",
+      "statusLabels": {
+        "open": "Open",
+        "review": "Under review",
+        "closed": "Closed"
+      },
+      "statusNotes": {
+        "open": "Auto-updating from HR feed",
+        "review": "Panel assessing submissions",
+        "closed": "Archived for transparency"
+      },
       "applyBy": "Apply by",
       "tbc": "TBC",
       "closed": "Closed",
       "daysRemaining": "{{count}} days remaining",
       "department": "Department",
       "departmentFallback": "NARA",
+      "grade": "Service grade",
+      "gradeFallback": "NARA Service Grade",
       "qualifications": "Qualifications",
       "qualificationsFallback": "See full brief",
       "salary": "Salary band",
       "salaryFallback": "Aligned with NARA scales",
       "buttons": {
         "overview": "Role overview",
-        "apply": "Submit application"
+        "apply": "Submit application",
+        "downloadPack": "Download pack",
+        "closed": "Applications closed",
+        "closedHint": "Applications are closed. Contact HR for clarifications."
       },
       "responsibilities": {
         "title": "Responsibilities",
@@ -276,6 +304,44 @@
         "contractType": "Contract type",
         "contractFallback": "Full-time"
       }
+    },
+    "sync": {
+      "metrics": {
+        "open": "Live vacancies",
+        "review": "Under review",
+        "closed": "Closed this quarter",
+        "lastSync": "Last sync"
+      },
+      "hints": {
+        "open": "Auto-published from Vacancy Manager",
+        "review": "Awaiting panel approvals and PSC endorsements",
+        "closed": "Archived with RTI-ready summaries",
+        "auto": "HR feed + gazette watcher"
+      },
+      "features": {
+        "cms": "Vacancy Manager",
+        "cmsDescription": "HR can publish, update, or close roles from the CMS or connected Google Sheet feed.",
+        "gazette": "Gazette assist",
+        "gazetteDescription": "Upload gazette PDFs with structured summaries; NARA mentions are flagged for HR confirmation.",
+        "backOffice": "Back-office controls",
+        "backOfficeDescription": "Approvals, reminders, CSV exports, and acknowledgement logs keep RTI obligations covered.",
+        "gazettePending": "{{count}} gazettes flagged",
+        "pscPending": "{{count}} PSC links tracked"
+      },
+      "relative": {
+        "never": "Awaiting sync",
+        "now": "Just now",
+        "minutes": "{{count}} minutes ago",
+        "hours": "{{count}} hours ago",
+        "days": "{{count}} days ago"
+      }
+    },
+    "archive": {
+      "title": "Archive: closed roles",
+      "description": "Recent vacancies remain visible for transparency and RTI readiness.",
+      "download": "Download notice",
+      "moreHint": "Browse the complete archive from your workspace.",
+      "total": "{{count}} closed roles"
     }
   },
   "dashboard": {

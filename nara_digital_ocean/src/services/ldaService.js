@@ -4,6 +4,7 @@ import {
   getDoc,
   getDocs,
   setDoc,
+  addDoc,
   updateDoc,
   deleteDoc,
   query,
@@ -407,6 +408,148 @@ export const incrementPaperStats = async (paperId, type = 'view') => {
 };
 
 // ============================================
+// TRAINING EVENTS
+// ============================================
+
+export const getTrainingEvents = async (filters = {}) => {
+  try {
+    const eventsCollection = collection(db, 'lda_training_events');
+    const constraints = [];
+
+    if (filters.status) {
+      constraints.push(where('status', '==', filters.status));
+    }
+
+    if (filters.audience) {
+      constraints.push(where('audience', 'array-contains', filters.audience));
+    }
+
+    if (filters.focusArea) {
+      constraints.push(where('focusAreas', 'array-contains', filters.focusArea));
+    }
+
+    constraints.push(orderBy('startDate', 'asc'));
+
+    if (filters.limitTo) {
+      constraints.push(limit(filters.limitTo));
+    }
+
+    if (filters.startAfter) {
+      constraints.push(startAfter(filters.startAfter));
+    }
+
+    const eventsQuery = query(eventsCollection, ...constraints);
+    const snapshot = await getDocs(eventsQuery);
+
+    return snapshot.docs.map(docSnap => {
+      const data = docSnap.data();
+      return {
+        id: docSnap.id,
+        ...data,
+        startDate: data.startDate?.toDate ? data.startDate.toDate() : data.startDate,
+        endDate: data.endDate?.toDate ? data.endDate.toDate() : data.endDate
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching training events:', error);
+    return [];
+  }
+};
+
+export const createTrainingEvent = async (eventData) => {
+  try {
+    const docRef = await addDoc(collection(db, 'lda_training_events'), {
+      ...eventData,
+      status: eventData.status || 'scheduled',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      registrations: [],
+      seatsRemaining:
+        typeof eventData.capacity === 'number' ? eventData.capacity : eventData.seatsRemaining ?? null
+    });
+
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error('Error creating training event:', error);
+    throw error;
+  }
+};
+
+export const updateTrainingEvent = async (eventId, updates) => {
+  try {
+    const eventRef = doc(db, 'lda_training_events', eventId);
+    const payload = {
+      ...updates,
+      updatedAt: serverTimestamp()
+    };
+
+    if (typeof updates.capacity === 'number') {
+      payload.seatsRemaining = Math.max(
+        typeof updates.seatsRemaining === 'number' ? updates.seatsRemaining : updates.capacity,
+        0
+      );
+    }
+
+    await updateDoc(eventRef, payload);
+    return { success: true };
+  } catch (error) {
+    console.error('Error updating training event:', error);
+    throw error;
+  }
+};
+
+export const registerForTrainingEvent = async (eventId, registrationData) => {
+  try {
+    const eventRef = doc(db, 'lda_training_events', eventId);
+    const eventSnap = await getDoc(eventRef);
+
+    if (!eventSnap.exists()) {
+      return { success: false, error: new Error('Training event not found') };
+    }
+
+    const event = eventSnap.data();
+    const registrations = event.registrations || [];
+
+    if (registrationData?.email) {
+      const alreadyRegistered = registrations.some(
+        (entry) => entry.email && entry.email === registrationData.email
+      );
+      if (alreadyRegistered) {
+        return { success: false, error: new Error('You have already registered for this session.') };
+      }
+    }
+
+    if (typeof event.capacity === 'number' && registrations.length >= event.capacity) {
+      return { success: false, error: new Error('This session is already fully booked.') };
+    }
+
+    const registrationRecord = {
+      ...registrationData,
+      registeredAt: serverTimestamp()
+    };
+
+    const updatePayload = {
+      registrations: arrayUnion(registrationRecord),
+      updatedAt: serverTimestamp()
+    };
+
+    if (typeof event.capacity === 'number') {
+      const seatsRemaining = Math.max(
+        (typeof event.seatsRemaining === 'number' ? event.seatsRemaining : event.capacity) - 1,
+        0
+      );
+      updatePayload.seatsRemaining = seatsRemaining;
+    }
+
+    await updateDoc(eventRef, updatePayload);
+    return { success: true };
+  } catch (error) {
+    console.error('Error registering for training event:', error);
+    return { success: false, error };
+  }
+};
+
+// ============================================
 // TRAINING MATERIALS
 // ============================================
 
@@ -715,13 +858,19 @@ export default {
   getPapers,
   incrementPaperStats,
 
-  // Training Materials
-  uploadTrainingMaterial,
-  getTrainingMaterials,
+// Training Materials
+uploadTrainingMaterial,
+getTrainingMaterials,
 
-  // Progress
-  updateLessonProgress,
-  getCourseProgress,
+// Training Events
+getTrainingEvents,
+registerForTrainingEvent,
+createTrainingEvent,
+updateTrainingEvent,
+
+// Progress
+updateLessonProgress,
+getCourseProgress,
 
   // Categories
   getCategories,

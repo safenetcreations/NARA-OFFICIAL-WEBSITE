@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Calendar, 
-  MapPin, 
-  Tag, 
-  Search, 
-  Filter, 
+import {
+  Activity,
+  Calendar,
+  MapPin,
+  Tag,
+  Search,
+  Filter,
   ChevronRight,
   ChevronLeft,
   ExternalLink,
@@ -13,12 +14,16 @@ import {
   User,
   Eye,
   BookOpen,
+  ShieldCheck,
+  ArrowRight,
   X
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import useNewsArticles from '../../hooks/useNewsArticles';
 import usePageContent from '../../hooks/usePageContent';
 import NewsHeader from './components/NewsHeader';
+import ShareMenu from './components/ShareMenu';
 
 const DATE_LOCALES = {
   en: 'en-US',
@@ -238,6 +243,19 @@ const NewsPage = () => {
     return t(`categories.${slugifyKey(category)}`, { defaultValue: category });
   };
 
+  const formatStatNumber = (value) => {
+    if (value == null) return '—';
+    const numeric = Number(value);
+    if (Number.isNaN(numeric)) {
+      return value;
+    }
+    try {
+      return numeric.toLocaleString();
+    } catch (error) {
+      return numeric;
+    }
+  };
+
   const clearAllFilters = () => {
     setSelectedCategory('all');
     setSearchTerm('');
@@ -273,6 +291,51 @@ const NewsPage = () => {
     count: currentArticles?.length || 0,
     total: filteredArticles?.length || 0
   });
+
+  const spotlightArticle = currentArticles?.[0] || null;
+  const supportingArticles = currentArticles?.slice(1) || [];
+  const featureGridArticles = supportingArticles.slice(0, 4);
+  const timelineArticles = supportingArticles.slice(4);
+  const adminStatusKey = newsError
+    ? 'error'
+    : newsSource === 'firestore'
+      ? 'connected'
+      : newsSource === 'local' || newsSource === 'empty'
+        ? 'cached'
+        : newsSource === 'error'
+          ? 'error'
+          : 'unknown';
+  const adminStatusMessage = t(`layout.admin.${adminStatusKey}`, {
+    defaultValue:
+      adminStatusKey === 'connected'
+        ? 'Live sync with newsroom admin'
+        : adminStatusKey === 'cached'
+          ? 'Showing cached newsroom dataset'
+          : adminStatusKey === 'error'
+            ? 'Using fallback newsroom data'
+            : 'Newsroom status unknown'
+  });
+  const lastUpdatedSource = metadata?.latest_date || spotlightArticle?.date || null;
+  const lastUpdatedLabel = lastUpdatedSource
+    ? formatDate(lastUpdatedSource)
+    : t('articles.datePending');
+  const totalArticlesCount = metadata?.total_articles ?? filteredArticles?.length ?? 0;
+  const totalArticlesLabel = t('layout.admin.articleCount', {
+    count: totalArticlesCount,
+    defaultValue: `${totalArticlesCount} stories published`
+  });
+  const formattedTotalViews = formatStatNumber(metadata?.total_views);
+  const averageReadTimeValue = metadata?.average_read_time ?? null;
+  const spotlightReadMinutes =
+    spotlightArticle?.read_time ||
+    spotlightArticle?.estimatedRead ||
+    metadata?.average_read_time ||
+    5;
+  const spotlightTags = spotlightArticle?.displayTags || spotlightArticle?.tags || [];
+  const spotlightViews = spotlightArticle?.views ?? 0;
+  const spotlightShares = spotlightArticle?.social_shares ?? 0;
+  const spotlightHighlights =
+    spotlightArticle?.displayKeyPoints || spotlightArticle?.key_points || [];
 
   const handleTickerSelect = (article) => {
     const localized = localizeArticle(article, i18n.language);
@@ -546,126 +609,382 @@ const NewsPage = () => {
             </motion.div>
           ) : (
             <AnimatePresence>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {currentArticles?.map((article, index) => {
-                  const readMinutes =
-                    article?.read_time ||
-                    article?.estimatedRead ||
-                    metadata?.average_read_time ||
-                    5;
-                  const additionalTags = (article?.displayTags?.length || 0) - 3;
-
-                  return (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="grid gap-10 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]"
+              >
+                <div className="space-y-8">
+                  {spotlightArticle && (
                     <motion.article
-                      key={article?.id || `${article?.slug}-${index}`}
-                      initial={{ opacity: 0, y: 30 }}
+                      key={spotlightArticle?.id || spotlightArticle?.slug || 'spotlight'}
+                      initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: index * 0.1 }}
-                      className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group transform hover:-translate-y-2"
+                      transition={{ duration: 0.5 }}
+                      className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
                     >
-                      <div className="h-64 bg-gradient-to-br from-blue-500 via-teal-500 to-cyan-500 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-500"></div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-
-                        <div className="absolute top-4 left-4">
-                          <span
-                            className={`px-4 py-2 rounded-full text-sm font-semibold border ${getCategoryColor(
-                              article?.category
-                            )} backdrop-blur-sm`}
-                          >
-                            {article?.displayCategory || article?.category}
-                          </span>
-                        </div>
-
-                        {article?.is_featured && (
-                          <div className="absolute top-4 right-4">
-                            <span className="px-3 py-1 bg-yellow-400 text-yellow-900 rounded-full text-xs font-bold">
-                              {t('articles.featured')}
+                      <div className="absolute -right-36 -top-32 h-72 w-72 rounded-full bg-gradient-to-br from-cyan-100 via-blue-50 to-slate-100 blur-3xl opacity-60"></div>
+                      <div className="relative z-10 grid gap-8 p-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
+                        <div className="space-y-6">
+                          <div className="flex flex-wrap items-center gap-3 text-sm font-semibold text-blue-700">
+                            <span className="inline-flex items-center gap-2 rounded-full bg-blue-100/80 px-4 py-2 text-blue-700">
+                              <Activity className="h-4 w-4" />
+                              {t('layout.spotlightTitle')}
                             </span>
-                          </div>
-                        )}
-
-                        <div className="absolute bottom-4 right-4 flex items-center gap-3 text-white/90 text-sm">
-                          <div className="flex items-center gap-1">
-                            <Eye className="w-4 h-4" />
-                            {article?.views ?? 0}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <ExternalLink className="w-4 h-4" />
-                            {article?.social_shares ?? 0}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="p-8">
-                        <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-4 h-4" />
-                            {formatDate(article?.date)}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4" />
-                            {t('articles.readTimeShort', { minutes: readMinutes })}
-                          </div>
-                        </div>
-
-                        {article?.displayLocation && (
-                          <div className="flex items-center gap-1 text-sm text-gray-600 mb-4">
-                            <MapPin className="w-4 h-4" />
-                            {article?.displayLocation}
-                          </div>
-                        )}
-
-                        <h3 className="text-xl font-bold text-gray-800 mb-4 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
-                          {article?.displayTitle || article?.title}
-                        </h3>
-
-                        <p className="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-3">
-                          {article?.displaySummary || article?.summary}
-                        </p>
-
-                        <div className="flex flex-wrap gap-2 mb-6">
-                          {article?.displayTags?.slice(0, 3)?.map((tag, tagIndex) => (
-                            <span
-                              key={`${tag}-${tagIndex}`}
-                              className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-gray-200 transition-colors"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                          {additionalTags > 0 && (
-                            <span className="text-xs text-gray-400">
-                              {t('articles.moreTags', { count: additionalTags })}
-                            </span>
-                          )}
-                        </div>
-
-                        {article?.displayAuthor && (
-                          <div className="flex items-center gap-2 text-sm text-gray-600 mb-6">
-                            <User className="w-4 h-4" />
-                            <span className="font-medium">
-                              {article?.displayAuthor}
-                            </span>
-                            {article?.displayAuthorPosition && (
-                              <span className="text-gray-500">
-                                • {article?.displayAuthorPosition}
+                            {spotlightArticle?.displayCategory && (
+                              <span className="inline-flex items-center gap-2 rounded-full border border-blue-100 px-4 py-2 text-blue-800">
+                                <Tag className="h-3.5 w-3.5" />
+                                {spotlightArticle.displayCategory}
                               </span>
                             )}
                           </div>
-                        )}
 
-                        <button
-                          onClick={() => setExpandedArticle(article)}
-                          className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-semibold transition-all duration-300 group/btn"
-                        >
-                          {t('articles.readFull')}
-                          <ChevronRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform duration-300" />
-                        </button>
+                          <div className="space-y-4">
+                            <h3 className="text-3xl font-bold leading-tight text-slate-900 lg:text-4xl">
+                              {spotlightArticle?.displayTitle || spotlightArticle?.title}
+                            </h3>
+                            {spotlightArticle?.displaySummary && (
+                              <p className="text-lg leading-relaxed text-slate-600">
+                                {spotlightArticle.displaySummary}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="flex flex-wrap gap-4 text-sm text-slate-600">
+                            <div className="inline-flex items-center gap-2">
+                              <Calendar className="h-4 w-4" />
+                              {formatDate(spotlightArticle?.date)}
+                            </div>
+                            {spotlightArticle?.displayLocation && (
+                              <div className="inline-flex items-center gap-2">
+                                <MapPin className="h-4 w-4" />
+                                {spotlightArticle.displayLocation}
+                              </div>
+                            )}
+                            <div className="inline-flex items-center gap-2">
+                              <Clock className="h-4 w-4" />
+                              {t('articles.readTimeShort', { minutes: spotlightReadMinutes })}
+                            </div>
+                          </div>
+
+                          <div className="flex flex-wrap gap-3">
+                            {spotlightTags.slice(0, 6).map((tag) => (
+                              <span
+                                key={tag}
+                                className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600"
+                              >
+                                #{tag}
+                              </span>
+                            ))}
+                            {spotlightTags.length === 0 && (
+                              <span className="text-sm text-slate-500">
+                                {t('modal.noTags')}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-3">
+                            <button
+                              onClick={() => setExpandedArticle(spotlightArticle)}
+                              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:bg-blue-700 hover:shadow-xl"
+                            >
+                              {t('articles.readFull')}
+                              <ArrowRight className="h-4 w-4" />
+                            </button>
+                            <ShareMenu
+                              article={spotlightArticle}
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-6">
+                          <div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-6 shadow-inner">
+                            <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
+                              <div>
+                                <p className="text-xs uppercase tracking-wide text-slate-500">
+                                  {t('modal.stats.views')}
+                                </p>
+                                <p className="mt-2 text-2xl font-semibold text-slate-900">
+                                  {formatStatNumber(spotlightViews)}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs uppercase tracking-wide text-slate-500">
+                                  {t('modal.stats.shares')}
+                                </p>
+                                <p className="mt-2 text-2xl font-semibold text-slate-900">
+                                  {formatStatNumber(spotlightShares)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="rounded-2xl border border-blue-100 bg-white/80 p-6 shadow-sm">
+                            <p className="text-xs uppercase tracking-wide text-slate-500">
+                              {t('modal.highlightsTitle')}
+                            </p>
+                            {spotlightHighlights.length > 0 ? (
+                              <ul className="mt-3 space-y-3 text-sm text-slate-600">
+                                {spotlightHighlights.slice(0, 4).map((highlight, index) => (
+                                  <li
+                                    key={`spotlight-highlight-${index}`}
+                                    className="flex items-start gap-2"
+                                  >
+                                    <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-500"></span>
+                                    <span>{highlight}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="mt-3 text-sm text-slate-500">
+                                {t('layout.spotlight.noHighlights')}
+                              </p>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </motion.article>
-                  );
-                })}
-              </div>
+                  )}
+
+                  {featureGridArticles.length > 0 && (
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-semibold text-slate-900">
+                        {t('layout.moreStoriesTitle')}
+                      </h3>
+                      <div className="grid gap-6 md:grid-cols-2">
+                        {featureGridArticles.map((article, index) => {
+                          const readMinutes =
+                            article?.read_time ||
+                            article?.estimatedRead ||
+                            metadata?.average_read_time ||
+                            5;
+
+                          return (
+                            <motion.article
+                              key={article?.id || `${article?.slug}-${index}`}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.4, delay: index * 0.05 }}
+                              className="flex h-full flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                            >
+                              <div className="space-y-4">
+                                <div className="flex items-start justify-between gap-3">
+                                  <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                                    {article?.displayCategory || article?.category}
+                                  </span>
+                                  {article?.is_featured && (
+                                    <span className="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-amber-700">
+                                      {t('articles.featured')}
+                                    </span>
+                                  )}
+                                </div>
+                                <h4 className="text-lg font-semibold leading-tight text-slate-900">
+                                  {article?.displayTitle || article?.title}
+                                </h4>
+                                {article?.displaySummary && (
+                                  <p className="text-sm leading-relaxed text-slate-600 line-clamp-3">
+                                    {article.displaySummary}
+                                  </p>
+                                )}
+                                {article?.displayAuthor && (
+                                  <p className="text-xs font-medium text-slate-500">
+                                    {article.displayAuthor}
+                                    {article?.displayAuthorPosition && (
+                                      <span className="text-slate-400"> · {article.displayAuthorPosition}</span>
+                                    )}
+                                  </p>
+                                )}
+                              </div>
+
+                              <div className="mt-6 space-y-4">
+                                <div className="flex flex-wrap gap-4 text-xs text-slate-500">
+                                  <span className="inline-flex items-center gap-1">
+                                    <Calendar className="h-3.5 w-3.5" />
+                                    {formatDate(article?.date)}
+                                  </span>
+                                  {article?.displayLocation && (
+                                    <span className="inline-flex items-center gap-1">
+                                      <MapPin className="h-3.5 w-3.5" />
+                                      {article.displayLocation}
+                                    </span>
+                                  )}
+                                  <span className="inline-flex items-center gap-1">
+                                    <Clock className="h-3.5 w-3.5" />
+                                    {t('articles.readTimeShort', { minutes: readMinutes })}
+                                  </span>
+                                </div>
+
+                                <div className="flex items-center justify-between gap-3 text-xs text-slate-500">
+                                  <div className="flex items-center gap-3">
+                                    <span className="inline-flex items-center gap-1">
+                                      <Eye className="h-3.5 w-3.5" />
+                                      {formatStatNumber(article?.views ?? 0)}
+                                    </span>
+                                    <span className="inline-flex items-center gap-1">
+                                      <ExternalLink className="h-3.5 w-3.5" />
+                                      {formatStatNumber(article?.social_shares ?? 0)}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      onClick={() => setExpandedArticle(article)}
+                                      className="inline-flex items-center gap-2 font-semibold text-blue-600 transition-colors duration-300 hover:text-blue-800"
+                                    >
+                                      {t('articles.readFull')}
+                                      <ArrowRight className="h-3.5 w-3.5" />
+                                    </button>
+                                    <ShareMenu
+                                      article={article}
+                                      size="sm"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </motion.article>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-6">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                    className="rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-cyan-50 p-6 shadow-inner"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white shadow-md">
+                        <ShieldCheck className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+                          {t('layout.admin.title')}
+                        </p>
+                        <p className="mt-1 text-base font-semibold text-slate-900">
+                          {adminStatusMessage}
+                        </p>
+                        <p className="mt-1 text-sm text-slate-600">
+                          {t('layout.admin.lastUpdated', { date: lastUpdatedLabel })}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 grid grid-cols-2 gap-4 text-sm text-slate-600">
+                      <div className="rounded-2xl bg-white/80 p-4 shadow-sm">
+                        <p className="text-xs uppercase tracking-wide text-slate-500">
+                          {t('hero.stats.totalArticles')}
+                        </p>
+                        <p className="mt-2 text-3xl font-semibold text-slate-900">
+                          {formatStatNumber(totalArticlesCount)}
+                        </p>
+                        <p className="mt-1 text-xs text-slate-500">{totalArticlesLabel}</p>
+                      </div>
+                      <div className="rounded-2xl bg-white/80 p-4 shadow-sm">
+                        <p className="text-xs uppercase tracking-wide text-slate-500">
+                          {t('hero.stats.totalViews')}
+                        </p>
+                        <p className="mt-2 text-3xl font-semibold text-slate-900">
+                          {formattedTotalViews}
+                        </p>
+                      </div>
+                      <div className="col-span-2 rounded-2xl bg-white/80 p-4 shadow-sm">
+                        <p className="text-xs uppercase tracking-wide text-slate-500">
+                          {t('hero.stats.averageReadTime')}
+                        </p>
+                        <p className="mt-2 text-2xl font-semibold text-slate-900">
+                          {averageReadTimeValue
+                            ? t('articles.readTimeShort', { minutes: averageReadTimeValue })
+                            : t('hero.stats.noReadTime')}
+                        </p>
+                      </div>
+                    </div>
+
+                    <Link
+                      to="/admin/login"
+                      className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:bg-blue-700 hover:shadow-xl"
+                    >
+                      {t('layout.admin.openPanel')}
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Activity className="h-5 w-5 text-blue-600" />
+                      <h3 className="text-lg font-semibold text-slate-900">
+                        {t('layout.timelineTitle')}
+                      </h3>
+                    </div>
+
+                    {timelineArticles.length > 0 ? (
+                      <div className="relative mt-6 pl-4">
+                        <div className="absolute left-1 top-2 bottom-2 w-px bg-gradient-to-b from-blue-300 via-blue-200 to-cyan-200"></div>
+                        <div className="space-y-6">
+                          {timelineArticles.map((article, index) => {
+                            const readMinutes =
+                              article?.read_time ||
+                              article?.estimatedRead ||
+                              metadata?.average_read_time ||
+                              5;
+
+                            return (
+                              <div key={article?.id || `${article?.slug}-${index}`} className="relative pl-4">
+                                <span className="absolute -left-[0.95rem] top-2 flex h-3 w-3 items-center justify-center">
+                                  <span className="h-2 w-2 rounded-full bg-blue-500"></span>
+                                </span>
+                                <p className="text-xs uppercase tracking-wide text-slate-400">
+                                  {formatDate(article?.date)}
+                                </p>
+                                <button
+                                  onClick={() => setExpandedArticle(article)}
+                                  className="mt-1 w-full text-left text-sm font-semibold text-slate-900 transition-colors duration-300 hover:text-blue-600"
+                                >
+                                  {article?.displayTitle || article?.title}
+                                </button>
+                                {article?.displaySummary && (
+                                  <p className="mt-1 text-xs leading-relaxed text-slate-500 line-clamp-2">
+                                    {article.displaySummary}
+                                  </p>
+                                )}
+                                <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-500">
+                                  <span className="inline-flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    {t('articles.readTimeShort', { minutes: readMinutes })}
+                                  </span>
+                                  {article?.displayLocation && (
+                                    <span className="inline-flex items-center gap-1">
+                                      <MapPin className="h-3 w-3" />
+                                      {article.displayLocation}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="mt-3 flex items-center gap-2">
+                                  <ShareMenu article={article} size="sm" />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="mt-6 text-sm leading-relaxed text-slate-600">
+                        {t('layout.timelineEmpty')}
+                      </p>
+                    )}
+                  </motion.div>
+                </div>
+              </motion.div>
             </AnimatePresence>
           )}
 
@@ -774,7 +1093,7 @@ const NewsPage = () => {
                   onClick={(e) => e?.stopPropagation()}
                 >
                   <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b-2 border-gray-100 p-8 z-10 rounded-t-3xl">
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between gap-6">
                       <div className="flex-1">
                         <div className="flex items-center gap-4 mb-4">
                           <span
@@ -812,12 +1131,22 @@ const NewsPage = () => {
                           </div>
                         )}
                       </div>
-                      <button
-                        onClick={() => setExpandedArticle(null)}
-                        className="text-gray-400 hover:text-gray-600 text-3xl font-bold ml-4 p-2 rounded-full hover:bg-gray-100 transition-all duration-300"
-                      >
-                        ×
-                      </button>
+                      <div className="flex flex-col items-end gap-3">
+                        <ShareMenu
+                          article={modalArticle}
+                          size="sm"
+                          showLabel
+                          showLink
+                          orientation="column"
+                        />
+                        <button
+                          onClick={() => setExpandedArticle(null)}
+                          className="text-gray-400 hover:text-gray-600 text-3xl font-bold p-2 rounded-full hover:bg-gray-100 transition-all duration-300"
+                          aria-label={t('modal.close', 'Close dialog')}
+                        >
+                          ×
+                        </button>
+                      </div>
                     </div>
                   </div>
 

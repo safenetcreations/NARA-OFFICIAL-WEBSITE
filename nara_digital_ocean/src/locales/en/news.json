@@ -85,7 +85,49 @@
     "noTags": "No tags available",
     "publishedBy": "Published by {{author}}",
     "defaultAuthor": "NARA Communications",
-    "publishedOn": "Published on {{date}}"
+    "publishedOn": "Published on {{date}}",
+    "close": "Close"
+  },
+  "layout": {
+    "spotlightTitle": "Spotlight briefing",
+    "spotlight": {
+      "noHighlights": "Key takeaways will appear here once the admin publishes them."
+    },
+    "moreStoriesTitle": "More newsroom stories",
+    "timelineTitle": "Rapid briefs",
+    "timelineEmpty": "More updates will appear here as soon as the newsroom publishes them.",
+    "admin": {
+      "title": "Admin sync status",
+      "connected": "Live sync with newsroom admin",
+      "cached": "Showing cached newsroom dataset",
+      "error": "Using fallback newsroom data. Connect the admin panel to publish.",
+      "unknown": "Newsroom status unknown",
+      "lastUpdated": "Last update: {{date}}",
+      "articleCount": "{{count}} stories published",
+      "openPanel": "Open admin panel"
+    }
+  },
+  "share": {
+    "button": "Share",
+    "title": "Share this update",
+    "facebook": "Share on Facebook",
+    "twitter": "Share on X (Twitter)",
+    "linkedin": "Share on LinkedIn",
+    "whatsapp": "Share on WhatsApp",
+    "email": "Send by email",
+    "copy": "Copy link",
+    "pdf": "Download PDF",
+    "native": "Share via device",
+    "linkLabel": "Direct link",
+    "copied": "Link copied",
+    "pdfTitleFallback": "NARA News Article",
+    "sections": {
+      "summary": "Summary",
+      "content": "Full content",
+      "highlights": "Key highlights",
+      "tags": "Tags",
+      "metadata": "Publication details"
+    }
   },
   "categories": {
     "education-outreach": "Education & Outreach",

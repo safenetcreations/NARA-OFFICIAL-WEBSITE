@@ -27,7 +27,8 @@ import {
   ArrowRight,
   Shield,
   Globe2,
-  MapPin
+  MapPin,
+  Search
 } from 'lucide-react';
 import { ProcurementAuthProvider, useProcurementAuth } from '../../contexts/ProcurementAuthContext';
 import { useTranslation } from 'react-i18next';
@@ -36,6 +37,7 @@ import {
   recruitmentService,
   fileUploadService,
   dashboardService,
+  vacancyIntegrationService,
   handleApiError
 } from '../../services/procurementRecruitmentService';
 
@@ -248,11 +250,30 @@ const PortalExperience = () => {
       filters: {
         focusLabel: translate('recruitment.filters.focusLabel', 'Focus area'),
         allOption: translate('recruitment.filters.allOption', 'All roles'),
+        searchLabel: translate('recruitment.filters.searchLabel', 'Search'),
+        searchPlaceholder: translate(
+          'recruitment.filters.searchPlaceholder',
+          'Search by title, division, or keyword…'
+        ),
+        statusLabel: translate('recruitment.filters.statusLabel', 'Status'),
+        divisionLabel: translate('recruitment.filters.divisionLabel', 'Division'),
+        gradeLabel: translate('recruitment.filters.gradeLabel', 'Grade'),
+        allDivisions: translate('recruitment.filters.allDivisions', 'All divisions'),
+        allGrades: translate('recruitment.filters.allGrades', 'All grades'),
         sortLabel: translate('recruitment.filters.sortLabel', 'Sort'),
         options: {
           deadline: translate('recruitment.filters.options.deadline', 'Closing soon'),
           salary: translate('recruitment.filters.options.salary', 'Highest salary'),
           recent: translate('recruitment.filters.options.recent', 'Recently posted')
+        },
+        statusOptions: {
+          all: translate('recruitment.filters.statusOptions.all', 'All statuses'),
+          Open: translate('recruitment.filters.statusOptions.open', 'Open'),
+          'Under Review': translate(
+            'recruitment.filters.statusOptions.review',
+            'Under review'
+          ),
+          Closed: translate('recruitment.filters.statusOptions.closed', 'Closed')
         }
       },
       sidebar: {
@@ -281,12 +302,35 @@ const PortalExperience = () => {
         daysRemaining: translate('recruitment.cards.daysRemaining', '{{count}} days remaining'),
         department: translate('recruitment.cards.department', 'Department'),
         departmentFallback: translate('recruitment.cards.departmentFallback', 'NARA'),
+        grade: translate('recruitment.cards.grade', 'Service grade'),
+        gradeFallback: translate('recruitment.cards.gradeFallback', 'NARA Service Grade'),
         qualifications: translate('recruitment.cards.qualifications', 'Qualifications'),
         qualificationsFallback: translate('recruitment.cards.qualificationsFallback', 'See full brief'),
         salary: translate('recruitment.cards.salary', 'Salary band'),
         salaryFallback: translate('recruitment.cards.salaryFallback', 'Aligned with NARA scales'),
-        overviewCta: translate('recruitment.cards.buttons.overview', 'Role overview'),
-        applyCta: translate('recruitment.cards.buttons.apply', 'Submit application'),
+        statusLabels: {
+          Open: translate('recruitment.cards.statusLabels.open', 'Open'),
+          'Under Review': translate('recruitment.cards.statusLabels.review', 'Under review'),
+          Closed: translate('recruitment.cards.statusLabels.closed', 'Closed')
+        },
+        statusNotes: {
+          Open: translate('recruitment.cards.statusNotes.open', 'Auto-updating from CMS'),
+          'Under Review': translate(
+            'recruitment.cards.statusNotes.review',
+            'Panel evaluating submissions'
+          ),
+          Closed: translate('recruitment.cards.statusNotes.closed', 'Archived for RTI compliance')
+        },
+        buttons: {
+          overview: translate('recruitment.cards.buttons.overview', 'Role overview'),
+          apply: translate('recruitment.cards.buttons.apply', 'Submit application'),
+          downloadPack: translate('recruitment.cards.buttons.downloadPack', 'Download pack'),
+          closed: translate('recruitment.cards.buttons.closed', 'Applications closed'),
+          closedHint: translate(
+            'recruitment.cards.buttons.closedHint',
+            'Applications are no longer being accepted. Contact HR for clarifications.'
+          )
+        },
         responsibilities: translate('recruitment.cards.responsibilities.title', 'Responsibilities'),
         responsibilitiesEmpty: translate(
           'recruitment.cards.responsibilities.empty',
@@ -300,6 +344,49 @@ const PortalExperience = () => {
         ),
         contractType: translate('recruitment.cards.profile.contractType', 'Contract type'),
         contractFallback: translate('recruitment.cards.profile.contractFallback', 'Full-time')
+      },
+      sync: {
+        metrics: {
+          open: translate('recruitment.sync.metrics.open', 'Live vacancies'),
+          review: translate('recruitment.sync.metrics.review', 'Under review'),
+          closed: translate('recruitment.sync.metrics.closed', 'Closed this quarter'),
+          lastSync: translate('recruitment.sync.metrics.lastSync', 'Last sync')
+        },
+        hints: {
+          open: translate('recruitment.sync.hints.open', 'Auto-published from Vacancy Manager'),
+          review: translate('recruitment.sync.hints.review', 'Pending HR approvals & PSC checklists'),
+          closed: translate('recruitment.sync.hints.closed', 'Archived with RTI-ready summaries'),
+          auto: translate('recruitment.sync.hints.auto', 'HR feed + gazette watcher')
+        },
+        features: {
+          cms: translate('recruitment.sync.features.cms', 'Vacancy Manager'),
+          cmsDescription: translate(
+            'recruitment.sync.features.cmsDescription',
+            'HR updates roles in the CMS or Google Sheet feed for scheduled publishing.'
+          ),
+          gazette: translate('recruitment.sync.features.gazette', 'Gazette assist'),
+          gazetteDescription: translate(
+            'recruitment.sync.features.gazetteDescription',
+            'Uploads gazette PDFs with summaries and flags NARA mentions for review.'
+          ),
+          backOffice: translate('recruitment.sync.features.backOffice', 'Back-office controls'),
+          backOfficeDescription: translate(
+            'recruitment.sync.features.backOfficeDescription',
+            'Approvals, reminders, CSV exports, and acknowledgement logs for RTI requests.'
+          )
+        }
+      },
+      archive: {
+        title: translate('recruitment.archive.title', 'Archive: closed roles'),
+        description: translate(
+          'recruitment.archive.description',
+          'Recent vacancies remain visible for transparency and RTI readiness.'
+        ),
+        download: translate('recruitment.archive.download', 'Download notice'),
+        moreHint: translate(
+          'recruitment.archive.moreHint',
+          'Browse the complete archive from your workspace.'
+        )
       }
     }),
     [translate]
@@ -443,6 +530,12 @@ const PortalExperience = () => {
   const [procurementSort, setProcurementSort] = useState('deadline');
   const [jobCategory, setJobCategory] = useState('all');
   const [jobSort, setJobSort] = useState('deadline');
+  const [jobStatusFilter, setJobStatusFilter] = useState('all');
+  const [jobDivisionFilter, setJobDivisionFilter] = useState('all');
+  const [jobGradeFilter, setJobGradeFilter] = useState('all');
+  const [jobSearchTerm, setJobSearchTerm] = useState('');
+  const [vacancySummary, setVacancySummary] = useState(null);
+  const [vacancyArchive, setVacancyArchive] = useState([]);
   const [expandedNoticeId, setExpandedNoticeId] = useState(null);
   const [expandedJobId, setExpandedJobId] = useState(null);
 
@@ -468,6 +561,10 @@ const PortalExperience = () => {
     if (activeTab === 'recruitment') {
       setJobCategory('all');
       setJobSort('deadline');
+      setJobStatusFilter('all');
+      setJobDivisionFilter('all');
+      setJobGradeFilter('all');
+      setJobSearchTerm('');
     }
   }, [activeTab]);
 
@@ -498,6 +595,56 @@ const PortalExperience = () => {
     return Number.isFinite(numeric) ? numeric : null;
   };
 
+  const formatRelativeTime = (value) => {
+    const date = toDate(value);
+    if (!date) return translate('recruitment.sync.relative.never', 'Awaiting sync');
+    const diffMinutes = Math.round((Date.now() - date.getTime()) / (1000 * 60));
+    if (diffMinutes < 1) return translate('recruitment.sync.relative.now', 'Just now');
+    if (diffMinutes < 60) {
+      return translate('recruitment.sync.relative.minutes', '{{count}} minutes ago', {
+        count: diffMinutes
+      });
+    }
+    const diffHours = Math.round(diffMinutes / 60);
+    if (diffHours < 24) {
+      return translate('recruitment.sync.relative.hours', '{{count}} hours ago', {
+        count: diffHours
+      });
+    }
+    const diffDays = Math.round(diffHours / 24);
+    return translate('recruitment.sync.relative.days', '{{count}} days ago', {
+      count: diffDays
+    });
+  };
+
+  const getJobStatus = useCallback(
+    (job) => {
+      const rawStatus = String(job?.status || '').toLowerCase();
+      if (rawStatus.includes('closed')) return 'Closed';
+      if (rawStatus.includes('review')) return 'Under Review';
+      if (rawStatus.includes('open')) return 'Open';
+
+      const deadlineDays = daysUntil(job?.application_deadline);
+      if (deadlineDays !== null) {
+        if (deadlineDays < -14) return 'Closed';
+        if (deadlineDays < 0) return 'Under Review';
+      }
+      return 'Open';
+    },
+    [daysUntil]
+  );
+
+  const getJobGrade = useCallback((job) => {
+    const gradeValue =
+      job?.grade ||
+      job?.job_grade ||
+      job?.pay_grade ||
+      job?.classification ||
+      job?.position_grade;
+    if (!gradeValue) return translate('recruitment.cards.gradeFallback', 'NARA Service Grade');
+    return gradeValue;
+  }, [translate]);
+
   const procurementCategoryOptions = useMemo(() => {
     const categories = new Set();
     procurementNotices?.forEach((notice) => {
@@ -507,14 +654,76 @@ const PortalExperience = () => {
     return ['all', ...Array.from(categories)];
   }, [procurementNotices]);
 
+  const enrichedJobPostings = useMemo(() => {
+    return (jobPostings || []).map((job) => {
+      const status = getJobStatus(job);
+      const division = job?.department || job?.division || job?.unit || translate('recruitment.cards.departmentFallback', 'NARA');
+      const grade = getJobGrade(job);
+      const publishedAt = job?.updated_at || job?.published_at || job?.created_at || job?.posted_at;
+
+      return {
+        ...job,
+        computedStatus: status,
+        computedDivision: division,
+        computedGrade: grade,
+        computedPublishedAt: publishedAt
+      };
+    });
+  }, [jobPostings, getJobGrade, getJobStatus, translate]);
+
+  const normalizedArchive = useMemo(() => {
+    return (vacancyArchive || []).map((job) => {
+      const status = getJobStatus(job);
+      const division = job?.department || job?.division || job?.unit || translate('recruitment.cards.departmentFallback', 'NARA');
+      const grade = getJobGrade(job);
+      const publishedAt =
+        job?.closed_at || job?.archived_at || job?.updated_at || job?.published_at || job?.created_at;
+
+      return {
+        ...job,
+        computedStatus: status,
+        computedDivision: division,
+        computedGrade: grade,
+        computedPublishedAt: publishedAt
+      };
+    });
+  }, [vacancyArchive, getJobGrade, getJobStatus, translate]);
+
   const recruitmentCategoryOptions = useMemo(() => {
     const categories = new Set();
-    jobPostings?.forEach((job) => {
+    enrichedJobPostings?.forEach((job) => {
       if (job?.category) categories.add(job?.category);
       else if (job?.department) categories.add(job?.department);
     });
     return ['all', ...Array.from(categories)];
-  }, [jobPostings]);
+  }, [enrichedJobPostings]);
+
+  const recruitmentDivisionOptions = useMemo(() => {
+    const divisions = new Set();
+    enrichedJobPostings?.forEach((job) => {
+      if (job?.computedDivision) divisions.add(job?.computedDivision);
+    });
+    return ['all', ...Array.from(divisions)];
+  }, [enrichedJobPostings]);
+
+  const recruitmentGradeOptions = useMemo(() => {
+    const grades = new Set();
+    enrichedJobPostings?.forEach((job) => {
+      if (job?.computedGrade) grades.add(job?.computedGrade);
+    });
+    return ['all', ...Array.from(grades)];
+  }, [enrichedJobPostings]);
+
+  const recruitmentStatusOptions = useMemo(() => {
+    const statuses = new Set(['Open', 'Under Review', 'Closed']);
+    enrichedJobPostings?.forEach((job) => {
+      if (job?.computedStatus) statuses.add(job?.computedStatus);
+    });
+    normalizedArchive?.forEach((job) => {
+      if (job?.computedStatus) statuses.add(job?.computedStatus);
+    });
+    return ['all', ...Array.from(statuses)];
+  }, [enrichedJobPostings, normalizedArchive]);
 
   const filteredProcurementNotices = useMemo(() => {
     const items = [...(procurementNotices || [])];
@@ -555,11 +764,44 @@ const PortalExperience = () => {
   }, [procurementNotices, procurementCategory, procurementSort]);
 
   const filteredJobPostings = useMemo(() => {
-    const items = [...(jobPostings || [])];
-    let filtered = items.filter(Boolean);
+    const searchNeedle = jobSearchTerm.trim().toLowerCase();
+    let filtered = [...(enrichedJobPostings || [])].filter(Boolean);
 
     if (jobCategory !== 'all') {
-      filtered = filtered.filter((job) => job?.category === jobCategory || job?.department === jobCategory);
+      filtered = filtered.filter(
+        (job) => job?.category === jobCategory || job?.computedDivision === jobCategory
+      );
+    }
+
+    if (jobDivisionFilter !== 'all') {
+      filtered = filtered.filter((job) => job?.computedDivision === jobDivisionFilter);
+    }
+
+    if (jobGradeFilter !== 'all') {
+      filtered = filtered.filter((job) => job?.computedGrade === jobGradeFilter);
+    }
+
+    if (jobStatusFilter !== 'all') {
+      filtered = filtered.filter((job) => job?.computedStatus === jobStatusFilter);
+    }
+
+    if (searchNeedle) {
+      filtered = filtered.filter((job) => {
+        const fields = [
+          job?.title,
+          job?.description,
+          job?.computedDivision,
+          job?.computedGrade,
+          job?.category,
+          job?.department,
+          job?.location,
+          job?.salary_range,
+          Array.isArray(job?.responsibilities) ? job.responsibilities.join(' ') : ''
+        ];
+        return fields
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(searchNeedle));
+      });
     }
 
     if (jobSort === 'deadline') {
@@ -572,22 +814,41 @@ const PortalExperience = () => {
 
     if (jobSort === 'salary') {
       filtered.sort((a, b) => {
-        const aValue = parseNumericValue(a?.salary_range_max) ?? parseNumericValue(a?.salary_range_min) ?? 0;
-        const bValue = parseNumericValue(b?.salary_range_max) ?? parseNumericValue(b?.salary_range_min) ?? 0;
+        const aValue =
+          parseNumericValue(a?.salary_range_max) ||
+          parseNumericValue(a?.salary_range_min) ||
+          parseNumericValue(a?.salary_range) ||
+          parseNumericValue(a?.compensation) ||
+          0;
+        const bValue =
+          parseNumericValue(b?.salary_range_max) ||
+          parseNumericValue(b?.salary_range_min) ||
+          parseNumericValue(b?.salary_range) ||
+          parseNumericValue(b?.compensation) ||
+          0;
         return bValue - aValue;
       });
     }
 
     if (jobSort === 'recent') {
       filtered.sort((a, b) => {
-        const aDate = toDate(a?.published_date) || toDate(a?.created_at);
-        const bDate = toDate(b?.published_date) || toDate(b?.created_at);
+        const aDate = toDate(a?.computedPublishedAt);
+        const bDate = toDate(b?.computedPublishedAt);
         return (bDate?.getTime?.() ?? 0) - (aDate?.getTime?.() ?? 0);
       });
     }
 
     return filtered;
-  }, [jobPostings, jobCategory, jobSort]);
+  }, [
+    enrichedJobPostings,
+    jobCategory,
+    jobDivisionFilter,
+    jobGradeFilter,
+    jobStatusFilter,
+    jobSearchTerm,
+    jobSort,
+    daysUntil
+  ]);
 
   const procurementClosingSoonCount = useMemo(() => (
     (procurementNotices || []).filter((notice) => {
@@ -597,11 +858,100 @@ const PortalExperience = () => {
   ), [procurementNotices]);
 
   const recruitmentClosingSoonCount = useMemo(() => (
-    (jobPostings || []).filter((job) => {
+    (enrichedJobPostings || []).filter((job) => {
       const days = daysUntil(job?.application_deadline);
-      return days !== null && days <= 7 && days >= 0;
+      return job?.computedStatus === 'Open' && days !== null && days <= 7 && days >= 0;
     }).length
-  ), [jobPostings]);
+  ), [enrichedJobPostings, daysUntil]);
+
+  const recruitmentUnderReviewCount = useMemo(() => {
+    const fallback = (enrichedJobPostings || []).filter((job) => job?.computedStatus === 'Under Review').length;
+    if (vacancySummary) {
+      const candidates = [
+        vacancySummary?.under_review,
+        vacancySummary?.in_review,
+        vacancySummary?.reviewing
+      ];
+      const summaryValue = candidates.find((value) => typeof value === 'number');
+      if (typeof summaryValue === 'number') {
+        return summaryValue;
+      }
+    }
+    return fallback;
+  }, [enrichedJobPostings, vacancySummary]);
+
+  const latestSyncDate = useMemo(() => {
+    if (vacancySummary) {
+      const candidate =
+        vacancySummary?.last_synced_at ||
+        vacancySummary?.synced_at ||
+        vacancySummary?.last_sync ||
+        vacancySummary?.generated_at;
+      const parsed = toDate(candidate);
+      if (parsed) return parsed;
+    }
+
+    return (enrichedJobPostings || [])
+      .map((job) => toDate(job?.computedPublishedAt))
+      .filter(Boolean)
+      .sort((a, b) => b.getTime() - a.getTime())[0] || null;
+  }, [vacancySummary, enrichedJobPostings]);
+
+  const archivedJobPostings = useMemo(() => {
+    const source = normalizedArchive.length ? normalizedArchive : (enrichedJobPostings || []).filter((job) => job?.computedStatus === 'Closed');
+
+    return [...source].sort((a, b) => {
+      const aDate = toDate(a?.computedPublishedAt);
+      const bDate = toDate(b?.computedPublishedAt);
+      return (bDate?.getTime?.() ?? 0) - (aDate?.getTime?.() ?? 0);
+    });
+  }, [normalizedArchive, enrichedJobPostings]);
+
+  const vacancyAutomationSnapshot = useMemo(() => {
+    const fallbackOpen = (enrichedJobPostings || []).filter((job) => job?.computedStatus === 'Open').length;
+    const fallbackClosed = archivedJobPostings.length;
+    const fallbackGazette = (enrichedJobPostings || []).filter((job) => job?.source === 'gazette').length;
+    const fallbackPsc = (enrichedJobPostings || []).filter((job) => job?.psc_reference).length;
+
+    if (vacancySummary) {
+      const selectNumber = (keys, fallback) => {
+        for (const key of keys) {
+          const value = vacancySummary?.[key];
+          if (typeof value === 'number') return value;
+        }
+        return fallback;
+      };
+
+      return {
+        lastSynced: toDate(
+          vacancySummary?.last_synced_at ||
+            vacancySummary?.synced_at ||
+            vacancySummary?.last_sync ||
+            vacancySummary?.generated_at
+        ) || latestSyncDate,
+        openRoles: selectNumber(['open_roles', 'open', 'active_roles'], fallbackOpen),
+        underReview: selectNumber(['under_review', 'in_review', 'reviewing'], recruitmentUnderReviewCount),
+        closedRoles: selectNumber(['closed_roles', 'closed'], fallbackClosed),
+        gazetteBacklog: selectNumber(['gazette_backlog', 'gazette_pending'], fallbackGazette),
+        pscLinks: selectNumber(['psc_links', 'psc_backlog'], fallbackPsc)
+      };
+    }
+
+    return {
+      lastSynced: latestSyncDate,
+      openRoles: fallbackOpen,
+      underReview: recruitmentUnderReviewCount,
+      closedRoles: fallbackClosed,
+      gazetteBacklog: fallbackGazette,
+      pscLinks: fallbackPsc
+    };
+  }, [
+    vacancySummary,
+    enrichedJobPostings,
+    archivedJobPostings.length,
+    latestSyncDate,
+    recruitmentUnderReviewCount
+  ]);
 
   const heroMetrics = useMemo(() => ([
     {
@@ -617,7 +967,7 @@ const PortalExperience = () => {
     {
       icon: Users,
       label: translate('hero.metrics.recruitment.label', 'Active career roles'),
-      value: jobPostings?.length || 0,
+      value: vacancyAutomationSnapshot.openRoles,
       hint: recruitmentClosingSoonCount
         ? translate('hero.metrics.recruitment.hint', '{{count}} closing soon', {
             count: recruitmentClosingSoonCount
@@ -696,9 +1046,44 @@ const PortalExperience = () => {
       if (activeTab === 'procurement') {
         const data = await procurementService?.getAllNotices({ status: 'active', page: 1, limit: 12 });
         setProcurementNotices(data?.notices || []);
+        setVacancySummary(null);
+        setVacancyArchive([]);
       } else if (activeTab === 'recruitment') {
-        const data = await recruitmentService?.getAllJobs({ status: 'active', page: 1, limit: 12 });
-        setJobPostings(data?.jobs || []);
+        const [jobsResult, summaryResult, archiveResult] = await Promise.allSettled([
+          recruitmentService?.getAllJobs({ status: 'active', page: 1, limit: 12 }),
+          vacancyIntegrationService?.getSyncSummary(),
+          vacancyIntegrationService?.getArchive({ status: 'closed', limit: 12 })
+        ]);
+
+        if (jobsResult.status === 'fulfilled') {
+          const jobsPayload = jobsResult.value;
+          setJobPostings(jobsPayload?.jobs || jobsPayload?.data || []);
+        } else {
+          setJobPostings([]);
+          const apiError = handleApiError(jobsResult.reason);
+          setError(apiError?.message);
+        }
+
+        if (summaryResult.status === 'fulfilled') {
+          const summaryPayload = summaryResult.value;
+          setVacancySummary(summaryPayload?.summary || summaryPayload || null);
+        } else {
+          setVacancySummary(null);
+        }
+
+        if (archiveResult.status === 'fulfilled') {
+          const archivePayload = archiveResult.value;
+          const archiveItems = Array.isArray(archivePayload?.jobs)
+            ? archivePayload.jobs
+            : Array.isArray(archivePayload?.archive)
+              ? archivePayload.archive
+              : Array.isArray(archivePayload)
+                ? archivePayload
+                : [];
+          setVacancyArchive(archiveItems);
+        } else {
+          setVacancyArchive([]);
+        }
       }
     } catch (err) {
       const apiError = handleApiError(err);
@@ -835,6 +1220,22 @@ const PortalExperience = () => {
 
     setSelectedNotice(item);
     setShowApplicationModal(true);
+  };
+
+  const handleDownloadPack = (job) => {
+    const attachments = Array.isArray(job?.attachments) ? job.attachments : [];
+    const attachmentWithUrl = attachments.find((item) => item?.url || item?.download_url);
+    const downloadUrl =
+      job?.download_pack_url ||
+      job?.pack_url ||
+      job?.document_url ||
+      job?.gazette_url ||
+      attachmentWithUrl?.url ||
+      attachmentWithUrl?.download_url;
+
+    if (downloadUrl) {
+      window.open(downloadUrl, '_blank', 'noopener');
+    }
   };
 
   const renderProcurementSection = () => (
@@ -1181,57 +1582,248 @@ const PortalExperience = () => {
           )}
         </div>
       </div>
+
     </motion.section>
   );
 
-  const renderRecruitmentSection = () => (
-    <motion.section
-      key="recruitment"
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -16 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-10"
-    >
-      <div className="flex flex-wrap items-start justify-between gap-6">
-        <div className="max-w-2xl">
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
-            {recruitmentCopy.heading}
-          </h2>
-          <p className="text-slate-300">
-            {recruitmentCopy.description}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-4 bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-          <div className="flex flex-col">
-            <span className="text-xs uppercase tracking-wider text-slate-400">
-              {recruitmentCopy.filters.focusLabel}
-            </span>
-            <select
-              value={jobCategory}
-              onChange={(event) => setJobCategory(event.target.value)}
-              className="mt-1 rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-slate-100 focus:border-emerald-400 focus:outline-none"
-            >
-              {recruitmentCategoryOptions.map((option) => (
-                <option key={option} value={option} className="bg-slate-900">
-                  {option === 'all' ? recruitmentCopy.filters.allOption : option}
-                </option>
-              ))}
-            </select>
+  const renderRecruitmentSection = () => {
+    const statusThemeMap = {
+      Open: 'border border-emerald-500/40 bg-emerald-500/10 text-emerald-200',
+      'Under Review': 'border border-amber-400/40 bg-amber-500/10 text-amber-200',
+      Closed: 'border border-slate-600 bg-slate-800/80 text-slate-300',
+      default: 'border border-slate-700 bg-slate-800/80 text-slate-200'
+    };
+
+    const statusIconMap = {
+      Open: CheckCircle,
+      'Under Review': Loader,
+      Closed: X
+    };
+
+    const archivePreview = archivedJobPostings.slice(0, 4);
+    const archiveTotalLabel = translate(
+      'recruitment.archive.total',
+      '{{count}} closed roles',
+      { count: archivedJobPostings.length }
+    );
+
+    return (
+      <motion.section
+        key="recruitment"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -16 }}
+        transition={{ duration: 0.3 }}
+        className="space-y-10"
+      >
+      <div className="space-y-6 lg:space-y-8">
+        <div className="flex flex-wrap items-start justify-between gap-6">
+          <div className="max-w-2xl">
+            <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+              {recruitmentCopy.heading}
+            </h2>
+            <p className="text-slate-300">
+              {recruitmentCopy.description}
+            </p>
           </div>
-          <div className="flex flex-col">
+          <div className="grid w-full max-w-3xl gap-4 rounded-2xl border border-slate-800 bg-slate-900/80 p-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="md:col-span-2 xl:col-span-3">
+              <label className="text-xs uppercase tracking-wider text-slate-400" htmlFor="job-search">
+                {recruitmentCopy.filters.searchLabel}
+              </label>
+              <div className="relative mt-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                <input
+                  id="job-search"
+                  type="search"
+                  value={jobSearchTerm}
+                  onChange={(event) => setJobSearchTerm(event.target.value)}
+                  placeholder={recruitmentCopy.filters.searchPlaceholder}
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950/80 py-2.5 pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs uppercase tracking-wider text-slate-400">
+                {recruitmentCopy.filters.focusLabel}
+              </span>
+              <select
+                value={jobCategory}
+                onChange={(event) => setJobCategory(event.target.value)}
+                className="mt-1 rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-slate-100 focus:border-emerald-400 focus:outline-none"
+              >
+                {recruitmentCategoryOptions.map((option) => (
+                  <option key={option} value={option} className="bg-slate-900">
+                    {option === 'all' ? recruitmentCopy.filters.allOption : option}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs uppercase tracking-wider text-slate-400">
+                {recruitmentCopy.filters.statusLabel}
+              </span>
+              <select
+                value={jobStatusFilter}
+                onChange={(event) => setJobStatusFilter(event.target.value)}
+                className="mt-1 rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-slate-100 focus:border-emerald-400 focus:outline-none"
+              >
+                {recruitmentStatusOptions.map((option) => {
+                  const optionKey =
+                    option === 'Under Review'
+                      ? 'review'
+                      : option === 'Open'
+                        ? 'open'
+                        : option === 'Closed'
+                          ? 'closed'
+                          : option;
+                  const label =
+                    recruitmentCopy.filters.statusOptions?.[optionKey] ||
+                    recruitmentCopy.filters.statusOptions?.[option] ||
+                    option;
+
+                  return (
+                    <option key={option} value={option} className="bg-slate-900">
+                      {label}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs uppercase tracking-wider text-slate-400">
+                {recruitmentCopy.filters.divisionLabel}
+              </span>
+              <select
+                value={jobDivisionFilter}
+                onChange={(event) => setJobDivisionFilter(event.target.value)}
+                className="mt-1 rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-slate-100 focus:border-emerald-400 focus:outline-none"
+              >
+                {recruitmentDivisionOptions.map((option) => (
+                  <option key={option} value={option} className="bg-slate-900">
+                    {option === 'all' ? recruitmentCopy.filters.allDivisions : option}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs uppercase tracking-wider text-slate-400">
+                {recruitmentCopy.filters.gradeLabel}
+              </span>
+              <select
+                value={jobGradeFilter}
+                onChange={(event) => setJobGradeFilter(event.target.value)}
+                className="mt-1 rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-slate-100 focus:border-emerald-400 focus:outline-none"
+              >
+                {recruitmentGradeOptions.map((option) => (
+                  <option key={option} value={option} className="bg-slate-900">
+                    {option === 'all' ? recruitmentCopy.filters.allGrades : option}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs uppercase tracking-wider text-slate-400">
+                {recruitmentCopy.filters.sortLabel}
+              </span>
+              <select
+                value={jobSort}
+                onChange={(event) => setJobSort(event.target.value)}
+                className="mt-1 rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-slate-100 focus:border-emerald-400 focus:outline-none"
+              >
+                <option value="deadline">{recruitmentCopy.filters.options.deadline}</option>
+                <option value="salary">{recruitmentCopy.filters.options.salary}</option>
+                <option value="recent">{recruitmentCopy.filters.options.recent}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 rounded-3xl border border-emerald-500/20 bg-slate-900/60 p-6 md:grid-cols-2 xl:grid-cols-4">
+          <div className="space-y-1">
             <span className="text-xs uppercase tracking-wider text-slate-400">
-              {recruitmentCopy.filters.sortLabel}
+              {recruitmentCopy.sync.metrics.open}
             </span>
-            <select
-              value={jobSort}
-              onChange={(event) => setJobSort(event.target.value)}
-              className="mt-1 rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-slate-100 focus:border-emerald-400 focus:outline-none"
-            >
-              <option value="deadline">{recruitmentCopy.filters.options.deadline}</option>
-              <option value="salary">{recruitmentCopy.filters.options.salary}</option>
-              <option value="recent">{recruitmentCopy.filters.options.recent}</option>
-            </select>
+            <p className="text-2xl font-semibold text-white">{vacancyAutomationSnapshot.openRoles}</p>
+            <p className="text-xs text-slate-400">{recruitmentCopy.sync.hints.open}</p>
+          </div>
+          <div className="space-y-1">
+            <span className="text-xs uppercase tracking-wider text-slate-400">
+              {recruitmentCopy.sync.metrics.review}
+            </span>
+            <p className="text-2xl font-semibold text-white">{vacancyAutomationSnapshot.underReview}</p>
+            <p className="text-xs text-slate-400">{recruitmentCopy.sync.hints.review}</p>
+          </div>
+          <div className="space-y-1">
+            <span className="text-xs uppercase tracking-wider text-slate-400">
+              {recruitmentCopy.sync.metrics.closed}
+            </span>
+            <p className="text-2xl font-semibold text-white">{vacancyAutomationSnapshot.closedRoles}</p>
+            <p className="text-xs text-slate-400">{recruitmentCopy.sync.hints.closed}</p>
+          </div>
+          <div className="space-y-1">
+            <span className="text-xs uppercase tracking-wider text-slate-400">
+              {recruitmentCopy.sync.metrics.lastSync}
+            </span>
+            <p className="text-base font-semibold text-emerald-300">
+              {formatRelativeTime(vacancyAutomationSnapshot.lastSynced)}
+            </p>
+            <p className="text-xs text-slate-400 flex items-center gap-1">
+              <RefreshCw className="h-3.5 w-3.5" />
+              {recruitmentCopy.sync.hints.auto}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-4 rounded-3xl border border-slate-800 bg-slate-900/80 p-6 md:grid-cols-3">
+          <div className="flex items-start gap-3">
+            <FileText className="mt-1 h-5 w-5 text-emerald-300" />
+            <div>
+              <p className="text-sm font-semibold text-white">{recruitmentCopy.sync.features.cms}</p>
+              <p className="text-xs text-slate-400">
+                {recruitmentCopy.sync.features.cmsDescription}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <Bell className="mt-1 h-5 w-5 text-emerald-300" />
+            <div>
+              <p className="text-sm font-semibold text-white">{recruitmentCopy.sync.features.gazette}</p>
+              <p className="text-xs text-slate-400">
+                {recruitmentCopy.sync.features.gazetteDescription}
+              </p>
+              {typeof vacancyAutomationSnapshot.gazetteBacklog === 'number' &&
+                vacancyAutomationSnapshot.gazetteBacklog > 0 && (
+                <p className="mt-2 inline-flex items-center gap-2 text-[11px] font-medium text-emerald-200">
+                  <Bell className="h-3.5 w-3.5" />
+                  {translate(
+                    'recruitment.sync.features.gazettePending',
+                    '{{count}} gazettes flagged',
+                    { count: vacancyAutomationSnapshot.gazetteBacklog }
+                  )}
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <Shield className="mt-1 h-5 w-5 text-emerald-300" />
+            <div>
+              <p className="text-sm font-semibold text-white">{recruitmentCopy.sync.features.backOffice}</p>
+              <p className="text-xs text-slate-400">
+                {recruitmentCopy.sync.features.backOfficeDescription}
+              </p>
+              {typeof vacancyAutomationSnapshot.pscLinks === 'number' &&
+                vacancyAutomationSnapshot.pscLinks > 0 && (
+                <p className="mt-2 inline-flex items-center gap-2 text-[11px] font-medium text-emerald-200">
+                  <Shield className="h-3.5 w-3.5" />
+                  {translate(
+                    'recruitment.sync.features.pscPending',
+                    '{{count}} PSC links tracked',
+                    { count: vacancyAutomationSnapshot.pscLinks }
+                  )}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -1301,6 +1893,26 @@ const PortalExperience = () => {
             filteredJobPostings.map((job) => {
               const daysLeft = daysUntil(job?.application_deadline);
               const isExpanded = expandedJobId === job?.job_id;
+              const status = job?.computedStatus || job?.status || recruitmentCopy.cards.statusFallback;
+              const StatusIconComponent = statusIconMap[status] || statusIconMap.Open;
+              const statusTheme = statusThemeMap[status] || statusThemeMap.default;
+              const statusLabel = recruitmentCopy.cards.statusLabels?.[status] || status;
+              const statusNote = recruitmentCopy.cards.statusNotes?.[status] || '';
+              const divisionLabel = job?.computedDivision || job?.department || recruitmentCopy.cards.departmentFallback;
+              const gradeLabel = job?.computedGrade || recruitmentCopy.cards.gradeFallback;
+              const salaryDisplay =
+                job?.salary_range_min && job?.salary_range_max
+                  ? `LKR ${job.salary_range_min} - ${job.salary_range_max}`
+                  : job?.salary_range || job?.compensation || recruitmentCopy.cards.salaryFallback;
+              const attachments = Array.isArray(job?.attachments) ? job.attachments : [];
+              const hasDownloadPack = Boolean(
+                job?.download_pack_url ||
+                  job?.pack_url ||
+                  job?.document_url ||
+                  job?.gazette_url ||
+                  attachments.find((item) => item?.url || item?.download_url)
+              );
+              const canApply = status === 'Open';
 
               return (
                 <motion.div
@@ -1314,21 +1926,28 @@ const PortalExperience = () => {
 
                   <div className="relative space-y-6">
                     <div className="flex flex-wrap items-start justify-between gap-4">
-                      <div>
-                        <div className="flex items-center gap-3">
+                      <div className="space-y-3">
+                        <div className="flex flex-wrap items-center gap-3">
                           <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-medium uppercase tracking-wider text-emerald-300">
                             {job?.category || recruitmentCopy.cards.categoryFallback}
                           </span>
-                          <span className="rounded-full border border-slate-700 px-3 py-1 text-xs uppercase tracking-wider text-slate-300">
-                            {job?.status || recruitmentCopy.cards.statusFallback}
-                          </span>
+                          {job?.work_mode && (
+                            <span className="rounded-full border border-slate-700 px-3 py-1 text-[11px] uppercase tracking-wider text-slate-300">
+                              {job?.work_mode}
+                            </span>
+                          )}
                         </div>
-                        <h3 className="mt-3 text-2xl font-semibold text-white">
+                        <h3 className="text-2xl font-semibold text-white">
                           {job?.title}
                         </h3>
-                        <p className="mt-2 text-sm leading-relaxed text-slate-300">
+                        <p className="text-sm leading-relaxed text-slate-300">
                           {job?.description}
                         </p>
+                        <div className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-semibold uppercase tracking-wider ${statusTheme}`}>
+                          <StatusIconComponent className="h-4 w-4" />
+                          <span>{statusLabel}</span>
+                          {statusNote && <span className="text-[10px] font-normal normal-case text-emerald-100/80">{statusNote}</span>}
+                        </div>
                       </div>
                       <div className="rounded-2xl border border-slate-700 bg-slate-950/80 px-5 py-4 text-right">
                         <span className="block text-xs uppercase tracking-wider text-slate-400">
@@ -1337,7 +1956,7 @@ const PortalExperience = () => {
                         <span className="text-lg font-semibold text-white">
                           {job?.application_deadline || recruitmentCopy.cards.tbc}
                         </span>
-                        {daysLeft !== null && (
+                        {status === 'Open' && daysLeft !== null ? (
                           <span className={`mt-1 block text-xs font-medium ${
                             daysLeft <= 3
                               ? 'text-red-300'
@@ -1345,26 +1964,35 @@ const PortalExperience = () => {
                                 ? 'text-amber-300'
                                 : 'text-emerald-300'
                           }`}>
-                            {daysLeft < 0
-                              ? recruitmentCopy.cards.closed
-                              : translate('recruitment.cards.daysRemaining', recruitmentCopy.cards.daysRemaining, {
-                                  count: daysLeft
-                                })}
+                            {translate('recruitment.cards.daysRemaining', recruitmentCopy.cards.daysRemaining, {
+                              count: Math.max(0, daysLeft)
+                            })}
+                          </span>
+                        ) : (
+                          <span className="mt-1 block text-xs font-medium text-slate-300">
+                            {statusLabel}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="grid gap-4 text-sm sm:grid-cols-3">
+                    <div className="grid gap-4 text-sm sm:grid-cols-2 xl:grid-cols-4">
                       <div className="flex items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-3">
                         <Building className="h-4 w-4 text-emerald-300" />
                         <div>
                           <p className="text-xs uppercase tracking-wider text-slate-400">
                             {recruitmentCopy.cards.department}
                           </p>
-                          <p className="text-slate-200">
-                            {job?.department || recruitmentCopy.cards.departmentFallback}
+                          <p className="text-slate-200">{divisionLabel}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-3">
+                        <Briefcase className="h-4 w-4 text-emerald-300" />
+                        <div>
+                          <p className="text-xs uppercase tracking-wider text-slate-400">
+                            {recruitmentCopy.cards.grade}
                           </p>
+                          <p className="text-slate-200">{gradeLabel}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-3">
@@ -1379,16 +2007,12 @@ const PortalExperience = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-3">
-                        <Briefcase className="h-4 w-4 text-emerald-300" />
+                        <BarChart3 className="h-4 w-4 text-emerald-300" />
                         <div>
                           <p className="text-xs uppercase tracking-wider text-slate-400">
                             {recruitmentCopy.cards.salary}
                           </p>
-                          <p className="text-slate-200">
-                            {job?.salary_range_min && job?.salary_range_max
-                              ? `LKR ${job.salary_range_min} - ${job.salary_range_max}`
-                              : job?.salary_range || recruitmentCopy.cards.salaryFallback}
-                          </p>
+                          <p className="text-slate-200">{salaryDisplay}</p>
                         </div>
                       </div>
                     </div>
@@ -1399,15 +2023,32 @@ const PortalExperience = () => {
                         className="flex items-center gap-2 rounded-full border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-emerald-400 hover:text-emerald-300"
                       >
                         <Eye className="h-4 w-4" />
-                        {recruitmentCopy.cards.overviewCta}
+                        {recruitmentCopy.cards.buttons.overview}
                         <ChevronDown className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                       </button>
+                      {hasDownloadPack && (
+                        <button
+                          onClick={() => handleDownloadPack(job)}
+                          className="flex items-center gap-2 rounded-full border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-emerald-400 hover:text-emerald-300"
+                        >
+                          <FileText className="h-4 w-4" />
+                          {recruitmentCopy.cards.buttons.downloadPack}
+                        </button>
+                      )}
                       <button
                         onClick={() => handleOpenApplication(job)}
-                        className="flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:scale-[1.01]"
+                        disabled={!canApply}
+                        title={!canApply ? recruitmentCopy.cards.buttons.closedHint : undefined}
+                        className={`flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold shadow-lg transition ${
+                          canApply
+                            ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-emerald-500/20 hover:scale-[1.01]'
+                            : 'cursor-not-allowed border border-slate-700 bg-slate-800 text-slate-400 shadow-none'
+                        }`}
                       >
                         <Send className="h-4 w-4" />
-                        {recruitmentCopy.cards.applyCta}
+                        {canApply
+                          ? recruitmentCopy.cards.buttons.apply
+                          : recruitmentCopy.cards.buttons.closed}
                       </button>
                     </div>
 
@@ -1482,8 +2123,67 @@ const PortalExperience = () => {
           )}
         </div>
       </div>
+
+      {archivedJobPostings.length > 0 && (
+        <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-6 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3 className="text-lg font-semibold text-white">{recruitmentCopy.archive.title}</h3>
+            <span className="text-xs uppercase tracking-wider text-slate-500">
+              {archiveTotalLabel}
+            </span>
+          </div>
+          <p className="text-sm text-slate-400">{recruitmentCopy.archive.description}</p>
+          <div className="space-y-3">
+            {archivePreview.map((job) => {
+              const division = job?.computedDivision || job?.department || recruitmentCopy.cards.departmentFallback;
+              const hasDownload = Boolean(
+                job?.download_pack_url ||
+                job?.pack_url ||
+                job?.document_url ||
+                job?.gazette_url ||
+                (Array.isArray(job?.attachments) && job.attachments.some((item) => item?.url || item?.download_url))
+              );
+
+              return (
+                <div
+                  key={`archive-${job?.job_id || job?.title}`}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800/60 bg-slate-950/60 px-4 py-3"
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-slate-200">{job?.title}</p>
+                    <p className="text-xs text-slate-500">
+                      {division}
+                      <span className="px-2 text-slate-600">•</span>
+                      {formatRelativeTime(job?.computedPublishedAt)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {hasDownload && (
+                      <button
+                        onClick={() => handleDownloadPack(job)}
+                        className="flex items-center gap-1 rounded-full border border-slate-700 px-3 py-1.5 text-[11px] font-medium text-slate-200 transition hover:border-emerald-400 hover:text-emerald-300"
+                      >
+                        <FileText className="h-3.5 w-3.5" />
+                        {recruitmentCopy.archive.download}
+                      </button>
+                    )}
+                    <span className="inline-flex items-center gap-2 rounded-full border border-slate-700 px-3 py-1 text-[11px] uppercase tracking-wider text-slate-400">
+                      {recruitmentCopy.cards.statusLabels.closed}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {archivedJobPostings.length > archivePreview.length && (
+            <p className="text-xs text-slate-500">{recruitmentCopy.archive.moreHint}</p>
+          )}
+        </div>
+      )}
+
     </motion.section>
-  );
+    );
+  };
 
   const renderDashboardSection = () => (
     <motion.section

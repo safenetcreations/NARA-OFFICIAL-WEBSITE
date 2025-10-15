@@ -217,5 +217,273 @@ service cloud.firestore {
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
+
+    // ============================================
+    // PHASE 4: STAKEHOLDER ENGAGEMENT & COLLABORATION
+    // ============================================
+
+    // PUBLIC CONSULTATION PORTAL
+    // Consultations - Public can read open consultations, admins manage
+    match /consultations/{consultationId} {
+      allow read: if resource.data.status == 'open' || resource.data.status == 'closed' || isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Consultation Feedback - Public can submit, read their own
+    match /consultation_feedback/{feedbackId} {
+      allow read: if true; // Public read for transparency
+      allow create: if true; // Anyone can submit feedback
+      allow update: if isAdmin(); // Only admins can moderate
+      allow delete: if isAdmin();
+    }
+
+    // Consultation Comments - Public can submit, read all
+    match /consultation_comments/{commentId} {
+      allow read: if true; // Public read
+      allow create: if true; // Anyone can comment
+      allow update: if isAdmin(); // Only admins can moderate
+      allow delete: if isAdmin();
+    }
+
+    // Consultation Polls - Public can view, admins manage
+    match /consultation_polls/{pollId} {
+      allow read: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Consultation Votes - Public can vote, read aggregated results
+    match /consultation_votes/{voteId} {
+      allow read: if true;
+      allow create: if true; // Anyone can vote
+      allow update: if false; // Votes are immutable
+      allow delete: if isAdmin();
+    }
+
+    // Survey Responses - Public can submit, read their own
+    match /survey_responses/{responseId} {
+      allow read: if request.auth != null && resource.data.respondentEmail == request.auth.token.email || isAdmin();
+      allow create: if true;
+      allow update: if false; // Responses are immutable
+      allow delete: if isAdmin();
+    }
+
+    // Consultation Reports - Only admins
+    match /consultation_reports/{reportId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // RESEARCH COLLABORATION HUB
+    // Researchers - Public can read verified profiles
+    match /researchers/{researcherId} {
+      allow read: if resource.data.verificationStatus == 'verified' || isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (resource.data.email == request.auth.token.email || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Collaboration Requests - Authenticated users can create and view
+    match /collaboration_requests/{requestId} {
+      allow read: if isAuthenticated() || isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (resource.data.requesterId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Shared Resources - Authenticated researchers can share and book
+    match /shared_resources/{resourceId} {
+      allow read: if isAuthenticated() || isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Joint Publications - Public can read, authenticated can add
+    match /joint_publications/{publicationId} {
+      allow read: if true; // Public read
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (resource.data.leadAuthorId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Funding Opportunities - Public can read active, admins manage
+    match /funding_opportunities/{fundingId} {
+      allow read: if resource.data.status == 'active' || isAuthenticated() || isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // INDUSTRY PARTNERSHIP DASHBOARD
+    // Industry Partners - Public can read verified partners
+    match /industry_partners/{partnerId} {
+      allow read: if resource.data.status == 'active' || isAdmin();
+      allow create: if isAuthenticated(); // Companies can register
+      allow update: if isAuthenticated() && (resource.data.contactEmail == request.auth.token.email || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Partnership Proposals - Authenticated can submit, admins approve
+    match /partnership_proposals/{proposalId} {
+      allow read: if isAuthenticated() && (resource.data.submittedBy == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAdmin(); // Only admins approve
+      allow delete: if isAdmin();
+    }
+
+    // Partnership Projects - Public can read active projects
+    match /partnership_projects/{projectId} {
+      allow read: if resource.data.status == 'active' || isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // EDUCATIONAL OUTREACH PLATFORM
+    // Educational Content - Public read, admins manage
+    match /educational_content/{contentId} {
+      allow read: if true; // Public education content
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Virtual Tours - Public access
+    match /virtual_tours/{tourId} {
+      allow read: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Student Competitions - Public can read and enter
+    match /student_competitions/{competitionId} {
+      allow read: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Competition Entries - Students can submit, read their own
+    match /competition_entries/{entryId} {
+      allow read: if request.auth != null && (resource.data.studentEmail == request.auth.token.email || isAdmin());
+      allow create: if true; // Students can enter
+      allow update: if isAdmin(); // Only admins can score
+      allow delete: if isAdmin();
+    }
+
+    // Webinar Events - Public can read and register
+    match /webinar_events/{webinarId} {
+      allow read: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Webinar Registrations - Users can register, read their own
+    match /webinar_registrations/{registrationId} {
+      allow read: if request.auth != null && (resource.data.email == request.auth.token.email || isAdmin());
+      allow create: if true; // Anyone can register
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // PHASE 5: ADVANCED ANALYTICS & INSIGHTS
+    // ============================================
+
+    // Predictions Collection - Predictive Analytics
+    match /predictions/{predictionId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Impact Assessments
+    match /impact_assessments/{assessmentId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Project Outcomes
+    match /project_outcomes/{outcomeId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ROI Calculations
+    match /roi_calculations/{roiId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Economic Valuations
+    match /economic_valuations/{valuationId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Tourism Revenue
+    match /tourism_revenue/{revenueId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Fisheries Valuations
+    match /fisheries_valuations/{valuationId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Employment Analyses
+    match /employment_analyses/{analysisId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Investment Models
+    match /investment_models/{modelId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Policy Simulations
+    match /policy_simulations/{simulationId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Impact Reports
+    match /impact_reports/{reportId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
   }
 }

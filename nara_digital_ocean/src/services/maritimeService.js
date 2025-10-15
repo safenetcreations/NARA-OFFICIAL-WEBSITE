@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  addDoc,
   getDoc,
   getDocs,
   setDoc,
@@ -177,6 +178,123 @@ export const deleteMaritimeService = async (serviceId) => {
     return { success: true };
   } catch (error) {
     console.error('Error deleting service:', error);
+    throw error;
+  }
+};
+
+// ============================================
+// HYDROGRAPHY & CHARTS
+// ============================================
+
+export const getChartCatalog = async (filters = {}) => {
+  try {
+    const chartsCollection = collection(db, 'hydro_charts');
+    const constraints = [];
+
+    if (filters.status) {
+      constraints.push(where('status', '==', filters.status));
+    }
+
+    if (filters.type) {
+      constraints.push(where('type', '==', filters.type));
+    }
+
+    if (filters.region) {
+      constraints.push(where('regions', 'array-contains', filters.region));
+    }
+
+    constraints.push(orderBy('updatedAt', 'desc'));
+
+    if (filters.limit) {
+      constraints.push(firestoreLimit(filters.limit));
+    }
+
+    const chartsQuery = query(chartsCollection, ...constraints);
+    const snapshot = await getDocs(chartsQuery);
+
+    let charts = snapshot.docs.map((docSnap) => ({
+      id: docSnap.id,
+      ...docSnap.data()
+    }));
+
+    if (filters.search) {
+      const term = filters.search.toLowerCase();
+      charts = charts.filter((chart) => {
+        const title =
+          typeof chart.title === 'string'
+            ? chart.title
+            : chart.title?.en || '';
+        return (
+          title.toLowerCase().includes(term) ||
+          (chart.chartNumber || '').toLowerCase().includes(term) ||
+          (chart.scale || '').toString().toLowerCase().includes(term)
+        );
+      });
+    }
+
+    return charts;
+  } catch (error) {
+    console.error('Error fetching hydrographic chart catalog:', error);
+    return [];
+  }
+};
+
+export const submitChartRequest = async (requestData) => {
+  try {
+    const docRef = await addDoc(collection(db, 'hydro_chart_requests'), {
+      ...requestData,
+      status: 'pending',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error('Error submitting chart request:', error);
+    throw error;
+  }
+};
+
+export const submitHydroSurveyRequest = async (surveyData) => {
+  try {
+    const docRef = await addDoc(collection(db, 'hydro_survey_requests'), {
+      ...surveyData,
+      status: 'review',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error('Error submitting hydrographic survey request:', error);
+    throw error;
+  }
+};
+
+export const submitHydroDataRequest = async (requestData) => {
+  try {
+    const docRef = await addDoc(collection(db, 'hydro_data_requests'), {
+      ...requestData,
+      status: 'pending',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error('Error submitting hydrographic data request:', error);
+    throw error;
+  }
+};
+
+export const submitBathymetryContribution = async (contributionData) => {
+  try {
+    const docRef = await addDoc(collection(db, 'hydro_crowd_bathymetry'), {
+      ...contributionData,
+      qcStatus: 'pending_review',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error('Error submitting bathymetry contribution:', error);
     throw error;
   }
 };
@@ -381,6 +499,11 @@ export default {
   createMaritimeService,
   updateMaritimeService,
   deleteMaritimeService,
+  getChartCatalog,
+  submitChartRequest,
+  submitHydroSurveyRequest,
+  submitHydroDataRequest,
+  submitBathymetryContribution,
   
   // Permits
   submitPermitApplication,

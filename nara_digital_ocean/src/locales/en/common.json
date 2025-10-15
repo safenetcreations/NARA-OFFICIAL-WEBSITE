@@ -22,7 +22,11 @@
           "researchExcellencePortal": "Research Excellence Portal",
           "researchCollaboration": "Research Collaboration",
           "knowledgeDiscovery": "Knowledge Discovery",
-          "partnershipInnovation": "Partnership Innovation"
+          "partnershipInnovation": "Partnership Innovation",
+          "vesselBooking": "Research Vessel Booking",
+          "labResults": "Lab Results Portal",
+          "scientificEvidence": "Scientific Evidence Repository",
+          "projectPipeline": "Project Pipeline Tracker"
         }
       },
       "services": {
@@ -31,12 +35,16 @@
           "digitalMarketplace": "Digital Marketplace",
           "maritimeServices": "Maritime Services",
           "governmentServices": "Government Services",
-          "emergencyResponse": "Emergency Response"
+          "emergencyResponse": "Emergency Response",
+          "fishAdvisory": "Fish Advisory System",
+          "exportIntelligence": "Export Market Intelligence",
+          "marineIncident": "Marine Incident Portal"
         }
       },
       "resources": {
         "title": "Resources",
         "links": {
+          "libraryCatalogue": "Library Catalogue",
           "digitalProductLibrary": "Digital Product Library",
           "learningAcademy": "Learning Academy",
           "regionalImpact": "Regional Impact",
@@ -68,7 +76,10 @@
         }
       },
       "news": {
-        "title": "News & Updates"
+        "title": "News & Updates",
+        "links": {
+          "mediaPressKit": "Media Press Kit"
+        }
       },
       "contact": {
         "title": "Contact",
@@ -106,5 +117,11 @@
   "attachFiles": "Attach Files",
   "filesSelected": "files selected",
   "submitting": "Submitting...",
-  "submit": "Submit"
+  "submit": "Submit",
+  "admin": {
+    "csvExport": {
+      "success": "Applicants CSV downloaded",
+      "error": "Unable to export applicants. Please retry."
+    }
+  }
 }

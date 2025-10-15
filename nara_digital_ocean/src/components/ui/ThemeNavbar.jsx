@@ -1,23 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as Icons from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import useThemeStore from '../../store/theme';
 import AppImage from '../AppImage';
 import { AVAILABLE_LANGUAGES } from '../../i18n';
 
 const ThemeNavbar = () => {
   const navigate = useNavigate();
-  const theme = useThemeStore((state) => state?.theme || 'ocean');
-  const toggleTheme = useThemeStore((state) => state?.toggleTheme);
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation(['common', 'audiences']);
   const languageMenuRef = useRef(null);
   const dropdownTimeoutRef = useRef(null);
+  const navbarRef = useRef(null);
+  const primaryFont = "'Noto Sans Sinhala', 'Noto Sans Tamil', 'Inter', 'Segoe UI', sans-serif";
+  const secondaryFont = "'Inter', 'Segoe UI', sans-serif";
+  const langBadgeMap = {
+    si: { label: 'සිංහල', short: 'සි', flag: '🇱🇰' },
+    ta: { label: 'தமிழ்', short: 'த', flag: '🇱🇰' },
+    en: { label: 'English', short: 'EN', flag: '🇱🇰' }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,23 +61,22 @@ const ThemeNavbar = () => {
       icon: Icons.Info,
       dropdown: [
         { labelKey: 'navbar.menu.about.links.ourStory', path: '/about-nara-our-story', icon: Icons.Heart },
-        { labelKey: 'navbar.menu.about.links.mediaGallery', path: '/media-gallery', icon: Icons.Image }
+        { labelKey: 'navbar.menu.divisions.links.allDivisions', path: '/divisions', icon: Icons.Grid3x3 },
+        { labelKey: 'navbar.menu.about.links.mediaGallery', path: '/media-gallery', icon: Icons.Image },
+        { labelKey: 'navbar.menu.about.links.newsUpdates', path: '/nara-news-updates-center', icon: Icons.Newspaper },
+        { labelKey: 'navbar.menu.news.links.mediaPressKit', path: '/media-press-kit', icon: Icons.Camera },
+        { labelKey: 'navbar.menu.about.links.procurement', path: '/procurement-recruitment-portal', icon: Icons.Briefcase }
       ]
     },
     {
-      titleKey: 'navbar.menu.divisions.title',
-      icon: Icons.Layers,
+      titleKey: 'audiences:nav.label',
+      icon: Icons.Target,
       dropdown: [
-        { labelKey: 'navbar.menu.divisions.links.allDivisions', path: '/divisions', icon: Icons.Grid3x3 },
-        { labelKey: 'navbar.menu.divisions.links.fisheriesScience', path: '/divisions/marine-inland-fisheries-science', icon: Icons.Fish },
-        { labelKey: 'navbar.menu.divisions.links.marineBiology', path: '/divisions/marine-biology-ecosystems', icon: Icons.Waves },
-        { labelKey: 'navbar.menu.divisions.links.aquaculture', path: '/divisions/inland-aquatic-aquaculture', icon: Icons.Droplet },
-        { labelKey: 'navbar.menu.divisions.links.fishingTechnology', path: '/divisions/fishing-technology', icon: Icons.Anchor },
-        { labelKey: 'navbar.menu.divisions.links.qualityAssurance', path: '/divisions/post-harvest-quality', icon: Icons.FlaskConical },
-        { labelKey: 'navbar.menu.divisions.links.socioEconomics', path: '/divisions/socio-economics-marketing', icon: Icons.TrendingUp },
-        { labelKey: 'navbar.menu.divisions.links.hydrography', path: '/divisions/hydrography-nautical-charts', icon: Icons.Map },
-        { labelKey: 'navbar.menu.divisions.links.environmental', path: '/divisions/environmental-monitoring-advisory', icon: Icons.CloudRain },
-        { labelKey: 'navbar.menu.divisions.links.information', path: '/divisions/information-outreach', icon: Icons.BookOpen }
+        { labelKey: 'audiences:nav.generalPublic', path: '/audiences/general-public', icon: Icons.Heart },
+        { labelKey: 'audiences:nav.researchers', path: '/audiences/researchers-students', icon: Icons.Microscope },
+        { labelKey: 'audiences:nav.policy', path: '/audiences/policy-regulators', icon: Icons.Scale },
+        { labelKey: 'audiences:nav.industry', path: '/audiences/industry-exporters', icon: Icons.BriefcaseBusiness },
+        { labelKey: 'audiences:nav.media', path: '/audiences/media-partners-donors', icon: Icons.Share2 }
       ]
     },
     {
@@ -82,7 +86,11 @@ const ThemeNavbar = () => {
         { labelKey: 'navbar.menu.research.links.researchExcellencePortal', path: '/research-excellence-portal', icon: Icons.Award },
         { labelKey: 'navbar.menu.research.links.researchCollaboration', path: '/research-collaboration-platform', icon: Icons.Users },
         { labelKey: 'navbar.menu.research.links.knowledgeDiscovery', path: '/knowledge-discovery-center', icon: Icons.BookOpen },
-        { labelKey: 'navbar.menu.research.links.partnershipInnovation', path: '/partnership-innovation-gateway', icon: Icons.Lightbulb }
+        { labelKey: 'navbar.menu.research.links.partnershipInnovation', path: '/partnership-innovation-gateway', icon: Icons.Lightbulb },
+        { labelKey: 'navbar.menu.research.links.vesselBooking', path: '/research-vessel-booking', icon: Icons.Ship },
+        { labelKey: 'navbar.menu.research.links.labResults', path: '/lab-results', icon: Icons.FlaskConical },
+        { labelKey: 'navbar.menu.research.links.scientificEvidence', path: '/scientific-evidence-repository', icon: Icons.BookText },
+        { labelKey: 'navbar.menu.research.links.projectPipeline', path: '/project-pipeline-tracker', icon: Icons.Activity }
       ]
     },
     {
@@ -92,13 +100,17 @@ const ThemeNavbar = () => {
         { labelKey: 'navbar.menu.services.links.digitalMarketplace', path: '/nara-digital-marketplace', icon: Icons.ShoppingBag },
         { labelKey: 'navbar.menu.services.links.maritimeServices', path: '/maritime-services-hub', icon: Icons.Ship },
         { labelKey: 'navbar.menu.services.links.governmentServices', path: '/government-services-portal', icon: Icons.Building },
-        { labelKey: 'navbar.menu.services.links.emergencyResponse', path: '/emergency-response-network', icon: Icons.AlertTriangle }
+        { labelKey: 'navbar.menu.services.links.emergencyResponse', path: '/emergency-response-network', icon: Icons.AlertTriangle },
+        { labelKey: 'navbar.menu.services.links.fishAdvisory', path: '/fish-advisory-system', icon: Icons.Fish },
+        { labelKey: 'navbar.menu.services.links.exportIntelligence', path: '/export-market-intelligence', icon: Icons.TrendingUp },
+        { labelKey: 'navbar.menu.services.links.marineIncident', path: '/marine-incident-portal', icon: Icons.AlertCircle }
       ]
     },
     {
       titleKey: 'navbar.menu.resources.title',
       icon: Icons.FolderOpen,
       dropdown: [
+        { labelKey: 'navbar.menu.resources.links.libraryCatalogue', path: '/library', icon: Icons.BookOpen },
         { labelKey: 'navbar.menu.resources.links.digitalProductLibrary', path: '/digital-product-library', icon: Icons.Archive },
         { labelKey: 'navbar.menu.resources.links.learningAcademy', path: '/learning-development-academy', icon: Icons.GraduationCap },
         { labelKey: 'navbar.menu.resources.links.regionalImpact', path: '/regional-impact-network', icon: Icons.Globe },
@@ -106,12 +118,9 @@ const ThemeNavbar = () => {
       ]
     },
     {
-      titleKey: 'navbar.menu.news.title',
-      icon: Icons.Newspaper,
-      dropdown: [
-        { labelKey: 'navbar.menu.about.links.newsUpdates', path: '/nara-news-updates-center', icon: Icons.Newspaper },
-        { labelKey: 'navbar.menu.about.links.procurement', path: '/procurement-recruitment-portal', icon: Icons.Briefcase }
-      ]
+      titleKey: 'navbar.menu.contact.title',
+      icon: Icons.Phone,
+      path: '/contact-us'
     }
   ];
 
@@ -127,184 +136,254 @@ const ThemeNavbar = () => {
     setLanguageMenuOpen(false);
   };
 
-  const cycleLanguage = () => {
-    const currentIndex = AVAILABLE_LANGUAGES.findIndex((lang) => lang.code === activeLanguage.code);
-    const nextIndex = (currentIndex + 1) % AVAILABLE_LANGUAGES.length;
-    handleLanguageChange(AVAILABLE_LANGUAGES[nextIndex].code);
-  };
-
-  const handleMouseEnter = (index) => {
+  const clearDropdownTimeout = useCallback(() => {
     if (dropdownTimeoutRef.current) {
       clearTimeout(dropdownTimeoutRef.current);
+      dropdownTimeoutRef.current = null;
     }
+  }, []);
+
+  useEffect(() => () => clearDropdownTimeout(), [clearDropdownTimeout]);
+
+  const closeAllDropdowns = useCallback(() => {
+    clearDropdownTimeout();
+    setActiveDropdown(null);
+  }, [clearDropdownTimeout]);
+
+  useEffect(() => {
+    const handlePointerDown = (event) => {
+      if (!navbarRef.current) return;
+      if (!navbarRef.current.contains(event.target)) {
+        closeAllDropdowns();
+        setLanguageMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, [closeAllDropdowns]);
+
+  const handleMouseEnter = (index) => {
+    clearDropdownTimeout();
     setActiveDropdown(index);
   };
 
   const handleMouseLeave = () => {
+    clearDropdownTimeout();
     dropdownTimeoutRef.current = setTimeout(() => {
       setActiveDropdown(null);
-    }, 200);
+      dropdownTimeoutRef.current = null;
+    }, 180);
   };
 
   const handleDropdownMouseEnter = () => {
-    if (dropdownTimeoutRef.current) {
-      clearTimeout(dropdownTimeoutRef.current);
+    clearDropdownTimeout();
+  };
+
+  const handleDropdownMouseLeave = () => {
+    clearDropdownTimeout();
+    dropdownTimeoutRef.current = setTimeout(() => {
+      setActiveDropdown(null);
+      dropdownTimeoutRef.current = null;
+    }, 160);
+  };
+
+  const handleTopLevelClick = (index, path, hasDropdown) => {
+    if (hasDropdown) {
+      if (activeDropdown === index) {
+        closeAllDropdowns();
+      } else {
+        setActiveDropdown(index);
+      }
+      return;
     }
+
+    if (path && path !== '#') {
+      navigate(path);
+    }
+    closeAllDropdowns();
+    setMobileMenuOpen(false);
+  };
+
+  const handleDropdownLinkClick = () => {
+    closeAllDropdowns();
+    setMobileMenuOpen(false);
   };
 
   return (
-    <nav className={`navbar-theme glass ${scrolled ? 'scrolled' : ''}`} 
-         style={{ 
-           position: 'fixed', 
-           top: 0, 
-           left: 0, 
-           right: 0, 
-           zIndex: 1000,
-           margin: '8px',
-           width: 'calc(100% - 16px)'
-         }}>
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between',
-        gap: '1rem',
+    <nav
+      ref={navbarRef}
+      className={`navbar-theme ${scrolled ? 'scrolled' : ''}`}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
         width: '100%',
-        padding: '0.5rem 1rem'
+        background: scrolled
+          ? 'linear-gradient(90deg, rgba(147, 196, 235, 0.95), rgba(125, 178, 219, 0.95))'
+          : 'linear-gradient(90deg, rgba(168, 210, 238, 0.92), rgba(143, 194, 226, 0.92))',
+        borderBottom: '2px solid rgba(0, 86, 179, 0.4)',
+        boxShadow: scrolled
+          ? '0 10px 28px rgba(0, 88, 164, 0.18)'
+          : '0 8px 18px rgba(0, 88, 164, 0.12)',
+        transition: 'background 0.35s ease, box-shadow 0.35s ease',
+        fontFamily: primaryFont
+      }}
+      onMouseLeave={() => {
+        clearDropdownTimeout();
+        dropdownTimeoutRef.current = setTimeout(() => {
+          setActiveDropdown(null);
+          dropdownTimeoutRef.current = null;
+        }, 220);
+      }}
+    >
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '0.5rem',
+        width: '100%',
+        padding: '0.15rem 0.6rem',
+        maxWidth: '1120px',
+        margin: '0 auto'
       }}>
         {/* Logo Section - Compact */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none', flexShrink: 0 }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none', flexShrink: 0 }}>
           <AppImage
             src="/assets/nara-logo.png"
             alt="NARA logo"
             className="w-10 h-10 md:w-12 md:h-12 object-contain"
           />
-          <div className="hidden sm:block">
+          <div className="hidden sm:block" style={{ fontFamily: primaryFont }}>
             <h1 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{t('navbar.brand.title')}</h1>
-            <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.7, color: 'var(--muted)', lineHeight: 1.2 }}>{t('navbar.brand.subtitle')}</p>
+            <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.7, color: 'var(--muted)', lineHeight: 1.2, fontFamily: secondaryFont }}>{t('navbar.brand.subtitle')}</p>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="nav-links" style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-          {menuItems.map((item, index) => (
-            <div
-              key={item.titleKey}
-              className="relative"
-              onMouseEnter={() => handleMouseEnter(index)}
-              onMouseLeave={handleMouseLeave}
-            >
-              <button className="btn-ghost" style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '0.5rem',
-                padding: '0.5rem 1rem',
-                borderRadius: '999px',
-                fontSize: '0.9rem',
-                fontWeight: 500,
-                transition: 'all 0.3s ease'
-              }}>
-                <item.icon className="w-4 h-4" />
-                {t(item.titleKey)}
-                <Icons.ChevronDown className="w-3 h-3" />
-              </button>
+        <div
+          className="nav-links"
+          style={{
+            flex: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '0.25rem',
+            fontFamily: primaryFont
+          }}
+        >
+          {menuItems.map((item, index) => {
+            const hasDropdown = Array.isArray(item.dropdown) && item.dropdown.length > 0;
+            const targetPath = hasDropdown ? item.dropdown[0]?.path : item.path;
+            return (
+              <div
+                key={item.titleKey}
+                className="relative"
+                onMouseEnter={() => hasDropdown && handleMouseEnter(index)}
+                onMouseLeave={hasDropdown ? handleMouseLeave : undefined}
+              >
+                <button
+                  type="button"
+                className="btn-ghost"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.25rem',
+                  padding: '0.28rem 0.42rem',
+                  borderRadius: '10px',
+                  fontSize: '0.8rem',
+                  fontWeight: 650,
+                  letterSpacing: '0.01em',
+                    transition: 'all 0.3s ease',
+                    whiteSpace: 'nowrap',
+                    color: '#003366',
+                    background: hasDropdown && activeDropdown === index ? 'rgba(0, 86, 179, 0.12)' : 'transparent',
+                    border: hasDropdown && activeDropdown === index ? '1px solid rgba(0, 86, 179, 0.25)' : '1px solid transparent'
+                  }}
+                  onClick={() => handleTopLevelClick(index, targetPath, hasDropdown)}
+                >
+                  <item.icon className="w-3 h-3" />
+                  {t(item.titleKey)}
+                  {hasDropdown && <Icons.ChevronDown className="w-3 h-3" aria-hidden="true" />}
+                </button>
 
-              <AnimatePresence>
-                {activeDropdown === index && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="glass"
-                    onMouseEnter={handleDropdownMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      marginTop: '0.5rem',
-                      minWidth: '240px',
-                      borderRadius: '16px',
-                      padding: '0.5rem',
-                      boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
-                      background: 'rgba(255, 255, 255, 0.95)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(0, 194, 255, 0.2)'
-                    }}
-                  >
-                    {item.dropdown.map((subItem) => (
-                      <Link
-                        key={subItem.path}
-                        to={subItem.path}
-                        className="dropdown-item"
-                        onClick={() => setActiveDropdown(null)}
+                {hasDropdown && (
+                  <AnimatePresence>
+                    {activeDropdown === index && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="glass"
+                        onMouseEnter={handleDropdownMouseEnter}
+                        onMouseLeave={handleDropdownMouseLeave}
                         style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.75rem',
-                          padding: '0.75rem 1rem',
-                          borderRadius: '12px',
-                          background: 'transparent',
-                          textDecoration: 'none',
-                          transition: 'all 0.2s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0, 194, 255, 0.1), rgba(0, 229, 255, 0.1))';
-                          e.currentTarget.style.transform = 'translateX(4px)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'transparent';
-                          e.currentTarget.style.transform = 'translateX(0)';
+                          position: 'absolute',
+                          top: 'calc(100% + 0.3rem)',
+                          left: 0,
+                          transform: 'translateX(-12px)',
+                          minWidth: '230px',
+                          borderRadius: '16px',
+                          padding: '0.4rem',
+                          boxShadow: '0 10px 40px rgba(0,0,0,0.22)',
+                          background: 'rgba(255, 255, 255, 0.97)',
+                          backdropFilter: 'blur(16px)',
+                          border: '1px solid rgba(0, 86, 179, 0.18)'
                         }}
                       >
-                        <subItem.icon className="w-4 h-4" style={{
-                          background: 'linear-gradient(135deg, #0088cc, #00c2ff)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          backgroundClip: 'text'
-                        }} />
-                        <span style={{
-                          fontSize: '0.9rem',
-                          fontWeight: 500,
-                          background: 'linear-gradient(135deg, #0088cc, #00c2ff)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          backgroundClip: 'text'
-                        }}>{t(subItem.labelKey)}</span>
-                      </Link>
-                    ))}
-                  </motion.div>
+                        {item.dropdown.map((subItem) => (
+                          <Link
+                            key={subItem.path}
+                            to={subItem.path}
+                            className="dropdown-item"
+                            onClick={handleDropdownLinkClick}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.65rem',
+                              padding: '0.6rem 0.85rem',
+                              borderRadius: '12px',
+                              background: 'transparent',
+                              textDecoration: 'none',
+                              transition: 'all 0.2s ease',
+                              fontFamily: secondaryFont
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = 'rgba(0, 86, 179, 0.08)';
+                              e.currentTarget.style.transform = 'translateX(3px)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = 'transparent';
+                              e.currentTarget.style.transform = 'translateX(0)';
+                            }}
+                          >
+                            <subItem.icon
+                              className="w-4 h-4"
+                              style={{
+                                color: '#005A9C'
+                              }}
+                            />
+                            <span style={{
+                              fontSize: '0.88rem',
+                              fontWeight: 550,
+                              fontFamily: secondaryFont,
+                              color: '#003366'
+                            }}>{t(subItem.labelKey)}</span>
+                          </Link>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 )}
-              </AnimatePresence>
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
 
-        {/* Right side actions - Compact */}
+        {/* Right side actions - Language selector only */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
-          {/* Contact Button - Compact */}
-          <Link
-            to="/contact-us"
-            className="btn-ghost hidden lg:flex"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              padding: '0.5rem 0.875rem',
-              borderRadius: '999px',
-              fontSize: '0.85rem',
-              fontWeight: 500,
-              background: 'var(--primary)',
-              color: 'white',
-              transition: 'all 0.3s ease',
-              textDecoration: 'none',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            <Icons.Phone className="w-4 h-4" />
-            <span className="hidden xl:inline">{t('navbar.menu.contact.links.getInTouch')}</span>
-          </Link>
 
           {/* Language Selector - Always Visible */}
           <div
@@ -317,18 +396,25 @@ const ThemeNavbar = () => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem',
-                padding: '0.5rem 0.75rem',
+                gap: '0.35rem',
+                padding: '0.45rem 0.75rem',
                 borderRadius: '999px',
-                fontSize: '0.8rem',
-                fontWeight: 500
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                background: 'linear-gradient(135deg, #f58220, #f9c602 55%, #0b7a44)',
+                color: '#00214d',
+                boxShadow: '0 6px 16px rgba(11, 122, 68, 0.25)'
               }}
               aria-haspopup="listbox"
               aria-expanded={languageMenuOpen}
               title={t('navbar.languageLabel')}
             >
-              <Icons.Globe2 className="w-4 h-4" />
-              <span style={{ fontWeight: 600 }}>{activeLanguage.code.toUpperCase()}</span>
+              <span role="img" aria-hidden="true" style={{ fontSize: '1rem' }}>
+                {langBadgeMap[activeLanguage.code]?.flag || '🇱🇰'}
+              </span>
+              <span style={{ fontFamily: primaryFont, letterSpacing: '0.04em' }}>
+                {langBadgeMap[activeLanguage.code]?.short || activeLanguage.code.toUpperCase()}
+              </span>
               <Icons.ChevronDown className={`w-3 h-3 transition-transform ${languageMenuOpen ? 'rotate-180' : ''}`} />
             </button>
 
@@ -365,10 +451,17 @@ const ThemeNavbar = () => {
                           padding: '0.65rem 0.85rem',
                           borderRadius: '12px',
                           fontSize: '0.85rem',
-                          background: lang.code === activeLanguage.code ? 'var(--hover)' : 'transparent'
+                          fontFamily: primaryFont,
+                          background: lang.code === activeLanguage.code ? 'rgba(0, 86, 179, 0.12)' : 'transparent',
+                          color: '#003366'
                         }}
                       >
-                        <span>{t(lang.labelKey)}</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <span role="img" aria-label={t(lang.labelKey)} style={{ fontSize: '1rem' }}>
+                            {langBadgeMap[lang.code]?.flag || '🌐'}
+                          </span>
+                          <span>{t(lang.labelKey)}</span>
+                        </span>
                         {lang.code === activeLanguage.code && (
                           <Icons.Check className="w-4 h-4" style={{ color: 'var(--primary)' }} />
                         )}
@@ -380,38 +473,15 @@ const ThemeNavbar = () => {
             </AnimatePresence>
           </div>
 
-          {/* Theme Toggle - Always Visible */}
-          <button 
-            onClick={toggleTheme}
-            className="btn-ghost"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              padding: '0.5rem 0.75rem',
-              borderRadius: '999px',
-              fontSize: '0.8rem',
-              fontWeight: 500
-            }}
-            title={theme === 'ocean' ? t('navbar.themes.ocean') : t('navbar.themes.cosmic')}
-            aria-label="Toggle theme"
-          >
-            {theme === 'ocean' ? (
-              <>
-                <Icons.Waves className="w-4 h-4" style={{ color: '#00c2ff' }} />
-                <span className="hidden sm:inline">{t('navbar.themes.ocean')}</span>
-              </>
-            ) : (
-              <>
-                <Icons.Sparkles className="w-4 h-4" style={{ color: '#a78bfa' }} />
-                <span className="hidden sm:inline">{t('navbar.themes.cosmic')}</span>
-              </>
-            )}
-          </button>
-
           {/* Mobile Menu Toggle */}
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            onClick={() => {
+              clearDropdownTimeout();
+              if (mobileMenuOpen) {
+                closeAllDropdowns();
+              }
+              setMobileMenuOpen(!mobileMenuOpen);
+            }}
             className="btn-ghost lg:hidden"
             style={{ padding: '0.5rem', borderRadius: '8px' }}
             aria-label="Toggle menu"
@@ -437,7 +507,8 @@ const ThemeNavbar = () => {
               marginTop: '0.5rem',
               borderRadius: '16px',
               padding: '1rem',
-              background: 'var(--glass-strong)'
+              background: 'var(--glass-strong)',
+              fontFamily: secondaryFont
             }}
           >
             <div
@@ -467,8 +538,10 @@ const ThemeNavbar = () => {
                       borderRadius: '999px',
                       fontSize: '0.8rem',
                       fontWeight: 500,
-                      border: '1px solid var(--border)',
-                      background: lang.code === activeLanguage.code ? 'var(--hover)' : 'transparent'
+                      border: '1px solid rgba(0, 86, 179, 0.25)',
+                      fontFamily: primaryFont,
+                      background: lang.code === normalizedLanguage ? 'rgba(0, 86, 179, 0.12)' : 'transparent',
+                      color: '#003366'
                     }}
                   >
                     {t(lang.labelKey)}
@@ -477,62 +550,68 @@ const ThemeNavbar = () => {
               </div>
             </div>
 
-            {menuItems.map((item) => (
-              <div key={item.titleKey}>
-                <h3 style={{ 
-                  fontSize: '0.75rem', 
-                  textTransform: 'uppercase', 
-                  opacity: 0.6,
-                  marginBottom: '0.5rem',
-                  marginTop: '1rem'
-                }}>
-                  {t(item.titleKey)}
-                </h3>
-                {item.dropdown.map((subItem) => (
-                  <Link
-                    key={subItem.path}
-                    to={subItem.path}
-                    onClick={() => setMobileMenuOpen(false)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.75rem',
-                      padding: '0.75rem',
-                      borderRadius: '8px',
-                      color: 'var(--text)',
-                      textDecoration: 'none'
-                    }}
-                  >
-                    <subItem.icon className="w-4 h-4" style={{ color: 'var(--primary)' }} />
-                    <span>{t(subItem.labelKey)}</span>
-                  </Link>
-                ))}
-              </div>
-            ))}
-
-            {/* Mobile Contact Us Button */}
-            <Link
-              to="/contact-us"
-              onClick={() => setMobileMenuOpen(false)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem',
-                padding: '0.875rem 1.5rem',
-                marginTop: '1.5rem',
-                borderRadius: '999px',
-                fontSize: '0.95rem',
-                fontWeight: 600,
-                background: 'var(--primary)',
-                color: 'white',
-                textDecoration: 'none',
-                boxShadow: '0 4px 12px rgba(0, 194, 255, 0.3)'
-              }}
-            >
-              <Icons.Phone className="w-5 h-5" />
-              {t('navbar.menu.contact.links.getInTouch')}
-            </Link>
+            {menuItems.map((item) => {
+              const hasDropdown = Array.isArray(item.dropdown) && item.dropdown.length > 0;
+              return (
+                <div key={item.titleKey}>
+                  <h3 style={{
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    opacity: 0.6,
+                    marginBottom: '0.5rem',
+                    marginTop: '1rem'
+                  }}>
+                    {t(item.titleKey)}
+                  </h3>
+                  {hasDropdown ? (
+                    item.dropdown.map((subItem) => (
+                      <Link
+                        key={subItem.path}
+                        to={subItem.path}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          closeAllDropdowns();
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.75rem',
+                          padding: '0.65rem 0.75rem',
+                          borderRadius: '8px',
+                          color: 'var(--text)',
+                          textDecoration: 'none',
+                          fontFamily: secondaryFont
+                        }}
+                      >
+                        <subItem.icon className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                        <span>{t(subItem.labelKey)}</span>
+                      </Link>
+                    ))
+                  ) : (
+                    <Link
+                      to={item.path || '#'}
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        closeAllDropdowns();
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        padding: '0.65rem 0.75rem',
+                        borderRadius: '8px',
+                        color: 'var(--text)',
+                        textDecoration: 'none',
+                        fontFamily: secondaryFont
+                      }}
+                    >
+                      <item.icon className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                      <span>{t(item.titleKey)}</span>
+                    </Link>
+                  )}
+                </div>
+              );
+            })}
           </motion.div>
         )}
       </AnimatePresence>

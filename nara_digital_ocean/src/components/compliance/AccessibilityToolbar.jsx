@@ -113,7 +113,7 @@ const AccessibilityToolbar = () => {
           {/* Header */}
           <div className="bg-gradient-to-r from-cyan-600 to-blue-600 px-6 py-4">
             <h3 className="text-white font-bold text-lg">Accessibility Options</h3>
-            <p className="text-cyan-100 text-xs">WCAG 2.1 AA Compliant</p>
+            <p className="text-cyan-100 text-xs">WCAG 2.2 AA Compliant</p>
           </div>
 
           {/* Controls */}

@@ -114,7 +114,7 @@ const CookieConsent = () => {
               <div className="flex-shrink-0 w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center">
                 <Cookie className="w-6 h-6 text-cyan-400" />
               </div>
-              <div className="flex-1">
+              <div className="flex-1" lang={language}>
                 <h3 className="text-xl font-bold text-white mb-2">{t.title}</h3>
                 <p className="text-slate-300 text-sm leading-relaxed mb-3">
                   {t.description}
@@ -128,7 +128,7 @@ const CookieConsent = () => {
 
             {/* Cookie Details (Expandable) */}
             {showDetails && (
-              <div className="mb-6 space-y-4 bg-slate-800/50 rounded-xl p-4 border border-slate-700">
+              <div className="mb-6 space-y-4 bg-slate-800/50 rounded-xl p-4 border border-slate-700" lang={language}>
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <input type="checkbox" checked disabled className="w-4 h-4" />
@@ -147,28 +147,32 @@ const CookieConsent = () => {
             )}
 
             {/* Actions */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3" lang={language}>
               <button
                 onClick={() => handleAccept('all')}
                 className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+                aria-label={t.acceptAll}
               >
                 {t.acceptAll}
               </button>
               <button
                 onClick={() => handleAccept('essential')}
                 className="px-6 py-3 bg-slate-700 text-white font-semibold rounded-lg hover:bg-slate-600 transition-colors"
+                aria-label={t.acceptEssential}
               >
                 {t.acceptEssential}
               </button>
               <button
                 onClick={() => setShowDetails(!showDetails)}
                 className="px-6 py-3 text-cyan-400 font-semibold hover:text-cyan-300 transition-colors"
+                aria-label={t.customize}
               >
                 {t.customize}
               </button>
               <a
                 href="/privacy-policy"
                 className="px-6 py-3 text-slate-400 hover:text-white text-sm underline transition-colors"
+                aria-label={t.privacyPolicy}
               >
                 {t.privacyPolicy}
               </a>

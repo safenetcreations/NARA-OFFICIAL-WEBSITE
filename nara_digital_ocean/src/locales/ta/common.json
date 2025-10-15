@@ -22,7 +22,11 @@
           "researchExcellencePortal": "ஆராய்ச்சி சிறப்புத் தளம்",
           "researchCollaboration": "ஆராய்ச்சி கூட்டாண்மை",
           "knowledgeDiscovery": "அறிவு கண்டுபிடிப்பு",
-          "partnershipInnovation": "கூட்டாண்மை புதுமை"
+          "partnershipInnovation": "கூட்டாண்மை புதுமை",
+          "vesselBooking": "ஆராய்ச்சி கப்பல் முன்பதிவு",
+          "labResults": "ஆய்வக முடிவுகள் தளம்",
+          "scientificEvidence": "அறிவியல் சான்று களஞ்சியம்",
+          "projectPipeline": "திட்ட குழாய் பாதை தடம்"
         }
       },
       "services": {
@@ -31,12 +35,16 @@
           "digitalMarketplace": "டிஜிட்டல் சந்தை",
           "maritimeServices": "கடல்சார் சேவைகள்",
           "governmentServices": "அரசு சேவைகள்",
-          "emergencyResponse": "அவசர நடவடிக்கை"
+          "emergencyResponse": "அவசர நடவடிக்கை",
+          "fishAdvisory": "மீன் ஆலோசனை அமைப்பு",
+          "exportIntelligence": "ஏற்றுமதி சந்தை நுண்ணறிவு",
+          "marineIncident": "கடல் சம்பவ தளம்"
         }
       },
       "resources": {
         "title": "வளங்கள்",
         "links": {
+          "libraryCatalogue": "நூலக பட்டியல்",
           "digitalProductLibrary": "டிஜிட்டல் தயாரிப்பு நூலகம்",
           "learningAcademy": "கற்றல் அகாடமி",
           "regionalImpact": "பிராந்திய தாக்கம்",
@@ -68,7 +76,10 @@
         }
       },
       "news": {
-        "title": "செய்திகள் மற்றும் புதுப்பிப்புகள்"
+        "title": "செய்திகள் மற்றும் புதுப்பிப்புகள்",
+        "links": {
+          "mediaPressKit": "ஊடக செய்தியாளர் கருவிப்பெட்டி"
+        }
       },
       "contact": {
         "title": "தொடர்பு கொள்ள",
@@ -106,5 +117,11 @@
   "attachFiles": "கோப்புகளை இணைக்கவும்",
   "filesSelected": "கோப்புகள் தேர்ந்தெடுக்கப்பட்டது",
   "submitting": "சமர்ப்பிக்கிறது...",
-  "submit": "சமர்ப்பிக்கவும்"
+  "submit": "சமர்ப்பிக்கவும்",
+  "admin": {
+    "csvExport": {
+      "success": "விண்ணப்பதாரர் CSV பதிவிறக்கப்பட்டது",
+      "error": "CSV ஏற்றுமதி தோல்வியடைந்தது. மீண்டும் முயற்சிக்கவும்."
+    }
+  }
 }

@@ -152,6 +152,27 @@ export const recruitmentService = {
   }
 };
 
+// Vacancy Automation & Archive Services
+export const vacancyIntegrationService = {
+  getSyncSummary: async () => {
+    try {
+      const response = await apiClient?.get('/jobs/sync/summary');
+      return response?.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch vacancy sync summary');
+    }
+  },
+
+  getArchive: async (params = {}) => {
+    try {
+      const response = await apiClient?.get('/jobs/archive', { params });
+      return response?.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch archived roles');
+    }
+  }
+};
+
 // File Upload Services
 export const fileUploadService = {
   // Upload documents
@@ -222,6 +243,19 @@ export const adminService = {
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to update application status');
     }
+  },
+
+  // Export applications as CSV
+  exportApplicantsCsv: async (params = {}) => {
+    try {
+      const response = await apiClient?.get('/admin/applications/export', {
+        params,
+        responseType: 'blob'
+      });
+      return response?.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to export applicants');
+    }
   }
 };
 
@@ -257,6 +291,7 @@ export default {
   recruitmentService,
   fileUploadService,
   dashboardService,
+  vacancyIntegrationService,
   adminService,
   handleApiError
 };

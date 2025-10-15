@@ -1,11 +1,13 @@
 {
   "hero": {
     "liveDataLabel": "Live Data",
-    "badge": "Sri Lanka Exclusive Economic Zone",
+    "badge": "Sri Lanka Government Research Agency",
     "title": {
       "lead": "Commanding",
       "highlight": "200 Nautical Miles",
-      "trail": "of Sovereign Ocean Intelligence"
+      "trail": "of Sovereign Ocean Intelligence",
+      "lineOne": "Pioneering Aquatic",
+      "lineTwo": "Stewardship in Sri Lanka"
     },
     "description": "NARA's national mission control fuses satellite telemetry, autonomous gliders, and coastal observatories to illuminate Sri Lanka's seas. Every pulse safeguards maritime trade, blue economy prosperity, and climate resilience across the island nation.",
     "actions": {
@@ -34,7 +36,14 @@
       },
       "lastSync": {
         "label": "Last Sync"
-      }
+      },
+      "tagline": "Sri Lanka's Premier Marine & Freshwater Research Agency",
+      "description": "Advancing scientific research and innovation in marine and aquatic resources to protect ecosystems, support sustainable fisheries, and drive the nation's blue economy.",
+      "since": "Since 1981",
+      "divisions": "9 Research Divisions",
+      "scientists": "100+ Scientists",
+      "primaryCta": "Explore Research",
+      "secondaryCta": "About NARA"
     }
   },
   "research": {
@@ -91,20 +100,20 @@
     }
   },
   "mission": {
-    "heading": "Protecting Our Oceans",
-    "description": "Through cutting-edge research and innovation, we safeguard Sri Lanka's marine ecosystems for future generations while advancing the blue economy through sustainable practices and scientific excellence.",
+    "heading": "Safeguarding Sri Lanka's Aquatic Wealth Through Science",
+    "description": "The National Aquatic Resources Research & Development Agency (NARA) is Sri Lanka's premier institute for marine and freshwater science, dedicated to safeguarding and sustainably developing the nation's aquatic wealth.",
     "stats": [
       {
-        "value": "25+",
-        "label": "Years of Excellence"
+        "value": "40+",
+        "label": "Years of Research Excellence"
       },
       {
-        "value": "500+",
-        "label": "Scientists"
+        "value": "460,000 km²",
+        "label": "Ocean Territory Under Watch"
       },
       {
-        "value": "50+",
-        "label": "Global Partners"
+        "value": "100+",
+        "label": "Completed Research Projects"
       }
     ]
   },
@@ -177,7 +186,7 @@
       }
     },
     "commandCenters": {
-      "heading": "Digital Command Centers",
+      "heading": "Command Centers",
       "links": {
         "maritime": "Maritime Services Hub",
         "emergency": "Emergency Response Network",
@@ -198,17 +207,190 @@
   "contact": {
     "heading": "Contact & Duty Desk",
     "address": "Crow Island, Colombo 15, Sri Lanka",
-    "hours": "Mission operations: 08:30 - 18:00 IST"
+    "hours": "Mission operations: 08:30 - 18:00 IST",
+    "phoneLabel": "Phone",
+    "phoneValue": "+94 11 234 5678",
+    "emailLabel": "Email",
+    "emailValue": "info@nara.gov.lk",
+    "follow": "Follow Us",
+    "social": {
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "youtube": "YouTube"
+    },
+    "socialAlt": {
+      "facebook": "Visit NARA on Facebook",
+      "twitter": "Visit NARA on Twitter",
+      "linkedin": "Visit NARA on LinkedIn",
+      "youtube": "Visit NARA on YouTube"
+    }
+  },
+  "divisions": {
+    "heading": "Our Research Divisions",
+    "subheading": "Specialized teams advancing marine and freshwater science across multiple disciplines",
+    "list": [
+      {
+        "name": "Marine Biology",
+        "description": "Studying marine biodiversity and ecosystem health"
+      },
+      {
+        "name": "Fisheries & Aquaculture",
+        "description": "Supporting sustainable fishing and aquatic farming practices"
+      },
+      {
+        "name": "Oceanography",
+        "description": "Monitoring ocean climate and marine ecosystems"
+      },
+      {
+        "name": "Environmental Management",
+        "description": "Protecting coastal and marine environments"
+      },
+      {
+        "name": "Inland Water Resources",
+        "description": "Managing freshwater lakes, rivers, and reservoirs"
+      },
+      {
+        "name": "Marine Biotechnology",
+        "description": "Developing innovations from marine organisms"
+      }
+    ]
+  },
+  "services": {
+    "heading": "Services for Stakeholders",
+    "subheading": "Supporting researchers, fishermen, industry, and the public with specialized services",
+    "list": [
+      {
+        "name": "Marine Laboratory Services",
+        "description": "Water quality testing and analysis"
+      },
+      {
+        "name": "Fisheries Advisory",
+        "description": "Expert guidance for fishing communities"
+      },
+      {
+        "name": "Data & Publications",
+        "description": "Access research data and reports"
+      },
+      {
+        "name": "Training Programs",
+        "description": "Capacity building and workshops"
+      }
+    ]
+  },
+  "milestones": {
+    "heading": "Four Decades of Excellence",
+    "subheading": "Celebrating milestones in marine research, conservation, and innovation since 1981",
+    "timeline": [
+      {
+        "year": "1981",
+        "title": "NARA Established",
+        "description": "Founded by Act 54 of 1981 to advance aquatic research"
+      },
+      {
+        "year": "1985",
+        "title": "First Marine Survey",
+        "description": "Conducted nationwide marine resource assessment"
+      },
+      {
+        "year": "1990s",
+        "title": "EEZ Research",
+        "description": "Initiated 200 nautical mile Exclusive Economic Zone studies"
+      },
+      {
+        "year": "2020",
+        "title": "Coral Restoration",
+        "description": "Pioneered innovative coral reef restoration projects"
+      }
+    ],
+    "achievementsHeading": "Impact & Recognition",
+    "achievements": [
+      {
+        "number": "150+",
+        "label": "New Marine Species Discovered"
+      },
+      {
+        "number": "5+",
+        "label": "Marine Protected Areas Established"
+      },
+      {
+        "number": "20+",
+        "label": "International Research Partners"
+      },
+      {
+        "number": "1000+",
+        "label": "Fishermen Trained Annually"
+      }
+    ],
+    "cta": "Explore Our Complete Journey"
+  },
+  "news": {
+    "heading": "Latest News & Updates",
+    "subheading": "Stay informed with our recent announcements and activities",
+    "viewAll": "View All News",
+    "readMore": "Read more",
+    "learnMore": "Learn more",
+    "articles": [
+      {
+        "date": "Dec 20, 2024",
+        "title": "NARA Launches Innovative Coral Reef Restoration Project",
+        "description": "New initiative aims to restore 5 hectares of damaged coral reefs along Sri Lanka's southern coast using advanced biotechnology methods."
+      },
+      {
+        "date": "Dec 15, 2024",
+        "title": "MoU Signed with University of Colombo for Joint Research",
+        "description": "Partnership will focus on marine biodiversity studies and capacity building for next-generation marine scientists in Sri Lanka."
+      },
+      {
+        "date": "Upcoming - Jan 25, 2025",
+        "title": "National Marine Resources Symposium 2025",
+        "description": "Join leading scientists and policymakers for discussions on sustainable ocean management and blue economy opportunities."
+      }
+    ],
+    "advisory": {
+      "title": "Fisheries Advisory Notice",
+      "description": "Fishing restrictions in effect for protected zones A3 and B7 until January 31, 2025 due to breeding season. All commercial vessels must comply with designated boundaries.",
+      "link": "View full advisory"
+    }
+  },
+  "cta": {
+    "heading": "How Can We Help You?",
+    "subheading": "Whether you're a researcher, partner, or community member, find the right resources for your needs",
+    "cards": [
+      {
+        "title": "Explore Research & Data",
+        "description": "Access scientific publications, research findings, and marine datasets for academic and policy research.",
+        "button": "Browse Research Projects"
+      },
+      {
+        "title": "Get Involved & Collaborate",
+        "description": "Partner with us on research projects, volunteer opportunities, or explore funding and collaboration options.",
+        "button": "View Partnership Options"
+      },
+      {
+        "title": "Contact Our Experts",
+        "description": "Seek guidance from our marine scientists on aquaculture, fisheries management, or environmental concerns.",
+        "button": "Request Expert Advice"
+      },
+      {
+        "title": "Publications Library",
+        "description": "Browse our archive of research papers, technical reports, journals, and educational materials.",
+        "button": "Access Publications"
+      }
+    ]
   },
   "footer": {
-    "badge": "This is a Sri Lanka Government website",
+    "badge": "This is an Official Sri Lanka Government Website",
+    "ministry": "Under the Ministry of Fisheries, Sri Lanka",
     "legal": {
-      "privacy": "Privacy & Data Ethics",
-      "terms": "Terms of Collaboration",
-      "transparency": "Transparency Portal",
-      "compliance": "ISO 27001 | GovCERT SL Aligned"
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Use",
+      "transparency": "Transparency",
+      "compliance": "ISO 27001 | GovCERT SL"
     },
     "craftedBy": "Crafted by",
-    "copyright": "© 2025 National Aquatic Resources Research & Development Agency."
+    "copyright": "© 2025 National Aquatic Resources Research & Development Agency.",
+    "craftedLinkLabel": "www.safenetcreations.com",
+    "craftedLink": "https://www.safenetcreations.com"
   }
 }

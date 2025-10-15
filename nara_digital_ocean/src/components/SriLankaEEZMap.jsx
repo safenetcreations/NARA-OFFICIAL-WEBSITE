@@ -8,8 +8,6 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
   useEffect(() => {
     let map = null;
     let eezCircle = null;
-    let outerGlow = null;
-    let midGlow = null;
 
     const initMap = async () => {
       try {
@@ -59,8 +57,8 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
           return;
         }
 
-        // Sri Lanka center coordinates
-        const sriLankaCenter = { lat: 7.8731, lng: 80.7718 };
+        // Sri Lanka center coordinates (shifted up)
+        const sriLankaCenter = { lat: 7.6, lng: 80.7718 };
         
         // Dark ocean theme styling
         const darkOceanStyles = [
@@ -78,14 +76,28 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
             stylers: [{ color: '#22d3ee', weight: 1.5 }]
           },
           {
+            featureType: 'administrative.country',
+            elementType: 'labels',
+            stylers: [{ visibility: 'off' }]
+          },
+          {
+            featureType: 'administrative.locality',
+            elementType: 'labels',
+            stylers: [{ visibility: 'off' }]
+          },
+          {
+            featureType: 'administrative.neighborhood',
+            elementType: 'labels',
+            stylers: [{ visibility: 'off' }]
+          },
+          {
             featureType: 'landscape',
             elementType: 'geometry',
             stylers: [{ color: '#132f4c' }]
           },
           {
             featureType: 'poi',
-            elementType: 'geometry',
-            stylers: [{ color: '#1a3a52' }]
+            stylers: [{ visibility: 'off' }]
           },
           {
             featureType: 'road',
@@ -111,7 +123,7 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
         console.log('🗺️ Creating Google Map instance...');
         map = new window.google.maps.Map(mapRef.current, {
           center: sriLankaCenter,
-          zoom: 7.8,
+          zoom: 7.5,
           disableDefaultUI: true,
           gestureHandling: 'none',
           draggable: false,
@@ -121,7 +133,7 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
           backgroundColor: '#001e3c',
           mapTypeId: 'terrain'
         });
-        console.log('✅ Map instance created with 30% more zoom (7.8)');
+        console.log('✅ Map instance created - focused on Sri Lanka only');
 
         // Sri Lanka's ACTUAL EEZ boundary coordinates (follows coastline at 200nm)
         const eezBoundaryCoords = [
@@ -158,42 +170,20 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
           { lat: 10.5, lng: 78.0 }
         ];
         
-        console.log('🌊 Drawing colorful glowing border line with Polyline...');
-
-        // Close the path for a complete border
+        // Simple subtle EEZ boundary (no glow, minimal)
+        console.log('🌊 Drawing simple EEZ boundary...');
         const closedPath = [...eezBoundaryCoords, eezBoundaryCoords[0]];
 
-        // Outer glow border (VERY WIDE)
-        outerGlow = new window.google.maps.Polyline({
-          map,
-          path: closedPath,
-          strokeColor: '#22d3ee',
-          strokeOpacity: 0.50,
-          strokeWeight: 25,
-          clickable: false
-        });
-        
-        // Mid glow border (WIDE)
-        midGlow = new window.google.maps.Polyline({
-          map,
-          path: closedPath,
-          strokeColor: '#06b6d4',
-          strokeOpacity: 0.80,
-          strokeWeight: 16,
-          clickable: false
-        });
-
-        // Main EEZ boundary (VERY THICK colorful border line)
         eezCircle = new window.google.maps.Polyline({
           map,
           path: closedPath,
           strokeColor: '#22d3ee',
-          strokeOpacity: 1.0,
-          strokeWeight: 10,
+          strokeOpacity: 0.4,
+          strokeWeight: 2,
           clickable: false
         });
         
-        console.log('✅ Colorful glowing POLYLINE border added - visible now!');
+        console.log('✅ Simple boundary added');
 
         // Add research station markers if enabled
         if (showMarkers) {
@@ -221,53 +211,6 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
           });
         }
 
-        // DRAMATIC COLORFUL glowing border animation - cycling through BRIGHT colors
-        const colors = [
-          '#00ffff', // Bright Cyan
-          '#0099ff', // Bright Blue
-          '#6633ff', // Bright Purple
-          '#ff00ff', // Bright Magenta
-          '#ff0066', // Bright Pink
-          '#ff3300', // Bright Red-Orange
-          '#ff9900', // Bright Orange
-          '#ffff00', // Bright Yellow
-          '#00ff00'  // Bright Green
-        ];
-        
-        let colorIndex = 0;
-        let mainStrokeOpacity = 1.0;
-        let increasing = true;
-        
-        console.log('🎨 Starting COLORFUL border animation...');
-        
-        // SLOWER Color cycling animation - change every 1 second
-        setInterval(() => {
-          colorIndex = (colorIndex + 1) % colors.length;
-          
-          console.log(`🌈 Border color changed to: ${colors[colorIndex]}`);
-          
-          if (eezCircle) {
-            eezCircle.setOptions({ 
-              strokeColor: colors[colorIndex],
-              strokeOpacity: 1.0
-            });
-          }
-          
-          if (midGlow) {
-            midGlow.setOptions({ 
-              strokeColor: colors[(colorIndex + 3) % colors.length],
-              strokeOpacity: 0.75
-            });
-          }
-          
-          if (outerGlow) {
-            outerGlow.setOptions({ 
-              strokeColor: colors[(colorIndex + 6) % colors.length],
-              strokeOpacity: 0.50
-            });
-          }
-        }, 1000);
-
         setMapLoaded(true);
       } catch (err) {
         console.error('Error loading Google Maps:', err);
@@ -280,8 +223,6 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
     // Cleanup
     return () => {
       if (eezCircle) eezCircle.setMap(null);
-      if (outerGlow) outerGlow.setMap(null);
-      if (midGlow) midGlow.setMap(null);
     };
   }, [showMarkers]);
 

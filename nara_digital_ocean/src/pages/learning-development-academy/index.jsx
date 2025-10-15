@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import * as Icons from 'lucide-react';
@@ -11,7 +11,9 @@ import {
   getTrainingMaterials,
   submitProject,
   uploadFile,
-  searchContent
+  searchContent,
+  getTrainingEvents,
+  registerForTrainingEvent
 } from '../../services/ldaService';
 import { useFirebaseAuth } from '../../contexts/FirebaseAuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -315,6 +317,178 @@ const staticCourses = [
   }
 ];
 
+const toDate = (value) => {
+  if (!value) return null;
+  if (value instanceof Date) return value;
+  if (value?.toDate) return value.toDate();
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
+const getLocalizedValue = (value, language, fallback = '') => {
+  if (!value) return fallback;
+  if (typeof value === 'string') return value;
+  return value[language] || value.en || Object.values(value)[0] || fallback;
+};
+
+const formatEventDateRange = (event, language = 'en') => {
+  const start = toDate(event?.startDate);
+  const end = toDate(event?.endDate);
+  const locale = language === 'si' ? 'si-LK' : language === 'ta' ? 'ta-LK' : 'en-GB';
+
+  if (!start && !end) {
+    return language === 'si'
+      ? 'ආසන්නයේ දැනුම්දෙනු ඇත'
+      : language === 'ta'
+        ? 'விரைவில் அறிவிக்கப்படும்'
+        : 'Schedule to be announced';
+  }
+
+  const dateFormatter = new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+  const timeFormatter = new Intl.DateTimeFormat(locale, {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  if (start && end) {
+    const sameDay = start.toDateString() === end.toDateString();
+    if (sameDay) {
+      return `${dateFormatter.format(start)} · ${timeFormatter.format(start)} – ${timeFormatter.format(end)}`;
+    }
+
+    const sameMonth =
+      start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth();
+    if (sameMonth) {
+      const dayFormatter = new Intl.DateTimeFormat(locale, { day: 'numeric' });
+      return `${dateFormatter.format(start)} – ${dayFormatter.format(end)}, ${end.getFullYear()}`;
+    }
+
+    const shortFormatter = new Intl.DateTimeFormat(locale, {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+    return `${shortFormatter.format(start)} – ${shortFormatter.format(end)}`;
+  }
+
+  return dateFormatter.format(start || end);
+};
+
+const staticTrainingEvents = [
+  {
+    id: 'evt-001',
+    title: {
+      en: 'Coastal Resilience Extension Lab',
+      si: 'වෙරළ කාලීන ප්‍රතිශක්ති පරිවර්ධන වැඩමුළුව',
+      ta: 'கடற்கரை மீட்பு விரிவாக்க ஆய்வகம்'
+    },
+    summary: {
+      en: 'Hands-on training on early warning briefs, evacuation playbooks, and community drills for coastal authorities.',
+      si: 'වෙරළ අධිකාරීන් සඳහා ආධාර early warning නිවේදන, ඉවත් කිරීමේ සැලසුම් සහ ප්‍රංති ආරම්භ මුහුණුවරට අව්‍යාජ පුහුණුව.',
+      ta: 'கடற்கரை அதிகாரிகளுக்கான முன் எச்சரிக்கை அறிவிப்புகள், வெளியேற்ற திட்டங்கள் மற்றும் சமுதாய பயிற்சிகளில் கைமுறைப் பயிற்சி.'
+    },
+    startDate: new Date('2025-02-12T09:00:00+05:30'),
+    endDate: new Date('2025-02-13T16:00:00+05:30'),
+    registrationDeadline: new Date('2025-02-05T23:59:00+05:30'),
+    format: 'in_person',
+    location: {
+      en: 'NARA Auditorium, Colombo',
+      si: 'NARA රඟහල, කොළඹ',
+      ta: 'NARA அரங்கம், கொழும்பு'
+    },
+    capacity: 60,
+    seatsRemaining: 22,
+    status: 'scheduled',
+    tags: ['disaster-response', 'coastal-planning'],
+    audience: ['government', 'local-authorities']
+  },
+  {
+    id: 'evt-002',
+    title: {
+      en: 'Remote Sensing for Fisheries Intelligence',
+      si: 'අභ්‍යවකාශ සංවේදනය මඟින් මත්ස්‍ය බුද්ධිමයකරණය',
+      ta: 'தொலை உணர்தலின் மூலம் மீன்வள நுண்ணறிவு'
+    },
+    summary: {
+      en: 'Live virtual clinic covering satellite indices, HAB detection, and catch forecasting pipelines using open data.',
+      si: 'තිතාකාලික සජීවී මණ්ඩපයක්: ව්‍යාප්ත දත්ත මඟින් උපායමාර්ග සූචක, HAB හඳුනා ගැනීම සහ අල්ලපු ප්‍රතිදර්ශක ආදාන.',
+      ta: 'திறந்த தரவு வழியாக செயற்கைக்கோள் குறியீடுகள், HAB கண்டறிதல் மற்றும் பிடிப்பு முன்னறிவிப்பு வழிமுறைகளை உள்ளடக்கிய நேரடி வெளி அமர்வு.'
+    },
+    startDate: new Date('2025-03-05T14:00:00+05:30'),
+    endDate: new Date('2025-03-05T17:00:00+05:30'),
+    registrationDeadline: new Date('2025-03-01T23:59:00+05:30'),
+    format: 'virtual',
+    location: {
+      en: 'Zoom (link shared after confirmation)',
+      si: 'Zoom (අනුමතවූ පසු සබැඳිය බෙදා හැරේ)',
+      ta: 'Zoom (உறுதிப்படுத்தப்பட்ட பின் இணைப்பு பகிரப்படும்)'
+    },
+    capacity: 120,
+    seatsRemaining: 58,
+    status: 'scheduled',
+    tags: ['analytics', 'fisheries'],
+    audience: ['students', 'researchers']
+  },
+  {
+    id: 'evt-003',
+    title: {
+      en: 'Community Extension Studio: Lagoon Co-management',
+      si: 'ප්‍රජා පුහුණුව: කලපුව ප්‍රමාණවත් කළමනාකරණය',
+      ta: 'சமூக விரிவாக்க ஸ்டுடியோ: குள செயல்முறை இணை மேலாண்மை'
+    },
+    summary: {
+      en: 'Field-based immersion with community partners to co-design monitoring plans, livelihood pilots, and data feedback loops.',
+      si: 'ප්‍රජා හමුදාවන් සමඟ ක්ෂේත්‍ර පදනම් වැඩසටහන්: නිරීක්ෂණ සැලසුම්, ජීවිකා පරීක්ෂණ සහ දත්ත ප්‍රතිචාර ආවර්තන.',
+      ta: 'சமூக கூட்டாளர்களுடன் கள அனுபவம்: கண்காணிப்பு திட்டங்கள், வாழ்வாதார முன்னோடிகள் மற்றும் தரவு பின்னூட்டச் சுழற்சிகளை இணைந்து வடிவமைக்க.'
+    },
+    startDate: new Date('2025-04-24T09:30:00+05:30'),
+    endDate: new Date('2025-04-26T15:30:00+05:30'),
+    registrationDeadline: new Date('2025-04-10T23:59:00+05:30'),
+    format: 'hybrid',
+    location: {
+      en: 'Puttalam Lagoon Field Station',
+      si: 'පුත්තලම කලපුව ක්ෂේත්‍ර මධ්‍යස්ථානය',
+      ta: 'புத்தளம் ஏரி புல நிலையம்'
+    },
+    capacity: 30,
+    seatsRemaining: 6,
+    status: 'scheduled',
+    tags: ['extension', 'community-engagement'],
+    audience: ['community', 'government', 'researchers']
+  },
+  {
+    id: 'evt-004',
+    title: {
+      en: 'Blue Carbon Policy Studio',
+      si: 'නිල් කාබන් ප්‍රතිපත්ති වැඩමුළුව',
+      ta: 'நீல கார்பன் கொள்கை ஸ்டுடியோ'
+    },
+    summary: {
+      en: 'Policy sprint aligning coastal carbon inventories with national MRV frameworks, finance pathways, and RTI transparency.',
+      si: 'ජාතික MRV රාමුව, මූල්‍ය මාර්ග සහ RTI විවෘතභාවය සමඟ වෙරළ කාබන් ගණන් සම්මුතිය.',
+      ta: 'கடற்கரை கார்பன் கணக்குகளை தேசிய MRV கட்டமைப்புகள், நிதி வழிகள் மற்றும் RTI வெளிப்படைத்தன்மையுடன் இணைக்கும் கொள்கை இடியச் சுருக்கு.'
+    },
+    startDate: new Date('2025-05-16T10:00:00+05:30'),
+    endDate: new Date('2025-05-17T16:30:00+05:30'),
+    registrationDeadline: new Date('2025-05-05T23:59:00+05:30'),
+    format: 'in_person',
+    location: {
+      en: 'NARA Policy Lab, Crow Island',
+      si: 'NARA ප්‍රතිපත්ති ශාලාව, කක්කුක්ස්දූව',
+      ta: 'NARA கொள்கை ஆய்வகம், காக்ஸ் தீவு'
+    },
+    capacity: 40,
+    seatsRemaining: 12,
+    status: 'scheduled',
+    tags: ['policy', 'climate-finance'],
+    audience: ['policy-makers', 'academia']
+  }
+];
+
 const LearningDevelopmentAcademy = () => {
   const { t, i18n } = useTranslation(['common', 'knowledge']);
   const currentLang = i18n.language || 'en';
@@ -328,7 +502,9 @@ const LearningDevelopmentAcademy = () => {
   const [categories, setCategories] = useState(staticCategories);
   const [papers, setPapers] = useState([]);
   const [materials, setMaterials] = useState([]);
+  const [events, setEvents] = useState(staticTrainingEvents);
   const [loading, setLoading] = useState(true);
+  const [eventsLoading, setEventsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('all');
@@ -343,6 +519,17 @@ const LearningDevelopmentAcademy = () => {
     files: []
   });
   const [submitting, setSubmitting] = useState(false);
+  const [calendarFilter, setCalendarFilter] = useState('upcoming');
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [eventModalOpen, setEventModalOpen] = useState(false);
+  const [eventRegistrationForm, setEventRegistrationForm] = useState({
+    fullName: '',
+    email: '',
+    organization: '',
+    phone: '',
+    notes: ''
+  });
+  const [registeringEvent, setRegisteringEvent] = useState(false);
 
   // Load data from Firebase with fallback to static data
   useEffect(() => {
@@ -352,11 +539,19 @@ const LearningDevelopmentAcademy = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [coursesData, categoriesData, papersData, materialsData] = await Promise.all([
+      setEventsLoading(true);
+      const [
+        coursesData,
+        categoriesData,
+        papersData,
+        materialsData,
+        eventsData
+      ] = await Promise.all([
         getCourses().catch(() => []),
         getCategories().catch(() => []),
         getPapers({ status: 'published' }).catch(() => []),
-        getTrainingMaterials({ status: 'published' }).catch(() => [])
+        getTrainingMaterials({ status: 'published' }).catch(() => []),
+        getTrainingEvents({ status: 'scheduled' }).catch(() => [])
       ]);
 
       // Use Firebase data if available, otherwise keep static data
@@ -364,11 +559,24 @@ const LearningDevelopmentAcademy = () => {
       if (categoriesData && categoriesData.length > 0) setCategories(categoriesData);
       if (papersData && papersData.length > 0) setPapers(papersData);
       if (materialsData && materialsData.length > 0) setMaterials(materialsData);
+      if (eventsData && eventsData.length > 0) {
+        setEvents(
+          eventsData.map((event) => ({
+            ...event,
+            startDate: toDate(event.startDate),
+            endDate: toDate(event.endDate),
+            registrationDeadline: toDate(event.registrationDeadline)
+          }))
+        );
+      } else {
+        setEvents(staticTrainingEvents);
+      }
     } catch (error) {
       console.error('Error loading LDA data:', error);
       // Keep static data on error
     } finally {
       setLoading(false);
+      setEventsLoading(false);
     }
   };
 
@@ -397,6 +605,81 @@ const LearningDevelopmentAcademy = () => {
           return 0;
       }
     });
+
+  const filteredEvents = useMemo(() => {
+    const now = new Date();
+    return [...events]
+      .map((event) => ({
+        ...event,
+        startDate: toDate(event.startDate),
+        endDate: toDate(event.endDate) || toDate(event.startDate),
+        registrationDeadline: toDate(event.registrationDeadline)
+      }))
+      .sort((a, b) => {
+        const aTime = a.startDate ? a.startDate.getTime() : Number.MAX_SAFE_INTEGER;
+        const bTime = b.startDate ? b.startDate.getTime() : Number.MAX_SAFE_INTEGER;
+        return aTime - bTime;
+      })
+      .filter((event) => {
+        if (calendarFilter === 'past') {
+          const end = event.endDate || event.startDate;
+          return end ? end < now : false;
+        }
+        if (calendarFilter === 'upcoming') {
+          const end = event.endDate || event.startDate;
+          if (!end) return true;
+          return end >= now;
+        }
+        return true;
+      });
+  }, [events, calendarFilter]);
+
+  const groupedEvents = useMemo(() => {
+    const locale = currentLang === 'si' ? 'si-LK' : currentLang === 'ta' ? 'ta-LK' : 'en-GB';
+    const monthFormatter = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });
+    const fallbackLabel =
+      currentLang === 'si'
+        ? 'ආසන්න ඊළඟ වැඩසටහන්'
+        : currentLang === 'ta'
+          ? 'விரைவில் வரவிருக்கும் அமர்வுகள்'
+          : 'Upcoming sessions';
+
+    return filteredEvents.reduce((acc, event) => {
+      const anchorDate = toDate(event.startDate) || toDate(event.registrationDeadline);
+      const key = anchorDate ? monthFormatter.format(anchorDate) : fallbackLabel;
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(event);
+      return acc;
+    }, {});
+  }, [filteredEvents, currentLang]);
+
+  const trainingKPIs = useMemo(() => {
+    const now = new Date();
+    const upcoming = events.filter((event) => {
+      const end = toDate(event.endDate) || toDate(event.startDate);
+      if (!end) return true;
+      return end >= now;
+    }).length;
+    const virtualSessions = events.filter((event) => event.format === 'virtual').length;
+    const seatsTotal = events.reduce(
+      (sum, event) => sum + (typeof event.capacity === 'number' ? event.capacity : 0),
+      0
+    );
+    const seatsRemaining = events.reduce(
+      (sum, event) => sum + (typeof event.seatsRemaining === 'number' ? event.seatsRemaining : 0),
+      0
+    );
+
+    return {
+      upcoming,
+      total: events.length,
+      virtualSessions,
+      seatsTotal,
+      seatsRemaining
+    };
+  }, [events]);
 
   // Enroll in course
   const handleEnroll = async (course) => {
@@ -496,6 +779,153 @@ const LearningDevelopmentAcademy = () => {
       : 'bg-gray-100 hover:bg-gray-200 text-gray-900';
   };
 
+  const getInputClasses = () => {
+    switch (theme) {
+      case 'dark':
+        return 'bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
+      case 'glow':
+        return 'bg-gray-900 border-cyan-500/40 text-cyan-100 placeholder:text-cyan-200/50 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400';
+      default:
+        return 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
+    }
+  };
+
+  const getTabLabel = (tab) => {
+    const defaults = {
+      courses:
+        currentLang === 'si'
+          ? 'පාඨමාලා'
+          : currentLang === 'ta'
+            ? 'பாடநெறிகள்'
+            : 'Courses',
+      calendar:
+        currentLang === 'si'
+          ? 'පුහුණු දින දසුන'
+          : currentLang === 'ta'
+            ? 'பயிற்சி நாட்காட்டி'
+            : 'Training Calendar',
+      papers:
+        currentLang === 'si'
+          ? 'පර්යේෂණ පත්‍ර'
+          : currentLang === 'ta'
+            ? 'ஆராய்ச்சி ஆவணங்கள்'
+            : 'Research Papers',
+      materials:
+        currentLang === 'si'
+          ? 'ඉගෙනුම් ද්‍රව්‍ය'
+          : currentLang === 'ta'
+            ? 'கற்றல் பொருட்கள்'
+            : 'Materials Library'
+    };
+
+    return t(`knowledge:${tab}`, { defaultValue: defaults[tab] });
+  };
+
+  const isAlreadyRegistered = (event) => {
+    if (!user) return false;
+    const registrations = event?.registrations || [];
+    return registrations.some(
+      (entry) => entry?.userId === user.uid || (entry?.email && entry.email === user.email)
+    );
+  };
+
+  const updateRegistrationField = (field, value) => {
+    setEventRegistrationForm((prev) => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const openEventModal = (event) => {
+    if (!user) {
+      alert(t('common:pleaseLogin'));
+      return;
+    }
+
+    if (isAlreadyRegistered(event)) {
+      alert(
+        t('knowledge:alreadyRegistered', {
+          defaultValue: 'You are already registered for this training.'
+        })
+      );
+      return;
+    }
+
+    setSelectedEvent(event);
+    setEventRegistrationForm({
+      fullName: user.displayName || '',
+      email: user.email || '',
+      organization: '',
+      phone: '',
+      notes: ''
+    });
+    setEventModalOpen(true);
+  };
+
+  const closeEventModal = () => {
+    setEventModalOpen(false);
+    setSelectedEvent(null);
+  };
+
+  const handleEventRegistration = async (e) => {
+    e.preventDefault();
+    if (!selectedEvent) return;
+
+    if (!eventRegistrationForm.fullName.trim() || !eventRegistrationForm.email.trim()) {
+      alert(
+        t('knowledge:registrationMissingFields', {
+          defaultValue: 'Please provide your name and email address to reserve a seat.'
+        })
+      );
+      return;
+    }
+
+    try {
+      setRegisteringEvent(true);
+      const payload = {
+        ...eventRegistrationForm,
+        userId: user?.uid,
+        eventId: selectedEvent.id
+      };
+
+      const result = await registerForTrainingEvent(selectedEvent.id, payload);
+
+      if (result?.success) {
+        alert(
+          t('knowledge:registrationSuccess', {
+            defaultValue: 'Thanks! Your seat is confirmed. We will email joining instructions shortly.'
+          })
+        );
+        setEvents((prev) =>
+          prev.map((event) => {
+            if (event.id !== selectedEvent.id) return event;
+            const seatsRemaining =
+              typeof event.seatsRemaining === 'number'
+                ? Math.max(event.seatsRemaining - 1, 0)
+                : event.seatsRemaining;
+            const registrations = [
+              ...(event.registrations || []),
+              { ...payload, registeredAt: new Date() }
+            ];
+            return {
+              ...event,
+              seatsRemaining,
+              registrations
+            };
+          })
+        );
+        closeEventModal();
+      } else {
+        alert(result?.error?.message || 'Unable to register right now. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error registering for training event:', error);
+      alert('Unable to register right now. Please try again later.');
+    } finally {
+      setRegisteringEvent(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className={getThemeClasses()}>
@@ -591,7 +1021,7 @@ const LearningDevelopmentAcademy = () => {
       {/* Tab Navigation */}
       <section className="max-w-7xl mx-auto px-4 mb-8">
         <div className="flex flex-wrap gap-4 justify-center">
-          {['courses', 'papers', 'materials'].map((tab) => (
+          {['courses', 'calendar', 'papers', 'materials'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -599,7 +1029,7 @@ const LearningDevelopmentAcademy = () => {
                 activeTab === tab ? getButtonClasses('primary') : getButtonClasses('secondary')
               }`}
             >
-              {t(`knowledge:${tab}`)}
+              {getTabLabel(tab)}
             </button>
           ))}
         </div>
@@ -734,6 +1164,299 @@ const LearningDevelopmentAcademy = () => {
           </motion.section>
         )}
 
+        {activeTab === 'calendar' && (
+          <motion.section
+            key="calendar"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="max-w-7xl mx-auto px-4 pb-20"
+          >
+            <div
+              className={`mb-10 rounded-3xl border ${getCardClasses()} overflow-hidden bg-gradient-to-br from-blue-600/10 via-cyan-500/10 to-blue-600/5`}
+            >
+              <div className="p-8">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                  <div>
+                    <h2 className="text-3xl font-bold mb-2">
+                      {t('knowledge:calendarHeadline', {
+                        defaultValue: 'Training & Extension Calendar'
+                      })}
+                    </h2>
+                    <p className="text-base opacity-75 max-w-2xl">
+                      {t('knowledge:calendarDescription', {
+                        defaultValue:
+                          'Book verified seats for instructor-led academies, virtual clinics, and community extension labs run by NARA trainers.'
+                      })}
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full lg:w-auto">
+                    <div className="rounded-2xl bg-white/60 dark:bg-white/10 p-4 text-center shadow-sm">
+                      <div className="text-3xl font-bold">
+                        {trainingKPIs.upcoming}
+                      </div>
+                      <p className="text-xs uppercase tracking-wide opacity-70">
+                        {t('knowledge:calendarUpcoming', { defaultValue: 'Upcoming' })}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-white/60 dark:bg-white/10 p-4 text-center shadow-sm">
+                      <div className="text-3xl font-bold">
+                        {trainingKPIs.virtualSessions}
+                      </div>
+                      <p className="text-xs uppercase tracking-wide opacity-70">
+                        {t('knowledge:calendarVirtual', { defaultValue: 'Virtual' })}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-white/60 dark:bg-white/10 p-4 text-center shadow-sm">
+                      <div className="text-3xl font-bold">
+                        {trainingKPIs.seatsRemaining}
+                      </div>
+                      <p className="text-xs uppercase tracking-wide opacity-70">
+                        {t('knowledge:calendarSeatsLeft', { defaultValue: 'Seats left' })}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-white/60 dark:bg-white/10 p-4 text-center shadow-sm">
+                      <div className="text-3xl font-bold">
+                        {trainingKPIs.total}
+                      </div>
+                      <p className="text-xs uppercase tracking-wide opacity-70">
+                        {t('knowledge:calendarTotalSessions', { defaultValue: 'Total sessions' })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3 mb-8">
+              {[
+                {
+                  id: 'upcoming',
+                  label: t('knowledge:calendarUpcoming', { defaultValue: 'Upcoming' })
+                },
+                {
+                  id: 'all',
+                  label: t('common:all', { defaultValue: 'All' })
+                },
+                {
+                  id: 'past',
+                  label: t('knowledge:calendarPast', { defaultValue: 'Past sessions' })
+                }
+              ].map((filter) => (
+                <button
+                  key={filter.id}
+                  onClick={() => setCalendarFilter(filter.id)}
+                  className={`px-4 py-2 rounded-full text-sm ${
+                    calendarFilter === filter.id
+                      ? getButtonClasses('primary')
+                      : getButtonClasses('secondary')
+                  }`}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
+
+            {eventsLoading ? (
+              <div className="flex justify-center py-16">
+                <Icons.Loader className="w-10 h-10 animate-spin text-blue-600" />
+              </div>
+            ) : Object.keys(groupedEvents).length === 0 ? (
+              <div className="text-center py-20 border-2 border-dashed rounded-3xl opacity-70">
+                <Icons.Calendar className="w-16 h-16 mx-auto mb-4" />
+                <p className="text-xl">
+                  {t('knowledge:noCalendarEntries', {
+                    defaultValue: 'No sessions match this filter. Check again soon.'
+                  })}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-10">
+                {Object.entries(groupedEvents).map(([month, monthEvents]) => (
+                  <div key={month} className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-8 rounded-full bg-blue-500"></div>
+                      <h3 className="text-2xl font-semibold">{month}</h3>
+                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {monthEvents.map((event) => {
+                        const seatsRemaining =
+                          typeof event.seatsRemaining === 'number'
+                            ? Math.max(event.seatsRemaining, 0)
+                            : null;
+                        const capacity =
+                          typeof event.capacity === 'number' ? event.capacity : null;
+                        const isFull = seatsRemaining === 0 && capacity !== null;
+                        const deadline = toDate(event.registrationDeadline);
+                        const registrationClosed = deadline ? deadline < new Date() : false;
+                        const alreadyRegistered = isAlreadyRegistered(event);
+                        const buttonDisabled = isFull || registrationClosed || alreadyRegistered;
+                        return (
+                          <motion.div
+                            key={event.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className={`relative rounded-2xl border ${getCardClasses()} p-6 overflow-hidden`}
+                          >
+                            <div className="absolute inset-y-0 right-0 w-1 bg-gradient-to-b from-blue-500/10 via-cyan-400/40 to-blue-500/10 pointer-events-none" />
+                            <div className="flex flex-col gap-4">
+                              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                                <div>
+                                  <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide mb-2">
+                                    <span className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-600">
+                                      {event.format === 'virtual'
+                                        ? t('knowledge:formatVirtual', { defaultValue: 'Virtual' })
+                                        : event.format === 'hybrid'
+                                        ? t('knowledge:formatHybrid', { defaultValue: 'Hybrid' })
+                                        : t('knowledge:formatInPerson', { defaultValue: 'In person' })}
+                                    </span>
+                                    {registrationClosed && (
+                                      <span className="px-3 py-1 rounded-full bg-red-500/10 text-red-600">
+                                        {t('knowledge:registrationClosed', {
+                                          defaultValue: 'Registration closed'
+                                        })}
+                                      </span>
+                                    )}
+                                    {isFull && (
+                                      <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-600">
+                                        {t('knowledge:eventFull', { defaultValue: 'Waitlist only' })}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <h4 className="text-2xl font-semibold">
+                                    {getLocalizedValue(event.title, currentLang, event.title?.en)}
+                                  </h4>
+                                  <p className="mt-2 text-sm opacity-80">
+                                    {getLocalizedValue(event.summary, currentLang, '')}
+                                  </p>
+                                </div>
+                                <div className="text-sm text-right space-y-1 whitespace-pre-line">
+                                  <div className="font-semibold text-blue-600">
+                                    {formatEventDateRange(event, currentLang)}
+                                  </div>
+                                  <div className="opacity-70">
+                                    {getLocalizedValue(event.location, currentLang, '')}
+                                  </div>
+                                  {deadline && (
+                                    <div className="text-xs uppercase tracking-wide opacity-70">
+                                      {t('knowledge:registerBy', { defaultValue: 'Register by' })}{' '}
+                                      {deadline.toLocaleDateString(
+                                        currentLang === 'si'
+                                          ? 'si-LK'
+                                          : currentLang === 'ta'
+                                            ? 'ta-LK'
+                                            : 'en-GB',
+                                        { day: 'numeric', month: 'short' }
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="flex flex-wrap gap-2">
+                                {event.tags?.map((tag) => (
+                                  <span
+                                    key={tag}
+                                    className="text-xs uppercase tracking-wide px-3 py-1 rounded-full bg-gray-200/60 dark:bg-gray-700/60"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+
+                              <div className="flex flex-wrap items-center gap-4 text-sm">
+                                {capacity !== null && (
+                                  <span className="flex items-center gap-2">
+                                    <Icons.Users className="w-4 h-4 opacity-70" />
+                                    {t('knowledge:capacity', { defaultValue: 'Capacity' })}:{' '}
+                                    <strong>
+                                      {capacity}
+                                      {seatsRemaining !== null
+                                        ? ` · ${seatsRemaining} ${t('knowledge:seatsLeft', {
+                                            defaultValue: 'left'
+                                          })}`
+                                        : ''}
+                                    </strong>
+                                  </span>
+                                )}
+                                {event.audience && (
+                                  <span className="flex items-center gap-2">
+                                    <Icons.Target className="w-4 h-4 opacity-70" />
+                                    {Array.isArray(event.audience)
+                                      ? event.audience.join(', ')
+                                      : event.audience}
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="flex flex-wrap gap-3">
+                                <button
+                                  onClick={() => openEventModal(event)}
+                                  disabled={buttonDisabled}
+                                  className={`px-5 py-2 rounded-lg ${getButtonClasses('primary')} disabled:opacity-60 disabled:cursor-not-allowed`}
+                                >
+                                  {alreadyRegistered
+                                    ? t('knowledge:alreadyRegistered', {
+                                        defaultValue: 'Already registered'
+                                      })
+                                    : isFull
+                                    ? t('knowledge:joinWaitlist', { defaultValue: 'Join waitlist' })
+                                    : registrationClosed
+                                    ? t('knowledge:registrationClosed', {
+                                        defaultValue: 'Registration closed'
+                                      })
+                                    : t('knowledge:reserveSeat', { defaultValue: 'Reserve seat' })}
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (typeof navigator === 'undefined' || !navigator.clipboard) {
+                                      alert(
+                                        t('knowledge:calendarCopyFallback', {
+                                          defaultValue:
+                                            'Copy failed. Please capture the details manually.'
+                                        })
+                                      );
+                                      return;
+                                    }
+
+                                    navigator.clipboard
+                                      .writeText(
+                                        `${getLocalizedValue(event.title, currentLang, event.title?.en)} — ${formatEventDateRange(event, currentLang)}`
+                                      )
+                                      .then(() => {
+                                        alert(
+                                          t('knowledge:calendarCopied', {
+                                            defaultValue:
+                                              'Event details copied. Paste into your calendar invite.'
+                                          })
+                                        );
+                                      })
+                                      .catch(() => {
+                                        alert(
+                                          t('knowledge:calendarCopyFallback', {
+                                            defaultValue:
+                                              'Copy failed. Please capture the details manually.'
+                                          })
+                                        );
+                                      });
+                                  }}
+                                  className={`px-5 py-2 rounded-lg ${getButtonClasses('secondary')}`}
+                                >
+                                  {t('knowledge:copyDetails', { defaultValue: 'Copy details' })}
+                                </button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </motion.section>
+        )}
+
         {activeTab === 'papers' && (
           <motion.section
             key="papers"
@@ -809,6 +1532,148 @@ const LearningDevelopmentAcademy = () => {
               ))}
             </div>
           </motion.section>
+        )}
+      </AnimatePresence>
+
+      {/* Training Event Registration Modal */}
+      <AnimatePresence>
+        {eventModalOpen && selectedEvent && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={closeEventModal}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`max-w-3xl w-full rounded-2xl p-8 space-y-6 ${getCardClasses()}`}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs uppercase tracking-wide opacity-60">
+                    {t('knowledge:eventRegistration', { defaultValue: 'Event registration' })}
+                  </p>
+                  <h2 className="text-2xl font-bold">
+                    {getLocalizedValue(selectedEvent.title, currentLang, selectedEvent.title?.en)}
+                  </h2>
+                  <p className="text-sm opacity-70 mt-2">
+                    {formatEventDateRange(selectedEvent, currentLang)} ·{' '}
+                    {getLocalizedValue(selectedEvent.location, currentLang, '')}
+                  </p>
+                </div>
+                <button
+                  onClick={closeEventModal}
+                  className="p-2 rounded-full border border-gray-300/50 hover:bg-gray-100 text-gray-500"
+                >
+                  <Icons.X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleEventRegistration} className="space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-semibold mb-1 block">
+                      {t('common:fullName', { defaultValue: 'Full name' })}
+                    </label>
+                    <input
+                      type="text"
+                      value={eventRegistrationForm.fullName}
+                      onChange={(e) => updateRegistrationField('fullName', e.target.value)}
+                      className={`w-full px-4 py-3 rounded-lg border ${getInputClasses()}`}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold mb-1 block">
+                      {t('common:email', { defaultValue: 'Email' })}
+                    </label>
+                    <input
+                      type="email"
+                      value={eventRegistrationForm.email}
+                      onChange={(e) => updateRegistrationField('email', e.target.value)}
+                      className={`w-full px-4 py-3 rounded-lg border ${getInputClasses()}`}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-semibold mb-1 block">
+                      {t('knowledge:organization', { defaultValue: 'Organization / Affiliation' })}
+                    </label>
+                    <input
+                      type="text"
+                      value={eventRegistrationForm.organization}
+                      onChange={(e) => updateRegistrationField('organization', e.target.value)}
+                      className={`w-full px-4 py-3 rounded-lg border ${getInputClasses()}`}
+                      placeholder={t('knowledge:organizationPlaceholder', {
+                        defaultValue: 'e.g., Department of Fisheries'
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold mb-1 block">
+                      {t('common:phone', { defaultValue: 'Phone' })}
+                    </label>
+                    <input
+                      type="tel"
+                      value={eventRegistrationForm.phone}
+                      onChange={(e) => updateRegistrationField('phone', e.target.value)}
+                      className={`w-full px-4 py-3 rounded-lg border ${getInputClasses()}`}
+                      placeholder="+94 77 XXX XXXX"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold mb-1 block">
+                    {t('common:notes', { defaultValue: 'Notes' })}
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={eventRegistrationForm.notes}
+                    onChange={(e) => updateRegistrationField('notes', e.target.value)}
+                    className={`w-full px-4 py-3 rounded-lg border resize-none ${getInputClasses()}`}
+                    placeholder={t('knowledge:eventNotesPlaceholder', {
+                      defaultValue: 'Let us know about accessibility needs or learning goals.'
+                    })}
+                  />
+                </div>
+
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pt-4 border-t border-gray-200/60">
+                  <p className="text-sm opacity-70">
+                    {t('knowledge:eventPrivacy', {
+                      defaultValue:
+                        'We will email joining instructions and add you to the reminder list for this session.'
+                    })}
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={closeEventModal}
+                      className={`px-5 py-2 rounded-lg ${getButtonClasses('secondary')}`}
+                    >
+                      {t('common:cancel')}
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={registeringEvent}
+                      className={`px-5 py-2 rounded-lg ${getButtonClasses('primary')} disabled:opacity-60 disabled:cursor-not-allowed`}
+                    >
+                      {registeringEvent
+                        ? t('knowledge:bookingInProgress', { defaultValue: 'Booking...' })
+                        : t('knowledge:confirmSeat', { defaultValue: 'Confirm seat' })}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 

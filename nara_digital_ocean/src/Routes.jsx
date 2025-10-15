@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from "react";
-import { BrowserRouter, Routes as RouterRoutes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes as RouterRoutes, Route, useLocation, Navigate } from "react-router-dom";
 import ScrollToTop from "components/ScrollToTop";
 import ErrorBoundary from "components/ErrorBoundary";
 import NotFound from "./pages/NotFound";
@@ -7,6 +7,7 @@ import FirebaseAuthProvider from './contexts/FirebaseAuthContext';
 import { CartProvider } from './contexts/CartContext';
 import GovFooter from './components/compliance/GovFooter';
 import ThemeNavbar from './components/ui/ThemeNavbar';
+import SkipLink from './components/compliance/SkipLink';
 
 const OceanIntelligenceDashboardHomepage = lazy(() => import("./pages/ocean-intelligence-dashboard-homepage"));
 const ResearchExcellencePortal = lazy(() => import("./pages/research-excellence-portal"));
@@ -29,6 +30,7 @@ const ContactUs = lazy(() => import("./pages/contact-us"));
 const FirebaseAdminAuthenticationPortal = lazy(() => import('./pages/firebase-admin-authentication-portal'));
 const FirebaseAdminDashboardControlCenter = lazy(() => import('./pages/firebase-admin-dashboard-control-center'));
 const MediaGallery = lazy(() => import('./pages/media-gallery'));
+const AudiencePage = lazy(() => import('./pages/audiences'));
 
 // Legal & Compliance Pages
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy'));
@@ -61,9 +63,69 @@ const GovernmentServicesAdmin = lazy(() => import('./pages/admin/GovernmentServi
 // Maritime Admin
 const MaritimeAdmin = lazy(() => import('./pages/admin/MaritimeAdmin'));
 
+// Analytics Admin - Phase 5
+const AnalyticsAdmin = lazy(() => import('./pages/admin/AnalyticsAdmin'));
+const PredictionsAdmin = lazy(() => import('./pages/admin/PredictionsAdmin'));
+const SimulationsEconomicAdmin = lazy(() => import('./pages/admin/SimulationsEconomicAdmin'));
+
 // Fish Advisory System
 const FishAdvisorySystem = lazy(() => import('./pages/fish-advisory-system'));
 const FishAdvisoryAdmin = lazy(() => import('./pages/admin/FishAdvisoryAdmin'));
+
+// Lab Results Portal
+const LabResultsPortal = lazy(() => import('./pages/lab-results'));
+const LabResultsAdmin = lazy(() => import('./pages/admin/LabResultsAdmin'));
+
+// Research Vessel Booking
+const ResearchVesselBooking = lazy(() => import('./pages/research-vessel-booking'));
+const ResearchVesselAdmin = lazy(() => import('./pages/admin/ResearchVesselAdmin'));
+
+// Scientific Evidence Repository
+const ScientificEvidenceRepository = lazy(() => import('./pages/scientific-evidence-repository'));
+
+// Export Market Intelligence
+const ExportMarketIntelligence = lazy(() => import('./pages/export-market-intelligence'));
+
+// Media Press Kit
+const MediaPressKit = lazy(() => import('./pages/media-press-kit'));
+
+// Open Data Portal
+const OpenDataPortal = lazy(() => import('./pages/open-data-portal'));
+
+// Marine Incident Portal
+const MarineIncidentPortal = lazy(() => import('./pages/marine-incident-portal'));
+const MarineIncidentAdmin = lazy(() => import('./pages/admin/MarineIncidentAdmin'));
+
+// Project Pipeline Tracker
+const ProjectPipelineTracker = lazy(() => import('./pages/project-pipeline-tracker'));
+const ProjectPipelineAdmin = lazy(() => import('./pages/admin/ProjectPipelineAdmin'));
+
+// Recruitment ATS
+const RecruitmentATSAdmin = lazy(() => import('./pages/admin/RecruitmentATSAdmin'));
+
+// Bathymetry Data Admin
+const BathymetryAdmin = lazy(() => import('./pages/admin/BathymetryAdmin'));
+
+// Marine Spatial Planning Viewer
+const MarineSpatialPlanningViewer = lazy(() => import('./pages/marine-spatial-planning-viewer'));
+
+// Data Center Integration Hub Admin
+const DataCenterIntegrationAdmin = lazy(() => import('./pages/admin/DataCenterIntegrationAdmin'));
+
+// Water Quality Monitoring Admin
+const WaterQualityMonitoringAdmin = lazy(() => import('./pages/admin/WaterQualityMonitoringAdmin'));
+
+// Public Consultation Portal
+const PublicConsultationPortal = lazy(() => import('./pages/public-consultation-portal'));
+const PublicConsultationAdmin = lazy(() => import('./pages/admin/PublicConsultationAdmin'));
+const Phase4DataSeeder = lazy(() => import('./pages/admin/Phase4DataSeeder'));
+
+// Analytics Hub - Phase 5
+const AnalyticsHub = lazy(() => import('./pages/analytics-hub'));
+const PredictiveAnalyticsDashboard = lazy(() => import('./pages/analytics-hub/PredictiveAnalyticsDashboard'));
+const ImpactAssessmentPortal = lazy(() => import('./pages/analytics-hub/ImpactAssessmentPortal'));
+const EconomicValuationDashboard = lazy(() => import('./pages/analytics-hub/EconomicValuationDashboard'));
+const PolicySimulatorInterface = lazy(() => import('./pages/analytics-hub/PolicySimulatorInterface'));
 
 // LDA Auth Pages
 const LDARegister = lazy(() => import('./pages/lda-register'));
@@ -72,6 +134,16 @@ const LDALogin = lazy(() => import('./pages/lda-login'));
 // Divisions Pages
 const DivisionsHub = lazy(() => import('./pages/nara-divisions-hub'));
 const DivisionPage = lazy(() => import('./pages/division-page'));
+
+// Library System Pages
+const LibraryCatalogue = lazy(() => import('./pages/library-catalogue'));
+const ItemDetail = lazy(() => import('./pages/library-catalogue/ItemDetail'));
+const PatronPortal = lazy(() => import('./pages/library-catalogue/PatronPortal'));
+const LibraryAdminDashboard = lazy(() => import('./pages/library-admin/LibraryAdminDashboard'));
+const CataloguingManager = lazy(() => import('./pages/library-admin/CataloguingManager'));
+const CirculationManager = lazy(() => import('./pages/library-admin/CirculationManager'));
+const PatronManager = lazy(() => import('./pages/library-admin/PatronManager'));
+const AcquisitionsManager = lazy(() => import('./pages/library-admin/AcquisitionsManager'));
 
 // Checkout & Payment
 const CheckoutPage = lazy(() => import('./pages/checkout'));
@@ -95,18 +167,41 @@ function Layout({ children }) {
     '/admin/government-services',
     '/admin/maritime',
     '/admin/fish-advisory',
+    '/admin/lab-results',
+    '/admin/research-vessel',
+    '/admin/marine-incident',
+    '/admin/project-pipeline',
+    '/admin/recruitment-ats',
+    '/admin/bathymetry',
+    '/admin/data-center-integration',
+    '/admin/water-quality-monitoring',
+    '/admin/public-consultation',
+    '/admin/phase4-seeder',
+    '/admin/analytics',
+    '/admin/library',
     '/admin'
   ];
   
   const shouldShowLayout = !hideLayoutPaths.some(path => location.pathname.startsWith(path));
   
+  // Homepage has its own custom footer, so we exclude GovFooter from it
+  const hideFooterPaths = ['/'];
+  const shouldShowFooter = shouldShowLayout && !hideFooterPaths.includes(location.pathname);
+  
   return (
     <>
+      {shouldShowLayout && <SkipLink />}
       {shouldShowLayout && <ThemeNavbar />}
-      <div style={shouldShowLayout ? { paddingTop: '88px' } : {}}>
+      <main 
+        id="main-content" 
+        tabIndex={-1}
+        role="main"
+        aria-label="Main content"
+        style={shouldShowLayout ? { paddingTop: '88px' } : {}}
+      >
         {children}
-      </div>
-      {shouldShowLayout && <GovFooter />}
+      </main>
+      {shouldShowFooter && <GovFooter />}
     </>
   );
 }
@@ -151,10 +246,24 @@ function Routes() {
               <Route path="/nara-news-updates-center" element={<NARANewsUpdatesCenter />} />
               <Route path="/procurement-recruitment-portal" element={<ProcurementRecruitmentPortal />} />
               <Route path="/contact-us" element={<ContactUs />} />
+              <Route path="/audiences" element={<Navigate to="/audiences/general-public" replace />} />
+              <Route path="/audiences/:slug" element={<AudiencePage />} />
 
               {/* Divisions Routes */}
               <Route path="/divisions" element={<DivisionsHub />} />
               <Route path="/divisions/:slug" element={<DivisionPage />} />
+
+              {/* Library System Routes */}
+              <Route path="/library" element={<LibraryCatalogue />} />
+              <Route path="/library/item/:id" element={<ItemDetail />} />
+              <Route path="/library/patron-portal" element={<PatronPortal />} />
+
+              {/* Library Admin Routes */}
+              <Route path="/admin/library" element={<LibraryAdminDashboard />} />
+              <Route path="/admin/library/cataloguing" element={<CataloguingManager />} />
+              <Route path="/admin/library/circulation" element={<CirculationManager />} />
+              <Route path="/admin/library/patrons" element={<PatronManager />} />
+              <Route path="/admin/library/acquisitions" element={<AcquisitionsManager />} />
 
               {/* Legal & Compliance Routes */}
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -199,9 +308,73 @@ function Routes() {
               {/* Maritime Admin Route */}
               <Route path="/admin/maritime" element={<MaritimeAdmin />} />
 
+              {/* Analytics Admin Routes - Phase 5 */}
+              <Route path="/admin/analytics" element={<AnalyticsAdmin />} />
+              <Route path="/admin/analytics/predictions" element={<PredictionsAdmin />} />
+              <Route path="/admin/analytics/simulations" element={<SimulationsEconomicAdmin />} />
+              <Route path="/admin/analytics/assessments" element={<SimulationsEconomicAdmin />} />
+              <Route path="/admin/analytics/economic" element={<SimulationsEconomicAdmin />} />
+
               {/* Fish Advisory System Routes */}
               <Route path="/fish-advisory-system" element={<FishAdvisorySystem />} />
               <Route path="/admin/fish-advisory" element={<FishAdvisoryAdmin />} />
+
+              {/* Lab Results Portal Routes */}
+              <Route path="/lab-results" element={<LabResultsPortal />} />
+              <Route path="/admin/lab-results" element={<LabResultsAdmin />} />
+
+              {/* Research Vessel Booking Routes */}
+              <Route path="/research-vessel-booking" element={<ResearchVesselBooking />} />
+              <Route path="/admin/research-vessel" element={<ResearchVesselAdmin />} />
+
+              {/* Scientific Evidence Repository Route */}
+              <Route path="/scientific-evidence-repository" element={<ScientificEvidenceRepository />} />
+
+              {/* Export Market Intelligence Route */}
+              <Route path="/export-market-intelligence" element={<ExportMarketIntelligence />} />
+
+              {/* Media Press Kit Route */}
+              <Route path="/media-press-kit" element={<MediaPressKit />} />
+
+              {/* Open Data Portal Route */}
+              <Route path="/open-data-portal" element={<OpenDataPortal />} />
+
+              {/* Marine Incident Portal Routes */}
+              <Route path="/marine-incident-portal" element={<MarineIncidentPortal />} />
+              <Route path="/admin/marine-incident" element={<MarineIncidentAdmin />} />
+
+              {/* Project Pipeline Tracker Routes */}
+              <Route path="/project-pipeline-tracker" element={<ProjectPipelineTracker />} />
+              <Route path="/admin/project-pipeline" element={<ProjectPipelineAdmin />} />
+
+              {/* Recruitment ATS Admin Route */}
+              <Route path="/admin/recruitment-ats" element={<RecruitmentATSAdmin />} />
+
+              {/* Bathymetry Data Admin Route */}
+              <Route path="/admin/bathymetry" element={<BathymetryAdmin />} />
+
+              {/* Marine Spatial Planning Viewer Route */}
+              <Route path="/marine-spatial-planning-viewer" element={<MarineSpatialPlanningViewer />} />
+
+              {/* Data Center Integration Hub Admin Route */}
+              <Route path="/admin/data-center-integration" element={<DataCenterIntegrationAdmin />} />
+
+              {/* Water Quality Monitoring Admin Route */}
+              <Route path="/admin/water-quality-monitoring" element={<WaterQualityMonitoringAdmin />} />
+
+              {/* Public Consultation Portal Routes */}
+              <Route path="/public-consultation-portal" element={<PublicConsultationPortal />} />
+              <Route path="/admin/public-consultation" element={<PublicConsultationAdmin />} />
+
+              {/* Phase 4 Data Seeder */}
+              <Route path="/admin/phase4-seeder" element={<Phase4DataSeeder />} />
+
+              {/* Analytics Hub - Phase 5 */}
+              <Route path="/analytics" element={<AnalyticsHub />} />
+              <Route path="/analytics/predictive" element={<PredictiveAnalyticsDashboard />} />
+              <Route path="/analytics/impact-assessment" element={<ImpactAssessmentPortal />} />
+              <Route path="/analytics/economic-valuation" element={<EconomicValuationDashboard />} />
+              <Route path="/analytics/policy-simulator" element={<PolicySimulatorInterface />} />
             </RouterRoutes>
             </Layout>
           </Suspense>
