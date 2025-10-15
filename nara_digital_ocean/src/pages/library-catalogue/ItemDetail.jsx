@@ -177,9 +177,46 @@ const ItemDetail = () => {
                 )}
               </div>
 
+              {/* Actions */}
+              <div className="mt-6 space-y-3">
+                {item.url && (
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full px-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg hover:from-cyan-700 hover:to-blue-700 transition flex items-center justify-center gap-2 font-semibold"
+                  >
+                    <Icons.ExternalLink className="w-5 h-5" />
+                    Access Digital Copy
+                  </a>
+                )}
+                
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert('Link copied to clipboard!');
+                  }}
+                  className="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-2 font-medium"
+                >
+                  <Icons.Share2 className="w-4 h-4" />
+                  Share This Item
+                </button>
+
+                <button
+                  onClick={() => window.print()}
+                  className="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-2 font-medium"
+                >
+                  <Icons.Printer className="w-4 h-4" />
+                  Print Details
+                </button>
+              </div>
+
               {/* Barcode */}
-              <div className="text-xs text-gray-500 mt-6">
-                Barcode: {item.barcode}
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="flex items-center justify-between text-xs text-gray-500">
+                  <span>Barcode: {item.barcode}</span>
+                  <span>ID: {item.id}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -204,55 +241,92 @@ const ItemDetail = () => {
               </div>
 
               {/* Bibliographic Details */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                {item.author && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Author</label>
-                    <p className="text-gray-900 mt-1">{item.author}</p>
-                  </div>
-                )}
+              <div className="bg-gray-50 rounded-lg p-6 mb-8">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <Icons.Info className="w-5 h-5 text-cyan-600" />
+                  Bibliographic Information
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {item.author && (
+                    <div className="flex items-start gap-3">
+                      <Icons.User className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">Author</label>
+                        <p className="text-gray-900 mt-1">{item.author}</p>
+                      </div>
+                    </div>
+                  )}
 
-                {item.publisher && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Publisher</label>
-                    <p className="text-gray-900 mt-1">{item.publisher}</p>
-                  </div>
-                )}
+                  {item.publisher && (
+                    <div className="flex items-start gap-3">
+                      <Icons.Building className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">Publisher</label>
+                        <p className="text-gray-900 mt-1">{item.publisher}</p>
+                      </div>
+                    </div>
+                  )}
 
-                {item.publication_year && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Publication Year</label>
-                    <p className="text-gray-900 mt-1">{item.publication_year}</p>
-                  </div>
-                )}
+                  {item.publication_year && (
+                    <div className="flex items-start gap-3">
+                      <Icons.Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">Publication Year</label>
+                        <p className="text-gray-900 mt-1">{item.publication_year}</p>
+                      </div>
+                    </div>
+                  )}
 
-                {item.edition && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Edition</label>
-                    <p className="text-gray-900 mt-1">{item.edition}</p>
-                  </div>
-                )}
+                  {item.edition && (
+                    <div className="flex items-start gap-3">
+                      <Icons.BookCopy className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">Edition</label>
+                        <p className="text-gray-900 mt-1">{item.edition}</p>
+                      </div>
+                    </div>
+                  )}
 
-                {item.isbn && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">ISBN</label>
-                    <p className="text-gray-900 mt-1 font-mono">{item.isbn}</p>
-                  </div>
-                )}
+                  {item.isbn && (
+                    <div className="flex items-start gap-3">
+                      <Icons.Hash className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">ISBN</label>
+                        <p className="text-gray-900 mt-1 font-mono">{item.isbn}</p>
+                      </div>
+                    </div>
+                  )}
 
-                {item.issn && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">ISSN</label>
-                    <p className="text-gray-900 mt-1 font-mono">{item.issn}</p>
-                  </div>
-                )}
+                  {item.issn && (
+                    <div className="flex items-start gap-3">
+                      <Icons.Hash className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">ISSN</label>
+                        <p className="text-gray-900 mt-1 font-mono">{item.issn}</p>
+                      </div>
+                    </div>
+                  )}
 
-                {item.pages && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Pages</label>
-                    <p className="text-gray-900 mt-1">{item.pages}</p>
-                  </div>
-                )}
+                  {item.pages && (
+                    <div className="flex items-start gap-3">
+                      <Icons.FileText className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">Pages</label>
+                        <p className="text-gray-900 mt-1">{item.pages}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {item.series && (
+                    <div className="flex items-start gap-3">
+                      <Icons.Layers className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">Series</label>
+                        <p className="text-gray-900 mt-1">{item.series}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Abstract/Description */}

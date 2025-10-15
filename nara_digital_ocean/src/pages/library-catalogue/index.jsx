@@ -4,6 +4,36 @@ import { useTranslation } from 'react-i18next';
 import * as Icons from 'lucide-react';
 import { searchService, catalogueService } from '../../services/libraryService';
 
+// All 26 NARA Material Types
+const MATERIAL_TYPES = [
+  { code: 'ACT', name: 'Acts', icon: 'Scale', color: 'from-purple-500 to-purple-600' },
+  { code: 'ATC', name: 'Atapattu Collection', icon: 'Archive', color: 'from-amber-500 to-amber-600' },
+  { code: 'BOBP', name: 'BOBP Reports', icon: 'FileText', color: 'from-blue-500 to-blue-600' },
+  { code: 'CD', name: 'CDs', icon: 'Disc', color: 'from-cyan-500 to-cyan-600' },
+  { code: 'DMAP', name: 'Digital Map', icon: 'Map', color: 'from-green-500 to-green-600' },
+  { code: 'EBOOK', name: 'Electronic Books', icon: 'Tablet', color: 'from-indigo-500 to-indigo-600' },
+  { code: 'FAO', name: 'FAO Reports', icon: 'FileSpreadsheet', color: 'from-emerald-500 to-emerald-600' },
+  { code: 'IOC', name: 'IOC Reports', icon: 'FileText', color: 'from-teal-500 to-teal-600' },
+  { code: 'IWMI', name: 'IWMI Reports', icon: 'Droplet', color: 'from-sky-500 to-sky-600' },
+  { code: 'JR', name: 'Journal', icon: 'BookOpen', color: 'from-violet-500 to-violet-600' },
+  { code: 'LBOOK', name: 'Lending Book', icon: 'Book', color: 'from-blue-600 to-blue-700' },
+  { code: 'MAP', name: 'Maps', icon: 'MapPin', color: 'from-lime-500 to-lime-600' },
+  { code: 'NEWS', name: 'Newspaper Articles', icon: 'Newspaper', color: 'from-slate-500 to-slate-600' },
+  { code: 'PREF', name: 'Permanent Reference', icon: 'BookMarked', color: 'from-red-500 to-red-600' },
+  { code: 'PROC', name: 'Proceedings', icon: 'BookCopy', color: 'from-orange-500 to-orange-600' },
+  { code: 'UACOL', name: 'Prof. Upali Amarasinghe Collection', icon: 'LibraryBig', color: 'from-pink-500 to-pink-600' },
+  { code: 'RBOOK', name: 'Reference Book', icon: 'BookOpenCheck', color: 'from-rose-500 to-rose-600' },
+  { code: 'RPAPER', name: 'Research Papers', icon: 'FileEdit', color: 'from-fuchsia-500 to-fuchsia-600' },
+  { code: 'RNARA', name: 'Research Reports - NARA', icon: 'ScrollText', color: 'from-cyan-600 to-cyan-700' },
+  { code: 'SREF', name: 'Special Reference', icon: 'BookmarkCheck', color: 'from-red-600 to-red-700' },
+  { code: 'SLBOOK', name: 'Sri Lanka Collection - Books', icon: 'Library', color: 'from-yellow-500 to-yellow-600' },
+  { code: 'SLREP', name: 'Sri Lanka Collection - Reports', icon: 'FolderOpen', color: 'from-amber-600 to-amber-700' },
+  { code: 'THESIS', name: 'Thesis', icon: 'GraduationCap', color: 'from-purple-600 to-purple-700' },
+  { code: 'WFISH', name: 'World Fisheries Collection', icon: 'Fish', color: 'from-blue-500 to-blue-600' },
+  { code: 'EJART', name: 'e-Journal Articles', icon: 'FileDigit', color: 'from-violet-600 to-violet-700' },
+  { code: 'EREP', name: 'e-Reports', icon: 'FileCode', color: 'from-indigo-600 to-indigo-700' },
+];
+
 const LibraryCatalogue = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -21,8 +51,10 @@ const LibraryCatalogue = () => {
     language: searchParams.get('language') || '',
   });
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
+  const [showCategories, setShowCategories] = useState(true);
   const [popularItems, setPopularItems] = useState([]);
   const [newArrivals, setNewArrivals] = useState([]);
+  const [categoryStats, setCategoryStats] = useState({});
 
   useEffect(() => {
     loadFacets();
@@ -124,6 +156,47 @@ const LibraryCatalogue = () => {
     navigate(`/library/item/${itemId}`);
   };
 
+  const handleCategoryClick = (categoryCode) => {
+    setFilters({ ...filters, material_type: categoryCode });
+    setSearchParams({ material_type: categoryCode });
+    setShowCategories(false);
+    
+    // Perform search with category filter
+    if (categoryCode) {
+      setSearchQuery('*'); // Search all items in this category
+      performCategorySearch(categoryCode);
+    }
+  };
+
+  const performCategorySearch = async (categoryCode, page = 1) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const params = {
+        page,
+        limit: 20,
+        material_type: categoryCode,
+      };
+
+      const response = await catalogueService.getAllItems(params);
+      
+      if (response.success) {
+        setItems(response.data);
+        setPagination(response.pagination);
+      }
+    } catch (err) {
+      setError('Failed to load items. Please try again.');
+      console.error('Category search error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getIconComponent = (iconName) => {
+    return Icons[iconName] || Icons.Book;
+  };
+
   const getAvailabilityBadge = (item) => {
     if (item.available_copies > 0) {
       return (
@@ -145,17 +218,47 @@ const LibraryCatalogue = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-cyan-600 to-blue-700 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-gradient-to-r from-cyan-600 to-blue-700 text-white py-16 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+            backgroundSize: '30px 30px'
+          }}></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
-            <Icons.Library className="w-16 h-16 mx-auto mb-4" />
-            <h1 className="text-4xl font-bold mb-4">NARA Library Catalogue</h1>
-            <p className="text-xl text-cyan-100 mb-8">
-              Discover our collection of marine and aquatic research resources
+            <Icons.Library className="w-20 h-20 mx-auto mb-4 animate-pulse" />
+            <h1 className="text-5xl font-bold mb-4">NARA Library Catalogue</h1>
+            <p className="text-xl text-cyan-100 mb-6">
+              Discover our comprehensive collection of marine and aquatic research resources
             </p>
+            
+            {/* Statistics Bar */}
+            <div className="max-w-4xl mx-auto mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 border border-white border-opacity-20">
+                  <div className="text-3xl font-bold">{facets.material_types.reduce((sum, type) => sum + (type.count || 0), 0).toLocaleString()}</div>
+                  <div className="text-sm text-cyan-100">Total Items</div>
+                </div>
+                <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 border border-white border-opacity-20">
+                  <div className="text-3xl font-bold">26</div>
+                  <div className="text-sm text-cyan-100">Categories</div>
+                </div>
+                <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 border border-white border-opacity-20">
+                  <div className="text-3xl font-bold">{facets.languages.length}</div>
+                  <div className="text-sm text-cyan-100">Languages</div>
+                </div>
+                <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 border border-white border-opacity-20">
+                  <div className="text-3xl font-bold">{facets.years.length}</div>
+                  <div className="text-sm text-cyan-100">Years Covered</div>
+                </div>
+              </div>
+            </div>
 
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="max-w-3xl mx-auto">
+            <form onSubmit={handleSearch} className="max-w-4xl mx-auto">
               <div className="flex gap-2">
                 <div className="flex-1 relative">
                   <Icons.Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -163,27 +266,56 @@ const LibraryCatalogue = () => {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search by title, author, subject, ISBN..."
-                    className="w-full pl-12 pr-4 py-4 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    placeholder="Search by title, author, subject, ISBN, keywords..."
+                    className="w-full pl-12 pr-4 py-4 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-lg"
                   />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setItems([]);
+                      }}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      <Icons.X className="w-5 h-5" />
+                    </button>
+                  )}
                 </div>
                 <button
                   type="submit"
-                  className="px-8 py-4 bg-white text-cyan-600 rounded-lg font-semibold hover:bg-cyan-50 transition flex items-center gap-2"
+                  disabled={!searchQuery.trim()}
+                  className="px-8 py-4 bg-white text-cyan-600 rounded-lg font-semibold hover:bg-cyan-50 transition flex items-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Icons.Search className="w-5 h-5" />
                   Search
                 </button>
               </div>
               
-              <button
-                type="button"
-                onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
-                className="mt-3 text-cyan-100 hover:text-white text-sm flex items-center gap-1 mx-auto"
-              >
-                <Icons.SlidersHorizontal className="w-4 h-4" />
-                Advanced Search
-              </button>
+              <div className="mt-4 flex items-center justify-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
+                  className="text-cyan-100 hover:text-white text-sm flex items-center gap-1"
+                >
+                  <Icons.SlidersHorizontal className="w-4 h-4" />
+                  {showAdvancedSearch ? 'Hide Filters' : 'Advanced Search'}
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowCategories(true);
+                    setSearchQuery('');
+                    setFilters({ material_type: '', year: '', language: '' });
+                    setItems([]);
+                  }}
+                  className="text-cyan-100 hover:text-white text-sm flex items-center gap-1"
+                >
+                  <Icons.Grid3x3 className="w-4 h-4" />
+                  Browse Categories
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -191,38 +323,48 @@ const LibraryCatalogue = () => {
 
       {/* Advanced Search Panel */}
       {showAdvancedSearch && (
-        <div className="bg-white border-b shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-gradient-to-br from-white to-gray-50 border-b shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <Icons.Filter className="w-5 h-5 text-cyan-600" />
+              Advanced Filters
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <Icons.BookType className="w-4 h-4 text-gray-500" />
                   Material Type
                 </label>
                 <select
                   value={filters.material_type}
                   onChange={(e) => handleFilterChange('material_type', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent shadow-sm hover:border-cyan-400 transition"
                 >
                   <option value="">All Types</option>
-                  {facets.material_types.map((type) => (
-                    <option key={type.id} value={type.id}>
-                      {type.name} ({type.count})
-                    </option>
-                  ))}
+                  {MATERIAL_TYPES.map((type) => {
+                    const count = facets.material_types.find(f => f.code === type.code)?.count || 0;
+                    return (
+                      <option key={type.code} value={type.code}>
+                        {type.name} {count > 0 && `(${count})`}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <Icons.Calendar className="w-4 h-4 text-gray-500" />
                   Publication Year
                 </label>
                 <select
                   value={filters.year}
                   onChange={(e) => handleFilterChange('year', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent shadow-sm hover:border-cyan-400 transition"
                 >
                   <option value="">All Years</option>
-                  {facets.years.slice(0, 20).map((year) => (
+                  {facets.years.slice(0, 25).map((year) => (
                     <option key={year.publication_year} value={year.publication_year}>
                       {year.publication_year} ({year.count})
                     </option>
@@ -231,13 +373,14 @@ const LibraryCatalogue = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <Icons.Languages className="w-4 h-4 text-gray-500" />
                   Language
                 </label>
                 <select
                   value={filters.language}
                   onChange={(e) => handleFilterChange('language', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent shadow-sm hover:border-cyan-400 transition"
                 >
                   <option value="">All Languages</option>
                   {facets.languages.map((lang) => (
@@ -249,22 +392,222 @@ const LibraryCatalogue = () => {
               </div>
             </div>
 
+            {/* Active Filters Display */}
             {(filters.material_type || filters.year || filters.language) && (
-              <button
-                onClick={clearFilters}
-                className="mt-4 text-sm text-cyan-600 hover:text-cyan-700 flex items-center gap-1"
-              >
-                <Icons.X className="w-4 h-4" />
-                Clear Filters
-              </button>
+              <div className="mt-6 flex items-center gap-3 flex-wrap">
+                <span className="text-sm font-medium text-gray-700">Active Filters:</span>
+                
+                {filters.material_type && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-cyan-100 text-cyan-800 rounded-full text-sm">
+                    {MATERIAL_TYPES.find(t => t.code === filters.material_type)?.name}
+                    <button
+                      onClick={() => handleFilterChange('material_type', '')}
+                      className="hover:bg-cyan-200 rounded-full p-0.5"
+                    >
+                      <Icons.X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                
+                {filters.year && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                    Year: {filters.year}
+                    <button
+                      onClick={() => handleFilterChange('year', '')}
+                      className="hover:bg-purple-200 rounded-full p-0.5"
+                    >
+                      <Icons.X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                
+                {filters.language && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                    {filters.language}
+                    <button
+                      onClick={() => handleFilterChange('language', '')}
+                      className="hover:bg-green-200 rounded-full p-0.5"
+                    >
+                      <Icons.X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                
+                <button
+                  onClick={clearFilters}
+                  className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1"
+                >
+                  <Icons.XCircle className="w-4 h-4" />
+                  Clear All
+                </button>
+              </div>
             )}
+            
+            {/* Quick Filter Suggestions */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <p className="text-sm font-medium text-gray-700 mb-3">Quick Filters:</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => handleFilterChange('material_type', 'EBOOK')}
+                  className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:border-cyan-500 hover:bg-cyan-50 transition"
+                >
+                  <Icons.Tablet className="w-4 h-4 inline mr-1" />
+                  E-Books
+                </button>
+                <button
+                  onClick={() => handleFilterChange('material_type', 'RNARA')}
+                  className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:border-cyan-500 hover:bg-cyan-50 transition"
+                >
+                  <Icons.ScrollText className="w-4 h-4 inline mr-1" />
+                  NARA Research
+                </button>
+                <button
+                  onClick={() => handleFilterChange('material_type', 'THESIS')}
+                  className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:border-cyan-500 hover:bg-cyan-50 transition"
+                >
+                  <Icons.GraduationCap className="w-4 h-4 inline mr-1" />
+                  Theses
+                </button>
+                <button
+                  onClick={() => handleFilterChange('year', new Date().getFullYear().toString())}
+                  className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:border-cyan-500 hover:bg-cyan-50 transition"
+                >
+                  <Icons.Sparkles className="w-4 h-4 inline mr-1" />
+                  This Year
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Material Type Categories Browser */}
+        {showCategories && !searchQuery && !filters.material_type && (
+          <div className="mb-12">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-3">Browse by Material Type</h2>
+              <p className="text-gray-600">Explore our collection of 26 specialized categories</p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+              {MATERIAL_TYPES.map((type) => {
+                const IconComponent = getIconComponent(type.icon);
+                const itemCount = facets.material_types.find(f => f.code === type.code)?.count || 0;
+                
+                return (
+                  <button
+                    key={type.code}
+                    onClick={() => handleCategoryClick(type.code)}
+                    className={`bg-gradient-to-br ${type.color} text-white rounded-xl p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center gap-3 group relative overflow-hidden`}
+                  >
+                    {/* Animated background effect */}
+                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                    
+                    {/* Icon */}
+                    <div className="relative z-10">
+                      <IconComponent className="w-10 h-10 group-hover:scale-110 transition-transform duration-300" />
+                    </div>
+                    
+                    {/* Name */}
+                    <div className="relative z-10 text-center">
+                      <h3 className="font-semibold text-sm leading-tight mb-1">{type.name}</h3>
+                      {itemCount > 0 && (
+                        <span className="text-xs opacity-90">
+                          {itemCount} {itemCount === 1 ? 'item' : 'items'}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Featured Collections Banner */}
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl p-6 text-white">
+                <Icons.TrendingUp className="w-8 h-8 mb-3" />
+                <h3 className="text-xl font-bold mb-2">NARA Research</h3>
+                <p className="text-cyan-100 text-sm mb-4">Access our exclusive marine research collection</p>
+                <button
+                  onClick={() => handleCategoryClick('RNARA')}
+                  className="bg-white text-cyan-600 px-4 py-2 rounded-lg font-semibold hover:bg-cyan-50 transition text-sm"
+                >
+                  Explore Collection →
+                </button>
+              </div>
+
+              <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl p-6 text-white">
+                <Icons.GraduationCap className="w-8 h-8 mb-3" />
+                <h3 className="text-xl font-bold mb-2">Academic Resources</h3>
+                <p className="text-purple-100 text-sm mb-4">Browse thesis, research papers, and journals</p>
+                <button
+                  onClick={() => handleCategoryClick('THESIS')}
+                  className="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-purple-50 transition text-sm"
+                >
+                  View Theses →
+                </button>
+              </div>
+
+              <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl p-6 text-white">
+                <Icons.Archive className="w-8 h-8 mb-3" />
+                <h3 className="text-xl font-bold mb-2">Special Collections</h3>
+                <p className="text-amber-100 text-sm mb-4">Discover curated collections and archives</p>
+                <button
+                  onClick={() => handleCategoryClick('ATC')}
+                  className="bg-white text-amber-600 px-4 py-2 rounded-lg font-semibold hover:bg-amber-50 transition text-sm"
+                >
+                  Explore Archives →
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Active Category Header */}
+        {filters.material_type && (
+          <div className="mb-8 bg-white rounded-lg shadow-lg p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                {(() => {
+                  const activeType = MATERIAL_TYPES.find(t => t.code === filters.material_type);
+                  if (activeType) {
+                    const IconComponent = getIconComponent(activeType.icon);
+                    return (
+                      <>
+                        <div className={`p-4 rounded-xl bg-gradient-to-br ${activeType.color} text-white`}>
+                          <IconComponent className="w-8 h-8" />
+                        </div>
+                        <div>
+                          <h2 className="text-2xl font-bold text-gray-900">{activeType.name}</h2>
+                          <p className="text-gray-600">
+                            {pagination.total || 0} {pagination.total === 1 ? 'item' : 'items'} in this collection
+                          </p>
+                        </div>
+                      </>
+                    );
+                  }
+                })()}
+              </div>
+              <button
+                onClick={() => {
+                  setFilters({ material_type: '', year: '', language: '' });
+                  setSearchParams({});
+                  setShowCategories(true);
+                  setItems([]);
+                  setSearchQuery('');
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+              >
+                <Icons.ArrowLeft className="w-4 h-4" />
+                Back to Categories
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Search Results */}
-        {searchQuery && (
+        {searchQuery && searchQuery !== '*' && (
           <div className="mb-12">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900">
@@ -361,8 +704,84 @@ const LibraryCatalogue = () => {
           </div>
         )}
 
+        {/* Category Results (when material_type filter is active) */}
+        {filters.material_type && items.length > 0 && (
+          <div className="mb-12">
+            {loading ? (
+              <div className="flex justify-center items-center py-12">
+                <Icons.Loader2 className="w-8 h-8 animate-spin text-cyan-600" />
+                <span className="ml-3 text-gray-600">Loading items...</span>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {items.map((item) => (
+                    <div
+                      key={item.id}
+                      onClick={() => handleItemClick(item.id)}
+                      className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer overflow-hidden group"
+                    >
+                      <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
+                        {item.cover_image_url ? (
+                          <img
+                            src={item.cover_image_url}
+                            alt={item.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Icons.BookOpen className="w-16 h-16 text-gray-400" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <div className="mb-2">
+                          {getAvailabilityBadge(item)}
+                        </div>
+                        <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-cyan-600 transition">
+                          {item.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 mb-2 line-clamp-1">{item.author}</p>
+                        <div className="flex items-center justify-between text-xs text-gray-500">
+                          <span>{item.material_type_name}</span>
+                          {item.publication_year && <span>{item.publication_year}</span>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {pagination.totalPages > 1 && (
+                  <div className="mt-8 flex justify-center gap-2">
+                    <button
+                      onClick={() => performCategorySearch(filters.material_type, pagination.page - 1)}
+                      disabled={pagination.page === 1}
+                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    >
+                      <Icons.ChevronLeft className="w-5 h-5" />
+                    </button>
+                    
+                    <span className="px-4 py-2 text-gray-700">
+                      Page {pagination.page} of {pagination.totalPages}
+                    </span>
+                    
+                    <button
+                      onClick={() => performCategorySearch(filters.material_type, pagination.page + 1)}
+                      disabled={pagination.page === pagination.totalPages}
+                      className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    >
+                      <Icons.ChevronRight className="w-5 h-5" />
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
         {/* Popular Items */}
-        {!searchQuery && popularItems.length > 0 && (
+        {!searchQuery && !filters.material_type && popularItems.length > 0 && (
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
               <Icons.TrendingUp className="w-6 h-6 text-cyan-600" />
@@ -401,7 +820,7 @@ const LibraryCatalogue = () => {
         )}
 
         {/* New Arrivals */}
-        {!searchQuery && newArrivals.length > 0 && (
+        {!searchQuery && !filters.material_type && newArrivals.length > 0 && (
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
               <Icons.Sparkles className="w-6 h-6 text-cyan-600" />
@@ -432,37 +851,88 @@ const LibraryCatalogue = () => {
           </div>
         )}
 
-        {/* Quick Links */}
-        {!searchQuery && (
-          <div className="mt-12 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Library Services</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <button
-                onClick={() => navigate('/library/patron-portal')}
-                className="bg-white rounded-lg p-6 shadow-md hover:shadow-xl transition text-center group"
-              >
-                <Icons.User className="w-12 h-12 text-cyan-600 mx-auto mb-3 group-hover:scale-110 transition" />
-                <h3 className="font-semibold text-gray-900 mb-2">Patron Portal</h3>
-                <p className="text-sm text-gray-600">Manage your loans, holds, and fines</p>
-              </button>
+        {/* Library Information Banner */}
+        {!searchQuery && !filters.material_type && (
+          <div className="mt-12 bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 rounded-2xl shadow-2xl overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8 lg:p-12">
+              {/* Left side - About */}
+              <div className="text-white">
+                <h2 className="text-3xl font-bold mb-4 flex items-center gap-3">
+                  <Icons.BookOpen className="w-8 h-8" />
+                  About NARA Library
+                </h2>
+                <p className="text-cyan-100 mb-6 leading-relaxed">
+                  The NARA Library is a specialized resource center focusing on marine science, aquatic research, 
+                  and fisheries management. Our collection includes scientific publications, research reports, 
+                  theses, and digital resources from around the world.
+                </p>
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
+                    <Icons.Clock className="w-6 h-6 mb-2" />
+                    <h4 className="font-semibold mb-1">Open Hours</h4>
+                    <p className="text-sm text-cyan-100">Mon-Fri: 8:30 AM - 4:30 PM</p>
+                  </div>
+                  <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
+                    <Icons.Mail className="w-6 h-6 mb-2" />
+                    <h4 className="font-semibold mb-1">Contact</h4>
+                    <p className="text-sm text-cyan-100">library@nara.ac.lk</p>
+                  </div>
+                </div>
+              </div>
 
-              <button
-                onClick={() => navigate('/knowledge-discovery-center')}
-                className="bg-white rounded-lg p-6 shadow-md hover:shadow-xl transition text-center group"
-              >
-                <Icons.Database className="w-12 h-12 text-cyan-600 mx-auto mb-3 group-hover:scale-110 transition" />
-                <h3 className="font-semibold text-gray-900 mb-2">Digital Repository</h3>
-                <p className="text-sm text-gray-600">Access research papers and publications</p>
-              </button>
+              {/* Right side - Services */}
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-6">Library Services</h3>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => navigate('/library/patron-portal')}
+                    className="w-full bg-white bg-opacity-10 backdrop-blur-sm border border-white border-opacity-20 rounded-lg p-4 hover:bg-opacity-20 transition text-left group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="bg-white bg-opacity-20 rounded-lg p-3 group-hover:scale-110 transition">
+                        <Icons.User className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="text-white flex-1">
+                        <h4 className="font-semibold mb-1">Patron Portal</h4>
+                        <p className="text-sm text-cyan-100">Manage loans, holds, and account</p>
+                      </div>
+                      <Icons.ChevronRight className="w-5 h-5 text-white opacity-50 group-hover:opacity-100" />
+                    </div>
+                  </button>
 
-              <button
-                onClick={() => navigate('/contact-us')}
-                className="bg-white rounded-lg p-6 shadow-md hover:shadow-xl transition text-center group"
-              >
-                <Icons.HelpCircle className="w-12 h-12 text-cyan-600 mx-auto mb-3 group-hover:scale-110 transition" />
-                <h3 className="font-semibold text-gray-900 mb-2">Need Help?</h3>
-                <p className="text-sm text-gray-600">Contact library staff for assistance</p>
-              </button>
+                  <button
+                    onClick={() => navigate('/knowledge-discovery-center')}
+                    className="w-full bg-white bg-opacity-10 backdrop-blur-sm border border-white border-opacity-20 rounded-lg p-4 hover:bg-opacity-20 transition text-left group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="bg-white bg-opacity-20 rounded-lg p-3 group-hover:scale-110 transition">
+                        <Icons.Database className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="text-white flex-1">
+                        <h4 className="font-semibold mb-1">Digital Repository</h4>
+                        <p className="text-sm text-cyan-100">Access digital collections & archives</p>
+                      </div>
+                      <Icons.ChevronRight className="w-5 h-5 text-white opacity-50 group-hover:opacity-100" />
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => navigate('/contact-us')}
+                    className="w-full bg-white bg-opacity-10 backdrop-blur-sm border border-white border-opacity-20 rounded-lg p-4 hover:bg-opacity-20 transition text-left group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="bg-white bg-opacity-20 rounded-lg p-3 group-hover:scale-110 transition">
+                        <Icons.HelpCircle className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="text-white flex-1">
+                        <h4 className="font-semibold mb-1">Need Help?</h4>
+                        <p className="text-sm text-cyan-100">Contact library staff for assistance</p>
+                      </div>
+                      <Icons.ChevronRight className="w-5 h-5 text-white opacity-50 group-hover:opacity-100" />
+                    </div>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}

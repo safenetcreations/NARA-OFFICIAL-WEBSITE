@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as Icons from 'lucide-react';
+import ChangeView from '../../components/ChangeView';
 import { MapContainer, TileLayer, Circle, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
@@ -772,10 +773,9 @@ const BathymetryAdmin = () => {
             <div className="lg:col-span-3">
               <div className="h-[600px] rounded-lg overflow-hidden border-2 border-gray-200">
                 <MapContainer
-                  center={[selectedDataset.coordinates.latitude, selectedDataset.coordinates.longitude]}
-                  zoom={10}
                   style={{ height: '100%', width: '100%' }}
                 >
+                  <ChangeView center={[selectedDataset.coordinates.latitude, selectedDataset.coordinates.longitude]} zoom={10} />
                   <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; OpenStreetMap contributors'
