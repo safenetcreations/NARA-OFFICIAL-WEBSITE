@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as Icons from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import { AVAILABLE_LANGUAGES } from '../../i18n';
 
 const ThemeNavbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -55,6 +56,18 @@ const ThemeNavbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [languageMenuOpen]);
 
+  // Check if current path matches any item
+  const isActivePath = (path) => {
+    if (!path) return false;
+    return location.pathname === path || location.pathname.startsWith(path + '/');
+  };
+
+  // Check if dropdown contains active path
+  const hasActiveChild = (dropdown) => {
+    if (!dropdown) return false;
+    return dropdown.some(item => isActivePath(item.path));
+  };
+
   const menuItems = [
     {
       titleKey: 'navbar.menu.about.title',
@@ -62,21 +75,10 @@ const ThemeNavbar = () => {
       dropdown: [
         { labelKey: 'navbar.menu.about.links.ourStory', path: '/about-nara-our-story', icon: Icons.Heart },
         { labelKey: 'navbar.menu.divisions.links.allDivisions', path: '/divisions', icon: Icons.Grid3x3 },
-        { labelKey: 'navbar.menu.about.links.mediaGallery', path: '/media-gallery', icon: Icons.Image },
         { labelKey: 'navbar.menu.about.links.newsUpdates', path: '/nara-news-updates-center', icon: Icons.Newspaper },
+        { labelKey: 'navbar.menu.about.links.mediaGallery', path: '/media-gallery', icon: Icons.Image },
         { labelKey: 'navbar.menu.news.links.mediaPressKit', path: '/media-press-kit', icon: Icons.Camera },
         { labelKey: 'navbar.menu.about.links.procurement', path: '/procurement-recruitment-portal', icon: Icons.Briefcase }
-      ]
-    },
-    {
-      titleKey: 'audiences:nav.label',
-      icon: Icons.Target,
-      dropdown: [
-        { labelKey: 'audiences:nav.generalPublic', path: '/audiences/general-public', icon: Icons.Heart },
-        { labelKey: 'audiences:nav.researchers', path: '/audiences/researchers-students', icon: Icons.Microscope },
-        { labelKey: 'audiences:nav.policy', path: '/audiences/policy-regulators', icon: Icons.Scale },
-        { labelKey: 'audiences:nav.industry', path: '/audiences/industry-exporters', icon: Icons.BriefcaseBusiness },
-        { labelKey: 'audiences:nav.media', path: '/audiences/media-partners-donors', icon: Icons.Share2 }
       ]
     },
     {
@@ -84,26 +86,26 @@ const ThemeNavbar = () => {
       icon: Icons.Microscope,
       dropdown: [
         { labelKey: 'navbar.menu.research.links.researchExcellencePortal', path: '/research-excellence-portal', icon: Icons.Award },
-        { labelKey: 'navbar.menu.research.links.researchCollaboration', path: '/research-collaboration-platform', icon: Icons.Users },
-        { labelKey: 'navbar.menu.research.links.knowledgeDiscovery', path: '/knowledge-discovery-center', icon: Icons.BookOpen },
-        { labelKey: 'navbar.menu.research.links.partnershipInnovation', path: '/partnership-innovation-gateway', icon: Icons.Lightbulb },
+        { labelKey: 'navbar.menu.data.links.analyticsHub', path: '/analytics', icon: Icons.TrendingUp },
+        { labelKey: 'navbar.menu.data.links.openData', path: '/open-data-portal', icon: Icons.Database },
+        { labelKey: 'navbar.menu.research.links.projectPipeline', path: '/project-pipeline-tracker', icon: Icons.Activity },
         { labelKey: 'navbar.menu.research.links.vesselBooking', path: '/research-vessel-booking', icon: Icons.Ship },
         { labelKey: 'navbar.menu.research.links.labResults', path: '/lab-results', icon: Icons.FlaskConical },
         { labelKey: 'navbar.menu.research.links.scientificEvidence', path: '/scientific-evidence-repository', icon: Icons.BookText },
-        { labelKey: 'navbar.menu.research.links.projectPipeline', path: '/project-pipeline-tracker', icon: Icons.Activity }
+        { labelKey: 'navbar.menu.data.links.spatialPlanning', path: '/marine-spatial-planning-viewer', icon: Icons.Map }
       ]
     },
     {
       titleKey: 'navbar.menu.services.title',
       icon: Icons.Briefcase,
       dropdown: [
-        { labelKey: 'navbar.menu.services.links.digitalMarketplace', path: '/nara-digital-marketplace', icon: Icons.ShoppingBag },
-        { labelKey: 'navbar.menu.services.links.maritimeServices', path: '/maritime-services-hub', icon: Icons.Ship },
         { labelKey: 'navbar.menu.services.links.governmentServices', path: '/government-services-portal', icon: Icons.Building },
         { labelKey: 'navbar.menu.services.links.emergencyResponse', path: '/emergency-response-network', icon: Icons.AlertTriangle },
         { labelKey: 'navbar.menu.services.links.fishAdvisory', path: '/fish-advisory-system', icon: Icons.Fish },
+        { labelKey: 'navbar.menu.services.links.maritimeServices', path: '/maritime-services-hub', icon: Icons.Ship },
+        { labelKey: 'navbar.menu.services.links.marineIncident', path: '/marine-incident-portal', icon: Icons.AlertCircle },
         { labelKey: 'navbar.menu.services.links.exportIntelligence', path: '/export-market-intelligence', icon: Icons.TrendingUp },
-        { labelKey: 'navbar.menu.services.links.marineIncident', path: '/marine-incident-portal', icon: Icons.AlertCircle }
+        { labelKey: 'navbar.menu.services.links.digitalMarketplace', path: '/nara-digital-marketplace', icon: Icons.ShoppingBag }
       ]
     },
     {
@@ -114,7 +116,10 @@ const ThemeNavbar = () => {
         { labelKey: 'navbar.menu.resources.links.digitalProductLibrary', path: '/digital-product-library', icon: Icons.Archive },
         { labelKey: 'navbar.menu.resources.links.learningAcademy', path: '/learning-development-academy', icon: Icons.GraduationCap },
         { labelKey: 'navbar.menu.resources.links.regionalImpact', path: '/regional-impact-network', icon: Icons.Globe },
-        { labelKey: 'navbar.menu.resources.links.integrationSystems', path: '/integration-systems-platform', icon: Icons.Network }
+        { labelKey: 'navbar.menu.resources.links.publicConsultation', path: '/public-consultation-portal', icon: Icons.MessageSquare },
+        { labelKey: 'audiences:nav.generalPublic', path: '/audiences/general-public', icon: Icons.Heart },
+        { labelKey: 'audiences:nav.researchers', path: '/audiences/researchers-students', icon: Icons.Microscope },
+        { labelKey: 'audiences:nav.industry', path: '/audiences/industry-exporters', icon: Icons.BriefcaseBusiness }
       ]
     },
     {
@@ -264,12 +269,12 @@ const ThemeNavbar = () => {
 
         {/* Desktop Navigation */}
         <div
-          className="nav-links"
+          className="nav-links hidden md:flex"
           style={{
             flex: 1,
             display: 'flex',
             justifyContent: 'center',
-            gap: '0.25rem',
+            gap: '0.3rem',
             fontFamily: primaryFont
           }}
         >
@@ -297,9 +302,10 @@ const ThemeNavbar = () => {
                   letterSpacing: '0.01em',
                     transition: 'all 0.3s ease',
                     whiteSpace: 'nowrap',
-                    color: '#003366',
-                    background: hasDropdown && activeDropdown === index ? 'rgba(0, 86, 179, 0.12)' : 'transparent',
-                    border: hasDropdown && activeDropdown === index ? '1px solid rgba(0, 86, 179, 0.25)' : '1px solid transparent'
+                    color: isActivePath(item.path) || hasActiveChild(item.dropdown) ? '#0066CC' : '#003366',
+                    background: (hasDropdown && activeDropdown === index) || isActivePath(item.path) || hasActiveChild(item.dropdown) ? 'rgba(100, 181, 246, 0.18)' : 'transparent',
+                    border: (hasDropdown && activeDropdown === index) || isActivePath(item.path) || hasActiveChild(item.dropdown) ? '1px solid rgba(100, 181, 246, 0.4)' : '1px solid transparent',
+                    boxShadow: isActivePath(item.path) || hasActiveChild(item.dropdown) ? '0 2px 8px rgba(100, 181, 246, 0.3)' : 'none'
                   }}
                   onClick={() => handleTopLevelClick(index, targetPath, hasDropdown)}
                 >
@@ -345,31 +351,36 @@ const ThemeNavbar = () => {
                               gap: '0.65rem',
                               padding: '0.6rem 0.85rem',
                               borderRadius: '12px',
-                              background: 'transparent',
+                              background: isActivePath(subItem.path) ? 'rgba(100, 181, 246, 0.2)' : 'transparent',
                               textDecoration: 'none',
                               transition: 'all 0.2s ease',
-                              fontFamily: secondaryFont
+                              fontFamily: secondaryFont,
+                              borderLeft: isActivePath(subItem.path) ? '3px solid #64B5F6' : '3px solid transparent'
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.background = 'rgba(0, 86, 179, 0.08)';
-                              e.currentTarget.style.transform = 'translateX(3px)';
+                              if (!isActivePath(subItem.path)) {
+                                e.currentTarget.style.background = 'rgba(0, 86, 179, 0.08)';
+                                e.currentTarget.style.transform = 'translateX(3px)';
+                              }
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.background = 'transparent';
-                              e.currentTarget.style.transform = 'translateX(0)';
+                              if (!isActivePath(subItem.path)) {
+                                e.currentTarget.style.background = 'transparent';
+                                e.currentTarget.style.transform = 'translateX(0)';
+                              }
                             }}
                           >
                             <subItem.icon
                               className="w-4 h-4"
                               style={{
-                                color: '#005A9C'
+                                color: isActivePath(subItem.path) ? '#0066CC' : '#005A9C'
                               }}
                             />
                             <span style={{
                               fontSize: '0.88rem',
-                              fontWeight: 550,
+                              fontWeight: isActivePath(subItem.path) ? 650 : 550,
                               fontFamily: secondaryFont,
-                              color: '#003366'
+                              color: isActivePath(subItem.path) ? '#0066CC' : '#003366'
                             }}>{t(subItem.labelKey)}</span>
                           </Link>
                         ))}
@@ -382,7 +393,7 @@ const ThemeNavbar = () => {
           })}
         </div>
 
-        {/* Right side actions - Language selector only */}
+        {/* Right side actions - Language selector */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
 
           {/* Language Selector - Always Visible */}
@@ -482,7 +493,7 @@ const ThemeNavbar = () => {
               }
               setMobileMenuOpen(!mobileMenuOpen);
             }}
-            className="btn-ghost lg:hidden"
+            className="btn-ghost md:hidden"
             style={{ padding: '0.5rem', borderRadius: '8px' }}
             aria-label="Toggle menu"
           >

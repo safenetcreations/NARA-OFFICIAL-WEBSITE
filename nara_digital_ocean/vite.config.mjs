@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
-// import tagger from "@dhiwise/component-tagger";
+// import { VitePWA } from 'vite-plugin-pwa'; // Temporarily disabled for Vite 7 compatibility
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -54,7 +54,8 @@ export default defineConfig({
   plugins: [
     tsconfigPaths(), 
     react()
-    // tagger() // Temporarily disabled for build
+    // Note: VitePWA plugin removed for Vite 7 compatibility
+    // Add back when vite-plugin-pwa supports Vite 7
   ],
   server: {
     port: "4028",

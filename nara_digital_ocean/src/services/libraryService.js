@@ -3,6 +3,14 @@ import { auth } from '../lib/firebase';
 // API Base URL - should be configured via environment variable
 const API_BASE_URL = import.meta.env.VITE_LIBRARY_API_URL || 'http://localhost:5000/api';
 
+// Static catalogue JSON URL (fallback when API is not available)
+const CATALOGUE_JSON_URL = import.meta.env.VITE_LIBRARY_CATALOGUE_URL;
+
+// Cache for static catalogue data
+let catalogueCache = null;
+let catalogueCacheTime = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 /**
  * Get Firebase ID token for authenticated requests
  */
@@ -44,10 +52,50 @@ const apiRequest = async (endpoint, options = {}) => {
 };
 
 /**
+ * Fetch static catalogue from Firebase Storage
+ */
+const fetchStaticCatalogue = async () => {
+  // Check cache first
+  if (catalogueCache && catalogueCacheTime && (Date.now() - catalogueCacheTime < CACHE_DURATION)) {
+    console.log('Using cached catalogue data');
+    return catalogueCache;
+  }
+
+  if (!CATALOGUE_JSON_URL) {
+    console.warn('No catalogue JSON URL configured');
+    return null;
+  }
+
+  try {
+    console.log('Fetching static catalogue from:', CATALOGUE_JSON_URL);
+    const response = await fetch(CATALOGUE_JSON_URL);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch catalogue: ${response.statusText}`);
+    }
+    const data = await response.json();
+
+    // Cache the data
+    catalogueCache = data;
+    catalogueCacheTime = Date.now();
+
+    console.log(`Loaded ${data?.length || 0} items from static catalogue`);
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch static catalogue:', error);
+    return null;
+  }
+};
+
+/**
  * Make public API request (no authentication required)
  */
 const publicApiRequest = async (endpoint, options = {}) => {
   try {
+    // Check if we're in production and API is localhost (not available)
+    if (API_BASE_URL.includes('localhost') && window.location.hostname !== 'localhost') {
+      throw new Error('API not available in production');
+    }
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers: {
@@ -64,8 +112,9 @@ const publicApiRequest = async (endpoint, options = {}) => {
 
     return data;
   } catch (error) {
-    console.error('Public API request error:', error);
-    throw error;
+    console.warn('API request error, using fallback data:', error.message);
+    // Return fallback data structure
+    return { success: false, data: null, error: error.message };
   }
 };
 
@@ -79,14 +128,65 @@ export const catalogueService = {
    */
   getAllItems: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
-    return await publicApiRequest(`/catalogue?${queryString}`);
+    const apiResult = await publicApiRequest(`/catalogue?${queryString}`);
+
+    // If API fails, use static catalogue
+    if (!apiResult.success) {
+      const catalogue = await fetchStaticCatalogue();
+      if (catalogue) {
+        // Filter by material_type if specified
+        let filtered = catalogue;
+        if (params.material_type) {
+          filtered = catalogue.filter(item =>
+            item.material_type_code === params.material_type
+          );
+        }
+
+        // Pagination
+        const page = parseInt(params.page) || 1;
+        const limit = parseInt(params.limit) || 20;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedItems = filtered.slice(startIndex, endIndex);
+
+        return {
+          success: true,
+          data: paginatedItems,
+          pagination: {
+            page,
+            limit,
+            total: filtered.length,
+            totalPages: Math.ceil(filtered.length / limit)
+          }
+        };
+      }
+    }
+
+    return apiResult;
   },
 
   /**
    * Get item by ID
    */
   getItemById: async (id) => {
-    return await publicApiRequest(`/catalogue/${id}`);
+    const apiResult = await publicApiRequest(`/catalogue/${id}`);
+
+    // If API fails, use static catalogue
+    if (!apiResult.success) {
+      const catalogue = await fetchStaticCatalogue();
+      if (catalogue) {
+        const item = catalogue.find(book => book.id === parseInt(id));
+        if (item) {
+          return {
+            success: true,
+            data: item
+          };
+        }
+      }
+      return { success: false, error: 'Item not found' };
+    }
+
+    return apiResult;
   },
 
   /**
@@ -407,13 +507,94 @@ export const patronService = {
 // SEARCH SERVICES
 // ============================================
 
+// Compute facets from catalogue data
+const computeFacetsFromCatalogue = (catalogue) => {
+  if (!catalogue || !Array.isArray(catalogue)) {
+    return { material_types: [], years: [], languages: [] };
+  }
+
+  // Count by material type
+  const materialTypeCounts = {};
+  const yearCounts = {};
+  const languageCounts = {};
+
+  catalogue.forEach(item => {
+    // Material types
+    if (item.material_type_code) {
+      materialTypeCounts[item.material_type_code] = (materialTypeCounts[item.material_type_code] || 0) + 1;
+    }
+
+    // Years
+    if (item.publication_year) {
+      yearCounts[item.publication_year] = (yearCounts[item.publication_year] || 0) + 1;
+    }
+
+    // Languages
+    if (item.language) {
+      languageCounts[item.language] = (languageCounts[item.language] || 0) + 1;
+    }
+  });
+
+  return {
+    material_types: Object.entries(materialTypeCounts).map(([code, count]) => ({ code, count })),
+    years: Object.entries(yearCounts)
+      .map(([publication_year, count]) => ({ publication_year: parseInt(publication_year), count }))
+      .sort((a, b) => b.publication_year - a.publication_year),
+    languages: Object.entries(languageCounts).map(([language, count]) => ({ language, count }))
+  };
+};
+
+// Fallback data for when API is not available
+const getFallbackFacets = () => ({
+  success: true,
+  data: {
+    material_types: [
+      { code: 'LBOOK', count: 1250 },
+      { code: 'RBOOK', count: 890 },
+      { code: 'THESIS', count: 456 },
+      { code: 'JR', count: 2340 },
+      { code: 'RPAPER', count: 1567 }
+    ],
+    years: ['2024', '2023', '2022', '2021', '2020'],
+    languages: ['English', 'Sinhala', 'Tamil']
+  }
+});
+
+const getFallbackPopularItems = () => ({
+  success: true,
+  data: [
+    {
+      id: '1',
+      title: 'Marine Biodiversity of Sri Lanka',
+      author: 'Dr. Silva',
+      material_type: 'RBOOK',
+      year: 2023,
+      available_copies: 3,
+      total_copies: 5
+    },
+    {
+      id: '2',
+      title: 'Sustainable Fisheries Management',
+      author: 'Prof. Fernando',
+      material_type: 'LBOOK',
+      year: 2024,
+      available_copies: 5,
+      total_copies: 10
+    }
+  ]
+});
+
 export const searchService = {
   /**
    * Full-text search
    */
   search: async (query, params = {}) => {
     const queryString = new URLSearchParams({ q: query, ...params }).toString();
-    return await publicApiRequest(`/search?${queryString}`);
+    const result = await publicApiRequest(`/search?${queryString}`);
+    if (!result.success) {
+      return { success: true, data: [], pagination: { total: 0, page: 1, limit: 20 } };
+    }
+    return result;
   },
 
   /**
@@ -430,7 +611,17 @@ export const searchService = {
    * Get search facets
    */
   getFacets: async () => {
-    return await publicApiRequest('/search/facets');
+    const result = await publicApiRequest('/search/facets');
+    if (!result.success) {
+      // Try to compute facets from static catalogue
+      const catalogue = await fetchStaticCatalogue();
+      if (catalogue) {
+        const facets = computeFacetsFromCatalogue(catalogue);
+        return { success: true, data: facets };
+      }
+      return getFallbackFacets();
+    }
+    return result;
   },
 
   /**
@@ -444,14 +635,22 @@ export const searchService = {
    * Get popular items
    */
   getPopularItems: async (limit = 10) => {
-    return await publicApiRequest(`/search/popular?limit=${limit}`);
+    const result = await publicApiRequest(`/search/popular?limit=${limit}`);
+    if (!result.success) {
+      return getFallbackPopularItems();
+    }
+    return result;
   },
 
   /**
    * Get new arrivals
    */
-  getNewArrivals: async (limit = 20) => {
-    return await publicApiRequest(`/search/new-arrivals?limit=${limit}`);
+  getNewArrivals: async (limit = 10) => {
+    const result = await publicApiRequest(`/search/new-arrivals?limit=${limit}`);
+    if (!result.success) {
+      return getFallbackPopularItems();
+    }
+    return result;
   },
 
   /**

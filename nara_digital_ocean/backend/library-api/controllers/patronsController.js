@@ -329,7 +329,7 @@ exports.updatePatronCategory = async (req, res) => {
     [id, ...values]
   );
 
-  if (.rows.length === 0) {
+  if (result.rows.length === 0) {
     return res.status(404).json({
       success: false,
       error: 'Patron category not found'

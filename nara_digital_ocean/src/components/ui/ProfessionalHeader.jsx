@@ -393,9 +393,9 @@ const ProfessionalHeader = ({ className = '' }) => {
             </nav>
 
             {/* Action Buttons & Tools */}
-            <div className="hidden lg:flex items-center space-x-3">
+            <div className="flex items-center space-x-2 lg:space-x-3">
               {/* Search */}
-              <div className="relative">
+              <div className="relative hidden lg:block">
                 <input
                   type="text"
                   placeholder="Search..."
@@ -410,7 +410,7 @@ const ProfessionalHeader = ({ className = '' }) => {
 
               {/* Language Selector */}
               <select 
-                className={`px-3 py-2 rounded-lg border ${
+                className={`hidden lg:block px-3 py-2 rounded-lg border ${
                   theme === 'dark' ? 'bg-slate-800 border-slate-700 text-white' :
                   theme === 'glow' ? 'bg-purple-900/30 border-purple-500/30 text-white' :
                   'bg-white border-slate-200 text-slate-900'
@@ -446,15 +446,29 @@ const ProfessionalHeader = ({ className = '' }) => {
                 </Button>
               </Link>
 
+              {/* Register */}
+              <Link to="/register">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`${currentTheme.text} border-current hover:bg-opacity-10`}
+                >
+                  <Icon name="UserPlus" size={16} className="mr-2" />
+                  Register
+                </Button>
+              </Link>
+
               {/* Sign In */}
-              <Button
-                variant="default"
-                size="sm"
-                className={currentTheme.button}
-              >
-                <Icon name="User" size={16} className="mr-2" />
-                Sign In
-              </Button>
+              <Link to="/library-login">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className={currentTheme.button}
+                >
+                  <Icon name="User" size={16} className="mr-2" />
+                  Sign In
+                </Button>
+              </Link>
 
               {/* Notifications */}
               <div className="relative">
@@ -588,14 +602,27 @@ const ProfessionalHeader = ({ className = '' }) => {
                     </Button>
                   </Link>
                   
-                  <Button
-                    variant="default"
-                    fullWidth
-                    className={currentTheme.button}
-                  >
-                    <Icon name="User" size={18} className="mr-2" />
-                    Sign In / Register
-                  </Button>
+                  <Link to="/register">
+                    <Button
+                      variant="outline"
+                      fullWidth
+                      className={`${currentTheme.text} border-current`}
+                    >
+                      <Icon name="UserPlus" size={18} className="mr-2" />
+                      Register Account
+                    </Button>
+                  </Link>
+                  
+                  <Link to="/library-login">
+                    <Button
+                      variant="default"
+                      fullWidth
+                      className={currentTheme.button}
+                    >
+                      <Icon name="User" size={18} className="mr-2" />
+                      Sign In
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>

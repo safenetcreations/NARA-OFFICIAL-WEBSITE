@@ -37,6 +37,8 @@ const DATE_RANGE_FALLBACKS = {
   year: 'Last 12 Months'
 };
 
+const normalizeTagKey = (tag = '') => tag.toString().toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
 const MediaGallery = () => {
   const { t, i18n } = useTranslation(['mediaGallery', 'common']);
   const currentLang = i18n.language || 'en';
@@ -112,6 +114,42 @@ const MediaGallery = () => {
   const dateFormatter = useMemo(
     () => new Intl.DateTimeFormat(i18n.language, { year: 'numeric', month: 'short', day: 'numeric' }),
     [i18n.language]
+  );
+
+  const getLocalizedTagLabel = useCallback(
+    (tag) => {
+      const key = normalizeTagKey(tag);
+      return key ? t(`mediaGallery:tags.${key}`, tag) : tag;
+    },
+    [t]
+  );
+
+  const getLocalizedTags = useCallback((item) => {
+    if (!item) {
+      return [];
+    }
+
+    if (item.tagTranslations && typeof item.tagTranslations === 'object') {
+      return item.tagTranslations[currentLang] || item.tagTranslations.en || item.tags || [];
+    }
+
+    if (item.translations && typeof item.translations === 'object') {
+      const localized = item.translations[currentLang]?.tags;
+      if (Array.isArray(localized)) {
+        return localized;
+      }
+      const english = item.translations.en?.tags;
+      if (Array.isArray(english)) {
+        return english;
+      }
+    }
+
+    return item.tags || [];
+  }, [currentLang]);
+
+  const getLocalizedLocation = useCallback(
+    (item) => getLocalizedTextValue(item, 'locationTranslations', 'location'),
+    [currentLang]
   );
 
   const updateInsights = useCallback(() => {
@@ -203,10 +241,31 @@ const MediaGallery = () => {
 
   const getSourceLabel = useCallback((item) => {
     if (item?.sourceName) {
+      const directTranslations = item.sourceNameTranslations;
+      if (directTranslations?.[currentLang]) {
+        return directTranslations[currentLang];
+      }
+      if (directTranslations?.en) {
+        return directTranslations.en;
+      }
+
+      const nestedTranslations = item.translations;
+      if (nestedTranslations?.[currentLang]?.sourceName) {
+        return nestedTranslations[currentLang].sourceName;
+      }
+      if (nestedTranslations?.en?.sourceName) {
+        return nestedTranslations.en.sourceName;
+      }
+
       return item.sourceName;
     }
-    return t(`mediaGallery:filters.sources.${item?.source}`, SOURCE_FALLBACKS[item?.source] || SOURCE_FALLBACKS.manual);
-  }, [t]);
+
+    if (item?.source) {
+      return t(`mediaGallery:filters.sources.${item.source}`, SOURCE_FALLBACKS[item.source] || SOURCE_FALLBACKS.manual);
+    }
+
+    return SOURCE_FALLBACKS.manual;
+  }, [t, currentLang]);
 
   const getCategoryLabel = useCallback((categoryId) => (
     t(`mediaGallery:filters.categories.${categoryId}`, CATEGORY_FALLBACKS[categoryId] || categoryId)
@@ -385,7 +444,23 @@ const MediaGallery = () => {
           likes: 89,
           approved: true,
           __fallback: true,
-          type: 'images'
+          type: 'images',
+          translations: {
+            si: {
+              title: 'දකුණු වෙරළ මුහුදු පර්යේෂණ මෙහෙයුම',
+              description: 'දකුණු මුහුදු ජලවල ජීව විවිධත්ව ඇගයීම සිදු කරන NARA ගවේෂකයින්',
+              location: 'ගාල්ල, ශ්‍රී ලංකාව',
+              tags: ['පර්යේෂණ', 'මුහුදු ජීව විද්‍යාව', 'ක්ෂේත්‍ර කටයුතු'],
+              sourceName: 'NARA නිල'
+            },
+            ta: {
+              title: 'தெற்கு கடற்கரை கடல் ஆராய்ச்சி பயணம்',
+              description: 'தெற்கு கடல் நீரில் கடல் உயிரியல் பல்வகைமையை மதிப்பீடு செய்யும் NARA ஆராய்ச்சியாளர்கள்',
+              location: 'காலி, இலங்கை',
+              tags: ['ஆராய்ச்சி', 'கடல் உயிரியல்', 'துறைத்தொழில்'],
+              sourceName: 'NARA அதிகாரப்பூர்வம்'
+            }
+          }
         },
         {
           id: '2',
@@ -404,7 +479,23 @@ const MediaGallery = () => {
           likes: 156,
           approved: true,
           __fallback: true,
-          type: 'images'
+          type: 'images',
+          translations: {
+            si: {
+              title: 'පවල් පරවල සංරක්ෂණ ව්‍යාපෘතිය',
+              description: 'පවල් පුනරුත්ථාන උත්සාහයන්ගේ ජලයටැසී ලේඛනගත කිරීම',
+              location: 'හික්කඩුව මුහුදු සංරක්ෂිතය',
+              tags: ['පවල්', 'සංරක්ෂණ', 'ජලයටැසී'],
+              sourceName: 'NARA නිල'
+            },
+            ta: {
+              title: 'பவளப் பாறை பாதுகாப்பு திட்டம்',
+              description: 'பவளப் பாறைகளை மீளுருவாக்கும் முயற்சிகளின் நீர்மூழ்கிய ஆவணப்படுத்தல்',
+              location: 'ஹிக்கடுவா கடல் காப்பகம்',
+              tags: ['பவளங்கள்', 'பாதுகாப்பு', 'நீரடுக்கு'],
+              sourceName: 'NARA அதிகாரப்பூர்வம்'
+            }
+          }
         },
         {
           id: '3',
@@ -423,7 +514,21 @@ const MediaGallery = () => {
           likes: 234,
           approved: true,
           __fallback: true,
-          type: 'images'
+          type: 'images',
+          translations: {
+            si: {
+              title: 'ජාත්‍යන්තර මුහුදු සම්මේලනය 2024',
+              description: 'ඉන්දෝ-ප්‍රශාන්තික මුහුදු විද්‍යා සමුළුවට NARA නියෝජිතයෝ',
+              location: 'කොළඹ සම්මේළන මධ්‍යස්ථානය',
+              tags: ['සම්මේලනය', 'ජාත්‍යන්තර', 'සහයෝගිතාව']
+            },
+            ta: {
+              title: 'சர்வதேச கடல் மாநாடு 2024',
+              description: 'இந்தோ-பசிபிக் கடல் அறிவியல் உச்சிமாநாட்டில் NARA பிரதிநிதிகள்',
+              location: 'கொழும்பு மாநாட்டு மையம்',
+              tags: ['மாநாடு', 'சர்வதேச', 'கூட்டு வேலை']
+            }
+          }
         },
         {
           id: '4',
@@ -442,7 +547,21 @@ const MediaGallery = () => {
           likes: 423,
           approved: true,
           __fallback: true,
-          type: 'images'
+          type: 'images',
+          translations: {
+            si: {
+              title: 'මුහුදු කරත්ත බිත්තර දැමීම නිරීක්ෂණය',
+              description: 'සංරක්ෂණ කණ්ඩායම මුහුදු කරත්ත බිත්තර තැබීමේ රටාවන් ලුහුබැඳයි',
+              location: 'රෑකව වෙරළ',
+              tags: ['කරත්ත', 'සංරක්ෂණ', 'වනජීවී']
+            },
+            ta: {
+              title: 'கடல் ஆமை முட்டையிடல் கண்காணிப்பு',
+              description: 'பாதுகாப்பு அணி கடல் ஆமைகளின் முட்டையிடும் முன்னேற்றத்தை கண்காணிக்கிறது',
+              location: 'ரேகவா கடற்கரை',
+              tags: ['ஆமைகள்', 'பாதுகாப்பு', 'காட்டு உயிர்கள்']
+            }
+          }
         },
         {
           id: '5',
@@ -461,7 +580,23 @@ const MediaGallery = () => {
           likes: 67,
           approved: true,
           __fallback: true,
-          type: 'images'
+          type: 'images',
+          translations: {
+            si: {
+              title: 'අධුනික මුහුදු රසායනාගාර උපකරණ',
+              description: 'නව තාක්ෂණික පර්යේෂණ උපකරණ පිහිටුවීම',
+              location: 'NARA කොළඹ',
+              tags: ['රසායනාගාරය', 'උපකරණ', 'පර්යේෂණ'],
+              sourceName: 'NARA නිල'
+            },
+            ta: {
+              title: 'மேம்பட்ட கடல் ஆய்வக உபகரணங்கள்',
+              description: 'புதிய அதிநவீன ஆராய்ச்சி உபகரணங்கள் நிறுவல்',
+              location: 'NARA கொழும்பு',
+              tags: ['ஆய்வகம்', 'உபகரணங்கள்', 'ஆராய்ச்சி'],
+              sourceName: 'NARA அதிகாரப்பூர்வம்'
+            }
+          }
         },
         {
           id: '6',
@@ -480,7 +615,23 @@ const MediaGallery = () => {
           likes: 198,
           approved: true,
           __fallback: true,
-          type: 'images'
+          type: 'images',
+          translations: {
+            si: {
+              title: 'පාසල් සම්බන්ධතා වැඩසටහන',
+              description: 'ප්‍රාදේශීය පාසල් සිසුන් සමඟ මුහුදු ජීව විද්‍යා අධ්‍යාපන සෙසුම',
+              location: 'NARA අධ්‍යයන මධ්‍යස්ථානය',
+              tags: ['අධ්‍යාපනය', 'ප්‍රවේශය', 'සිසුන්'],
+              sourceName: 'NARA නිල'
+            },
+            ta: {
+              title: 'பள்ளி தொடர்பு திட்டம்',
+              description: 'உள்ளூர் பள்ளி மாணவர்களுடன் கடல் உயிரியல் கல்வி அமர்வு',
+              location: 'NARA கற்றல் மையம்',
+              tags: ['கல்வி', 'விரிவு', 'மாணவர்கள்'],
+              sourceName: 'NARA அதிகாரப்பூர்வம்'
+            }
+          }
         }
       ];
     } else {
@@ -501,7 +652,21 @@ const MediaGallery = () => {
           likes: 892,
           approved: true,
           __fallback: true,
-          type: 'videos'
+          type: 'videos',
+          translations: {
+            si: {
+              title: 'NARA 2024 වර්ෂ සමාලෝචනය',
+              description: 'NARAයේ ප්‍රධාන සාර්ථකත්ව සහ පර්යේෂණ විශේෂාංග පිළිබඳ සවිස්තර අවලෝකනය',
+              tags: ['වාර්ෂික සමාලෝචනය', 'ප්‍රධාන අවධානම්', 'පර්යේෂණ'],
+              sourceName: 'NARA නිල'
+            },
+            ta: {
+              title: 'NARA 2024 ஆண்டுச் சுருக்கம்',
+              description: 'NARA-வின் முக்கிய சாதனைகள் மற்றும் ஆராய்ச்சி சிறப்பம்சங்களின் விரிவான பார்வை',
+              tags: ['ஆண்டு மீள்பார்வை', 'முக்கிய அம்சங்கள்', 'ஆராய்ச்சி'],
+              sourceName: 'NARA அதிகாரப்பூர்வம்'
+            }
+          }
         },
         {
           id: 'v2',
@@ -519,7 +684,21 @@ const MediaGallery = () => {
           likes: 1567,
           approved: true,
           __fallback: true,
-          type: 'videos'
+          type: 'videos',
+          translations: {
+            si: {
+              title: 'ජලයටැසී වාර්තාව: ශ්‍රී ලාංකීය පවල් පරළි',
+              description: 'ශ්‍රී ලංකාවේ පවල් පරළු ජීව විවිධත්වය පෙන්වන 4K ජලයටැසී දෘශ්‍ය',
+              tags: ['පවල් පරළි', 'ජලයටැසී', 'චිත්‍රපටය'],
+              sourceName: 'NARA නිල'
+            },
+            ta: {
+              title: 'நீரடுக்கு ஆவணம்: இலங்கை பவளப் பாறைகள்',
+              description: 'இலங்கை பவளப் பாறைகளின் உயிர்ச்சிறப்பை காட்டும் 4K நீரடுக்கு காட்சிகள்',
+              tags: ['பவளப் பாறைகள்', 'நீரடுக்கு', 'ஆவணப்படம்'],
+              sourceName: 'NARA அதிகாரப்பூர்வம்'
+            }
+          }
         },
         {
           id: 'v3',
@@ -537,7 +716,21 @@ const MediaGallery = () => {
           likes: 567,
           approved: true,
           __fallback: true,
-          type: 'videos'
+          type: 'videos',
+          translations: {
+            si: {
+              title: 'මුහුදු පර්යේෂණ ක්‍රම පුහුණු කිරීම',
+              description: 'අධුනික මුහුදු පර්යේෂණ ක්‍රම හා උපකරණ පිළිබඳ අධ්‍යාපනික වීඩියෝව',
+              tags: ['පුහුණුව', 'අධ්‍යාපනය', 'ක්‍රම'],
+              sourceName: 'NARA නිල'
+            },
+            ta: {
+              title: 'கடல் ஆராய்ச்சி முறைகள் பயிற்சி',
+              description: 'நவீன கடல் ஆராய்ச்சி முறைகள் மற்றும் உபகரணங்களை விளக்கும் கல்வி வீடியோ',
+              tags: ['பயிற்சி', 'கல்வி', 'முறைகள்'],
+              sourceName: 'NARA அதிகாரப்பூர்வம்'
+            }
+          }
         },
         {
           id: 'v4',
@@ -555,7 +748,19 @@ const MediaGallery = () => {
           likes: 3245,
           approved: true,
           __fallback: true,
-          type: 'videos'
+          type: 'videos',
+          translations: {
+            si: {
+              title: 'නිල් මාළිඟු නිරීක්ෂණය - දකුණු වෙරළ',
+              description: 'ශ්‍රී ලාංකීය මුහුදෙන් ගමන් කරන නිල් මාළිඟුගේ දුර්ලභ දසුන්',
+              tags: ['මාළිඟු', 'වනජීවී', 'ගමනාගමනය']
+            },
+            ta: {
+              title: 'நீலத் திமிங்கலம் காட்சி - தெற்கு கடற்கரை',
+              description: 'இலங்கை கடல் வழியாக செல்கின்ற நீலத் திமிங்கலங்களின் அரிதான காட்சிகள்',
+              tags: ['திமிங்கல்கள்', 'காட்டு உயிர்கள்', 'குடிபெயர்வு']
+            }
+          }
         }
       ];
     }
@@ -623,10 +828,10 @@ const MediaGallery = () => {
       const searchCorpus = [
         getLocalizedTitle(item),
         getLocalizedDescription(item),
-        item.location,
+        getLocalizedLocation(item),
         item.photographer,
         getSourceLabel(item),
-        item.tags?.join(' ')
+        getLocalizedTags(item).join(' ')
       ]
         .filter(Boolean)
         .join(' ')
@@ -634,7 +839,7 @@ const MediaGallery = () => {
 
       return searchCorpus.includes(loweredSearch);
     });
-  }, [mediaItems, searchQuery, selectedCategory, selectedSource, dateFilter, getLocalizedTitle, getLocalizedDescription, getSourceLabel]);
+  }, [mediaItems, searchQuery, selectedCategory, selectedSource, dateFilter, getLocalizedTitle, getLocalizedDescription, getLocalizedLocation, getSourceLabel, getLocalizedTags]);
 
   const decoratedMedia = useMemo(() => (
     filteredMedia.map(item => ({
@@ -643,9 +848,11 @@ const MediaGallery = () => {
       displayDescription: getLocalizedDescription(item),
       displaySource: getSourceLabel(item),
       displayCategory: getCategoryLabel(item.category),
-      displayDate: formatDateDisplay(item.date || item.createdAt)
+      displayDate: formatDateDisplay(item.date || item.createdAt),
+      displayLocation: getLocalizedLocation(item),
+      displayTags: getLocalizedTags(item).map(tag => getLocalizedTagLabel(tag))
     }))
-  ), [filteredMedia, getLocalizedTitle, getLocalizedDescription, getSourceLabel, getCategoryLabel, formatDateDisplay]);
+  ), [filteredMedia, getLocalizedTitle, getLocalizedDescription, getSourceLabel, getCategoryLabel, formatDateDisplay, getLocalizedLocation, getLocalizedTags, getLocalizedTagLabel]);
 
   const sourceBreakdown = useMemo(() => {
     if (!mediaItems.length) {
@@ -668,19 +875,26 @@ const MediaGallery = () => {
     const tagCounts = {};
     mediaItems.forEach(item => {
       (item.tags || []).forEach(tag => {
-        const normalized = tag.trim();
-        if (!normalized) {
+        const key = normalizeTagKey(tag);
+        if (!key) {
           return;
         }
-        tagCounts[normalized] = (tagCounts[normalized] || 0) + 1;
+        if (!tagCounts[key]) {
+          tagCounts[key] = { key, raw: tag, count: 0 };
+        }
+        tagCounts[key].count += 1;
       });
     });
 
-    return Object.entries(tagCounts)
-      .map(([tag, count]) => ({ tag, count }))
+    return Object.values(tagCounts)
       .sort((a, b) => b.count - a.count)
-      .slice(0, 8);
-  }, [mediaItems]);
+      .slice(0, 8)
+      .map(entry => ({
+        key: entry.key,
+        count: entry.count,
+        label: getLocalizedTagLabel(entry.raw)
+      }));
+  }, [mediaItems, getLocalizedTagLabel]);
 
   const latestMediaHighlights = useMemo(() => {
     const sorted = [...mediaItems].sort((a, b) => {
@@ -770,6 +984,8 @@ const MediaGallery = () => {
     const displaySource = getSourceLabel(cachedItem);
     const displayCategory = getCategoryLabel(cachedItem.category);
     const displayDate = formatDateDisplay(cachedItem.date || cachedItem.createdAt);
+    const displayLocation = getLocalizedLocation(cachedItem);
+    const displayTags = getLocalizedTags(cachedItem).map(tag => getLocalizedTagLabel(tag));
     setSelectedMedia({
       ...cachedItem,
       type,
@@ -778,7 +994,9 @@ const MediaGallery = () => {
       displayDescription,
       displaySource,
       displayCategory,
-      displayDate
+      displayDate,
+      displayLocation,
+      displayTags
     });
 
     if (item.__fallback || !item.id) {
@@ -1103,8 +1321,8 @@ const MediaGallery = () => {
             ) : (
               <div className="flex flex-wrap gap-2">
                 {topTags.map(tag => (
-                  <span key={tag.tag} className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-200 text-xs">
-                    #{tag.tag} • {tag.count}
+                  <span key={tag.key} className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-200 text-xs">
+                    #{tag.label} • {tag.count}
                   </span>
                 ))}
               </div>
@@ -1239,7 +1457,7 @@ const MediaCard = ({ item, viewMode, isVideo, isFavorite, onToggleFavorite, onCl
       <div className="relative aspect-video overflow-hidden">
         <img
           src={item.thumbnail}
-          alt={item.title}
+          alt={item.displayTitle || item.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
         {isVideo && (
@@ -1270,14 +1488,14 @@ const MediaCard = ({ item, viewMode, isVideo, isFavorite, onToggleFavorite, onCl
           <span className="flex items-center gap-1"><Tag className="w-3 h-3" /> {item.displayCategory}</span>
           <span className="flex items-center gap-1"><ExternalLink className="w-3 h-3" /> {item.displaySource}</span>
         </div>
-        {item.location && (
+        {(item.displayLocation || item.location) && (
           <div className="flex items-center gap-1 text-xs text-cyan-400 mb-2">
-            <MapPin className="w-3 h-3" /> {item.location}
+            <MapPin className="w-3 h-3" /> {item.displayLocation || item.location}
           </div>
         )}
         <div className="flex flex-wrap gap-1">
-          {item.tags?.slice(0, 3).map(tag => (
-            <span key={tag} className="px-2 py-1 bg-slate-700/50 rounded text-xs">
+          {(item.displayTags || item.tags || []).slice(0, 3).map((tag, idx) => (
+            <span key={`${item.id}-tag-${idx}`} className="px-2 py-1 bg-slate-700/50 rounded text-xs">
               {tag}
             </span>
           ))}
@@ -1358,10 +1576,10 @@ const MediaModal = ({ media, isVideo, onClose, onDownload, onShare, onToggleFavo
                 <ExternalLink className="w-5 h-5 text-cyan-400" />
                 <span className="text-sm">{media.displaySource || media.sourceName || SOURCE_FALLBACKS[media.source] || media.source}</span>
               </div>
-              {media.location && (
+              {(media.displayLocation || media.location) && (
                 <div className="flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-cyan-400" />
-                  <span className="text-sm">{media.location}</span>
+                  <span className="text-sm">{media.displayLocation || media.location}</span>
                 </div>
               )}
             </div>
@@ -1373,8 +1591,8 @@ const MediaModal = ({ media, isVideo, onClose, onDownload, onShare, onToggleFavo
             )}
 
             <div className="flex flex-wrap gap-2 mb-4">
-              {media.tags?.map(tag => (
-                <span key={tag} className="px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-sm">
+              {(media.displayTags || media.tags || []).map((tag, idx) => (
+                <span key={`${media.id}-modal-tag-${idx}`} className="px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-sm">
                   #{tag}
                 </span>
               ))}

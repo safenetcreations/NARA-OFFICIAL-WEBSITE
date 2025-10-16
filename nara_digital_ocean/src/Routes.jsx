@@ -1,13 +1,15 @@
-import React, { Suspense, lazy } from "react";
+import React, { lazy, Suspense } from "react";
 import { BrowserRouter, Routes as RouterRoutes, Route, useLocation, Navigate } from "react-router-dom";
 import ScrollToTop from "components/ScrollToTop";
 import ErrorBoundary from "components/ErrorBoundary";
 import NotFound from "./pages/NotFound";
-import FirebaseAuthProvider from './contexts/FirebaseAuthContext';
-import { CartProvider } from './contexts/CartContext';
+import { ProtectedRoute } from './components/library';
 import GovFooter from './components/compliance/GovFooter';
 import ThemeNavbar from './components/ui/ThemeNavbar';
 import SkipLink from './components/compliance/SkipLink';
+import FirebaseAuthProvider from './contexts/FirebaseAuthContext';
+import { LibraryUserProvider } from './contexts/LibraryUserContext';
+import { CartProvider } from './contexts/CartContext';
 
 const OceanIntelligenceDashboardHomepage = lazy(() => import("./pages/ocean-intelligence-dashboard-homepage"));
 const ResearchExcellencePortal = lazy(() => import("./pages/research-excellence-portal"));
@@ -139,8 +141,15 @@ const DivisionPage = lazy(() => import('./pages/division-page'));
 const LibraryCatalogue = lazy(() => import('./pages/library-catalogue'));
 const ItemDetail = lazy(() => import('./pages/library-catalogue/ItemDetail'));
 const PatronPortal = lazy(() => import('./pages/library-catalogue/PatronPortal'));
+const LibraryRegister = lazy(() => import('./pages/library-register'));
+const LibraryLogin = lazy(() => import('./pages/library-login'));
+const UnifiedRegistration = lazy(() => import('./pages/unified-registration'));
+const LibraryDashboard = lazy(() => import('./pages/library-dashboard'));
+const LibraryResearchSubmit = lazy(() => import('./pages/library-research-submit'));
 const LibraryAdminDashboard = lazy(() => import('./pages/library-admin/LibraryAdminDashboard'));
+const ResearchReviewDashboard = lazy(() => import('./pages/library-admin/ResearchReviewDashboard'));
 const CataloguingManager = lazy(() => import('./pages/library-admin/CataloguingManager'));
+const EnhancedCataloguingManager = lazy(() => import('./pages/library-admin/EnhancedCataloguingManager'));
 const CirculationManager = lazy(() => import('./pages/library-admin/CirculationManager'));
 const PatronManager = lazy(() => import('./pages/library-admin/PatronManager'));
 const AcquisitionsManager = lazy(() => import('./pages/library-admin/AcquisitionsManager'));
@@ -208,20 +217,22 @@ function Layout({ children }) {
 
 function Routes() {
   return (
-    <FirebaseAuthProvider>
-      <CartProvider>
-        <BrowserRouter>
-          <ErrorBoundary>
-            <ScrollToTop />
-          <Suspense
-            fallback={
-              <div className="min-h-screen flex items-center justify-center bg-black text-white">
-                Loading experience...
+    <BrowserRouter>
+      <FirebaseAuthProvider>
+        <CartProvider>
+          <LibraryUserProvider>
+            <Suspense fallback={
+              <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                  <p className="text-slate-600 font-medium">Loading NARA Digital Ocean...</p>
+                </div>
               </div>
-            }
-          >
-            <Layout>
-              <RouterRoutes>
+            }>
+              <ErrorBoundary>
+                <ScrollToTop />
+                <Layout>
+                  <RouterRoutes>
               <Route path="/" element={<OceanIntelligenceDashboardHomepage />} />
               <Route path="/research-excellence-portal" element={<ResearchExcellencePortal />} />
               <Route path="/emergency-response-network" element={<EmergencyResponseNetwork />} />
@@ -257,10 +268,31 @@ function Routes() {
               <Route path="/library" element={<LibraryCatalogue />} />
               <Route path="/library/item/:id" element={<ItemDetail />} />
               <Route path="/library/patron-portal" element={<PatronPortal />} />
+              <Route path="/register" element={<UnifiedRegistration />} />
+              <Route path="/library-register" element={<LibraryRegister />} />
+              <Route path="/library-login" element={<LibraryLogin />} />
+              <Route 
+                path="/library-dashboard" 
+                element={
+                  <ProtectedRoute>
+                    <LibraryDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/library-research-submit" 
+                element={
+                  <ProtectedRoute requiredRole="researcher">
+                    <LibraryResearchSubmit />
+                  </ProtectedRoute>
+                } 
+              />
 
               {/* Library Admin Routes */}
               <Route path="/admin/library" element={<LibraryAdminDashboard />} />
-              <Route path="/admin/library/cataloguing" element={<CataloguingManager />} />
+              <Route path="/admin/library/research-review" element={<ResearchReviewDashboard />} />
+              <Route path="/admin/library/cataloguing" element={<EnhancedCataloguingManager />} />
+              <Route path="/admin/library/cataloguing/basic" element={<CataloguingManager />} />
               <Route path="/admin/library/circulation" element={<CirculationManager />} />
               <Route path="/admin/library/patrons" element={<PatronManager />} />
               <Route path="/admin/library/acquisitions" element={<AcquisitionsManager />} />
@@ -375,13 +407,14 @@ function Routes() {
               <Route path="/analytics/impact-assessment" element={<ImpactAssessmentPortal />} />
               <Route path="/analytics/economic-valuation" element={<EconomicValuationDashboard />} />
               <Route path="/analytics/policy-simulator" element={<PolicySimulatorInterface />} />
-            </RouterRoutes>
-            </Layout>
-          </Suspense>
-        </ErrorBoundary>
-      </BrowserRouter>
-      </CartProvider>
-    </FirebaseAuthProvider>
+                  </RouterRoutes>
+                </Layout>
+              </ErrorBoundary>
+            </Suspense>
+          </LibraryUserProvider>
+        </CartProvider>
+      </FirebaseAuthProvider>
+    </BrowserRouter>
   );
 }
 

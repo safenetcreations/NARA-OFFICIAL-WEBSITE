@@ -91,5 +91,31 @@
   },
   "mediaFallback": {
     "empty": "ஊடகம் இல்லை"
+  },
+  "tags": {
+    "research": "ஆராய்ச்சி",
+    "marine-biology": "கடல் உயிரியல்",
+    "field-work": "துறைத்தொழில்",
+    "coral": "பவளங்கள்",
+    "conservation": "பாதுகாப்பு",
+    "underwater": "நீரடுக்கு",
+    "conference": "மாநாடு",
+    "international": "சர்வதேச",
+    "collaboration": "கூட்டு வேலை",
+    "turtles": "கடல் ஆமைகள்",
+    "wildlife": "காட்டு உயிர்கள்",
+    "laboratory": "ஆய்வகம்",
+    "equipment": "உபகரணங்கள்",
+    "education": "கல்வி",
+    "outreach": "விரிவு சேவை",
+    "students": "மாணவர்கள்",
+    "annual-review": "ஆண்டு மீள்பார்வை",
+    "highlights": "முக்கிய அம்சங்கள்",
+    "coral-reefs": "பவளப் பாறைகள்",
+    "documentary": "ஆவணப்படம்",
+    "training": "பயிற்சி",
+    "methods": "முறைகள்",
+    "whales": "திமிங்கல்கள்",
+    "migration": "குடிபெயர்வு"
   }
 }

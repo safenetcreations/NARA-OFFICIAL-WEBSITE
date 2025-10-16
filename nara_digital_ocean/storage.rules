@@ -7,9 +7,22 @@ service firebase.storage {
     // Public assets (logos, images, documents)
     match /public/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null && 
+      allow write: if request.auth != null &&
         (getUserRole() in ['admin', 'editor', 'content_manager']) &&
         isAllowedUpload(request.resource);
+    }
+
+    // Library PDFs and QR codes (public read access)
+    match /pdfs/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null &&
+        getUserRole() in ['admin', 'librarian'];
+    }
+
+    match /qr-codes/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null &&
+        getUserRole() in ['admin', 'librarian'];
     }
     
     // News and article images
@@ -20,8 +33,29 @@ service firebase.storage {
         isAllowedUpload(request.resource);
     }
     
-    // Research project files
-    match /research/{projectId}/{fileName} {
+    // Library research submissions (main documents)
+    match /research/{userId}/{fileName} {
+      // Users can upload their own research
+      allow write: if request.auth != null && 
+        request.auth.uid == userId &&
+        isAllowedUpload(request.resource) &&
+        request.resource.size < 50 * 1024 * 1024; // 50MB limit
+      
+      // Authenticated users and admins can read
+      allow read: if request.auth != null;
+    }
+    
+    // Library research supplementary files
+    match /research/{userId}/supplementary/{fileName} {
+      allow write: if request.auth != null && 
+        request.auth.uid == userId &&
+        isAllowedUpload(request.resource) &&
+        request.resource.size < 50 * 1024 * 1024;
+      allow read: if request.auth != null;
+    }
+    
+    // Research project files (existing projects)
+    match /research_projects/{projectId}/{fileName} {
       allow read: if resource.metadata.visibility == 'public' ||
         (request.auth != null && 
          (getUserRole() in ['admin', 'researcher'] || 

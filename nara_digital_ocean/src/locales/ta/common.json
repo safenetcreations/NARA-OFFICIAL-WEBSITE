@@ -48,7 +48,19 @@
           "digitalProductLibrary": "டிஜிட்டல் தயாரிப்பு நூலகம்",
           "learningAcademy": "கற்றல் அகாடமி",
           "regionalImpact": "பிராந்திய தாக்கம்",
-          "integrationSystems": "இணைப்பு அமைப்புகள்"
+          "publicConsultation": "பொது ஆலோசனை"
+        }
+      },
+      "media": {
+        "title": "ஊடகம்",
+        "links": {}
+      },
+      "data": {
+        "title": "தரவு மற்றும் பகுப்பாய்வு",
+        "links": {
+          "analyticsHub": "பகுப்பாய்வு மையம்",
+          "openData": "திறந்த தரவு தளம்",
+          "spatialPlanning": "கடல் இட திட்டமிடல்"
         }
       },
       "about": {

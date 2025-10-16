@@ -24,6 +24,7 @@ import useNewsArticles from '../../hooks/useNewsArticles';
 import usePageContent from '../../hooks/usePageContent';
 import NewsHeader from './components/NewsHeader';
 import ShareMenu from './components/ShareMenu';
+import { autoTranslateArticle, translateCategory, translateTerm, translateDate, formatReadTime } from '../../utils/newsTranslation';
 
 const DATE_LOCALES = {
   en: 'en-US',
@@ -59,23 +60,9 @@ const slugifyKey = (value = '') =>
 
 const localizeArticle = (article, language) => {
   if (!article) return null;
-  const translation = article?.translations?.[language] || {};
-
-  return {
-    ...article,
-    displayTitle: translation?.title || article?.title,
-    displaySummary: translation?.summary || article?.summary,
-    displayContent: translation?.content || article?.content,
-    displayCategory: translation?.category || article?.category,
-    displayLocation: translation?.location || article?.location,
-    displayTags: Array.isArray(translation?.tags) ? translation?.tags : article?.tags || [],
-    displayKeyPoints: Array.isArray(translation?.key_points)
-      ? translation?.key_points
-      : article?.key_points || [],
-    displayAuthor: translation?.author || article?.author,
-    displayAuthorPosition:
-      translation?.author_position || translation?.authorPosition || article?.author_position
-  };
+  
+  // Use the auto-translation utility which handles both pre-translated and fallback content
+  return autoTranslateArticle(article, language);
 };
 
 const NewsPage = () => {
@@ -1047,7 +1034,7 @@ const NewsPage = () => {
               </div>
 
               <div className="text-center mt-6 text-gray-600">
-                Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
+                {t('pagination.pageInfo', { current: currentPage, total: totalPages })}
               </div>
             </motion.div>
           )}

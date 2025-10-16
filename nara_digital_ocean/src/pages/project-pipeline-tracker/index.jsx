@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import * as Icons from 'lucide-react';
 import {
   projectsService,
@@ -10,6 +11,7 @@ import {
 } from '../../services/projectPipelineService';
 
 const ProjectPipelineTracker = () => {
+  const { t } = useTranslation('project-pipeline');
   const [activeView, setActiveView] = useState('dashboard'); // 'dashboard' | 'projects' | 'detail'
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
@@ -147,9 +149,9 @@ const ProjectPipelineTracker = () => {
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white p-12">
         <div className="relative z-10">
           <Icons.Activity className="w-16 h-16 mb-4 opacity-90" />
-          <h1 className="text-4xl font-bold mb-3">Project Pipeline Tracker</h1>
+          <h1 className="text-4xl font-bold mb-3">{t('hero.title')}</h1>
           <p className="text-xl text-blue-100 max-w-3xl">
-            Track NARA's research projects in real-time. Monitor progress, budgets, outputs, and impact through our public transparency dashboard.
+            {t('hero.subtitle')}
           </p>
         </div>
         <div className="absolute top-0 right-0 w-1/2 h-full opacity-10">
@@ -162,25 +164,25 @@ const ProjectPipelineTracker = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard
             icon={Icons.FolderOpen}
-            label="Total Projects"
+            label={t('stats.totalProjects')}
             value={dashboardStats.overview.totalProjects}
             color="blue"
           />
           <StatCard
             icon={Icons.Activity}
-            label="Active Projects"
+            label={t('stats.activeProjects')}
             value={dashboardStats.overview.activeProjects}
             color="green"
           />
           <StatCard
             icon={Icons.CheckCircle}
-            label="Completed Projects"
+            label={t('stats.completedProjects')}
             value={dashboardStats.overview.completedProjects}
             color="purple"
           />
           <StatCard
             icon={Icons.DollarSign}
-            label="Total Budget"
+            label={t('stats.totalBudget')}
             value={formatCurrency(dashboardStats.overview.totalBudget)}
             color="indigo"
             isLarge
@@ -193,32 +195,32 @@ const ProjectPipelineTracker = () => {
         <div className="bg-white rounded-xl shadow-lg p-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
             <Icons.AlertCircle className="w-7 h-7 text-blue-600" />
-            Project Health (RAG Status)
+            {t('ragStatus.title')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-green-50 rounded-xl p-6 border-2 border-green-200">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-green-700 font-semibold">On Track (Green)</span>
+                <span className="text-green-700 font-semibold">{t('ragStatus.green.label')}</span>
                 <div className="w-4 h-4 rounded-full bg-green-500"></div>
               </div>
               <div className="text-4xl font-bold text-green-800">{dashboardStats.ragStatus.green}</div>
-              <p className="text-green-600 text-sm mt-2">Projects proceeding as planned</p>
+              <p className="text-green-600 text-sm mt-2">{t('ragStatus.green.description')}</p>
             </div>
             <div className="bg-yellow-50 rounded-xl p-6 border-2 border-yellow-200">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-yellow-700 font-semibold">At Risk (Amber)</span>
+                <span className="text-yellow-700 font-semibold">{t('ragStatus.amber.label')}</span>
                 <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
               </div>
               <div className="text-4xl font-bold text-yellow-800">{dashboardStats.ragStatus.amber}</div>
-              <p className="text-yellow-600 text-sm mt-2">Minor issues requiring attention</p>
+              <p className="text-yellow-600 text-sm mt-2">{t('ragStatus.amber.description')}</p>
             </div>
             <div className="bg-red-50 rounded-xl p-6 border-2 border-red-200">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-red-700 font-semibold">Critical (Red)</span>
+                <span className="text-red-700 font-semibold">{t('ragStatus.red.label')}</span>
                 <div className="w-4 h-4 rounded-full bg-red-500"></div>
               </div>
               <div className="text-4xl font-bold text-red-800">{dashboardStats.ragStatus.red}</div>
-              <p className="text-red-600 text-sm mt-2">Significant delays or issues</p>
+              <p className="text-red-600 text-sm mt-2">{t('ragStatus.red.description')}</p>
             </div>
           </div>
         </div>
@@ -231,8 +233,8 @@ const ProjectPipelineTracker = () => {
           className="bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-xl p-8 hover:shadow-2xl transition-all duration-300 group"
         >
           <Icons.Search className="w-12 h-12 mb-4 group-hover:scale-110 transition-transform" />
-          <h3 className="text-2xl font-bold mb-2">Browse All Projects</h3>
-          <p className="text-blue-100">Explore our complete research portfolio with advanced filtering</p>
+          <h3 className="text-2xl font-bold mb-2">{t('quickActions.browseProjects.title')}</h3>
+          <p className="text-blue-100">{t('quickActions.browseProjects.description')}</p>
         </button>
         <button
           onClick={() => {
@@ -242,8 +244,8 @@ const ProjectPipelineTracker = () => {
           className="bg-gradient-to-br from-red-600 to-red-700 text-white rounded-xl p-8 hover:shadow-2xl transition-all duration-300 group"
         >
           <Icons.AlertTriangle className="w-12 h-12 mb-4 group-hover:scale-110 transition-transform" />
-          <h3 className="text-2xl font-bold mb-2">Critical Projects</h3>
-          <p className="text-red-100">View projects requiring immediate attention</p>
+          <h3 className="text-2xl font-bold mb-2">{t('quickActions.criticalProjects.title')}</h3>
+          <p className="text-red-100">{t('quickActions.criticalProjects.description')}</p>
         </button>
       </div>
 
@@ -252,7 +254,7 @@ const ProjectPipelineTracker = () => {
         <div className="bg-white rounded-xl shadow-lg p-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
             <Icons.Building className="w-7 h-7 text-blue-600" />
-            Projects by Division
+            {t('divisions.title')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {Object.entries(dashboardStats.byDivision).map(([division, count]) => (
@@ -281,10 +283,10 @@ const ProjectPipelineTracker = () => {
           className="flex items-center gap-2 text-blue-100 hover:text-white mb-4 transition-colors"
         >
           <Icons.ArrowLeft className="w-5 h-5" />
-          Back to Dashboard
+          {t('projects.backToDashboard')}
         </button>
-        <h1 className="text-3xl font-bold">Research Projects</h1>
-        <p className="text-blue-100 mt-2">Browse and track all public research projects</p>
+        <h1 className="text-3xl font-bold">{t('projects.title')}</h1>
+        <p className="text-blue-100 mt-2">{t('projects.subtitle')}</p>
       </div>
 
       {/* Filters */}
@@ -292,14 +294,14 @@ const ProjectPipelineTracker = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {/* Search */}
           <div className="lg:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('filters.search')}</label>
             <div className="relative">
               <Icons.Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
                 value={filters.searchTerm}
                 onChange={(e) => setFilters({ ...filters, searchTerm: e.target.value })}
-                placeholder="Search projects, PI, keywords..."
+                placeholder={t('filters.searchPlaceholder')}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -307,44 +309,44 @@ const ProjectPipelineTracker = () => {
 
           {/* Status Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('filters.status')}</label>
             <select
               value={filters.status}
               onChange={(e) => setFilters({ ...filters, status: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="all">All Statuses</option>
-              <option value="planning">Planning</option>
-              <option value="active">Active</option>
-              <option value="on_hold">On Hold</option>
-              <option value="completed">Completed</option>
+              <option value="all">{t('filters.allStatuses')}</option>
+              <option value="planning">{t('projectStatus.planning')}</option>
+              <option value="active">{t('projectStatus.active')}</option>
+              <option value="on_hold">{t('projectStatus.on_hold')}</option>
+              <option value="completed">{t('projectStatus.completed')}</option>
             </select>
           </div>
 
           {/* RAG Status Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">RAG Status</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('filters.ragStatus')}</label>
             <select
               value={filters.ragStatus}
               onChange={(e) => setFilters({ ...filters, ragStatus: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="all">All RAG</option>
-              <option value="green">Green (On Track)</option>
-              <option value="amber">Amber (At Risk)</option>
-              <option value="red">Red (Critical)</option>
+              <option value="all">{t('filters.allRAG')}</option>
+              <option value="green">{t('ragLabels.green')}</option>
+              <option value="amber">{t('ragLabels.amber')}</option>
+              <option value="red">{t('ragLabels.red')}</option>
             </select>
           </div>
 
           {/* Division Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Division</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('filters.division')}</label>
             <select
               value={filters.division}
               onChange={(e) => setFilters({ ...filters, division: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="all">All Divisions</option>
+              <option value="all">{t('filters.allDivisions')}</option>
               <option value="Marine Biology & Ecosystems">Marine Biology & Ecosystems</option>
               <option value="Fisheries Science">Fisheries Science</option>
               <option value="Aquaculture">Aquaculture</option>
@@ -357,7 +359,7 @@ const ProjectPipelineTracker = () => {
 
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
           <span className="text-sm text-gray-600">
-            Showing {filteredProjects.length} of {projects.length} projects
+            {t('filters.showing', { filtered: filteredProjects.length, total: projects.length })}
           </span>
           <button
             onClick={() => setFilters({
@@ -369,7 +371,7 @@ const ProjectPipelineTracker = () => {
             })}
             className="text-sm text-blue-600 hover:text-blue-700 font-medium"
           >
-            Clear Filters
+            {t('filters.clearFilters')}
           </button>
         </div>
       </div>
@@ -382,7 +384,7 @@ const ProjectPipelineTracker = () => {
       ) : filteredProjects.length === 0 ? (
         <div className="bg-white rounded-xl shadow-lg p-12 text-center">
           <Icons.FolderOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <p className="text-xl text-gray-600">No projects found matching your filters</p>
+          <p className="text-xl text-gray-600">{t('filters.noProjects')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -394,6 +396,7 @@ const ProjectPipelineTracker = () => {
                 setSelectedProject(project);
                 setActiveView('detail');
               }}
+              t={t}
             />
           ))}
         </div>
@@ -418,7 +421,7 @@ const ProjectPipelineTracker = () => {
             className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4 transition-colors"
           >
             <Icons.ArrowLeft className="w-5 h-5" />
-            Back to Projects
+            {t('projects.backToProjects')}
           </button>
 
           <div className="flex items-start justify-between mb-4">
@@ -441,19 +444,19 @@ const ProjectPipelineTracker = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
             <div>
-              <p className="text-sm text-gray-600 mb-1">Project ID</p>
+              <p className="text-sm text-gray-600 mb-1">{t('projectDetail.projectId')}</p>
               <p className="font-mono font-semibold text-gray-800">{selectedProject.projectId}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">Division</p>
+              <p className="text-sm text-gray-600 mb-1">{t('projectDetail.division')}</p>
               <p className="font-semibold text-gray-800">{selectedProject.division}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">Start Date</p>
+              <p className="text-sm text-gray-600 mb-1">{t('projectDetail.startDate')}</p>
               <p className="font-semibold text-gray-800">{formatDate(selectedProject.startDate)}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">End Date</p>
+              <p className="text-sm text-gray-600 mb-1">{t('projectDetail.endDate')}</p>
               <p className="font-semibold text-gray-800">{formatDate(selectedProject.endDate)}</p>
             </div>
           </div>
@@ -465,11 +468,11 @@ const ProjectPipelineTracker = () => {
           <div className="bg-white rounded-xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <Icons.TrendingUp className="w-6 h-6 text-blue-600" />
-              Progress
+              {t('projectDetail.progress')}
             </h2>
             <div className="mb-4">
               <div className="flex justify-between mb-2">
-                <span className="text-sm text-gray-600">Completion</span>
+                <span className="text-sm text-gray-600">{t('projectDetail.completion')}</span>
                 <span className="text-sm font-semibold text-gray-800">{selectedProject.completionPercentage || 0}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3">
@@ -481,7 +484,7 @@ const ProjectPipelineTracker = () => {
             </div>
             {selectedProject.ragNotes && (
               <div className="bg-gray-50 rounded-lg p-4 mt-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Latest Update:</p>
+                <p className="text-sm font-medium text-gray-700 mb-2">{t('projectDetail.latestUpdate')}</p>
                 <p className="text-sm text-gray-600">{selectedProject.ragNotes}</p>
               </div>
             )}
@@ -491,26 +494,26 @@ const ProjectPipelineTracker = () => {
           <div className="bg-white rounded-xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <Icons.DollarSign className="w-6 h-6 text-green-600" />
-              Budget
+              {t('projectDetail.budget')}
             </h2>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-600">Total Budget</span>
+                <span className="text-gray-600">{t('projectDetail.totalBudget')}</span>
                 <span className="font-semibold text-gray-800">{formatCurrency(selectedProject.totalBudget || 0)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Spent</span>
+                <span className="text-gray-600">{t('projectDetail.spent')}</span>
                 <span className="font-semibold text-green-600">{formatCurrency(selectedProject.budgetSpent || 0)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Remaining</span>
+                <span className="text-gray-600">{t('projectDetail.remaining')}</span>
                 <span className="font-semibold text-blue-600">
                   {formatCurrency((selectedProject.totalBudget || 0) - (selectedProject.budgetSpent || 0))}
                 </span>
               </div>
               <div className="pt-3 border-t border-gray-200">
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm text-gray-600">Utilization</span>
+                  <span className="text-sm text-gray-600">{t('projectDetail.utilization')}</span>
                   <span className="text-sm font-semibold">{selectedProject.budgetUtilization || 0}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -528,16 +531,16 @@ const ProjectPipelineTracker = () => {
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             <Icons.Users className="w-6 h-6 text-purple-600" />
-            Research Team
+            {t('projectDetail.team')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <p className="text-sm text-gray-600 mb-1">Principal Investigator</p>
+              <p className="text-sm text-gray-600 mb-1">{t('projectDetail.principalInvestigator')}</p>
               <p className="font-semibold text-gray-800">{selectedProject.principalInvestigator}</p>
             </div>
             {selectedProject.team && selectedProject.team.length > 0 && (
               <div className="md:col-span-2">
-                <p className="text-sm text-gray-600 mb-2">Team Members</p>
+                <p className="text-sm text-gray-600 mb-2">{t('projectDetail.teamMembers')}</p>
                 <div className="flex flex-wrap gap-2">
                   {selectedProject.team.map((member, index) => (
                     <span key={index} className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-sm">
@@ -555,7 +558,7 @@ const ProjectPipelineTracker = () => {
           <div className="bg-white rounded-xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <Icons.Target className="w-6 h-6 text-orange-600" />
-              Milestones
+              {t('projectDetail.milestones')}
             </h2>
             <div className="space-y-4">
               {selectedProject.milestones.map((milestone) => (
@@ -573,10 +576,10 @@ const ProjectPipelineTracker = () => {
                     <h3 className="font-semibold text-gray-800 mb-1">{milestone.title}</h3>
                     <p className="text-sm text-gray-600 mb-2">{milestone.description}</p>
                     <div className="flex items-center gap-4 text-sm">
-                      <span className="text-gray-500">Target: {formatDate(milestone.targetDate)}</span>
+                      <span className="text-gray-500">{t('projectDetail.target')} {formatDate(milestone.targetDate)}</span>
                       {milestone.completedDate && (
                         <span className="text-green-600 font-medium">
-                          Completed: {formatDate(milestone.completedDate)}
+                          {t('projectDetail.completed')} {formatDate(milestone.completedDate)}
                         </span>
                       )}
                     </div>
@@ -592,7 +595,7 @@ const ProjectPipelineTracker = () => {
           <div className="bg-white rounded-xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <Icons.FileText className="w-6 h-6 text-indigo-600" />
-              Research Outputs
+              {t('projectDetail.outputs')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {selectedProject.outputs.map((output) => (
@@ -622,7 +625,7 @@ const ProjectPipelineTracker = () => {
                   <div className="flex items-center gap-4 text-xs text-gray-500">
                     <span>{formatDate(output.publishedDate)}</span>
                     {output.citations > 0 && (
-                      <span>{output.citations} citations</span>
+                      <span>{output.citations} {t('projectDetail.citations')}</span>
                     )}
                   </div>
                 </div>
@@ -635,7 +638,7 @@ const ProjectPipelineTracker = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50" style={{ fontFamily: "'Noto Sans Sinhala', 'Noto Sans Tamil', 'Inter', 'Segoe UI', sans-serif" }}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
           {activeView === 'dashboard' && renderDashboard()}
@@ -666,7 +669,7 @@ const StatCard = ({ icon: Icon, label, value, color, isLarge = false }) => {
 };
 
 // Project Card Component
-const ProjectCard = ({ project, onClick }) => {
+const ProjectCard = ({ project, onClick, t }) => {
   const getRAGColor = (ragStatus) => {
     const colors = {
       green: 'bg-green-500',
@@ -722,7 +725,7 @@ const ProjectCard = ({ project, onClick }) => {
       {/* Progress Bar */}
       <div className="mb-4">
         <div className="flex justify-between text-sm mb-2">
-          <span className="text-gray-600">Progress</span>
+          <span className="text-gray-600">{t('projectCard.progress')}</span>
           <span className="font-semibold text-gray-800">{project.completionPercentage || 0}%</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -736,11 +739,11 @@ const ProjectCard = ({ project, onClick }) => {
       {/* Metadata */}
       <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
         <div>
-          <p className="text-xs text-gray-500 mb-1">Principal Investigator</p>
+          <p className="text-xs text-gray-500 mb-1">{t('projectCard.principalInvestigator')}</p>
           <p className="text-sm font-semibold text-gray-800">{project.principalInvestigator}</p>
         </div>
         <div>
-          <p className="text-xs text-gray-500 mb-1">Budget</p>
+          <p className="text-xs text-gray-500 mb-1">{t('projectCard.budget')}</p>
           <p className="text-sm font-semibold text-gray-800">{formatCurrency(project.totalBudget || 0)}</p>
         </div>
       </div>
@@ -754,7 +757,7 @@ const ProjectCard = ({ project, onClick }) => {
         {project.milestones && project.milestones.length > 0 && (
           <span className="flex items-center gap-1">
             <Icons.Target className="w-3 h-3" />
-            {project.milestones.filter(m => m.status === 'completed').length}/{project.milestones.length} milestones
+            {project.milestones.filter(m => m.status === 'completed').length}/{project.milestones.length} {t('projectCard.milestones')}
           </span>
         )}
       </div>

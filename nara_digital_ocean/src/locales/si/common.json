@@ -48,7 +48,19 @@
           "digitalProductLibrary": "ඩිජිටල් නිෂ්පාදන පුස්තකාලය",
           "learningAcademy": "ඉගෙනීමේ අකැඩමිය",
           "regionalImpact": "ප්‍රාදේශීය බලපෑම",
-          "integrationSystems": "එකතු කිරීමේ පද්ධති"
+          "publicConsultation": "මහජන උපදේශන"
+        }
+      },
+      "media": {
+        "title": "මාධ්‍ය",
+        "links": {}
+      },
+      "data": {
+        "title": "දත්ත සහ විශ්ලේෂණය",
+        "links": {
+          "analyticsHub": "විශ්ලේෂණ මධ්‍යස්ථානය",
+          "openData": "විවෘත දත්ත ද්වාරය",
+          "spatialPlanning": "සමුද්‍ර අවකාශීය සැලසුම්කරණය"
         }
       },
       "about": {

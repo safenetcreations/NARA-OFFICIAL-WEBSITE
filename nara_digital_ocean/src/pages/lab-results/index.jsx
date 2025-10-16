@@ -5,7 +5,7 @@ import * as Icons from 'lucide-react';
 import { labResultsService, sampleTrackingService, labResultsDashboardService } from '../../services/labResultsService';
 
 const LabResultsPortal = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('labResults');
   const currentLang = i18n.language;
 
   // State Management
@@ -79,11 +79,11 @@ const LabResultsPortal = () => {
       if (data) {
         setSelectedSample(data);
       } else {
-        alert('Sample not found');
+        alert(t('alerts.notFound'));
       }
     } catch (error) {
       console.error('Error tracking sample:', error);
-      alert('Error tracking sample');
+      alert(t('alerts.error'));
     } finally {
       setLoading(false);
     }
@@ -127,10 +127,47 @@ const LabResultsPortal = () => {
 
   // Navigation Tabs
   const navTabs = [
-    { id: 'dashboard', label: { en: 'Dashboard', si: 'උපකරණ පුවරුව', ta: 'டாஷ்போர்டு' }, icon: Icons.LayoutDashboard },
-    { id: 'results', label: { en: 'Lab Results', si: 'රසායනාගාර ප්‍රතිඵල', ta: 'ஆய்வக முடிவுகள்' }, icon: Icons.FlaskConical },
-    { id: 'samples', label: { en: 'My Samples', si: 'මගේ නියැදි', ta: 'எனது மாதிரிகள்' }, icon: Icons.TestTube },
-    { id: 'track', label: { en: 'Track Sample', si: 'නියැදි ලුහුබැඳීම', ta: 'மாதிரி கண்காணிப்பு' }, icon: Icons.Search }
+    { id: 'dashboard', labelKey: 'nav.dashboard', icon: Icons.LayoutDashboard },
+    { id: 'results', labelKey: 'nav.results', icon: Icons.FlaskConical },
+    { id: 'samples', labelKey: 'nav.samples', icon: Icons.TestTube },
+    { id: 'track', labelKey: 'nav.track', icon: Icons.Search }
+  ];
+
+  const statsCards = [
+    {
+      labelKey: 'dashboard.stats.totalResults',
+      value: dashboardStats?.results?.total || 0,
+      icon: Icons.FileText,
+      color: 'blue',
+      bgGradient: 'from-blue-500 to-cyan-500'
+    },
+    {
+      labelKey: 'dashboard.stats.completed',
+      value: dashboardStats?.results?.completed || 0,
+      icon: Icons.CheckCircle,
+      color: 'green',
+      bgGradient: 'from-green-500 to-emerald-500'
+    },
+    {
+      labelKey: 'dashboard.stats.pending',
+      value: dashboardStats?.results?.pending || 0,
+      icon: Icons.Clock,
+      color: 'yellow',
+      bgGradient: 'from-yellow-500 to-amber-500'
+    },
+    {
+      labelKey: 'dashboard.stats.totalSamples',
+      value: dashboardStats?.samples?.total || 0,
+      icon: Icons.TestTube,
+      color: 'purple',
+      bgGradient: 'from-purple-500 to-pink-500'
+    }
+  ];
+
+  const quickActions = [
+    { icon: Icons.Search, labelKey: 'dashboard.quickActions.items.trackSample', action: () => setActiveView('track') },
+    { icon: Icons.FlaskConical, labelKey: 'dashboard.quickActions.items.viewResults', action: () => setActiveView('results') },
+    { icon: Icons.Download, labelKey: 'dashboard.quickActions.items.downloadReports', action: () => {} }
   ];
 
   return (
@@ -168,13 +205,13 @@ const LabResultsPortal = () => {
             className="text-center"
           >
             <div className="inline-block mb-4 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-              <span className="text-cyan-300 font-semibold">For Researchers & Students</span>
+              <span className="text-cyan-300 font-semibold">{t('hero.badge')}</span>
             </div>
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              Laboratory Results Portal
+              {t('hero.title')}
             </h1>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Access your test results, track samples, and manage laboratory analysis data in one comprehensive platform
+              {t('hero.description')}
             </p>
           </motion.div>
         </div>
@@ -201,7 +238,7 @@ const LabResultsPortal = () => {
                   }`}
                 >
                   <Icon size={20} />
-                  <span>{tab.label[currentLang] || tab.label.en}</span>
+                  <span>{t(tab.labelKey)}</span>
                 </button>
               );
             })}
@@ -223,36 +260,7 @@ const LabResultsPortal = () => {
             >
               {/* Statistics Cards */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                {[
-                  {
-                    label: { en: 'Total Results', si: 'සම්පූර්ණ ප්‍රතිඵල', ta: 'மொத்த முடிவுகள்' },
-                    value: dashboardStats?.results?.total || 0,
-                    icon: Icons.FileText,
-                    color: 'blue',
-                    bgGradient: 'from-blue-500 to-cyan-500'
-                  },
-                  {
-                    label: { en: 'Completed', si: 'සම්පූර්ණ', ta: 'முடிக்கப்பட்டது' },
-                    value: dashboardStats?.results?.completed || 0,
-                    icon: Icons.CheckCircle,
-                    color: 'green',
-                    bgGradient: 'from-green-500 to-emerald-500'
-                  },
-                  {
-                    label: { en: 'Pending', si: 'පොරොත්තුවෙන්', ta: 'நிலுவையில்' },
-                    value: dashboardStats?.results?.pending || 0,
-                    icon: Icons.Clock,
-                    color: 'yellow',
-                    bgGradient: 'from-yellow-500 to-amber-500'
-                  },
-                  {
-                    label: { en: 'Total Samples', si: 'සම්පූර්ණ නියැදි', ta: 'மொத்த மாதிரிகள்' },
-                    value: dashboardStats?.samples?.total || 0,
-                    icon: Icons.TestTube,
-                    color: 'purple',
-                    bgGradient: 'from-purple-500 to-pink-500'
-                  }
-                ].map((stat, idx) => (
+                {statsCards.map((stat, idx) => (
                   <motion.div
                     key={idx}
                     initial={{ opacity: 0, y: 20 }}
@@ -269,7 +277,7 @@ const LabResultsPortal = () => {
                         <Icons.TrendingUp className={`text-${stat.color}-500 opacity-50`} size={20} />
                       </div>
                       <div className="text-3xl font-black text-gray-900 mb-1">{stat.value}</div>
-                      <div className="text-sm font-medium text-gray-600">{stat.label[currentLang] || stat.label.en}</div>
+                      <div className="text-sm font-medium text-gray-600">{t(stat.labelKey)}</div>
                     </div>
                   </motion.div>
                 ))}
@@ -286,9 +294,7 @@ const LabResultsPortal = () => {
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                       <Icons.FileText className="text-blue-600" size={28} />
-                      {currentLang === 'en' && 'Recent Results'}
-                      {currentLang === 'si' && 'මෑත ප්‍රතිඵල'}
-                      {currentLang === 'ta' && 'சமீபத்தியmுடிவுகள்'}
+                      {t('dashboard.recentResults.title')}
                     </h3>
                     <button
                       onClick={() => {
@@ -297,9 +303,7 @@ const LabResultsPortal = () => {
                       }}
                       className="text-blue-600 hover:text-blue-700 font-semibold text-sm"
                     >
-                      {currentLang === 'en' && 'View All'}
-                      {currentLang === 'si' && 'සියල්ල බලන්න'}
-                      {currentLang === 'ta' && 'அனைத்தையும் பார்க்க'}
+                      {t('dashboard.recentResults.viewAll')}
                     </button>
                   </div>
 
@@ -309,15 +313,15 @@ const LabResultsPortal = () => {
                         <div key={idx} className="p-4 bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex-1">
-                              <p className="font-semibold text-gray-900">{result.testType || 'Test'}</p>
+                              <p className="font-semibold text-gray-900">{result.testType || t('dashboard.recentResults.fallbackName')}</p>
                               <p className="text-sm text-gray-600">{result.sampleType}</p>
                             </div>
                             <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(result.status)}`}>
-                              {result.status}
+                              {t(`status.${result.status}`, { defaultValue: result.status })}
                             </span>
                           </div>
                           <div className="text-xs text-gray-500">
-                            {result.createdAt && new Date(result.createdAt).toLocaleDateString()}
+                            {result.createdAt && new Date(result.createdAt).toLocaleDateString(currentLang)}
                           </div>
                         </div>
                       ))}
@@ -325,7 +329,7 @@ const LabResultsPortal = () => {
                   ) : (
                     <div className="text-center py-8 text-gray-500">
                       <Icons.FileText className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                      <p>{currentLang === 'en' && 'No results yet'}</p>
+                      <p>{t('dashboard.recentResults.empty')}</p>
                     </div>
                   )}
                 </motion.div>
@@ -339,9 +343,7 @@ const LabResultsPortal = () => {
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                       <Icons.TestTube className="text-purple-600" size={28} />
-                      {currentLang === 'en' && 'Recent Samples'}
-                      {currentLang === 'si' && 'මෑත නියැදි'}
-                      {currentLang === 'ta' && 'சமீபத்திய மாதிரிகள்'}
+                      {t('dashboard.recentSamples.title')}
                     </h3>
                     <button
                       onClick={() => {
@@ -350,9 +352,7 @@ const LabResultsPortal = () => {
                       }}
                       className="text-purple-600 hover:text-purple-700 font-semibold text-sm"
                     >
-                      {currentLang === 'en' && 'View All'}
-                      {currentLang === 'si' && 'සියල්ල බලන්න'}
-                      {currentLang === 'ta' && 'அனைத்தையும் பார்க்க'}
+                      {t('dashboard.recentSamples.viewAll')}
                     </button>
                   </div>
 
@@ -366,11 +366,11 @@ const LabResultsPortal = () => {
                               <p className="text-sm text-gray-600">{sample.sampleType}</p>
                             </div>
                             <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(sample.status)}`}>
-                              {sample.status}
+                              {t(`status.${sample.status}`, { defaultValue: sample.status })}
                             </span>
                           </div>
                           <div className="text-xs text-gray-500">
-                            {sample.createdAt && new Date(sample.createdAt).toLocaleDateString()}
+                            {sample.createdAt && new Date(sample.createdAt).toLocaleDateString(currentLang)}
                           </div>
                         </div>
                       ))}
@@ -378,7 +378,7 @@ const LabResultsPortal = () => {
                   ) : (
                     <div className="text-center py-8 text-gray-500">
                       <Icons.TestTube className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                      <p>{currentLang === 'en' && 'No samples yet'}</p>
+                      <p>{t('dashboard.recentSamples.empty')}</p>
                     </div>
                   )}
                 </motion.div>
@@ -390,20 +390,16 @@ const LabResultsPortal = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl shadow-2xl p-8 text-white"
               >
-                <h3 className="text-2xl font-bold mb-4">Quick Actions</h3>
+                <h3 className="text-2xl font-bold mb-4">{t('dashboard.quickActions.title')}</h3>
                 <div className="grid md:grid-cols-3 gap-4">
-                  {[
-                    { icon: Icons.Search, label: { en: 'Track Sample', si: 'නියැදි ලුහුබැඳීම', ta: 'மாதிரி கண்காணிப்பு' }, action: () => setActiveView('track') },
-                    { icon: Icons.FlaskConical, label: { en: 'View Results', si: 'ප්‍රතිඵල බලන්න', ta: 'முடிவுகளைப் பார்க்கவும்' }, action: () => setActiveView('results') },
-                    { icon: Icons.Download, label: { en: 'Download Reports', si: 'වාර්තා බාගන්න', ta: 'அறிக்கைகளைப் பதிவிறக்கவும்' }, action: () => {} }
-                  ].map((action, idx) => (
+                  {quickActions.map((action, idx) => (
                     <button
                       key={idx}
                       onClick={action.action}
                       className="bg-white/10 backdrop-blur-sm hover:bg-white/20 border border-white/30 rounded-xl p-6 transition-all group"
                     >
                       <action.icon className="w-12 h-12 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                      <p className="font-semibold">{action.label[currentLang] || action.label.en}</p>
+                      <p className="font-semibold">{t(action.labelKey)}</p>
                     </button>
                   ))}
                 </div>
@@ -430,7 +426,7 @@ const LabResultsPortal = () => {
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder={currentLang === 'en' ? 'Search by test type, sample type...' : 'සොයන්න...'}
+                        placeholder={t('results.searchPlaceholder')}
                         className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all"
                       />
                     </div>
@@ -441,10 +437,10 @@ const LabResultsPortal = () => {
                       onChange={(e) => setStatusFilter(e.target.value)}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all"
                     >
-                      <option value="all">{currentLang === 'en' ? 'All Status' : 'සියලු තත්ත්වය'}</option>
-                      <option value="completed">{currentLang === 'en' ? 'Completed' : 'සම්පූර්ණ'}</option>
-                      <option value="pending">{currentLang === 'en' ? 'Pending' : 'පොරොත්තුවෙන්'}</option>
-                      <option value="in_progress">{currentLang === 'en' ? 'In Progress' : 'ක්‍රියාත්මකයි'}</option>
+                      <option value="all">{t('results.filters.status.all')}</option>
+                      <option value="completed">{t('results.filters.status.completed')}</option>
+                      <option value="pending">{t('results.filters.status.pending')}</option>
+                      <option value="in_progress">{t('results.filters.status.in_progress')}</option>
                     </select>
                   </div>
                 </div>
@@ -465,38 +461,38 @@ const LabResultsPortal = () => {
                       className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all cursor-pointer group"
                       onClick={() => setSelectedResult(result)}
                     >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <Icons.FlaskConical className="text-blue-600 group-hover:scale-110 transition-transform" size={24} />
-                            <h3 className="text-xl font-bold text-gray-900">{result.testType || 'Laboratory Test'}</h3>
-                          </div>
-                          <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
-                            <div className="flex items-center gap-2">
-                              <Icons.TestTube size={16} />
-                              <span><strong>Sample:</strong> {result.sampleType}</span>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <Icons.FlaskConical className="text-blue-600 group-hover:scale-110 transition-transform" size={24} />
+                              <h3 className="text-xl font-bold text-gray-900">{result.testType || t('results.fallbackTitle')}</h3>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Icons.Calendar size={16} />
-                              <span><strong>Date:</strong> {result.createdAt ? new Date(result.createdAt).toLocaleDateString() : 'N/A'}</span>
-                            </div>
-                            {result.projectName && (
+                            <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
                               <div className="flex items-center gap-2">
-                                <Icons.FolderOpen size={16} />
-                                <span><strong>Project:</strong> {result.projectName}</span>
+                                <Icons.TestTube size={16} />
+                                <span><strong>{`${t('results.card.sample')}:`}</strong> {result.sampleType}</span>
                               </div>
-                            )}
+                              <div className="flex items-center gap-2">
+                                <Icons.Calendar size={16} />
+                                <span><strong>{`${t('results.card.date')}:`}</strong> {result.createdAt ? new Date(result.createdAt).toLocaleDateString(currentLang) : t('common.na')}</span>
+                              </div>
+                              {result.projectName && (
+                                <div className="flex items-center gap-2">
+                                  <Icons.FolderOpen size={16} />
+                                  <span><strong>{`${t('results.card.project')}:`}</strong> {result.projectName}</span>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${getStatusColor(result.status)}`}>
-                            {result.status}
-                          </span>
-                          <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-1">
-                            {currentLang === 'en' ? 'View Details' : 'විස්තර බලන්න'}
-                            <Icons.ChevronRight size={16} />
-                          </button>
-                        </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${getStatusColor(result.status)}`}>
+                            {t(`status.${result.status}`, { defaultValue: result.status })}
+                            </span>
+                            <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-1">
+                            {t('results.card.viewDetails')}
+                              <Icons.ChevronRight size={16} />
+                            </button>
+                          </div>
                       </div>
                     </motion.div>
                   ))}
@@ -504,7 +500,7 @@ const LabResultsPortal = () => {
               ) : (
                 <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
                   <Icons.FileX className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                  <p className="text-gray-500 text-lg">{currentLang === 'en' ? 'No results found' : 'ප්‍රතිඵල හමු නොවීය'}</p>
+                  <p className="text-gray-500 text-lg">{t('results.empty')}</p>
                 </div>
               )}
             </motion.div>
@@ -529,7 +525,7 @@ const LabResultsPortal = () => {
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder={currentLang === 'en' ? 'Search by sample ID, type...' : 'සොයන්න...'}
+                        placeholder={t('samples.searchPlaceholder')}
                         className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all"
                       />
                     </div>
@@ -540,11 +536,11 @@ const LabResultsPortal = () => {
                       onChange={(e) => setStatusFilter(e.target.value)}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all"
                     >
-                      <option value="all">{currentLang === 'en' ? 'All Status' : 'සියලු තත්ත්වය'}</option>
-                      <option value="submitted">{currentLang === 'en' ? 'Submitted' : 'ඉදිරිපත් කළ'}</option>
-                      <option value="received">{currentLang === 'en' ? 'Received' : 'ලැබී ඇත'}</option>
-                      <option value="processing">{currentLang === 'en' ? 'Processing' : 'සැකසීම'}</option>
-                      <option value="completed">{currentLang === 'en' ? 'Completed' : 'සම්පූර්ණ'}</option>
+                      <option value="all">{t('samples.filters.status.all')}</option>
+                      <option value="submitted">{t('samples.filters.status.submitted')}</option>
+                      <option value="received">{t('samples.filters.status.received')}</option>
+                      <option value="processing">{t('samples.filters.status.processing')}</option>
+                      <option value="completed">{t('samples.filters.status.completed')}</option>
                     </select>
                   </div>
                 </div>
@@ -574,24 +570,24 @@ const LabResultsPortal = () => {
                           <div className="grid md:grid-cols-3 gap-4 text-sm text-gray-600">
                             <div className="flex items-center gap-2">
                               <Icons.Droplet size={16} />
-                              <span><strong>Type:</strong> {sample.sampleType}</span>
+                              <span><strong>{`${t('samples.card.type')}:`}</strong> {sample.sampleType}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Icons.Calendar size={16} />
-                              <span><strong>Submitted:</strong> {sample.submittedAt ? new Date(sample.submittedAt).toLocaleDateString() : 'N/A'}</span>
+                              <span><strong>{`${t('samples.card.submitted')}:`}</strong> {sample.submittedAt ? new Date(sample.submittedAt).toLocaleDateString(currentLang) : t('common.na')}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Icons.MapPin size={16} />
-                              <span><strong>Location:</strong> {sample.location || 'N/A'}</span>
+                              <span><strong>{`${t('samples.card.location')}:`}</strong> {sample.location || t('common.na')}</span>
                             </div>
                           </div>
                         </div>
                         <div className="flex flex-col items-end gap-2">
                           <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${getStatusColor(sample.status)}`}>
-                            {sample.status}
+                            {t(`status.${sample.status}`, { defaultValue: sample.status })}
                           </span>
                           <button className="text-purple-600 hover:text-purple-700 font-semibold text-sm flex items-center gap-1">
-                            {currentLang === 'en' ? 'Track Sample' : 'ලුහුබැඳීම'}
+                            {t('samples.card.track')}
                             <Icons.ChevronRight size={16} />
                           </button>
                         </div>
@@ -602,7 +598,7 @@ const LabResultsPortal = () => {
               ) : (
                 <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
                   <Icons.TestTube className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                  <p className="text-gray-500 text-lg">{currentLang === 'en' ? 'No samples found' : 'නියැදි හමු නොවීය'}</p>
+                  <p className="text-gray-500 text-lg">{t('samples.empty')}</p>
                 </div>
               )}
             </motion.div>
@@ -620,9 +616,7 @@ const LabResultsPortal = () => {
               <div className="bg-white rounded-2xl shadow-lg p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                   <Icons.Search className="text-blue-600" size={32} />
-                  {currentLang === 'en' && 'Track Your Sample'}
-                  {currentLang === 'si' && 'ඔබේ නියැදිය ලුහුබැඳින්න'}
-                  {currentLang === 'ta' && 'உங்கள் மாதிரியைக் கண்காணிக்கவும்'}
+                  {t('track.title')}
                 </h2>
 
                 <div className="flex gap-4 mb-8">
@@ -630,7 +624,7 @@ const LabResultsPortal = () => {
                     type="text"
                     value={trackingId}
                     onChange={(e) => setTrackingId(e.target.value)}
-                    placeholder={currentLang === 'en' ? 'Enter Sample ID (e.g., SMP-1234567890-ABC123)' : 'නියැදි හැඳුනුම්පත ඇතුළත් කරන්න'}
+                    placeholder={t('track.inputPlaceholder')}
                     className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all"
                   />
                   <button
@@ -643,7 +637,7 @@ const LabResultsPortal = () => {
                     ) : (
                       <Icons.Search size={20} />
                     )}
-                    {currentLang === 'en' ? 'Track' : 'ලුහුබඳින්න'}
+                    {t('track.button')}
                   </button>
                 </div>
 
@@ -660,34 +654,34 @@ const LabResultsPortal = () => {
                         <p className="text-gray-600">{selectedSample.sampleType}</p>
                       </div>
                       <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${getStatusColor(selectedSample.status)}`}>
-                        {selectedSample.status}
+                        {t(`status.${selectedSample.status}`, { defaultValue: selectedSample.status })}
                       </span>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-6 mb-6">
                       <div>
-                        <p className="text-sm text-gray-600 mb-1">Submitted Date</p>
+                        <p className="text-sm text-gray-600 mb-1">{t('track.submittedDate')}</p>
                         <p className="font-semibold text-gray-900">
-                          {selectedSample.submittedAt ? new Date(selectedSample.submittedAt).toLocaleString() : 'N/A'}
+                          {selectedSample.submittedAt ? new Date(selectedSample.submittedAt).toLocaleString(currentLang) : t('common.na')}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 mb-1">Location</p>
-                        <p className="font-semibold text-gray-900">{selectedSample.location || 'N/A'}</p>
+                        <p className="text-sm text-gray-600 mb-1">{t('track.location')}</p>
+                        <p className="font-semibold text-gray-900">{selectedSample.location || t('common.na')}</p>
                       </div>
                       {selectedSample.receivedAt && (
                         <div>
-                          <p className="text-sm text-gray-600 mb-1">Received Date</p>
+                          <p className="text-sm text-gray-600 mb-1">{t('track.receivedDate')}</p>
                           <p className="font-semibold text-gray-900">
-                            {new Date(selectedSample.receivedAt).toLocaleString()}
+                            {new Date(selectedSample.receivedAt).toLocaleString(currentLang)}
                           </p>
                         </div>
                       )}
                       {selectedSample.completedAt && (
                         <div>
-                          <p className="text-sm text-gray-600 mb-1">Completed Date</p>
+                          <p className="text-sm text-gray-600 mb-1">{t('track.completedDate')}</p>
                           <p className="font-semibold text-gray-900">
-                            {new Date(selectedSample.completedAt).toLocaleString()}
+                            {new Date(selectedSample.completedAt).toLocaleString(currentLang)}
                           </p>
                         </div>
                       )}
@@ -697,10 +691,10 @@ const LabResultsPortal = () => {
                     <div className="relative">
                       <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-blue-200" />
                       {[
-                        { status: 'submitted', label: 'Submitted', completed: true },
-                        { status: 'received', label: 'Received', completed: selectedSample.status !== 'submitted' },
-                        { status: 'processing', label: 'Processing', completed: selectedSample.status === 'processing' || selectedSample.status === 'completed' },
-                        { status: 'completed', label: 'Completed', completed: selectedSample.status === 'completed' }
+                        { status: 'submitted', labelKey: 'status.submitted', completed: true },
+                        { status: 'received', labelKey: 'status.received', completed: selectedSample.status !== 'submitted' },
+                        { status: 'processing', labelKey: 'status.processing', completed: selectedSample.status === 'processing' || selectedSample.status === 'completed' },
+                        { status: 'completed', labelKey: 'status.completed', completed: selectedSample.status === 'completed' }
                       ].map((stage, idx) => (
                         <div key={idx} className="relative flex items-center gap-4 mb-4">
                           <div className={`w-8 h-8 rounded-full flex items-center justify-center z-10 ${
@@ -714,7 +708,7 @@ const LabResultsPortal = () => {
                           </div>
                           <div>
                             <p className={`font-semibold ${stage.completed ? 'text-blue-900' : 'text-gray-500'}`}>
-                              {stage.label}
+                              {t(stage.labelKey)}
                             </p>
                           </div>
                         </div>
@@ -723,7 +717,7 @@ const LabResultsPortal = () => {
 
                     {selectedSample.statusNotes && (
                       <div className="mt-6 p-4 bg-white rounded-xl border border-blue-200">
-                        <p className="text-sm font-semibold text-gray-700 mb-1">Notes:</p>
+                        <p className="text-sm font-semibold text-gray-700 mb-1">{`${t('track.notes')}:`}</p>
                         <p className="text-gray-600">{selectedSample.statusNotes}</p>
                       </div>
                     )}

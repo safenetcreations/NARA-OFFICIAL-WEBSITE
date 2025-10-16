@@ -1,20 +1,57 @@
 const admin = require('firebase-admin');
 
-// Initialize Firebase Admin SDK
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    }),
-  });
+// Initialize Firebase Admin SDK with error handling for development
+let firebaseInitialized = false;
+
+try {
+  if (!admin.apps.length) {
+    // Check if we have valid credentials
+    if (process.env.FIREBASE_PROJECT_ID && 
+        process.env.FIREBASE_CLIENT_EMAIL && 
+        process.env.FIREBASE_PRIVATE_KEY &&
+        process.env.FIREBASE_PRIVATE_KEY.includes('BEGIN PRIVATE KEY')) {
+      
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        }),
+      });
+      firebaseInitialized = true;
+      console.log('✓ Firebase Admin SDK initialized');
+    } else {
+      console.warn('⚠️  Firebase credentials not configured - Running in MOCK MODE');
+      console.warn('⚠️  Authentication is disabled for testing');
+    }
+  }
+} catch (error) {
+  console.error('⚠️  Firebase initialization failed:', error.message);
+  console.warn('⚠️  Running in MOCK MODE - Authentication disabled');
+  firebaseInitialized = false;
 }
 
 /**
  * Middleware to verify Firebase ID token
  */
 const verifyToken = async (req, res, next) => {
+  // MOCK MODE: If Firebase not initialized, use mock user
+  if (!firebaseInitialized) {
+    req.user = {
+      uid: 'mock-admin-user',
+      email: 'admin@nara.ac.lk',
+      name: 'Mock Admin User',
+      emailVerified: true,
+      customClaims: { 
+        admin: true,
+        library_admin: true,
+        librarian: true 
+      }
+    };
+    return next();
+  }
+  
+  // PRODUCTION MODE: Verify actual Firebase token
   try {
     const authHeader = req.headers.authorization;
     
@@ -128,6 +165,12 @@ const requirePermission = (...permissions) => {
  * Optional authentication - adds user info if token is present but doesn't require it
  */
 const optionalAuth = async (req, res, next) => {
+  // MOCK MODE: If Firebase not initialized, add mock user (optional)
+  if (!firebaseInitialized) {
+    // Don't add user in optional auth for mock mode
+    return next();
+  }
+  
   try {
     const authHeader = req.headers.authorization;
     

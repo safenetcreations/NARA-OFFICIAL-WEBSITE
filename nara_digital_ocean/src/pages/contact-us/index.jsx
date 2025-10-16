@@ -241,12 +241,29 @@ const ContactUs = () => {
         <section className="bg-slate-50 py-16 px-4">
           <div className="mx-auto max-w-7xl">
             <h2 className="mb-8 text-center text-3xl font-bold text-slate-900">{mapSection.title}</h2>
-            <div className="flex h-96 items-center justify-center rounded-xl bg-slate-200">
-              <div className="text-center text-slate-600">
-                <Icon name="MapPin" size={48} className="mx-auto mb-4 text-slate-400" />
-                <p className="text-lg">{mapSection.comingSoon}</p>
-                <p className="text-sm">{mapSection.location}</p>
-              </div>
+            <div className="overflow-hidden rounded-xl shadow-2xl border border-slate-200">
+              <iframe
+                title="NARA Location Map"
+                src="https://www.google.com/maps?q=National+Aquatic+Resources+Research+and+Development+Agency+NARA+Crow+Island+Colombo+15+Sri+Lanka&output=embed"
+                width="100%"
+                height="500"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full"
+              />
+            </div>
+            <div className="mt-6 text-center">
+              <a
+                href="https://www.google.com/maps/dir//National+Aquatic+Resources+Research+and+Development+Agency+(NARA),+Crow+Island,+Colombo+15,+Sri+Lanka"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white font-semibold hover:bg-blue-700 transition-colors shadow-lg"
+              >
+                <Icon name="Navigation" size={20} />
+                {mapSection.getDirections}
+              </a>
             </div>
           </div>
         </section>

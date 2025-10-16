@@ -72,9 +72,23 @@
     "policies": "Policies Tracked"
   },
   "actions": {
-    "exploreTool": "Explore Tool",
+    "exploreTool": "Key Features",
     "viewDashboard": "View Dashboard",
     "learnMore": "Learn More",
     "getStarted": "Get Started"
+  },
+  "valueProps": {
+    "aiTitle": "AI-Powered Predictions",
+    "aiDesc": "Machine learning algorithms forecast trends and predict outcomes with confidence intervals",
+    "dataTitle": "Data-Driven Decisions",
+    "dataDesc": "Evidence-based insights help policy makers make informed choices with measurable impact",
+    "riskTitle": "Risk Mitigation",
+    "riskDesc": "Simulate policy changes and assess risks before implementation to avoid costly mistakes"
+  },
+  "labels": {
+    "policiesTracked": "policies tracked",
+    "projectsMeasured": "projects measured",
+    "netValue": "Net value",
+    "avgROI": "Average ROI"
   }
 }

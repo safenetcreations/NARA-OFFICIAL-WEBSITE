@@ -24,7 +24,7 @@ const KnowledgeDiscoveryCenter = () => {
     { id: 'training', label: t('search.filters.training'), icon: Icons.GraduationCap },
     { id: 'experts', label: t('search.filters.experts'), icon: Icons.Users },
     { id: 'tools', label: t('search.filters.tools'), icon: Icons.Wrench },
-    { id: 'analytics', label: 'Analytics', icon: Icons.BarChart3 }
+    { id: 'analytics', label: t('analytics.title'), icon: Icons.BarChart3 }
   ], [t]);
 
   return (

@@ -18,6 +18,46 @@ const TIMELINE_MEDIA = {
 };
 
 const ACHIEVEMENT_ICONS = [Icons.FlaskConical, Icons.Globe2, Icons.Handshake, Icons.Sparkles];
+const LOGO_FEATURE_ICONS = {
+  waves: Icons.Waves,
+  fish: Icons.Fish,
+  globe: Icons.Globe,
+  sparkles: Icons.Sparkles
+};
+
+const LOGO_FEATURE_STYLES = {
+  waves: 'text-cyan-400',
+  fish: 'text-blue-400',
+  globe: 'text-emerald-400',
+  sparkles: 'text-amber-400'
+};
+
+const LOGO_FEATURE_TITLE_STYLES = {
+  waves: 'text-cyan-300',
+  fish: 'text-blue-300',
+  globe: 'text-emerald-300',
+  sparkles: 'text-amber-300'
+};
+
+const LOGO_STAT_ICONS = {
+  calendar: Icons.Calendar,
+  users: Icons.Users,
+  flask: Icons.FlaskConical,
+  trophy: Icons.Trophy
+};
+
+const DIRECTOR_ICON_MAP = {
+  leaf: Icons.Leaf,
+  anchor: Icons.Anchor,
+  waves: Icons.Waves,
+  shell: Icons.Shell,
+  fish: Icons.Fish,
+  barChart: Icons.BarChart,
+  globe: Icons.Globe,
+  trendingUp: Icons.TrendingUp,
+  briefcase: Icons.Briefcase,
+  package: Icons.Package
+};
 const DEFAULT_TIMELINE_MEDIA = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80';
 
 const AboutNARAStoryPage = () => {
@@ -48,6 +88,8 @@ const AboutNARAStoryPage = () => {
   const history = t('about.history', { returnObjects: true });
   const achievements = t('about.achievements', { returnObjects: true });
   const cta = t('about.cta', { returnObjects: true });
+  const logo = t('about.logo', { returnObjects: true });
+  const leadership = t('about.leadership', { returnObjects: true });
 
   const heroStats = Array.isArray(hero?.stats) ? hero.stats : [];
   const historyBody = Array.isArray(history?.body) ? history.body : [];
@@ -62,6 +104,37 @@ const AboutNARAStoryPage = () => {
   const timelineScrollDuration = Math.max(24, timeline.length * 6);
   const achievementItems = Array.isArray(achievements?.items) ? achievements.items : [];
   const timelineIntro = history?.timelineIntro || '';
+  const milestoneCountLabel = t('about.history.milestoneCount', { count: timeline.length });
+  const logoDescription = Array.isArray(logo?.description) ? logo.description : [];
+  const logoFeatures = Array.isArray(logo?.features) ? logo.features : [];
+  const logoStats = Array.isArray(logo?.stats) ? logo.stats : [];
+  const logoHistory = logo?.history || {};
+  const logoHistoryBody = Array.isArray(logoHistory?.body) ? logoHistory.body : [];
+  const leadershipExecutives = Array.isArray(leadership?.executives) ? leadership.executives : [];
+  const leadershipDirectors = Array.isArray(leadership?.directors) ? leadership.directors : [];
+  const boardMembers = Array.isArray(leadership?.board?.members) ? leadership.board.members : [];
+  const boardTitle = leadership?.board?.title || '';
+  const vacancyNotice = leadership?.vacancyNotice || '';
+  const executiveStyles = [
+    {
+      gradient: 'from-cyan-500/30 to-blue-500/30',
+      border: 'border-cyan-500/40',
+      iconBg: 'from-cyan-400/25 to-blue-500/25 border-cyan-500/50',
+      icon: Icons.User,
+      textClass: 'text-cyan-200',
+      accentBar: 'from-cyan-400/40',
+      iconColor: 'text-cyan-400'
+    },
+    {
+      gradient: 'from-blue-500/25 to-indigo-500/25',
+      border: 'border-blue-500/35',
+      iconBg: 'from-blue-400/20 to-indigo-500/20 border-blue-500/45',
+      icon: Icons.UserCheck,
+      textClass: 'text-blue-200',
+      accentBar: 'from-blue-400/40',
+      iconColor: 'text-blue-400'
+    }
+  ];
 
   const getTimelineMedia = (year) => TIMELINE_MEDIA[year] || DEFAULT_TIMELINE_MEDIA;
 
@@ -156,7 +229,7 @@ const AboutNARAStoryPage = () => {
                   </span>
                   <div className="flex items-center gap-2 text-xs text-cyan-200/80">
                     <Icons.Clock className="w-3.5 h-3.5" />
-                    {timeline.length} milestones
+                    {milestoneCountLabel}
                   </div>
                 </div>
                 <div className="relative h-[520px] md:h-[600px] overflow-hidden mt-auto">
@@ -297,81 +370,74 @@ const AboutNARAStoryPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-cyan-300 via-blue-300 to-cyan-400 bg-clip-text text-transparent"
-            >
-              The NARA Emblem
-            </motion.h2>
+            className="text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-cyan-300 via-blue-300 to-cyan-400 bg-clip-text text-transparent"
+          >
+              {logo?.title || 'The NARA Emblem'}
+          </motion.h2>
 
-            {/* Logo Description */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
+          {/* Logo Description */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.5 }}
               className="max-w-4xl mx-auto"
             >
               <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-cyan-400/20 shadow-2xl">
-                <h3 className="text-2xl md:text-3xl font-bold text-cyan-300 mb-6">Symbol of Excellence in Marine Research</h3>
+                <h3 className="text-2xl md:text-3xl font-bold text-cyan-300 mb-6">{logo?.subtitle}</h3>
 
                 <div className="text-lg text-slate-200 leading-relaxed space-y-4 text-left">
-                  <p>
-                    The <span className="text-cyan-400 font-semibold">National Aquatic Resources Research and Development Agency (NARA)</span> emblem represents our commitment to advancing marine science and sustainable aquatic resource management in Sri Lanka.
-                  </p>
+                  {logoDescription.map((paragraph, idx) => (
+                    <p key={`logo-desc-${idx}`}>{paragraph}</p>
+                  ))}
 
-                  <p className="flex items-start gap-3">
-                    <Icons.Waves className="w-6 h-6 text-cyan-400 flex-shrink-0 mt-1" />
-                    <span><strong className="text-cyan-300">The Ocean Waves</strong> symbolize our focus on marine and aquatic ecosystems, representing the vast coastal waters and inland water bodies that are central to our research mission.</span>
-                  </p>
+                  {logoFeatures.map((feature, idx) => {
+                    const FeatureIcon = LOGO_FEATURE_ICONS[feature.icon] || Icons.Sparkles;
+                    const iconClass = LOGO_FEATURE_STYLES[feature.icon] || 'text-cyan-400';
+                    const titleClass = LOGO_FEATURE_TITLE_STYLES[feature.icon] || 'text-cyan-300';
 
-                  <p className="flex items-start gap-3">
-                    <Icons.Fish className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
-                    <span><strong className="text-blue-300">Marine Life Elements</strong> embody our dedication to understanding and protecting aquatic biodiversity, from fisheries science to marine biology conservation.</span>
-                  </p>
-
-                  <p className="flex items-start gap-3">
-                    <Icons.Globe className="w-6 h-6 text-emerald-400 flex-shrink-0 mt-1" />
-                    <span><strong className="text-emerald-300">The Circular Design</strong> represents our holistic approach to marine research, encompassing oceanography, limnology, aquaculture, and socio-economic studies.</span>
-                  </p>
-
-                  <p className="flex items-start gap-3">
-                    <Icons.Sparkles className="w-6 h-6 text-amber-400 flex-shrink-0 mt-1" />
-                    <span><strong className="text-amber-300">Scientific Excellence</strong> is reflected in every aspect of the emblem, showcasing our commitment to rigorous research, innovation, and sustainable development practices.</span>
-                  </p>
+                    return (
+                      <div key={`logo-feature-${idx}`} className="flex items-start gap-3">
+                        <FeatureIcon className={`w-6 h-6 flex-shrink-0 mt-1 ${iconClass}`} />
+                        <span>
+                          <strong className={`${titleClass}`}>{feature.title}</strong> {feature.description}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* Logo History */}
                 <div className="mt-8 pt-8 border-t border-cyan-400/20">
-                  <h4 className="text-xl font-bold text-cyan-300 mb-4">Emblem History</h4>
-                  <p className="text-slate-200 leading-relaxed">
-                    Established in <span className="text-cyan-400 font-semibold">1981</span>, NARA's emblem has remained a constant symbol of scientific integrity and marine stewardship.
-                    The design reflects our evolution from a nascent research institution to a world-class center for aquatic research excellence,
-                    guiding our mission to protect and sustainably manage Sri Lanka's precious marine and aquatic resources for future generations.
-                  </p>
+                  <h4 className="text-xl font-bold text-cyan-300 mb-4">{logoHistory?.title}</h4>
+                  <div className="space-y-3 text-slate-200 leading-relaxed">
+                    {logoHistoryBody.map((paragraph, idx) => (
+                      <p key={`logo-history-${idx}`}>{paragraph}</p>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Logo Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-10">
-                  {[
-                    { icon: Icons.Calendar, label: 'Established', value: '1981' },
-                    { icon: Icons.Users, label: 'Researchers', value: '200+' },
-                    { icon: Icons.FlaskConical, label: 'Research Areas', value: '8' },
-                    { icon: Icons.Trophy, label: 'Years of Excellence', value: '40+' }
-                  ].map((stat, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.7 + idx * 0.1 }}
-                      className="text-center"
-                    >
-                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-cyan-400/10 border border-cyan-400/30 mb-3">
-                        <stat.icon className="w-6 h-6 text-cyan-400" />
-                      </div>
-                      <div className="text-2xl md:text-3xl font-bold text-white mb-1">{stat.value}</div>
-                      <div className="text-sm text-slate-400">{stat.label}</div>
-                    </motion.div>
-                  ))}
+                  {logoStats.map((stat, idx) => {
+                    const StatIcon = LOGO_STAT_ICONS[stat.icon] || Icons.Info;
+                    return (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.7 + idx * 0.1 }}
+                        className="text-center"
+                      >
+                        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-cyan-400/10 border border-cyan-400/30 mb-3">
+                          <StatIcon className="w-6 h-6 text-cyan-400" />
+                        </div>
+                        <div className="text-2xl md:text-3xl font-bold text-white mb-1">{stat.value}</div>
+                        <div className="text-sm text-slate-400">{stat.label}</div>
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </div>
             </motion.div>
@@ -390,352 +456,214 @@ const AboutNARAStoryPage = () => {
             className="text-center mb-16"
           >
             <h3 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-amber-300 via-orange-300 to-amber-400 bg-clip-text text-transparent">
-              Leadership & Administration
+              {leadership?.title || 'Leadership & Administration'}
             </h3>
             <p className="text-xl text-slate-300/90 max-w-3xl mx-auto leading-relaxed">
-              Our organizational structure ensures excellence in marine research, with dedicated leaders guiding NARA's mission across Sri Lanka.
+              {leadership?.intro}
             </p>
           </motion.div>
 
-          {/* Chairman - Highest Priority */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto mb-12"
-          >
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/40 to-orange-500/40 rounded-3xl opacity-75 group-hover:opacity-100 blur-2xl transition duration-500" />
-              <div className="relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 border border-amber-500/40 rounded-3xl p-8 md:p-10 shadow-[0_30px_90px_-50px_rgba(251,191,36,0.6)] backdrop-blur">
-                <div className="flex flex-col md:flex-row gap-8 items-center">
-                  {/* Photo */}
-                  <div className="relative w-32 h-32 md:w-40 md:h-40 flex-shrink-0">
-                    <div className="w-full h-full rounded-2xl bg-gradient-to-br from-amber-400/25 to-orange-500/25 border-2 border-amber-500/50 flex items-center justify-center shadow-[0_20px_60px_-30px_rgba(251,191,36,0.8)]">
-                      <Icons.Crown className="w-16 h-16 md:w-20 md:h-20 text-amber-400" />
-                    </div>
-                    <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center shadow-xl">
-                      <Icons.Award className="w-5 h-5 text-white" />
-                    </div>
-                  </div>
-                  {/* Info */}
-                  <div className="flex-1 text-center md:text-left">
-                    <div className="flex items-center justify-center md:justify-start gap-3 mb-3">
-                      <h3 className="text-3xl md:text-4xl font-bold text-amber-200">Chairman</h3>
-                      <div className="hidden md:block h-px flex-1 bg-gradient-to-r from-amber-400/60 to-transparent" />
-                    </div>
-                    <p className="text-lg md:text-xl text-white/95 font-semibold mb-2">Prof. Sanath Hettiarachchi</p>
-                    <div className="flex flex-col gap-1.5 text-sm text-slate-300/80 mb-3">
-                      <div className="flex items-center justify-center md:justify-start gap-2">
-                        <Icons.Mail className="w-4 h-4 text-amber-400/70" />
-                        <a href="mailto:chairman@nara.ac.lk" className="hover:text-amber-300 transition">chairman@nara.ac.lk</a>
-                      </div>
-                      <div className="flex items-center justify-center md:justify-start gap-2">
-                        <Icons.Phone className="w-4 h-4 text-amber-400/70" />
-                        <a href="tel:+94112521881" className="hover:text-amber-300 transition">+94-11-2521881</a>
-                      </div>
-                    </div>
-                    <p className="text-base text-slate-300/80 leading-relaxed">
-                      Supreme administrative authority overseeing NARA's strategic direction, governance, and long-term vision for marine research excellence.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Executive Leadership Grid */}
-          <div className="grid md:grid-cols-2 gap-8 mb-12 max-w-6xl mx-auto">
-            {/* Director General */}
+          {leadership?.chairman && (
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="group relative"
+              transition={{ duration: 0.8 }}
+              className="max-w-4xl mx-auto mb-12"
             >
-              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/30 to-blue-500/30 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition duration-500" />
-              <div className="relative bg-slate-900/80 border border-cyan-500/40 rounded-2xl p-6 backdrop-blur shadow-[0_20px_60px_-40px_rgba(6,182,212,0.5)]">
-                <div className="flex gap-5 items-start">
-                  <div className="w-20 h-20 flex-shrink-0 rounded-xl bg-gradient-to-br from-cyan-400/25 to-blue-500/25 border border-cyan-500/50 flex items-center justify-center">
-                    <Icons.User className="w-10 h-10 text-cyan-400" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h4 className="text-xl font-bold text-cyan-200">Director General</h4>
-                      <div className="h-px flex-1 bg-gradient-to-r from-cyan-400/40 to-transparent" />
-                    </div>
-                    <p className="text-sm text-white/85 font-medium mb-2">Dr. K. Arulananthan</p>
-                    <div className="space-y-1 text-xs text-slate-300/70 mb-2">
-                      <div className="flex items-center gap-2">
-                        <Icons.Mail className="w-3 h-3 text-cyan-400/70" />
-                        <a href="mailto:dg@nara.ac.lk" className="hover:text-cyan-300 transition">dg@nara.ac.lk</a>
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/40 to-orange-500/40 rounded-3xl opacity-75 group-hover:opacity-100 blur-2xl transition duration-500" />
+                <div className="relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 border border-amber-500/40 rounded-3xl p-8 md:p-10 shadow-[0_30px_90px_-50px_rgba(251,191,36,0.6)] backdrop-blur">
+                  <div className="flex flex-col md:flex-row gap-8 items-center">
+                    <div className="relative w-32 h-32 md:w-40 md:h-40 flex-shrink-0">
+                      <div className="w-full h-full rounded-2xl bg-gradient-to-br from-amber-400/25 to-orange-500/25 border-2 border-amber-500/50 flex items-center justify-center shadow-[0_20px_60px_-30px_rgba(251,191,36,0.8)]">
+                        <Icons.Crown className="w-16 h-16 md:w-20 md:h-20 text-amber-400" />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Icons.Phone className="w-3 h-3 text-cyan-400/70" />
-                        <a href="tel:+94112521932" className="hover:text-cyan-300 transition">+94-11-2521932</a>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Icons.Smartphone className="w-3 h-3 text-cyan-400/70" />
-                        <a href="tel:+94719353627" className="hover:text-cyan-300 transition">+94-71-9353627</a>
+                      <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center shadow-xl">
+                        <Icons.Award className="w-5 h-5 text-white" />
                       </div>
                     </div>
-                    <p className="text-sm text-slate-300/70 leading-relaxed">
-                      Chief executive officer managing day-to-day operations and implementing strategic initiatives.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Deputy Director General */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="group relative"
-            >
-              <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/25 to-indigo-500/25 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition duration-500" />
-              <div className="relative bg-slate-900/80 border border-blue-500/35 rounded-2xl p-6 backdrop-blur shadow-[0_20px_60px_-40px_rgba(59,130,246,0.5)]">
-                <div className="flex gap-5 items-start">
-                  <div className="w-20 h-20 flex-shrink-0 rounded-xl bg-gradient-to-br from-blue-400/20 to-indigo-500/20 border border-blue-500/45 flex items-center justify-center">
-                    <Icons.UserCheck className="w-10 h-10 text-blue-400" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h4 className="text-xl font-bold text-blue-200">Deputy Director General</h4>
-                      <div className="h-px flex-1 bg-gradient-to-r from-blue-400/40 to-transparent" />
-                    </div>
-                    <p className="text-sm text-white/85 font-medium mb-2">Dr. K.H.M.L. Amaralal</p>
-                    <p className="text-xs text-blue-200/70 mb-2">Research and Development</p>
-                    <div className="space-y-1 text-xs text-slate-300/70 mb-2">
-                      <div className="flex items-center gap-2">
-                        <Icons.Mail className="w-3 h-3 text-blue-400/70" />
-                        <a href="mailto:lalith@nara.ac.lk" className="hover:text-blue-300 transition">lalith@nara.ac.lk</a>
+                    <div className="flex-1 text-center md:text-left">
+                      <div className="flex items-center justify-center md:justify-start gap-3 mb-3">
+                        <h3 className="text-3xl md:text-4xl font-bold text-amber-200">{leadership.chairman.title}</h3>
+                        <div className="hidden md:block h-px flex-1 bg-gradient-to-r from-amber-400/60 to-transparent" />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Icons.Phone className="w-3 h-3 text-blue-400/70" />
-                        <a href="tel:+94112529754" className="hover:text-blue-300 transition">+94-11-2529754</a>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Icons.Smartphone className="w-3 h-3 text-blue-400/70" />
-                        <a href="tel:+94719353275" className="hover:text-blue-300 transition">+94-71-9353275</a>
-                      </div>
-                    </div>
-                    <p className="text-sm text-slate-300/70 leading-relaxed">
-                      Deputy chief executive supporting operational excellence and strategic planning.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Division Directors */}
-          <div className="mb-12 max-w-6xl mx-auto">
-            <h4 className="text-2xl font-bold text-slate-200 mb-6 flex items-center gap-3">
-              <Icons.Users className="w-6 h-6 text-slate-400" />
-              Heads of Divisions
-            </h4>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
-              {[
-                {
-                  name: 'Dr. K.A.W.S. Weerasekara',
-                  position: 'Principal Scientist',
-                  division: 'Head, Environmental Studies Division',
-                  expertise: 'Aquatic pollution, water quality assessment, pesticide residue analysis, harmful marine microalgae',
-                  education: 'PhD in Environmental Management, M.Sc. in Natural Resource Management',
-                  email: 'shyamalikaww@nara.ac.lk',
-                  icon: Icons.Leaf,
-                  delay: 0.1
-                },
-                {
-                  name: 'Dr. W.N.C. Priyadarshani',
-                  position: 'Principal Scientist',
-                  division: 'Acting Head, Fishing Technology Division',
-                  expertise: 'Fishing technology, coral-associated fish, marine plankton and benthos diversity',
-                  education: 'Specialization in Fishing Technology',
-                  email: 'nilanthi_priyadarshani@yahoo.com',
-                  icon: Icons.Anchor,
-                  delay: 0.15
-                },
-                {
-                  name: 'Mr. S.R.C. Ranaweera',
-                  position: 'Chief Hydrographer',
-                  division: 'National Hydrographic Office',
-                  expertise: 'National Charting Programme, multibeam backscatter technology, hydrographic surveying',
-                  education: 'Category A Certification in Hydrographic Surveying, Post Graduate Diploma in Ocean Mapping, Master in Business Studies',
-                  email: 'roshanccom@gmail.com',
-                  icon: Icons.Waves,
-                  delay: 0.2
-                },
-                {
-                  name: 'Dr. P.P.M. Heenatigala',
-                  position: 'Principal Scientist',
-                  division: 'Head, Inland Aquatic Resources and Aquaculture Division',
-                  expertise: 'Aquatic animal health management, bacterial and viral diseases, vaccine development for fish',
-                  education: 'PhD in Genetics (Chinese Academy of Science), MSc in Food and Nutrition, BSc in Biological Science',
-                  email: 'prajani@nara.ac.lk',
-                  icon: Icons.Shell,
-                  delay: 0.25
-                },
-                {
-                  name: 'Dr. R.P. Prabath Krishantha Jayasinghe',
-                  position: 'Principal Scientist',
-                  division: 'Head, Marine Biological Resources Division',
-                  expertise: 'Fisheries management, marine biodiversity, coral reefs, tuna and billfish fisheries',
-                  education: 'PhD in Marine and Coastal Management (Spain), M.Sc. in Water and Coastal Management (Portugal)',
-                  email: 'prabath_jayasinghe@yahoo.com',
-                  icon: Icons.Fish,
-                  delay: 0.3
-                },
-                {
-                  name: 'Mr. P.A.D. Ajith Kumara',
-                  position: 'Director',
-                  division: 'Monitoring and Evaluation',
-                  expertise: 'Sea cucumber aquaculture, population dynamics, indigenous fish species research',
-                  education: 'M.Phil (University of Kelaniya), B.Sc. Special in Zoology',
-                  email: 'ajithkumaranara@gmail.com',
-                  icon: Icons.BarChart,
-                  delay: 0.35
-                },
-                {
-                  name: 'Mr. R.M.R.M. Jayathilaka',
-                  position: 'Senior Scientist',
-                  division: 'Acting Head, Oceanography Division',
-                  expertise: 'Coastal oceanography, climate change impacts, numerical modeling, coastal erosion',
-                  education: 'PhD Candidate (Earth Resources Engineering), MSc in Coastal Engineering (IHE Delft, Netherlands)',
-                  email: 'ruchira.jayathilaka@gmail.com',
-                  icon: Icons.Globe,
-                  delay: 0.4
-                },
-                {
-                  name: 'Ms. D.W.L.U. De Silva',
-                  position: 'Researcher',
-                  division: 'Acting Head, Socio-Economics & Marketing Research Division',
-                  expertise: 'Socio-economic analysis, seafood value chains, climate change vulnerability, fish demand modeling',
-                  education: 'Master of Science in Applied Statistics (University of Peradeniya)',
-                  email: 'lasamiupsala@gmail.com',
-                  icon: Icons.TrendingUp,
-                  delay: 0.45
-                },
-                {
-                  name: 'Mr. R.D.P.P. Ranasinghe',
-                  position: 'Director',
-                  division: 'Administration & Human Resources Management',
-                  expertise: 'Personnel management, administrative functions, human resource operations',
-                  education: 'MBA, BSc, Diploma in HR',
-                  email: 'directoradmin@nara.ac.lk',
-                  icon: Icons.Briefcase,
-                  delay: 0.5
-                },
-                {
-                  name: 'Vacant',
-                  position: 'Position Open',
-                  division: 'Post Harvest Technology Division',
-                  expertise: 'Seeking qualified candidate',
-                  education: '',
-                  email: '',
-                  icon: Icons.Package,
-                  delay: 0.55
-                }
-              ].map((director, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: director.delay }}
-                  className="group relative"
-                >
-                  <div className="absolute -inset-1 bg-slate-500/10 rounded-xl opacity-0 group-hover:opacity-100 blur-lg transition" />
-                  <div className={`relative bg-slate-900/70 border ${director.name === 'Vacant' ? 'border-slate-700/20' : 'border-slate-700/50'} rounded-2xl p-6 hover:border-slate-600/70 transition-all duration-300`}>
-                    <div className="flex gap-4">
-                      <div className="w-14 h-14 flex-shrink-0 rounded-xl bg-slate-800/80 border border-slate-600/60 flex items-center justify-center">
-                        <director.icon className="w-6 h-6 text-slate-400" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h5 className={`text-base font-bold ${director.name === 'Vacant' ? 'text-slate-500' : 'text-slate-100'} mb-1`}>{director.name}</h5>
-                        <p className="text-xs text-slate-400 font-medium mb-2">{director.position}</p>
-                        <p className="text-xs text-cyan-300/80 mb-3 leading-relaxed">{director.division}</p>
-
-                        {director.education && (
-                          <div className="mb-3 p-2.5 bg-slate-800/50 rounded-lg border border-slate-700/30">
-                            <div className="flex items-start gap-1.5 mb-1.5">
-                              <Icons.GraduationCap className="w-3.5 h-3.5 text-blue-400/70 flex-shrink-0 mt-0.5" />
-                              <p className="text-xs text-slate-300/90 leading-relaxed">{director.education}</p>
-                            </div>
+                      <p className="text-lg md:text-xl text-white/95 font-semibold mb-2">{leadership.chairman.name}</p>
+                      <div className="flex flex-col gap-1.5 text-sm text-slate-300/80 mb-3">
+                        {leadership.chairman.email && (
+                          <div className="flex items-center justify-center md:justify-start gap-2">
+                            <Icons.Mail className="w-4 h-4 text-amber-400/70" />
+                            <a href={`mailto:${leadership.chairman.email}`} className="hover:text-amber-300 transition">{leadership.chairman.email}</a>
                           </div>
                         )}
+                        {leadership.chairman.phone && (
+                          <div className="flex items-center justify-center md:justify-start gap-2">
+                            <Icons.Phone className="w-4 h-4 text-amber-400/70" />
+                            <a href={`tel:${leadership.chairman.phone.replace(/[^+\d]/g, '')}`} className="hover:text-amber-300 transition">{leadership.chairman.phone}</a>
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-base text-slate-300/80 leading-relaxed">{leadership.chairman.description}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
-                        <div className="mb-3 p-2.5 bg-slate-800/30 rounded-lg">
-                          <div className="flex items-start gap-1.5">
-                            <Icons.Lightbulb className="w-3.5 h-3.5 text-amber-400/70 flex-shrink-0 mt-0.5" />
-                            <p className="text-xs text-slate-300/80 leading-relaxed">{director.expertise}</p>
+          {leadershipExecutives.length > 0 && (
+            <div className="grid md:grid-cols-2 gap-8 mb-12 max-w-6xl mx-auto">
+              {leadershipExecutives.map((executive, idx) => {
+                const style = executiveStyles[idx] || executiveStyles[executiveStyles.length - 1];
+                const IconComponent = style.icon;
+                const contacts = [
+                  executive.email ? { id: 'email', icon: Icons.Mail, value: executive.email, href: `mailto:${executive.email}` } : null,
+                  executive.phone ? { id: 'phone', icon: Icons.Phone, value: executive.phone, href: `tel:${executive.phone.replace(/[^+\d]/g, '')}` } : null,
+                  executive.mobile ? { id: 'mobile', icon: Icons.Smartphone, value: executive.mobile, href: `tel:${executive.mobile.replace(/[^+\d]/g, '')}` } : null
+                ].filter(Boolean);
+
+                return (
+                  <motion.div
+                    key={`executive-${idx}`}
+                    initial={{ opacity: 0, x: idx % 2 === 0 ? -30 : 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="group relative"
+                  >
+                    <div className={`absolute -inset-1 bg-gradient-to-r ${style.gradient} rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition duration-500`} />
+                    <div className={`relative bg-slate-900/80 border ${style.border} rounded-2xl p-6 backdrop-blur shadow-[0_20px_60px_-40px_rgba(6,182,212,0.5)]`}>
+                      <div className="flex gap-5 items-start">
+                        <div className={`w-20 h-20 flex-shrink-0 rounded-xl bg-gradient-to-br ${style.iconBg} flex items-center justify-center`}>
+                          <IconComponent className={`w-10 h-10 ${style.iconColor}`} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h4 className={`text-xl font-bold ${style.textClass}`}>{executive.title}</h4>
+                            <div className={`h-px flex-1 bg-gradient-to-r ${style.accentBar}`} />
+                          </div>
+                          <p className="text-sm text-white/85 font-medium mb-2">{executive.name}</p>
+                          {executive.subtitle && (
+                            <p className="text-xs text-slate-300/70 mb-2">{executive.subtitle}</p>
+                          )}
+                          <div className="space-y-1 text-xs text-slate-300/70 mb-3">
+                            {contacts.map(contact => (
+                              <div key={`${executive.name}-${contact.id}`} className="flex items-center gap-2">
+                                <contact.icon className="w-3 h-3 text-slate-300/70" />
+                                <a href={contact.href} className="hover:text-white/80 transition">{contact.value}</a>
+                              </div>
+                            ))}
+                          </div>
+                          <p className="text-sm text-slate-300/70 leading-relaxed">{executive.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+
+          {leadershipDirectors.length > 0 && (
+            <div className="mb-12 max-w-6xl mx-auto">
+              <h4 className="text-2xl font-bold text-slate-200 mb-6 flex items-center gap-3">
+                <Icons.Users className="w-6 h-6 text-slate-400" />
+                {leadership?.directorsTitle || 'Division Heads'}
+              </h4>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
+                {leadershipDirectors.map((director, idx) => {
+                  const DirectorIcon = DIRECTOR_ICON_MAP[director.icon] || Icons.User;
+                  const isVacant = director.vacant;
+                  return (
+                    <motion.div
+                      key={`${director.name}-${idx}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.1 * idx }}
+                      className="group relative"
+                    >
+                      <div className="absolute -inset-1 bg-slate-500/10 rounded-xl opacity-0 group-hover:opacity-100 blur-lg transition" />
+                      <div className={`relative bg-slate-900/70 border ${isVacant ? 'border-slate-700/20' : 'border-slate-700/50'} rounded-2xl p-6 hover:border-slate-600/70 transition-all duration-300`}>
+                        <div className="flex gap-4">
+                          <div className="w-14 h-14 flex-shrink-0 rounded-xl bg-slate-800/80 border border-slate-600/60 flex items-center justify-center">
+                            <DirectorIcon className="w-6 h-6 text-slate-400" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h5 className={`text-base font-bold ${isVacant ? 'text-slate-500' : 'text-slate-100'} mb-1`}>{director.name}</h5>
+                            <p className="text-xs text-slate-400 font-medium mb-2">{director.position}</p>
+                            <p className="text-xs text-cyan-300/80 mb-3 leading-relaxed">{director.division}</p>
+
+                            {director.education && (
+                              <div className="mb-3 p-2.5 bg-slate-800/50 rounded-lg border border-slate-700/30">
+                                <div className="flex items-start gap-1.5 mb-1.5">
+                                  <Icons.GraduationCap className="w-3.5 h-3.5 text-blue-400/70 flex-shrink-0 mt-0.5" />
+                                  <p className="text-xs text-slate-300/90 leading-relaxed">{director.education}</p>
+                                </div>
+                              </div>
+                            )}
+
+                            {director.expertise && (
+                              <div className="mb-3 p-2.5 bg-slate-800/30 rounded-lg">
+                                <div className="flex items-start gap-1.5">
+                                  <Icons.Lightbulb className="w-3.5 h-3.5 text-amber-400/70 flex-shrink-0 mt-0.5" />
+                                  <p className="text-xs text-slate-300/80 leading-relaxed">{director.expertise}</p>
+                                </div>
+                              </div>
+                            )}
+
+                            {director.email ? (
+                              <div className="flex items-center gap-2">
+                                <Icons.Mail className="w-3.5 h-3.5 text-cyan-400/70 flex-shrink-0" />
+                                <a href={`mailto:${director.email}`} className="text-xs text-cyan-400/80 hover:text-cyan-300 transition truncate">{director.email}</a>
+                              </div>
+                            ) : (
+                              <p className="text-xs text-slate-500 italic flex items-center gap-1.5">
+                                <Icons.AlertCircle className="w-3.5 h-3.5" />
+                                {vacancyNotice || 'Position currently vacant'}
+                              </p>
+                            )}
                           </div>
                         </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
-                        {director.email && (
-                          <div className="flex items-center gap-2">
-                            <Icons.Mail className="w-3.5 h-3.5 text-cyan-400/70 flex-shrink-0" />
-                            <a href={`mailto:${director.email}`} className="text-xs text-cyan-400/80 hover:text-cyan-300 transition truncate">{director.email}</a>
-                          </div>
-                        )}
-                        {!director.email && (
-                          <p className="text-xs text-slate-500 italic flex items-center gap-1.5">
-                            <Icons.AlertCircle className="w-3.5 h-3.5" />
-                            Position currently vacant
-                          </p>
-                        )}
+          {boardMembers.length > 0 && (
+            <div className="max-w-6xl mx-auto">
+              <div className="flex items-center gap-3 mb-6">
+                <Icons.Shield className="w-6 h-6 text-emerald-400" />
+                <h4 className="text-2xl font-bold text-slate-200">{boardTitle || 'Governing Board Members'}</h4>
+                <div className="h-px flex-1 bg-gradient-to-r from-emerald-400/30 to-transparent" />
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {boardMembers.map((member, idx) => (
+                  <motion.div
+                    key={`${member.name}-${idx}`}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.1 * idx }}
+                    className="bg-slate-900/40 border border-emerald-500/15 rounded-lg p-4 hover:border-emerald-500/30 transition"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 flex-shrink-0 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                        <Icons.UserCheck className="w-5 h-5 text-emerald-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h5 className="text-sm font-semibold text-slate-200 mb-0.5 truncate">{member.name}</h5>
+                        <p className="text-xs text-slate-400 leading-relaxed">{member.role}</p>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </div>
             </div>
-          </div>
-
-          {/* Governing Board Members */}
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center gap-3 mb-6">
-              <Icons.Shield className="w-6 h-6 text-emerald-400" />
-              <h4 className="text-2xl font-bold text-slate-200">Governing Board Members</h4>
-              <div className="h-px flex-1 bg-gradient-to-r from-emerald-400/30 to-transparent" />
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { name: 'Prof. Sanath Hettiarachchi', role: 'Chairman', delay: 0.1 },
-                { name: 'Dr. Keerthi Sri Senarathna Atapaththu', role: 'Member', delay: 0.15 },
-                { name: 'Prof. M.P.K.S.K. De Silva', role: 'Member', delay: 0.2 },
-                { name: 'Dr. Cdr. S. U. Lanka Prasada', role: 'Member', delay: 0.25 },
-                { name: 'Mr. Kapila R.A. Tissera', role: 'Member', delay: 0.3 },
-                { name: 'Mr. Perera Shanaka Paththinigama', role: 'Member', delay: 0.35 },
-                { name: 'Mr. Kithsiri Dharmapriya', role: 'Chairman, National Aquaculture Development Authority', delay: 0.4 },
-                { name: 'Mr. Udayakantha Wickramasinghe', role: 'Member', delay: 0.45 },
-                { name: 'Mr. G.L. Wernon Perera', role: 'Additional Secretary, Ministry of Fisheries and Ocean Resources', delay: 0.5 }
-              ].map((member, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: member.delay }}
-                  className="bg-slate-900/40 border border-emerald-500/15 rounded-lg p-4 hover:border-emerald-500/30 transition"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 flex-shrink-0 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                      <Icons.UserCheck className="w-5 h-5 text-emerald-400" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h5 className="text-sm font-semibold text-slate-200 mb-0.5 truncate">{member.name}</h5>
-                      <p className="text-xs text-slate-400 leading-relaxed">{member.role}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+          )}
         </div>
       </section>
 

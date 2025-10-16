@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import * as Icons from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import AppImage from '../../components/AppImage';
 import { useOceanData } from '../../hooks/useOceanData';
 import SriLankaEEZMap from '../../components/SriLankaEEZMap';
 import GovFooter from '../../components/compliance/GovFooter';
+import LibraryBooksCarousel from '../../components/library/LibraryBooksCarousel';
 
 const NewHomePage = () => {
   const [lastUpdate, setLastUpdate] = useState(new Date());
@@ -373,38 +374,34 @@ const NewHomePage = () => {
           {/* Mission Statement */}
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 font-space">
-              Safeguarding Sri Lanka&apos;s Aquatic Wealth Through Science
+              {missionContent?.heading}
             </h2>
             <p className="text-base md:text-lg text-slate-300 leading-relaxed max-w-4xl mx-auto">
-              The National Aquatic Resources Research & Development Agency (NARA) is Sri Lanka&apos;s premier institute for marine and freshwater science, dedicated to safeguarding and sustainably developing the nation&apos;s aquatic wealth. We conduct cutting-edge research, guide policy on fisheries and ocean resources, and drive innovation in the Blue Economy to benefit ecosystems and communities.
+              {missionContent?.description}
             </p>
           </div>
 
           {/* Key Impact Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 text-center backdrop-blur">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 mb-4">
-                <Icons.Calendar className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-3xl font-bold text-cyan-400 mb-2">40+</div>
-              <div className="text-sm text-slate-400">Years of Research Excellence</div>
-            </div>
+            {(missionContent?.stats || []).map((stat, index) => {
+              const StatIcon = missionStatsIcons[index] || Icons.Award;
+              const gradientClasses = [
+                'from-cyan-500 to-blue-500',
+                'from-blue-500 to-purple-500',
+                'from-purple-500 to-pink-500'
+              ];
+              const colorClasses = ['text-cyan-400', 'text-blue-400', 'text-purple-400'];
 
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 text-center backdrop-blur">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 mb-4">
-                <Icons.Waves className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-3xl font-bold text-blue-400 mb-2">460,000 km²</div>
-              <div className="text-sm text-slate-400">Ocean Territory Under Watch</div>
-            </div>
-
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 text-center backdrop-blur">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 mb-4">
-                <Icons.Award className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-3xl font-bold text-purple-400 mb-2">100+</div>
-              <div className="text-sm text-slate-400">Completed Research Projects</div>
-            </div>
+              return (
+                <div key={stat.label || index} className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 text-center backdrop-blur">
+                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r ${gradientClasses[index] || 'from-cyan-500 to-blue-500'} mb-4`}>
+                    <StatIcon className="w-6 h-6 text-white" />
+                  </div>
+                  <div className={`text-3xl font-bold ${colorClasses[index] || 'text-cyan-400'} mb-2`}>{stat.value}</div>
+                  <div className="text-sm text-slate-400">{stat.label}</div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -738,6 +735,9 @@ const NewHomePage = () => {
           </div>
         </div>
       </section>
+
+      {/* Library Books Carousel - Only on Homepage */}
+      <LibraryBooksCarousel />
 
       <GovFooter />
     </div>

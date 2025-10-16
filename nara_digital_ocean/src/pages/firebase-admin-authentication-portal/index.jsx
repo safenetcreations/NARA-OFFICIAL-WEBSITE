@@ -324,7 +324,7 @@ const FirebaseAdminAuthenticationPortal = () => {
                           name="email"
                           value={formData?.email}
                           onChange={handleInputChange}
-                          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-200 bg-white/70 backdrop-blur-sm"
+                          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-200 bg-white/70 backdrop-blur-sm text-gray-900"
                           placeholder="admin@nara.gov.lk"
                           required
                           disabled={isLoading}
@@ -345,7 +345,7 @@ const FirebaseAdminAuthenticationPortal = () => {
                           name="password"
                           value={formData?.password}
                           onChange={handleInputChange}
-                          className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-200 bg-white/70 backdrop-blur-sm"
+                          className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-200 bg-white/70 backdrop-blur-sm text-gray-900"
                           placeholder="••••••••"
                           required
                           disabled={isLoading}
@@ -443,7 +443,7 @@ const FirebaseAdminAuthenticationPortal = () => {
                           id="resetEmail"
                           value={resetEmail}
                           onChange={(e) => setResetEmail(e?.target?.value)}
-                          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-200 bg-white/70 backdrop-blur-sm"
+                          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent transition-all duration-200 bg-white/70 backdrop-blur-sm text-gray-900"
                           placeholder="admin@nara.gov.lk"
                           required
                           disabled={isLoading}

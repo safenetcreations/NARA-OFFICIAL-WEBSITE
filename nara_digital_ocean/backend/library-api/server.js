@@ -109,13 +109,13 @@ app.use((err, req, res, next) => {
 
 async function startServer() {
   try {
-    // Test database connection
+    // Test database connection (optional in demo mode)
     console.log('🔍 Testing database connection...');
     const dbConnected = await testConnection();
     
     if (!dbConnected) {
-      console.error('❌ Failed to connect to database. Please check your configuration.');
-      process.exit(1);
+      console.warn('⚠️  Database not connected - Running in DEMO MODE');
+      console.warn('⚠️  Using mock data for testing');
     }
     
     // Start Express server

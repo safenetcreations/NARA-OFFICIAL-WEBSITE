@@ -91,5 +91,31 @@
   },
   "mediaFallback": {
     "empty": "No media available"
+  },
+  "tags": {
+    "research": "Research",
+    "marine-biology": "Marine biology",
+    "field-work": "Field work",
+    "coral": "Coral",
+    "conservation": "Conservation",
+    "underwater": "Underwater",
+    "conference": "Conference",
+    "international": "International",
+    "collaboration": "Collaboration",
+    "turtles": "Sea turtles",
+    "wildlife": "Wildlife",
+    "laboratory": "Laboratory",
+    "equipment": "Equipment",
+    "education": "Education",
+    "outreach": "Outreach",
+    "students": "Students",
+    "annual-review": "Annual review",
+    "highlights": "Highlights",
+    "coral-reefs": "Coral reefs",
+    "documentary": "Documentary",
+    "training": "Training",
+    "methods": "Methods",
+    "whales": "Whales",
+    "migration": "Migration"
   }
 }

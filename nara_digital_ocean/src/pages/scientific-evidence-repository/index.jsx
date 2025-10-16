@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import * as Icons from 'lucide-react';
 import {
   evidenceDocumentsService,
@@ -9,6 +10,7 @@ import {
 } from '../../services/scientificEvidenceService';
 
 const ScientificEvidenceRepository = () => {
+  const { t } = useTranslation('scientific-evidence');
   const [activeView, setActiveView] = useState('home'); // 'home' | 'documents' | 'briefs' | 'data' | 'search'
   const [documents, setDocuments] = useState([]);
   const [briefs, setBriefs] = useState([]);
@@ -97,22 +99,22 @@ const ScientificEvidenceRepository = () => {
   });
 
   const navTabs = [
-    { id: 'home', label: 'Home', icon: Icons.Home },
-    { id: 'documents', label: 'Research Evidence', icon: Icons.FileText },
-    { id: 'briefs', label: 'Policy Briefs', icon: Icons.BookOpen },
-    { id: 'data', label: 'Data & Visualizations', icon: Icons.BarChart }
+    { id: 'home', label: t('navigation.home'), icon: Icons.Home },
+    { id: 'documents', label: t('navigation.researchEvidence'), icon: Icons.FileText },
+    { id: 'briefs', label: t('navigation.policyBriefs'), icon: Icons.BookOpen },
+    { id: 'data', label: t('navigation.dataVisualizations'), icon: Icons.BarChart }
   ];
 
   if (loading && documents.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50 flex items-center justify-center">
-        <div className="text-purple-900 text-xl">Loading...</div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50 flex items-center justify-center" style={{ fontFamily: "'Noto Sans Sinhala', 'Noto Sans Tamil', 'Inter', 'Segoe UI', sans-serif" }}>
+        <div className="text-purple-900 text-xl">{t('hero.loading')}</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50" style={{ fontFamily: "'Noto Sans Sinhala', 'Noto Sans Tamil', 'Inter', 'Segoe UI', sans-serif" }}>
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 text-white py-24 overflow-hidden">
         {/* Animated Background Icons */}
@@ -150,11 +152,10 @@ const ScientificEvidenceRepository = () => {
               <Icons.Scale className="w-16 h-16" />
             </div>
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              Scientific Evidence Repository
+              {t('hero.title')}
             </h1>
             <p className="text-xl text-purple-100 max-w-3xl mx-auto leading-relaxed mb-8">
-              Access peer-reviewed research, policy briefs, and data-driven insights
-              to inform evidence-based marine and fisheries policy decisions
+              {t('hero.subtitle')}
             </p>
 
             {/* Search Bar */}
@@ -167,7 +168,7 @@ const ScientificEvidenceRepository = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                    placeholder="Search by keywords, authors, or topics..."
+                    placeholder={t('hero.searchPlaceholder')}
                     className="w-full pl-12 pr-4 py-4 rounded-xl text-gray-900 border-2 border-transparent focus:border-purple-400 focus:outline-none text-lg"
                   />
                 </div>
@@ -175,7 +176,7 @@ const ScientificEvidenceRepository = () => {
                   onClick={handleSearch}
                   className="px-8 py-4 bg-white text-purple-900 rounded-xl hover:bg-purple-50 transition-all shadow-lg hover:shadow-xl font-semibold"
                 >
-                  Search
+                  {t('hero.searchButton')}
                 </button>
               </div>
             </div>
@@ -185,19 +186,19 @@ const ScientificEvidenceRepository = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12 max-w-4xl mx-auto">
                 <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                   <div className="text-3xl font-bold mb-2">{statistics.documents.total}</div>
-                  <div className="text-sm text-purple-200">Research Documents</div>
+                  <div className="text-sm text-purple-200">{t('statistics.researchDocuments')}</div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                   <div className="text-3xl font-bold mb-2">{statistics.briefs.total}</div>
-                  <div className="text-sm text-purple-200">Policy Briefs</div>
+                  <div className="text-sm text-purple-200">{t('statistics.policyBriefs')}</div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                   <div className="text-3xl font-bold mb-2">{statistics.documents.totalViews}</div>
-                  <div className="text-sm text-purple-200">Total Views</div>
+                  <div className="text-sm text-purple-200">{t('statistics.totalViews')}</div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                   <div className="text-3xl font-bold mb-2">{statistics.visualizations.total}</div>
-                  <div className="text-sm text-purple-200">Data Visualizations</div>
+                  <div className="text-sm text-purple-200">{t('statistics.dataVisualizations')}</div>
                 </div>
               </div>
             )}
@@ -240,7 +241,7 @@ const ScientificEvidenceRepository = () => {
             >
               {/* Featured / Popular Documents */}
               <div className="mb-12">
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">Most Viewed Research</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">{t('sections.mostViewed')}</h2>
                 <div className="grid md:grid-cols-2 gap-6">
                   {statistics?.popularDocuments?.slice(0, 4).map((doc, idx) => (
                     <motion.div
@@ -282,7 +283,7 @@ const ScientificEvidenceRepository = () => {
                           onClick={() => handleDownload(doc)}
                           className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
                         >
-                          View Document
+                          {t('buttons.viewDocument')}
                         </button>
                       </div>
                     </motion.div>
@@ -293,12 +294,12 @@ const ScientificEvidenceRepository = () => {
               {/* Recent Policy Briefs */}
               <div className="mb-12">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-3xl font-bold text-gray-900">Recent Policy Briefs</h2>
+                  <h2 className="text-3xl font-bold text-gray-900">{t('sections.recentBriefs')}</h2>
                   <button
                     onClick={() => setActiveView('briefs')}
                     className="text-purple-600 hover:text-purple-700 font-medium flex items-center gap-2"
                   >
-                    View All <Icons.ArrowRight className="w-4 h-4" />
+                    {t('buttons.viewAll')} <Icons.ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
                 <div className="grid md:grid-cols-3 gap-6">
@@ -318,7 +319,7 @@ const ScientificEvidenceRepository = () => {
                         {brief.publishedDate?.toDate?.()?.toLocaleDateString()}
                       </div>
                       <button className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium">
-                        Read Brief
+                        {t('buttons.readBrief')}
                       </button>
                     </div>
                   ))}
@@ -327,15 +328,15 @@ const ScientificEvidenceRepository = () => {
 
               {/* Policy Areas */}
               <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">Browse by Policy Area</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">{t('sections.browseByArea')}</h2>
                 <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-4">
                   {[
-                    { id: 'fisheries_management', label: 'Fisheries Management', icon: Icons.Fish },
-                    { id: 'marine_conservation', label: 'Marine Conservation', icon: Icons.Waves },
-                    { id: 'aquaculture', label: 'Aquaculture', icon: Icons.Droplet },
-                    { id: 'coastal_management', label: 'Coastal Management', icon: Icons.Map },
-                    { id: 'climate_change', label: 'Climate Change', icon: Icons.CloudRain },
-                    { id: 'sustainable_development', label: 'Sustainable Development', icon: Icons.Leaf }
+                    { id: 'fisheries_management', icon: Icons.Fish },
+                    { id: 'marine_conservation', icon: Icons.Waves },
+                    { id: 'aquaculture', icon: Icons.Droplet },
+                    { id: 'coastal_management', icon: Icons.Map },
+                    { id: 'climate_change', icon: Icons.CloudRain },
+                    { id: 'sustainable_development', icon: Icons.Leaf }
                   ].map((area) => (
                     <button
                       key={area.id}
@@ -346,7 +347,7 @@ const ScientificEvidenceRepository = () => {
                       className="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all text-center group"
                     >
                       <area.icon className="w-10 h-10 mx-auto mb-3 text-purple-600 group-hover:scale-110 transition-transform" />
-                      <div className="text-sm font-medium text-gray-900">{area.label}</div>
+                      <div className="text-sm font-medium text-gray-900">{t(`policyAreas.${area.id}`)}</div>
                     </button>
                   ))}
                 </div>
@@ -363,32 +364,32 @@ const ScientificEvidenceRepository = () => {
               exit={{ opacity: 0, y: -20 }}
             >
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-bold text-gray-900">Research Evidence</h2>
+                <h2 className="text-3xl font-bold text-gray-900">{t('navigation.researchEvidence')}</h2>
                 <div className="flex gap-3">
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
                     className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none"
                   >
-                    <option value="all">All Categories</option>
-                    <option value="research_paper">Research Paper</option>
-                    <option value="technical_report">Technical Report</option>
-                    <option value="policy_analysis">Policy Analysis</option>
-                    <option value="data_report">Data Report</option>
-                    <option value="review">Review</option>
+                    <option value="all">{t('categories.allCategories')}</option>
+                    <option value="research_paper">{t('categories.research_paper')}</option>
+                    <option value="technical_report">{t('categories.technical_report')}</option>
+                    <option value="policy_analysis">{t('categories.policy_analysis')}</option>
+                    <option value="data_report">{t('categories.data_report')}</option>
+                    <option value="review">{t('categories.review')}</option>
                   </select>
                   <select
                     value={selectedPolicyArea}
                     onChange={(e) => setSelectedPolicyArea(e.target.value)}
                     className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none"
                   >
-                    <option value="all">All Policy Areas</option>
-                    <option value="fisheries_management">Fisheries Management</option>
-                    <option value="marine_conservation">Marine Conservation</option>
-                    <option value="aquaculture">Aquaculture</option>
-                    <option value="coastal_management">Coastal Management</option>
-                    <option value="climate_change">Climate Change</option>
-                    <option value="sustainable_development">Sustainable Development</option>
+                    <option value="all">{t('policyAreas.allPolicyAreas')}</option>
+                    <option value="fisheries_management">{t('policyAreas.fisheries_management')}</option>
+                    <option value="marine_conservation">{t('policyAreas.marine_conservation')}</option>
+                    <option value="aquaculture">{t('policyAreas.aquaculture')}</option>
+                    <option value="coastal_management">{t('policyAreas.coastal_management')}</option>
+                    <option value="climate_change">{t('policyAreas.climate_change')}</option>
+                    <option value="sustainable_development">{t('policyAreas.sustainable_development')}</option>
                   </select>
                 </div>
               </div>
@@ -413,7 +414,7 @@ const ScientificEvidenceRepository = () => {
                         <p className="text-gray-600 mb-4 line-clamp-3">{doc.abstract}</p>
                         {doc.authors && (
                           <div className="text-sm text-gray-500 mb-3">
-                            <strong>Authors:</strong> {doc.authors.join(', ')}
+                            <strong>{t('labels.authors')}:</strong> {doc.authors.join(', ')}
                           </div>
                         )}
                         <div className="flex items-center justify-between">
@@ -424,11 +425,11 @@ const ScientificEvidenceRepository = () => {
                             </span>
                             <span className="flex items-center gap-2">
                               <Icons.Eye className="w-4 h-4" />
-                              {doc.viewCount} views
+                              {doc.viewCount} {t('labels.views')}
                             </span>
                             <span className="flex items-center gap-2">
                               <Icons.Download className="w-4 h-4" />
-                              {doc.downloadCount} downloads
+                              {doc.downloadCount} {t('labels.downloads')}
                             </span>
                           </div>
                           <button
@@ -436,7 +437,7 @@ const ScientificEvidenceRepository = () => {
                             className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center gap-2"
                           >
                             <Icons.Download className="w-4 h-4" />
-                            Download
+                            {t('buttons.download')}
                           </button>
                         </div>
                       </div>
@@ -448,7 +449,7 @@ const ScientificEvidenceRepository = () => {
               {filteredDocuments.length === 0 && (
                 <div className="text-center py-16 text-gray-500">
                   <Icons.FileText className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                  <p>No documents found matching your criteria.</p>
+                  <p>{t('emptyStates.noDocuments')}</p>
                 </div>
               )}
             </motion.div>
@@ -462,7 +463,7 @@ const ScientificEvidenceRepository = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Policy Briefs</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">{t('navigation.policyBriefs')}</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {briefs.map((brief) => (
                   <div key={brief.id} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all">
@@ -477,11 +478,11 @@ const ScientificEvidenceRepository = () => {
                     <h3 className="text-lg font-bold text-gray-900 mb-3">{brief.title}</h3>
                     <p className="text-gray-600 text-sm mb-4 line-clamp-4">{brief.summary}</p>
                     <div className="text-xs text-gray-500 mb-4">
-                      Published: {brief.publishedDate?.toDate?.()?.toLocaleDateString()}
+                      {t('labels.published')}: {brief.publishedDate?.toDate?.()?.toLocaleDateString()}
                     </div>
                     {brief.recommendations && brief.recommendations.length > 0 && (
                       <div className="mb-4">
-                        <div className="text-xs font-semibold text-gray-700 mb-2">Key Recommendations:</div>
+                        <div className="text-xs font-semibold text-gray-700 mb-2">{t('labels.keyRecommendations')}:</div>
                         <ul className="text-xs text-gray-600 space-y-1">
                           {brief.recommendations.slice(0, 2).map((rec, i) => (
                             <li key={i} className="flex items-start gap-2">
@@ -496,7 +497,7 @@ const ScientificEvidenceRepository = () => {
                       onClick={() => handleDownload(brief)}
                       className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
                     >
-                      Read Full Brief
+                      {t('buttons.readFullBrief')}
                     </button>
                   </div>
                 ))}
@@ -505,7 +506,7 @@ const ScientificEvidenceRepository = () => {
               {briefs.length === 0 && (
                 <div className="text-center py-16 text-gray-500">
                   <Icons.BookOpen className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                  <p>No policy briefs available at the moment.</p>
+                  <p>{t('emptyStates.noBriefs')}</p>
                 </div>
               )}
             </motion.div>
@@ -519,7 +520,7 @@ const ScientificEvidenceRepository = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Data & Visualizations</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">{t('navigation.dataVisualizations')}</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {visualizations.map((viz) => (
                   <div key={viz.id} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all">
@@ -534,7 +535,7 @@ const ScientificEvidenceRepository = () => {
                     <h3 className="text-lg font-bold text-gray-900 mb-3">{viz.title}</h3>
                     <p className="text-gray-600 text-sm mb-4">{viz.description}</p>
                     <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                      View Visualization
+                      {t('buttons.viewVisualization')}
                     </button>
                   </div>
                 ))}
@@ -543,7 +544,7 @@ const ScientificEvidenceRepository = () => {
               {visualizations.length === 0 && (
                 <div className="text-center py-16 text-gray-500">
                   <Icons.BarChart className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                  <p>No data visualizations available at the moment.</p>
+                  <p>{t('emptyStates.noVisualizations')}</p>
                 </div>
               )}
             </motion.div>
@@ -557,8 +558,8 @@ const ScientificEvidenceRepository = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Search Results</h2>
-              <p className="text-gray-600 mb-6">Found {searchResults.length} documents matching "{searchQuery}"</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">{t('search.title')}</h2>
+              <p className="text-gray-600 mb-6">{t('search.foundDocuments', { count: searchResults.length, query: searchQuery })}</p>
 
               <div className="space-y-6">
                 {searchResults.map((doc) => (
@@ -577,7 +578,7 @@ const ScientificEvidenceRepository = () => {
                       onClick={() => handleDownload(doc)}
                       className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
                     >
-                      View Document
+                      {t('buttons.viewDocument')}
                     </button>
                   </div>
                 ))}
@@ -586,7 +587,7 @@ const ScientificEvidenceRepository = () => {
               {searchResults.length === 0 && (
                 <div className="text-center py-16 text-gray-500">
                   <Icons.Search className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                  <p>No documents found. Try different keywords.</p>
+                  <p>{t('emptyStates.noSearchResults')}</p>
                 </div>
               )}
             </motion.div>

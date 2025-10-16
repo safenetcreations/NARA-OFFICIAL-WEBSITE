@@ -70,8 +70,12 @@
   "articles": {
     "featured": "විශේෂිත",
     "readTimeShort": "{{minutes}} විනාඩි කියවීම",
+    "readFull": "සම්පූර්ණ කතාව කියවන්න",
     "moreTags": "+තවත් {{count}}",
     "datePending": "දිනය අපේක්ෂිතය"
+  },
+  "pagination": {
+    "pageInfo": "පිටුව {{current}} / {{total}}"
   },
   "modal": {
     "highlightsTitle": "ප්‍රධාන අවධාන්‍ය",

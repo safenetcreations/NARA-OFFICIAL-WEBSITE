@@ -72,7 +72,8 @@
     "map": {
       "title": "අපව සොයන්න",
       "comingSoon": "මායිම් සිතියම් ඒකාබද්ධ කිරීම ඉක්මනින්",
-      "location": "Crow Island, කොළඹ 15, ශ්‍රී ලංකාව"
+      "location": "Crow Island, කොළඹ 15, ශ්‍රී ලංකාව",
+      "getDirections": "මාර්ග ලබා ගන්න"
     }
   }
 }

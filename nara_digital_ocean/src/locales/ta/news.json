@@ -70,8 +70,12 @@
   "articles": {
     "featured": "சிறப்பு",
     "readTimeShort": "{{minutes}} நிமி வாசிப்பு",
+    "readFull": "முழு கதையை படிக்கவும்",
     "moreTags": "+{{count}} மேலும்",
     "datePending": "தேதி நிலுவை"
+  },
+  "pagination": {
+    "pageInfo": "பக்கம் {{current}} / {{total}}"
   },
   "modal": {
     "highlightsTitle": "முக்கிய அம்சங்கள்",

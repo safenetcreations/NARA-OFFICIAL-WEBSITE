@@ -13,6 +13,7 @@ import enProcurement from './locales/en/procurement.json';
 import enResearchEnhanced from './locales/en/researchEnhanced.json';
 import enDigitalLibrary from './locales/en/digitalLibrary.json';
 import enKnowledge from './locales/en/knowledge.json';
+import enLabResults from './locales/en/labResults.json';
 import enMaritime from './locales/en/maritime.json';
 import enIntegration from './locales/en/integration.json';
 import enFishAdvisory from './locales/en/fishAdvisory.json';
@@ -24,6 +25,10 @@ import enMarineIncident from './locales/en/marineIncident.json';
 import enExportMarket from './locales/en/exportMarket.json';
 import enMediaGallery from './locales/en/mediaGallery.json';
 import enVesselBooking from './locales/en/vesselBooking.json';
+import enMedia from './locales/en/media.json';
+import enLibrary from './locales/en/library.json';
+import enProjectPipeline from './locales/en/project-pipeline.json';
+import enScientificEvidence from './locales/en/scientific-evidence.json';
 import taCommon from './locales/ta/common.json';
 import taLda from './locales/ta/lda.json';
 import taMarketplace from './locales/ta/marketplace.json';
@@ -36,6 +41,7 @@ import taProcurement from './locales/ta/procurement.json';
 import taResearchEnhanced from './locales/ta/researchEnhanced.json';
 import taDigitalLibrary from './locales/ta/digitalLibrary.json';
 import taKnowledge from './locales/ta/knowledge.json';
+import taLabResults from './locales/ta/labResults.json';
 import taMaritime from './locales/ta/maritime.json';
 import taIntegration from './locales/ta/integration.json';
 import taFishAdvisory from './locales/ta/fishAdvisory.json';
@@ -47,6 +53,10 @@ import taMarineIncident from './locales/ta/marineIncident.json';
 import taExportMarket from './locales/ta/exportMarket.json';
 import taMediaGallery from './locales/ta/mediaGallery.json';
 import taVesselBooking from './locales/ta/vesselBooking.json';
+import taMedia from './locales/ta/media.json';
+import taLibrary from './locales/ta/library.json';
+import taProjectPipeline from './locales/ta/project-pipeline.json';
+import taScientificEvidence from './locales/ta/scientific-evidence.json';
 import siCommon from './locales/si/common.json';
 import siLda from './locales/si/lda.json';
 import siMarketplace from './locales/si/marketplace.json';
@@ -59,6 +69,7 @@ import siProcurement from './locales/si/procurement.json';
 import siResearchEnhanced from './locales/si/researchEnhanced.json';
 import siDigitalLibrary from './locales/si/digitalLibrary.json';
 import siKnowledge from './locales/si/knowledge.json';
+import siLabResults from './locales/si/labResults.json';
 import siMaritime from './locales/si/maritime.json';
 import siIntegration from './locales/si/integration.json';
 import siFishAdvisory from './locales/si/fishAdvisory.json';
@@ -70,6 +81,10 @@ import siMarineIncident from './locales/si/marineIncident.json';
 import siExportMarket from './locales/si/exportMarket.json';
 import siMediaGallery from './locales/si/mediaGallery.json';
 import siVesselBooking from './locales/si/vesselBooking.json';
+import siMedia from './locales/si/media.json';
+import siLibrary from './locales/si/library.json';
+import siProjectPipeline from './locales/si/project-pipeline.json';
+import siScientificEvidence from './locales/si/scientific-evidence.json';
 
 const resources = {
   en: {
@@ -83,6 +98,7 @@ const resources = {
     researchEnhanced: enResearchEnhanced,
     digitalLibrary: enDigitalLibrary,
     knowledge: enKnowledge,
+    labResults: enLabResults,
     lda: enLda,
     marketplace: enMarketplace,
     maritime: enMaritime,
@@ -95,7 +111,11 @@ const resources = {
     marineIncident: enMarineIncident,
     exportMarket: enExportMarket,
     mediaGallery: enMediaGallery,
-    vesselBooking: enVesselBooking
+    vesselBooking: enVesselBooking,
+    media: enMedia,
+    library: enLibrary,
+    'project-pipeline': enProjectPipeline,
+    'scientific-evidence': enScientificEvidence
   },
   ta: {
     common: taCommon,
@@ -108,6 +128,7 @@ const resources = {
     researchEnhanced: taResearchEnhanced,
     digitalLibrary: taDigitalLibrary,
     knowledge: taKnowledge,
+    labResults: taLabResults,
     lda: taLda,
     marketplace: taMarketplace,
     maritime: taMaritime,
@@ -120,7 +141,11 @@ const resources = {
     marineIncident: taMarineIncident,
     exportMarket: taExportMarket,
     mediaGallery: taMediaGallery,
-    vesselBooking: taVesselBooking
+    vesselBooking: taVesselBooking,
+    media: taMedia,
+    library: taLibrary,
+    'project-pipeline': taProjectPipeline,
+    'scientific-evidence': taScientificEvidence
   },
   si: {
     common: siCommon,
@@ -133,6 +158,7 @@ const resources = {
     researchEnhanced: siResearchEnhanced,
     digitalLibrary: siDigitalLibrary,
     knowledge: siKnowledge,
+    labResults: siLabResults,
     lda: siLda,
     marketplace: siMarketplace,
     maritime: siMaritime,
@@ -145,7 +171,11 @@ const resources = {
     marineIncident: siMarineIncident,
     exportMarket: siExportMarket,
     mediaGallery: siMediaGallery,
-    vesselBooking: siVesselBooking
+    vesselBooking: siVesselBooking,
+    media: siMedia,
+    library: siLibrary,
+    'project-pipeline': siProjectPipeline,
+    'scientific-evidence': siScientificEvidence
   }
 };
 
@@ -173,7 +203,7 @@ i18n
     resources,
     lng: getStoredLanguage(),
     fallbackLng: 'en',
-    ns: ['common', 'home', 'about', 'research', 'collaboration', 'procurement', 'news', 'researchEnhanced', 'digitalLibrary', 'knowledge', 'lda', 'marketplace', 'maritime', 'integration', 'fishAdvisory', 'audiences', 'contact', 'publicConsultation', 'openData', 'marineIncident', 'exportMarket', 'mediaGallery', 'vesselBooking'],
+    ns: ['common', 'home', 'about', 'research', 'collaboration', 'procurement', 'news', 'researchEnhanced', 'digitalLibrary', 'knowledge', 'labResults', 'lda', 'marketplace', 'maritime', 'integration', 'fishAdvisory', 'audiences', 'contact', 'publicConsultation', 'openData', 'marineIncident', 'exportMarket', 'mediaGallery', 'vesselBooking', 'media', 'library', 'project-pipeline', 'scientific-evidence'],
     defaultNS: 'common',
     interpolation: {
       escapeValue: false

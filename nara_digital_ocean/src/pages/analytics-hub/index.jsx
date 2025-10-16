@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
   BarChart3,
@@ -18,6 +19,7 @@ import {
 import { metricsAggregationService } from '../../services/impactAssessmentService';
 
 const AnalyticsHub = () => {
+  const { t } = useTranslation('analytics');
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -37,68 +39,88 @@ const AnalyticsHub = () => {
   const tools = [
     {
       id: 'predictive',
-      name: 'Predictive Analytics',
-      description: 'AI-powered forecasting for fish stocks, climate impacts, and marine trends',
+      name: t('tools.predictive.name'),
+      description: t('tools.predictive.description'),
       icon: Brain,
       color: 'from-purple-500 to-purple-600',
       path: '/analytics/predictive',
-      features: ['Fish Stock Forecasting', 'Climate Impact Prediction', 'Trend Analysis', 'Anomaly Detection']
+      features: [
+        t('tools.predictive.features.forecast'),
+        t('tools.predictive.features.climate'),
+        t('tools.predictive.features.trends'),
+        t('tools.predictive.features.anomaly')
+      ]
     },
     {
       id: 'impact',
-      name: 'Impact Assessment',
-      description: 'Measure policy effectiveness and project outcomes with data-driven insights',
+      name: t('tools.impact.name'),
+      description: t('tools.impact.description'),
       icon: Target,
       color: 'from-blue-500 to-blue-600',
       path: '/analytics/impact-assessment',
-      features: ['Policy Impact Tracking', 'Project Outcomes', 'ROI Calculation', 'Report Generation']
+      features: [
+        t('tools.impact.features.policy'),
+        t('tools.impact.features.outcomes'),
+        t('tools.impact.features.roi'),
+        t('tools.impact.features.reports')
+      ]
     },
     {
       id: 'economic',
-      name: 'Economic Valuation',
-      description: 'Calculate blue economy contributions and investment returns',
+      name: t('tools.economic.name'),
+      description: t('tools.economic.description'),
       icon: DollarSign,
       color: 'from-green-500 to-green-600',
       path: '/analytics/economic-valuation',
-      features: ['Blue Economy GDP', 'Tourism Revenue', 'Fisheries Value', 'Employment Impact']
+      features: [
+        t('tools.economic.features.gdp'),
+        t('tools.economic.features.tourism'),
+        t('tools.economic.features.fisheries'),
+        t('tools.economic.features.employment')
+      ]
     },
     {
       id: 'simulator',
-      name: 'Policy Simulator',
-      description: 'Model policy changes and simulate outcomes before implementation',
+      name: t('tools.simulator.name'),
+      description: t('tools.simulator.description'),
       icon: Activity,
       color: 'from-orange-500 to-orange-600',
       path: '/analytics/policy-simulator',
-      features: ['Scenario Modeling', 'Impact Prediction', 'Cost-Benefit Analysis', 'Risk Assessment']
+      features: [
+        t('tools.simulator.features.modeling'),
+        t('tools.simulator.features.prediction'),
+        t('tools.simulator.features.costBenefit'),
+        t('tools.simulator.features.risk')
+      ]
     }
   ];
 
   const recentInsights = [
     {
       type: 'success',
-      title: 'Fish Stock Recovery Trend Detected',
-      description: 'Predictive models show 15% improvement in yellowfin tuna stocks over next 6 months',
-      timestamp: '2 hours ago'
+      title: t('insights.success.title'),
+      description: t('insights.success.description'),
+      timestamp: t('insights.timestamp.hours', { count: 2 })
     },
     {
       type: 'warning',
-      title: 'Policy Review Recommended',
-      description: 'Marine conservation policy showing neutral impact - reassessment suggested',
-      timestamp: '5 hours ago'
+      title: t('insights.warning.title'),
+      description: t('insights.warning.description'),
+      timestamp: t('insights.timestamp.hours', { count: 5 })
     },
     {
       type: 'info',
-      title: 'Blue Economy Growth',
-      description: 'Tourism sector contributing 2.3% to GDP, up 0.4% from last year',
-      timestamp: '1 day ago'
+      title: t('insights.info.title'),
+      description: t('insights.info.description'),
+      timestamp: t('insights.timestamp.day')
     }
   ];
 
   return (
     <>
       <Helmet>
-        <title>Analytics Hub - NARA Digital Ocean</title>
-        <meta name="description" content="AI-powered analytics and insights for marine resource management and policy decisions" />
+        <title>{t('hero.title')} - NARA Digital Ocean</title>
+        <meta name="description" content={t('hero.description')} />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
@@ -107,10 +129,10 @@ const AnalyticsHub = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-3 mb-4">
               <Sparkles className="w-10 h-10 text-yellow-400" />
-              <h1 className="text-5xl font-bold">Analytics Hub</h1>
+              <h1 className="text-5xl font-bold">{t('hero.title')}</h1>
             </div>
             <p className="text-xl text-blue-200 max-w-3xl">
-              AI-powered insights and predictive analytics for evidence-based marine policy decisions
+              {t('hero.description')}
             </p>
 
             {/* Quick Stats */}
@@ -119,37 +141,37 @@ const AnalyticsHub = () => {
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
                   <div className="flex items-center gap-3 mb-2">
                     <Target className="w-6 h-6 text-green-400" />
-                    <span className="text-sm text-blue-200">Policy Effectiveness</span>
+                    <span className="text-sm text-blue-200">{t('stats.policies')}</span>
                   </div>
                   <div className="text-3xl font-bold">{metrics.policyImpact.avgScore}</div>
-                  <div className="text-sm text-blue-300 mt-1">{metrics.policyImpact.totalPolicies} policies tracked</div>
+                  <div className="text-sm text-blue-300 mt-1">{metrics.policyImpact.totalPolicies} {t('labels.policiesTracked')}</div>
                 </div>
 
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
                   <div className="flex items-center gap-3 mb-2">
                     <CheckCircle className="w-6 h-6 text-green-400" />
-                    <span className="text-sm text-blue-200">Project Success Rate</span>
+                    <span className="text-sm text-blue-200">{t('stats.accuracy')}</span>
                   </div>
                   <div className="text-3xl font-bold">{metrics.projectOutcomes.avgSuccessScore}%</div>
-                  <div className="text-sm text-blue-300 mt-1">{metrics.projectOutcomes.totalProjects} projects measured</div>
+                  <div className="text-sm text-blue-300 mt-1">{metrics.projectOutcomes.totalProjects} {t('labels.projectsMeasured')}</div>
                 </div>
 
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
                   <div className="flex items-center gap-3 mb-2">
                     <DollarSign className="w-6 h-6 text-green-400" />
-                    <span className="text-sm text-blue-200">Average ROI</span>
+                    <span className="text-sm text-blue-200">{t('labels.avgROI')}</span>
                   </div>
                   <div className="text-3xl font-bold">{metrics.roi.avgROI}%</div>
-                  <div className="text-sm text-blue-300 mt-1">Net value: LKR {(metrics.roi.netValue / 1000000).toFixed(1)}M</div>
+                  <div className="text-sm text-blue-300 mt-1">{t('labels.netValue')}: LKR {(metrics.roi.netValue / 1000000).toFixed(1)}M</div>
                 </div>
 
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
                   <div className="flex items-center gap-3 mb-2">
                     <Activity className="w-6 h-6 text-green-400" />
-                    <span className="text-sm text-blue-200">Platform Health</span>
+                    <span className="text-sm text-blue-200">{t('stats.models')}</span>
                   </div>
                   <div className="text-3xl font-bold">{metrics.overall.healthScore}</div>
-                  <div className="text-sm text-blue-300 mt-1">Excellent performance</div>
+                  <div className="text-sm text-blue-300 mt-1">{t('stats.insights')}</div>
                 </div>
               </div>
             )}
@@ -159,8 +181,8 @@ const AnalyticsHub = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Analytics Tools Grid */}
           <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Analytics Tools</h2>
-            <p className="text-gray-600 mb-8">Choose a tool to explore insights and generate reports</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">{t('hero.subtitle')}</h2>
+            <p className="text-gray-600 mb-8">{t('hero.description')}</p>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {tools.map((tool) => {
@@ -187,7 +209,7 @@ const AnalyticsHub = () => {
                     </div>
 
                     <div className="p-6">
-                      <p className="text-sm font-semibold text-gray-700 mb-3">Key Features:</p>
+                      <p className="text-sm font-semibold text-gray-700 mb-3">{t('actions.exploreTool')}:</p>
                       <ul className="grid grid-cols-2 gap-2">
                         {tool.features.map((feature, index) => (
                           <li key={index} className="flex items-center gap-2 text-sm text-gray-600">
@@ -207,7 +229,7 @@ const AnalyticsHub = () => {
           <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
             <div className="flex items-center gap-3 mb-6">
               <TrendingUp className="w-6 h-6 text-blue-600" />
-              <h2 className="text-2xl font-bold text-gray-900">Recent Insights</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{t('insights.title')}</h2>
             </div>
 
             <div className="space-y-4">
@@ -251,9 +273,9 @@ const AnalyticsHub = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
                 <Brain className="w-8 h-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">AI-Powered Predictions</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t('valueProps.aiTitle')}</h3>
               <p className="text-gray-600">
-                Machine learning algorithms forecast trends and predict outcomes with confidence intervals
+                {t('valueProps.aiDesc')}
               </p>
             </div>
 
@@ -261,9 +283,9 @@ const AnalyticsHub = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
                 <PieChart className="w-8 h-8 text-green-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Data-Driven Decisions</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t('valueProps.dataTitle')}</h3>
               <p className="text-gray-600">
-                Evidence-based insights help policy makers make informed choices with measurable impact
+                {t('valueProps.dataDesc')}
               </p>
             </div>
 
@@ -271,9 +293,9 @@ const AnalyticsHub = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
                 <Target className="w-8 h-8 text-purple-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Risk Mitigation</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t('valueProps.riskTitle')}</h3>
               <p className="text-gray-600">
-                Simulate policy changes and assess risks before implementation to avoid costly mistakes
+                {t('valueProps.riskDesc')}
               </p>
             </div>
           </div>

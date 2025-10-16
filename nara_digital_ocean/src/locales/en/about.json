@@ -80,7 +80,190 @@
           "description": "Signed MOU for collaborative operation of research vessels, amplifying EEZ monitoring and Blue Economy innovation."
         }
       ],
-      "timelineIntro": "Explore the milestones that transformed a pioneering mandate into a national legacy."
+      "timelineIntro": "Explore the milestones that transformed a pioneering mandate into a national legacy.",
+      "milestoneCount": "{{count}} milestone",
+      "milestoneCount_plural": "{{count}} milestones"
+    },
+    "logo": {
+      "title": "The NARA Emblem",
+      "subtitle": "Symbol of Excellence in Marine Research",
+      "description": [
+        "The National Aquatic Resources Research and Development Agency (NARA) emblem represents our commitment to advancing marine science and sustainable aquatic resource management in Sri Lanka."
+      ],
+      "features": [
+        {
+          "icon": "waves",
+          "title": "Ocean Waves",
+          "description": "Symbolise our focus on marine and aquatic ecosystems, representing the vast coastal waters and inland water bodies that are central to our research mission."
+        },
+        {
+          "icon": "fish",
+          "title": "Marine Life Elements",
+          "description": "Reflect our dedication to understanding and protecting aquatic biodiversity—from fisheries science to marine biology conservation."
+        },
+        {
+          "icon": "globe",
+          "title": "Circular Design",
+          "description": "Represents our holistic approach to marine research, encompassing oceanography, limnology, aquaculture, and socio-economic studies."
+        },
+        {
+          "icon": "sparkles",
+          "title": "Scientific Excellence",
+          "description": "Showcases our commitment to rigorous research, innovation, and sustainable development practices."
+        }
+      ],
+      "history": {
+        "title": "Emblem History",
+        "body": [
+          "Established in 1981, NARA's emblem has remained a constant symbol of scientific integrity and marine stewardship.",
+          "The design reflects our evolution from a nascent research institution to a world-class centre for aquatic research excellence, guiding our mission to protect and sustainably manage Sri Lanka's precious marine and aquatic resources for future generations."
+        ]
+      },
+      "stats": [
+        { "icon": "calendar", "label": "Established", "value": "1981" },
+        { "icon": "users", "label": "Researchers", "value": "200+" },
+        { "icon": "flask", "label": "Research Areas", "value": "8" },
+        { "icon": "trophy", "label": "Years of Excellence", "value": "40+" }
+      ]
+    },
+    "leadership": {
+      "title": "Leadership & Administration",
+      "intro": "Our organisational structure ensures excellence in marine research, with dedicated leaders guiding NARA's mission across Sri Lanka.",
+      "chairman": {
+        "title": "Chairman",
+        "name": "Prof. Sanath Hettiarachchi",
+        "email": "chairman@nara.ac.lk",
+        "phone": "+94-11-2521881",
+        "description": "Supreme administrative authority overseeing NARA's strategic direction, governance, and long-term vision for marine research excellence."
+      },
+      "executives": [
+        {
+          "title": "Director General",
+          "name": "Dr. K. Arulananthan",
+          "email": "dg@nara.ac.lk",
+          "phone": "+94-11-2521932",
+          "mobile": "+94-71-9353627",
+          "description": "Chief executive officer managing day-to-day operations and implementing strategic initiatives."
+        },
+        {
+          "title": "Deputy Director General",
+          "subtitle": "Research and Development",
+          "name": "Dr. K.H.M.L. Amaralal",
+          "email": "lalith@nara.ac.lk",
+          "phone": "+94-11-2529754",
+          "mobile": "+94-71-9353275",
+          "description": "Deputy chief executive supporting operational excellence and strategic planning."
+        }
+      ],
+      "directorsTitle": "Heads of Divisions",
+      "directors": [
+        {
+          "name": "Dr. K.A.W.S. Weerasekara",
+          "position": "Principal Scientist",
+          "division": "Head, Environmental Studies Division",
+          "expertise": "Aquatic pollution, water quality assessment, pesticide residue analysis, harmful marine microalgae",
+          "education": "PhD in Environmental Management, M.Sc. in Natural Resource Management",
+          "email": "shyamalikaww@nara.ac.lk",
+          "icon": "leaf"
+        },
+        {
+          "name": "Dr. W.N.C. Priyadarshani",
+          "position": "Principal Scientist",
+          "division": "Acting Head, Fishing Technology Division",
+          "expertise": "Fishing technology, coral-associated fish, marine plankton and benthos diversity",
+          "education": "Specialisation in Fishing Technology",
+          "email": "nilanthi_priyadarshani@yahoo.com",
+          "icon": "anchor"
+        },
+        {
+          "name": "Mr. S.R.C. Ranaweera",
+          "position": "Chief Hydrographer",
+          "division": "National Hydrographic Office",
+          "expertise": "National charting programme, multibeam backscatter technology, hydrographic surveying",
+          "education": "Category A Certification in Hydrographic Surveying, Post Graduate Diploma in Ocean Mapping, Master in Business Studies",
+          "email": "roshanccom@gmail.com",
+          "icon": "waves"
+        },
+        {
+          "name": "Dr. P.P.M. Heenatigala",
+          "position": "Principal Scientist",
+          "division": "Head, Inland Aquatic Resources and Aquaculture Division",
+          "expertise": "Aquatic animal health management, bacterial and viral diseases, vaccine development for fish",
+          "education": "PhD in Genetics (Chinese Academy of Science), MSc in Food and Nutrition, BSc in Biological Science",
+          "email": "prajani@nara.ac.lk",
+          "icon": "shell"
+        },
+        {
+          "name": "Dr. R.P. Prabath Krishantha Jayasinghe",
+          "position": "Principal Scientist",
+          "division": "Head, Marine Biological Resources Division",
+          "expertise": "Fisheries management, marine biodiversity, coral reefs, tuna and billfish fisheries",
+          "education": "PhD in Marine and Coastal Management (Spain), M.Sc. in Water and Coastal Management (Portugal)",
+          "email": "prabath_jayasinghe@yahoo.com",
+          "icon": "fish"
+        },
+        {
+          "name": "Mr. P.A.D. Ajith Kumara",
+          "position": "Director",
+          "division": "Monitoring and Evaluation",
+          "expertise": "Sea cucumber aquaculture, population dynamics, indigenous fish species research",
+          "education": "M.Phil (University of Kelaniya), B.Sc. Special in Zoology",
+          "email": "ajithkumaranara@gmail.com",
+          "icon": "barChart"
+        },
+        {
+          "name": "Mr. R.M.R.M. Jayathilaka",
+          "position": "Senior Scientist",
+          "division": "Acting Head, Oceanography Division",
+          "expertise": "Coastal oceanography, climate change impacts, numerical modelling, coastal erosion",
+          "education": "PhD Candidate (Earth Resources Engineering), MSc in Coastal Engineering (IHE Delft, Netherlands)",
+          "email": "ruchira.jayathilaka@gmail.com",
+          "icon": "globe"
+        },
+        {
+          "name": "Ms. D.W.L.U. De Silva",
+          "position": "Researcher",
+          "division": "Acting Head, Socio-Economics & Marketing Research Division",
+          "expertise": "Socio-economic analysis, seafood value chains, climate change vulnerability, fish demand modelling",
+          "education": "Master of Science in Applied Statistics (University of Peradeniya)",
+          "email": "lasamiupsala@gmail.com",
+          "icon": "trendingUp"
+        },
+        {
+          "name": "Mr. R.D.P.P. Ranasinghe",
+          "position": "Director",
+          "division": "Administration & Human Resources Management",
+          "expertise": "Personnel management, administrative functions, human resource operations",
+          "education": "MBA, BSc, Diploma in HR",
+          "email": "directoradmin@nara.ac.lk",
+          "icon": "briefcase"
+        },
+        {
+          "name": "Vacant",
+          "position": "Position Open",
+          "division": "Post Harvest Technology Division",
+          "expertise": "Seeking qualified candidate",
+          "education": "",
+          "email": "",
+          "icon": "package",
+          "vacant": true
+        }
+      ],
+      "vacancyNotice": "Position currently vacant",
+      "board": {
+        "title": "Governing Board Members",
+        "members": [
+          { "name": "Prof. Sanath Hettiarachchi", "role": "Chairman" },
+          { "name": "Dr. Keerthi Sri Senarathna Atapaththu", "role": "Member" },
+          { "name": "Prof. M.P.K.S.K. De Silva", "role": "Member" },
+          { "name": "Dr. Cdr. S. U. Lanka Prasada", "role": "Member" },
+          { "name": "Mr. Kapila R.A. Tissera", "role": "Member" },
+          { "name": "Mr. Perera Shanaka Paththinigama", "role": "Member" },
+          { "name": "Mr. Kithsiri Dharmapriya", "role": "Chairman, National Aquaculture Development Authority" },
+          { "name": "Mr. Udayakantha Wickramasinghe", "role": "Member" },
+          { "name": "Mr. G.L. Wernon Perera", "role": "Additional Secretary, Ministry of Fisheries and Ocean Resources" }
+        ]
+      }
     },
     "achievements": {
       "title": "Spotlight on Achievements: Driving Impact Through Science",

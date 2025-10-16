@@ -48,7 +48,19 @@
           "digitalProductLibrary": "Digital Product Library",
           "learningAcademy": "Learning Academy",
           "regionalImpact": "Regional Impact",
-          "integrationSystems": "Integration Systems"
+          "publicConsultation": "Public Consultation"
+        }
+      },
+      "media": {
+        "title": "Media",
+        "links": {}
+      },
+      "data": {
+        "title": "Data & Analytics",
+        "links": {
+          "analyticsHub": "Analytics Hub",
+          "openData": "Open Data Portal",
+          "spatialPlanning": "Marine Spatial Planning"
         }
       },
       "about": {

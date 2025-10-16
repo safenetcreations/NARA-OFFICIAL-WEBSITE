@@ -49,4 +49,6 @@ export const MainContent = ({ children, id = 'main-content' }) => {
   );
 };
 
+// Export both as named and default
+export { SkipLink };
 export default SkipLink;

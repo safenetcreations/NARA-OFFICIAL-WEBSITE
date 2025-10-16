@@ -70,8 +70,12 @@
   "articles": {
     "featured": "Featured",
     "readTimeShort": "{{minutes}} min read",
+    "readFull": "Read full story",
     "moreTags": "+{{count}} more",
     "datePending": "Date pending"
+  },
+  "pagination": {
+    "pageInfo": "Page {{current}} of {{total}}"
   },
   "modal": {
     "highlightsTitle": "Key highlights",
