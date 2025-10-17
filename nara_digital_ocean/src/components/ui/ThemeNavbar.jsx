@@ -5,9 +5,11 @@ import * as Icons from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import AppImage from '../AppImage';
 import { AVAILABLE_LANGUAGES } from '../../i18n';
+import { useFirebaseAuth } from '../../contexts/FirebaseAuthContext';
 
 const ThemeNavbar = () => {
   const navigate = useNavigate();
+  const { user } = useFirebaseAuth();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -216,6 +218,7 @@ const ThemeNavbar = () => {
   };
 
   return (
+    <header>
     <nav
       ref={navbarRef}
       className={`navbar-theme ${scrolled ? 'scrolled' : ''}`}
@@ -393,8 +396,72 @@ const ThemeNavbar = () => {
           })}
         </div>
 
-        {/* Right side actions - Language selector */}
+        {/* Right side actions - Profile/Registration & Language selector */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+
+          {/* Show Profile or Register button based on auth status */}
+          {user ? (
+            <Link
+              to="/profile"
+              className="hidden md:flex"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                padding: '0.5rem 0.9rem',
+                borderRadius: '10px',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                background: 'rgba(0, 102, 204, 0.1)',
+                color: '#0066CC',
+                textDecoration: 'none',
+                border: '1px solid rgba(0, 102, 204, 0.3)',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(0, 102, 204, 0.15)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(0, 102, 204, 0.1)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <Icons.User className="w-4 h-4" />
+              <span>{t('navbar.profile', 'Profile')}</span>
+            </Link>
+          ) : (
+            <Link
+              to="/register"
+              className="hidden md:flex"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                padding: '0.5rem 0.9rem',
+                borderRadius: '10px',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                background: 'linear-gradient(135deg, #0066CC, #0052A3)',
+                color: '#ffffff',
+                textDecoration: 'none',
+                boxShadow: '0 4px 12px rgba(0, 102, 204, 0.3)',
+                transition: 'all 0.3s ease',
+                border: 'none'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 102, 204, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 102, 204, 0.3)';
+              }}
+            >
+              <Icons.UserPlus className="w-4 h-4" />
+              <span>{t('navbar.register', 'Register')}</span>
+            </Link>
+          )}
 
           {/* Language Selector - Always Visible */}
           <div
@@ -522,6 +589,55 @@ const ThemeNavbar = () => {
               fontFamily: secondaryFont
             }}
           >
+            {/* Profile/Registration Button - Mobile */}
+            {user ? (
+              <Link
+                to="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '12px',
+                  fontSize: '0.9rem',
+                  fontWeight: 600,
+                  background: 'rgba(0, 102, 204, 0.1)',
+                  color: '#0066CC',
+                  textDecoration: 'none',
+                  border: '2px solid rgba(0, 102, 204, 0.3)',
+                  marginBottom: '1rem'
+                }}
+              >
+                <Icons.User className="w-5 h-5" />
+                <span>{t('navbar.profile', 'Profile')}</span>
+              </Link>
+            ) : (
+              <Link
+                to="/register"
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '12px',
+                  fontSize: '0.9rem',
+                  fontWeight: 600,
+                  background: 'linear-gradient(135deg, #0066CC, #0052A3)',
+                  color: '#ffffff',
+                  textDecoration: 'none',
+                  boxShadow: '0 4px 12px rgba(0, 102, 204, 0.3)',
+                  marginBottom: '1rem'
+                }}
+              >
+                <Icons.UserPlus className="w-5 h-5" />
+                <span>{t('navbar.register', 'Register')}</span>
+              </Link>
+            )}
+
             <div
               style={{
                 display: 'flex',
@@ -627,6 +743,7 @@ const ThemeNavbar = () => {
         )}
       </AnimatePresence>
     </nav>
+    </header>
   );
 };
 

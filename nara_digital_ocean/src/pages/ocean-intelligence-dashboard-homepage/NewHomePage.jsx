@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import AppImage from '../../components/AppImage';
 import { useOceanData } from '../../hooks/useOceanData';
 import SriLankaEEZMap from '../../components/SriLankaEEZMap';
+import APIIntegrationShowcase from '../../components/sections/APIIntegrationShowcase';
 import GovFooter from '../../components/compliance/GovFooter';
 import LibraryBooksCarousel from '../../components/library/LibraryBooksCarousel';
 
@@ -37,7 +38,7 @@ const NewHomePage = () => {
   const milestonesContent = t('milestones', { ns: 'home', returnObjects: true });
   const newsContent = t('news', { ns: 'home', returnObjects: true });
   const ctaContent = t('cta', { ns: 'home', returnObjects: true });
-  const portalContent = t('portal', { ns: 'home', returnObjects: true });
+  const integrationContent = t('integration', { ns: 'home', returnObjects: true });
   const missionControlContent = t('missionControl', { ns: 'home', returnObjects: true });
   const highlightsContent = t('highlights', { ns: 'home', returnObjects: true });
 
@@ -213,6 +214,7 @@ const NewHomePage = () => {
         </div>
       </div>
 
+      <main>
       {/* Hero Section - Sri Lanka Sovereign Waters */}
       <section ref={heroRef} className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-[#03101d] to-blue-950">
         <div className="absolute inset-0 pointer-events-none">
@@ -523,6 +525,8 @@ const NewHomePage = () => {
         </div>
       </section>
 
+      <APIIntegrationShowcase content={integrationContent} />
+
       {/* Achievements & Milestones */}
       <section className="relative py-20 px-4 bg-gradient-to-b from-slate-800 via-slate-700 to-slate-800">
         <div className="max-w-7xl mx-auto">
@@ -738,6 +742,7 @@ const NewHomePage = () => {
 
       {/* Library Books Carousel - Only on Homepage */}
       <LibraryBooksCarousel />
+      </main>
 
       <GovFooter />
     </div>
