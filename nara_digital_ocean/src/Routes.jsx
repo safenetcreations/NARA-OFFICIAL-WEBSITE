@@ -144,6 +144,7 @@ const PatronPortal = lazy(() => import('./pages/library-catalogue/PatronPortal')
 const LibraryRegister = lazy(() => import('./pages/library-register'));
 const LibraryLogin = lazy(() => import('./pages/library-login'));
 const UnifiedRegistration = lazy(() => import('./pages/unified-registration'));
+const UserProfile = lazy(() => import('./pages/user-profile'));
 const LibraryDashboard = lazy(() => import('./pages/library-dashboard'));
 const LibraryResearchSubmit = lazy(() => import('./pages/library-research-submit'));
 const LibraryAdminDashboard = lazy(() => import('./pages/library-admin/LibraryAdminDashboard'));
@@ -234,7 +235,7 @@ function Routes() {
                 <Layout>
                   <RouterRoutes>
               <Route path="/" element={<OceanIntelligenceDashboardHomepage />} />
-              <Route path="/research-excellence-portal" element={<ResearchExcellencePortal />} />
+              <Route path="/research-excellence-portal/*" element={<ResearchExcellencePortal />} />
               <Route path="/emergency-response-network" element={<EmergencyResponseNetwork />} />
               <Route path="/learning-development-academy" element={<LearningDevelopmentAcademy />} />
               <Route path="/lda-register" element={<LDARegister />} />
@@ -271,6 +272,14 @@ function Routes() {
               <Route path="/register" element={<UnifiedRegistration />} />
               <Route path="/library-register" element={<LibraryRegister />} />
               <Route path="/library-login" element={<LibraryLogin />} />
+              <Route 
+                path="/profile" 
+                element={
+                  <ProtectedRoute>
+                    <UserProfile />
+                  </ProtectedRoute>
+                } 
+              />
               <Route 
                 path="/library-dashboard" 
                 element={

@@ -136,6 +136,101 @@
     },
     "cta": "Enter Portal"
   },
+  "integration": {
+    "badge": "Seamless Partnerships",
+    "title": "Integration Command Center",
+    "subtitle": "Share updates with partners and keep hands-on control in one place.",
+    "description": "Give collaborators what they need without adding extra work for your teams.",
+    "summaryCards": [
+      {
+        "title": "Invite partners in minutes",
+        "description": "Send a sandbox link with starter docs and an API key—no custom setup required."
+      },
+      {
+        "title": "Update data yourself",
+        "description": "Upload files, trigger syncs, or publish advisories from the admin panel without touching code."
+      },
+      {
+        "title": "Stay in the loop",
+        "description": "Dashboard cards flag recent activity, upcoming syncs, and anything that needs your attention."
+      }
+    ],
+    "howItWorks": {
+      "heading": "What this unlocks",
+      "caption": "Partners access the same trusted information you see, while NARA keeps ownership of every update.",
+      "steps": [
+        {
+          "title": "Invite a partner",
+          "description": "Create sandbox access and share the quick-start pack so they can test straight away."
+        },
+        {
+          "title": "Publish or sync",
+          "description": "Use the admin panel to add new data, approve changes, or run a scheduled sync."
+        },
+        {
+          "title": "Promote to live",
+          "description": "When everything looks good, switch the feed to production and keep monitoring from the dashboard."
+        }
+      ]
+    },
+    "tabs": {
+      "partners": {
+        "label": "For Partners",
+        "heading": "A guided hand-off for external teams",
+        "body": "Partners receive clear documentation, a sandbox key, and a support contact to keep them moving.",
+        "benefits": [
+          "Step-by-step quick start guide with sample requests",
+          "Sandbox and production keys managed from one place",
+          "Status alerts so partners know when data refreshes"
+        ],
+        "actions": [
+          { "label": "Share the partner console", "to": "/integration-systems-platform" },
+          { "label": "Download quick-start kit", "to": "/media-press-kit" }
+        ]
+      },
+      "admin": {
+        "label": "For NARA Teams",
+        "heading": "Keep manual control when you need it",
+        "body": "The admin panel lets staff post new data, approve changes, and pause access without touching code.",
+        "benefits": [
+          "Upload files or edit copy with built-in checks",
+          "Optional approvals so sensitive updates get reviewed",
+          "Pause or resume feeds with a single toggle"
+        ],
+        "actions": [
+          { "label": "Open the admin panel", "to": "/admin/dashboard" },
+          { "label": "Read the operations guide", "to": "/admin/content" }
+        ]
+      },
+      "playground": {
+        "label": "Try It First",
+        "heading": "Experiment safely before you go live",
+        "body": "A ready-made playground mirrors the live endpoints so teams can prototype and learn quickly.",
+        "benefits": [
+          "Mock responses that mirror live payloads",
+          "Copy-and-paste examples for popular languages",
+          "Notifications when an endpoint changes"
+        ],
+        "actions": [
+          { "label": "Launch the playground", "to": "/open-data-portal" },
+          { "label": "Talk to the integration desk", "to": "/contact-us" }
+        ]
+      }
+    },
+    "security": {
+      "title": "Trust built in",
+      "body": "Role-based access, audit history, and automated alerts protect national data while keeping partners informed.",
+      "checklist": [
+        "Separate sandbox and production keys for every partner",
+        "Automatic email when thresholds or quotas are reached",
+        "Exportable audit trail for compliance reviews"
+      ]
+    },
+    "cta": {
+      "primary": { "label": "Explore the API catalogue", "to": "/open-data-portal" },
+      "secondary": { "label": "Book an onboarding call", "to": "/contact-us" }
+    }
+  },
   "missionControl": {
     "badge": "National Mission Control",
     "title": "Safeguarding Sri Lanka's Blue Economy",

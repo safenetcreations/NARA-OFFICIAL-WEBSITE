@@ -1,8 +1,11 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
+import { useTranslation } from 'react-i18next';
 
 const IndustryInsightCard = ({ insight }) => {
+  const { t } = useTranslation(['maritime', 'common']);
+
   const getInsightTypeColor = (type) => {
     switch (type) {
       case 'Fishing':
@@ -16,6 +19,12 @@ const IndustryInsightCard = ({ insight }) => {
     }
   };
 
+  const getInsightTypeLabel = (type) => {
+    if (!type) return '';
+    const key = type.toLowerCase();
+    return t(`industryInsights.types.${key}`, { defaultValue: type });
+  };
+
   return (
     <div className="bg-card rounded-lg scientific-border ocean-depth-shadow interactive-lift p-6">
       <div className="flex items-start justify-between mb-4">
@@ -26,12 +35,14 @@ const IndustryInsightCard = ({ insight }) => {
           <div>
             <h3 className="font-headline text-lg font-bold text-text-primary">{insight?.title}</h3>
             <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-cta-medium ${getInsightTypeColor(insight?.type)}`}>
-              {insight?.type}
+              {getInsightTypeLabel(insight?.type)}
             </div>
           </div>
         </div>
         <div className="text-right">
-          <div className="text-sm text-text-secondary">Updated</div>
+          <div className="text-sm text-text-secondary">
+            {t('industryInsights.updated')}
+          </div>
           <div className="font-cta-medium text-sm text-text-primary">{insight?.lastUpdated}</div>
         </div>
       </div>
@@ -60,13 +71,14 @@ const IndustryInsightCard = ({ insight }) => {
           iconName="ExternalLink"
           iconPosition="right"
         >
-          View Full Report
+          {t('industryInsights.buttons.viewReport')}
         </Button>
         <Button
           variant="ghost"
           size="default"
           iconName="Download"
         >
+          {t('common:download')}
         </Button>
       </div>
     </div>

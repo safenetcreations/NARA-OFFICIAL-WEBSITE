@@ -1,8 +1,11 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
+import { useTranslation } from 'react-i18next';
 
 const SuccessStoryCard = ({ story }) => {
+  const { t } = useTranslation('maritime');
+
   const getBusinessTypeColor = (type) => {
     switch (type) {
       case 'Fishing Cooperative':
@@ -18,6 +21,21 @@ const SuccessStoryCard = ({ story }) => {
     }
   };
 
+  const getBusinessTypeLabel = (type) => {
+    if (!type) return '';
+    const map = {
+      'Fishing Cooperative': 'fishingCooperative',
+      'Aquaculture': 'aquaculture',
+      'Shipping Company': 'shippingCompany',
+      'Marine Tourism': 'marineTourism',
+      'Research Institution': 'researchInstitution',
+      'Government Agency': 'governmentAgency',
+      Other: 'other'
+    };
+    const key = map[type] || 'other';
+    return t(`successStory.businessTypes.${key}`, { defaultValue: type });
+  };
+
   return (
     <div className="bg-card rounded-lg scientific-border ocean-depth-shadow interactive-lift overflow-hidden">
       <div className="relative h-48 overflow-hidden">
@@ -29,7 +47,7 @@ const SuccessStoryCard = ({ story }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
         <div className="absolute bottom-4 left-4 right-4">
           <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-cta-medium ${getBusinessTypeColor(story?.businessType)} mb-2`}>
-            {story?.businessType}
+            {getBusinessTypeLabel(story?.businessType)}
           </div>
           <h3 className="font-headline text-lg font-bold text-white">{story?.businessName}</h3>
           <p className="text-sm text-white/80">{story?.location}</p>
@@ -38,22 +56,30 @@ const SuccessStoryCard = ({ story }) => {
       <div className="p-6">
         <div className="flex items-center space-x-2 mb-4">
           <Icon name="Quote" size={20} className="text-accent" />
-          <span className="font-cta text-sm text-text-secondary">Success Story</span>
+          <span className="font-cta text-sm text-text-secondary">
+            {t('successStory.label')}
+          </span>
         </div>
 
         <p className="font-body text-text-secondary mb-4 line-clamp-3">{story?.testimonial}</p>
 
         <div className="space-y-3 mb-6">
           <div className="flex items-center justify-between">
-            <span className="font-cta text-sm text-text-secondary">Service Used:</span>
+            <span className="font-cta text-sm text-text-secondary">
+              {t('successStory.serviceUsed')}
+            </span>
             <span className="font-cta-medium text-sm text-text-primary">{story?.serviceUsed}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="font-cta text-sm text-text-secondary">Impact:</span>
+            <span className="font-cta text-sm text-text-secondary">
+              {t('successStory.impact')}
+            </span>
             <span className="font-cta-medium text-sm text-success">{story?.impact}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="font-cta text-sm text-text-secondary">Timeline:</span>
+            <span className="font-cta text-sm text-text-secondary">
+              {t('successStory.timeline')}
+            </span>
             <span className="font-cta-medium text-sm text-text-primary">{story?.timeline}</span>
           </div>
         </div>

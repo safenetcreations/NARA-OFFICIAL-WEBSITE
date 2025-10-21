@@ -47,8 +47,10 @@ import {
   integrationDashboardService,
   webhookService
 } from '../../services/dataCenterIntegrationService';
+import { getIntegrationMockData } from '../../utils/mockIntegrationData';
 
 const DataCenterIntegrationAdmin = () => {
+  const USE_MOCK = import.meta?.env?.VITE_USE_INTEGRATION_ADMIN_MOCK === 'true';
   const [activeTab, setActiveTab] = useState('dashboard');
   const [dashboardStats, setDashboardStats] = useState(null);
   const [dataSources, setDataSources] = useState([]);
@@ -56,6 +58,7 @@ const DataCenterIntegrationAdmin = () => {
   const [apiIntegrations, setApiIntegrations] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [usingMock, setUsingMock] = useState(USE_MOCK);
 
   // Forms
   const [sourceForm, setSourceForm] = useState({
@@ -86,26 +89,51 @@ const DataCenterIntegrationAdmin = () => {
 
   useEffect(() => {
     fetchAllData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchAllData = async () => {
-    setLoading(true);
-
-    const [statsRes, sourcesRes, jobsRes, integrationsRes, activityRes] = await Promise.all([
-      integrationDashboardService.getStats(),
-      dataSourceRegistryService.getAll(),
-      dataSyncService.getAllJobs(),
-      apiIntegrationService.getAll(),
-      integrationDashboardService.getRecentActivity()
-    ]);
-
-    if (statsRes.data) setDashboardStats(statsRes.data);
-    if (sourcesRes.data) setDataSources(sourcesRes.data);
-    if (jobsRes.data) setSyncJobs(jobsRes.data);
-    if (integrationsRes.data) setApiIntegrations(integrationsRes.data);
-    if (activityRes.data) setRecentActivity(activityRes.data);
-
+  const applyMockData = () => {
+    const mock = getIntegrationMockData();
+    setDashboardStats(mock.dashboardStats);
+    setDataSources(mock.dataSources);
+    setSyncJobs(mock.syncJobs);
+    setApiIntegrations(mock.apiIntegrations);
+    setRecentActivity(mock.recentActivity);
+    setUsingMock(true);
     setLoading(false);
+  };
+
+  const fetchAllData = async () => {
+    if (USE_MOCK) {
+      applyMockData();
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const [statsRes, sourcesRes, jobsRes, integrationsRes, activityRes] = await Promise.all([
+        integrationDashboardService.getStats(),
+        dataSourceRegistryService.getAll(),
+        dataSyncService.getAllJobs(),
+        apiIntegrationService.getAll(),
+        integrationDashboardService.getRecentActivity()
+      ]);
+
+      if (statsRes.error || sourcesRes.error || jobsRes.error || integrationsRes.error || activityRes.error) {
+        throw new Error('Integration services returned an error');
+      }
+
+      if (statsRes.data) setDashboardStats(statsRes.data);
+      if (sourcesRes.data) setDataSources(sourcesRes.data);
+      if (jobsRes.data) setSyncJobs(jobsRes.data);
+      if (integrationsRes.data) setApiIntegrations(integrationsRes.data);
+      if (activityRes.data) setRecentActivity(activityRes.data);
+      setUsingMock(false);
+      setLoading(false);
+    } catch (error) {
+      console.error('[DataCenterIntegrationAdmin] Falling back to mock data:', error);
+      applyMockData();
+    }
   };
 
   // ========== HANDLERS ==========
@@ -850,6 +878,99 @@ const DataCenterIntegrationAdmin = () => {
     );
   };
 
+  const renderPlaybook = () => {
+    return (
+      <div className="p-8">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+          <Link className="w-8 h-8 text-blue-600" />
+          Integration Playbook
+        </h2>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">1. Issue partner credentials</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Use the <strong>API Integrations</strong> tab to create a sandbox connection for new
+              partners. Generate scoped API keys and share them securely through the partner channel.
+            </p>
+            <div className="rounded-xl bg-slate-900 text-slate-100 text-xs font-mono p-4 overflow-x-auto">
+              <pre className="whitespace-pre-wrap">
+{`curl -X POST https://partners.nara.lk/api/v1/tides \\
+  -H "Authorization: ApiKey <partner-key>" \\
+  -H "NARA-Environment: sandbox"`}
+              </pre>
+            </div>
+            <p className="mt-3 text-xs text-gray-500">
+              Tip: Share the OpenAPI spec and SDK starter pack so partners can prototype within
+              minutes.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">2. Configure sync automation</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Align partner data pulls with the source sync frequency. Track quota utilisation and
+              health signals from the dashboard to know when to scale.
+            </p>
+            <ul className="space-y-2 text-sm text-gray-700">
+              <li className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5" />
+                Match cron jobs with the <em>Sync Jobs</em> cadence (e.g. hourly ocean data, nightly
+                fisheries submissions).
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5" />
+                Enable webhook callbacks for alert-level events (incidents, advisories, compliance).
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5" />
+                Promote to production once success rate exceeds 95% for seven consecutive runs.
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">3. Monitor &amp; govern access</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              The dashboard surfaces anomalies automatically. Lock credentials when failure rate or
+              latency breaches thresholds to safeguard national systems.
+            </p>
+            <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4 text-sm text-gray-700">
+              <p className="font-semibold text-gray-900 mb-2">Recommended guardrails</p>
+              <ul className="space-y-1">
+                <li>• Rotate API keys every 90 days (30 days for restricted datasets).</li>
+                <li>• Enable rate limiting: default 5,000 requests / hour per partner.</li>
+                <li>• Audit log export to GovCERT every weekend.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">4. Hand-off to production</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Once the integration is steady, switch partner endpoints to the production gateway and
+              share the incident escalation matrix.
+            </p>
+            <div className="rounded-xl bg-slate-900 text-slate-100 text-xs font-mono p-4 overflow-x-auto">
+              <pre className="whitespace-pre-wrap">
+{`PATCH /admin/integrations/API-FORECAST-004
+{
+  "environment": "production",
+  "webhooks": ["incident.alert", "quota.low"],
+  "contacts": ["ops@nara.lk", "partner-support@nara.lk"]
+}`}
+              </pre>
+            </div>
+            <p className="mt-3 text-xs text-gray-500">
+              Document the go-live in the mission log so policy, research, and compliance can track
+              downstream impacts.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // ========== MAIN RENDER ==========
 
   if (loading) {
@@ -873,6 +994,12 @@ const DataCenterIntegrationAdmin = () => {
             Data Center Integration Hub - Admin
           </h1>
           <p className="text-gray-600 mt-2">Manage data sources, integrations, and synchronization</p>
+          {usingMock && (
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-700">
+              <AlertCircle className="w-4 h-4" />
+              Previewing mock integration data. Connect Firebase services to see live metrics.
+            </div>
+          )}
         </div>
       </div>
 
@@ -885,7 +1012,8 @@ const DataCenterIntegrationAdmin = () => {
               { id: 'sources', label: 'Data Sources', icon: Database },
               { id: 'sync', label: 'Sync Jobs', icon: RefreshCw },
               { id: 'api', label: 'API Integrations', icon: Globe },
-              { id: 'transform', label: 'Transformations', icon: Code }
+              { id: 'transform', label: 'Transformations', icon: Code },
+              { id: 'playbook', label: 'Integration Playbook', icon: Link }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -911,6 +1039,7 @@ const DataCenterIntegrationAdmin = () => {
         {activeTab === 'sync' && renderSyncJobs()}
         {activeTab === 'api' && renderApiIntegrations()}
         {activeTab === 'transform' && renderTransformations()}
+        {activeTab === 'playbook' && renderPlaybook()}
       </AnimatePresence>
     </div>
   );

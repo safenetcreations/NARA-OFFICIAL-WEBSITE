@@ -22,6 +22,7 @@ const AnalyticsHub = () => {
   const { t } = useTranslation('analytics');
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [metricsWarning, setMetricsWarning] = useState(false);
 
   useEffect(() => {
     loadMetrics();
@@ -29,11 +30,25 @@ const AnalyticsHub = () => {
 
   const loadMetrics = async () => {
     setLoading(true);
-    const { data } = await metricsAggregationService.aggregateAll();
-    if (data) {
-      setMetrics(data);
+    try {
+      const { data, error } = await metricsAggregationService.aggregateAll();
+      if (data) {
+        setMetrics(data);
+        setMetricsWarning(data.source !== 'live');
+      } else {
+        setMetricsWarning(true);
+        setMetrics(getFallbackMetrics());
+      }
+      if (error) {
+        console.warn('Analytics metrics fallback in use:', error);
+      }
+    } catch (err) {
+      console.warn('Analytics metrics unavailable, using fallback:', err);
+      setMetricsWarning(true);
+      setMetrics(getFallbackMetrics());
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const tools = [
@@ -134,6 +149,11 @@ const AnalyticsHub = () => {
             <p className="text-xl text-blue-200 max-w-3xl">
               {t('hero.description')}
             </p>
+            {metricsWarning && (
+              <div className="mt-6 max-w-3xl bg-yellow-100/90 border border-yellow-300 text-yellow-900 rounded-lg p-4 text-sm">
+                {t('messages.fallback')}
+              </div>
+            )}
 
             {/* Quick Stats */}
             {!loading && metrics && (
@@ -304,5 +324,28 @@ const AnalyticsHub = () => {
     </>
   );
 };
+
+const getFallbackMetrics = () => ({
+  policyImpact: {
+    avgScore: '72.50',
+    totalPolicies: 18,
+    effective: 14
+  },
+  projectOutcomes: {
+    avgSuccessScore: '81.20',
+    totalProjects: 24,
+    successful: 19
+  },
+  roi: {
+    avgROI: '28.40',
+    totalInvestment: 125000000,
+    totalReturns: 160000000,
+    netValue: 35000000
+  },
+  overall: {
+    healthScore: '73.70'
+  },
+  source: 'local-fallback'
+});
 
 export default AnalyticsHub;

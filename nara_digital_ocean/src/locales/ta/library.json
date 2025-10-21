@@ -139,6 +139,56 @@
     "pages": "பக்கங்கள்",
     "viewDetails": "விவரங்களைக் காண்க",
     "exploreFullLibrary": "முழு நூலகத்தை ஆராயுங்கள்",
-    "accessInfo": "ஆயிரக்கணக்கான ஆராய்ச்சி ஆவணங்கள், வெளியீடுகள் மற்றும் கடல் அறிவியல் வளங்களை அணுகவும்"
+    "accessInfo": "ஆயிரக்கணக்கான ஆராய்ச்சி ஆவணங்கள், வெளியீடுகள் மற்றும் கடல் அறிவியல் வளங்களை அணுகவும்",
+    "books": [
+      {
+        "id": "marine-biodiversity",
+        "title": "இலங்கை கடல் நீரின் கடல் உயிரின பல்வகைமை",
+        "author": "Dr. Arjan Rajasuriya",
+        "category": "கடல் உயிரியல்",
+        "description": "இலங்கையின் கடலோர நீர்பரப்பில் கடல் உயிரின பல்வகைமையைப் பற்றி விரிவான ஆய்வு.",
+        "language": "ஆங்கிலம்"
+      },
+      {
+        "id": "sustainable-fisheries",
+        "title": "நிலையான மீன்வள மேலாண்மை",
+        "author": "Prof. Nimal Fernando",
+        "category": "மீன்வளம்",
+        "description": "வெப்பமண்டல கடல்களில் நிலையான மீன்பிடிக்கான சிறந்த நடைமுறைகள்.",
+        "language": "ஆங்கிலம்"
+      },
+      {
+        "id": "coastal-restoration",
+        "title": "கரையோர சூழலியல் மீட்பு",
+        "author": "Dr. Chamari Silva",
+        "category": "பாதுகாப்பு",
+        "description": "கரையோர சூழலியல் அமைப்புகளை மீட்டெடுக்கும் புதுமையான அணுகுமுறைகள்.",
+        "language": "ஆங்கிலம்"
+      },
+      {
+        "id": "climate-ocean-acidification",
+        "title": "காலநிலை மாற்றம் மற்றும் கடல் அமிலமயமாதல்",
+        "author": "Dr. Sampath Perera",
+        "category": "காலநிலை அறிவியல்",
+        "description": "காலநிலை மாற்றம் இலங்கை கடல் சூழலுக்கு ஏற்படுத்தும் தாக்கம்.",
+        "language": "ஆங்கிலம்"
+      },
+      {
+        "id": "marine-spatial-planning",
+        "title": "தெற்காசியாவின் கடல் தளவமைப்பு திட்டமிடல்",
+        "author": "Prof. Nilanthi Jayasuriya",
+        "category": "கொள்கை",
+        "description": "திறமையான கடல் தளவமைப்பு திட்டமிடலுக்கான வாயமைப்பு.",
+        "language": "ஆங்கிலம்"
+      },
+      {
+        "id": "aquaculture-innovations",
+        "title": "நீர்வள புதுமைகள்",
+        "author": "Dr. Rohan de Silva",
+        "category": "நீர்வள வேளாண்மை",
+        "description": "நிலையான நீர்வள வேளாண்மைக்கான நவீன நுட்பங்கள்.",
+        "language": "ஆங்கிலம்"
+      }
+    ]
   }
 }

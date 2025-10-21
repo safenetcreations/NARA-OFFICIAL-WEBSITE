@@ -15,13 +15,74 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const BASE_BOOKS = [
+  {
+    id: 'marine-biodiversity',
+    categoryKey: 'marineBiology',
+    cover: '/images/books/marine-bio.jpg',
+    isbn: '978-955-1234-56-7',
+    pages: 456,
+    year: 2023
+  },
+  {
+    id: 'sustainable-fisheries',
+    categoryKey: 'fisheries',
+    cover: '/images/books/fisheries.jpg',
+    isbn: '978-955-1234-57-8',
+    pages: 320,
+    year: 2023
+  },
+  {
+    id: 'coastal-restoration',
+    categoryKey: 'conservation',
+    cover: '/images/books/coastal.jpg',
+    isbn: '978-955-1234-58-9',
+    pages: 280,
+    year: 2024
+  },
+  {
+    id: 'climate-ocean-acidification',
+    categoryKey: 'climateScience',
+    cover: '/images/books/climate.jpg',
+    isbn: '978-955-1234-59-0',
+    pages: 412,
+    year: 2023
+  },
+  {
+    id: 'marine-spatial-planning',
+    categoryKey: 'policy',
+    cover: '/images/books/spatial.jpg',
+    isbn: '978-955-1234-60-6',
+    pages: 350,
+    year: 2024
+  },
+  {
+    id: 'aquaculture-innovations',
+    categoryKey: 'aquaculture',
+    cover: '/images/books/aquaculture.jpg',
+    isbn: '978-955-1234-61-3',
+    pages: 298,
+    year: 2023
+  }
+];
+
+const CATEGORY_GRADIENTS = {
+  marineBiology: 'bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800',
+  fisheries: 'bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800',
+  conservation: 'bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800',
+  climateScience: 'bg-gradient-to-br from-emerald-600 via-teal-700 to-cyan-800',
+  policy: 'bg-gradient-to-br from-indigo-600 via-blue-700 to-cyan-800',
+  aquaculture: 'bg-gradient-to-br from-blue-600 via-sky-700 to-teal-800',
+  default: 'bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800'
+};
+
 /**
  * Stunning Library Books Carousel Section
  * Displays library books with realistic cover designs in a dark hero-style background
  * Features trilingual support and matches other hero sections
  */
 const LibraryBooksCarousel = () => {
-  const { t } = useTranslation('library');
+  const { t, i18n } = useTranslation('library');
   const [books, setBooks] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -30,81 +91,26 @@ const LibraryBooksCarousel = () => {
   const autoPlayRef = useRef(null);
 
   // Mock data for demonstration - replace with actual API call
-  const getMockBooks = () => {
-    return [
-      {
-        id: 1,
-        title: "Marine Biodiversity of Sri Lankan Waters",
-        author: "Dr. Arjan Rajasuriya",
-        year: 2023,
-        category: "Marine Biology",
-        cover: "/images/books/marine-bio.jpg",
-        description: "A comprehensive study of marine biodiversity in Sri Lankan coastal waters",
-        isbn: "978-955-1234-56-7",
-        pages: 456,
-        language: "English"
-      },
-      {
-        id: 2,
-        title: "Sustainable Fisheries Management",
-        author: "Prof. Nimal Fernando",
-        year: 2023,
-        category: "Fisheries",
-        cover: "/images/books/fisheries.jpg",
-        description: "Best practices for sustainable fisheries in tropical waters",
-        isbn: "978-955-1234-57-8",
-        pages: 320,
-        language: "English"
-      },
-      {
-        id: 3,
-        title: "Coastal Ecosystem Restoration",
-        author: "Dr. Chamari Silva",
-        year: 2024,
-        category: "Conservation",
-        cover: "/images/books/coastal.jpg",
-        description: "Innovative approaches to coastal ecosystem restoration",
-        isbn: "978-955-1234-58-9",
-        pages: 280,
-        language: "English"
-      },
-      {
-        id: 4,
-        title: "Climate Change and Ocean Acidification",
-        author: "Dr. Sampath Perera",
-        year: 2023,
-        category: "Climate Science",
-        cover: "/images/books/climate.jpg",
-        description: "Impact of climate change on Sri Lankan marine ecosystems",
-        isbn: "978-955-1234-59-0",
-        pages: 412,
-        language: "English"
-      },
-      {
-        id: 5,
-        title: "Marine Spatial Planning in South Asia",
-        author: "Prof. Nilanthi Jayasuriya",
-        year: 2024,
-        category: "Policy",
-        cover: "/images/books/spatial.jpg",
-        description: "Framework for effective marine spatial planning",
-        isbn: "978-955-1234-60-6",
-        pages: 350,
-        language: "English"
-      },
-      {
-        id: 6,
-        title: "Aquaculture Innovations",
-        author: "Dr. Rohan de Silva",
-        year: 2023,
-        category: "Aquaculture",
-        cover: "/images/books/aquaculture.jpg",
-        description: "Modern techniques in sustainable aquaculture",
-        isbn: "978-955-1234-61-3",
-        pages: 298,
-        language: "English"
-      }
-    ];
+  const getLocalizedBooks = () => {
+    const localizedBooks = t('carousel.books', { returnObjects: true }) || [];
+    const fallbackBundle = i18n.getResourceBundle('en', 'library');
+    const fallbackBooks = fallbackBundle?.carousel?.books || [];
+
+    return BASE_BOOKS.map((baseBook, index) => {
+      const localized = localizedBooks.find((entry) => entry.id === baseBook.id) || localizedBooks[index] || {};
+      const fallback = fallbackBooks.find((entry) => entry.id === baseBook.id) || fallbackBooks[index] || {};
+
+      return {
+        ...baseBook,
+        title: localized.title || fallback.title || '',
+        author: localized.author || fallback.author || '',
+        category: localized.category || fallback.category || '',
+        description: localized.description || fallback.description || '',
+        language: localized.language || fallback.language || '',
+        displayYear: localized.year || fallback.year || baseBook.year,
+        displayPages: localized.pages || fallback.pages || baseBook.pages
+      };
+    });
   };
 
   // Fetch books from library service
@@ -114,19 +120,21 @@ const LibraryBooksCarousel = () => {
         setLoading(true);
         // TODO: Replace with actual API call
         // const data = await catalogueService.getAllItems({ limit: 12, random: true });
-        const mockData = getMockBooks();
+        const mockData = getLocalizedBooks();
         setBooks(mockData);
+        setCurrentIndex(0);
       } catch (error) {
         console.error('Error fetching library books:', error);
         // Use mock data as fallback
-        setBooks(getMockBooks());
+        setBooks(getLocalizedBooks());
+        setCurrentIndex(0);
       } finally {
         setLoading(false);
       }
     };
 
     fetchBooks();
-  }, []);
+  }, [i18n.language]);
 
   // Auto-play functionality
   useEffect(() => {
@@ -291,12 +299,11 @@ const LibraryBooksCarousel = () => {
                         <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/40 to-transparent z-10"></div>
                         
                         {/* Book cover with gradient based on category */}
-                        <div className={`absolute inset-0 ${
-                          book.category === 'Climate Science' ? 'bg-gradient-to-br from-emerald-600 via-teal-700 to-cyan-800' :
-                          book.category === 'Policy' ? 'bg-gradient-to-br from-indigo-600 via-blue-700 to-cyan-800' :
-                          book.category === 'Aquaculture' ? 'bg-gradient-to-br from-blue-600 via-sky-700 to-teal-800' :
-                          'bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800'
-                        } flex flex-col items-center justify-center p-8 text-center`}>
+                        <div
+                          className={`absolute inset-0 ${
+                            CATEGORY_GRADIENTS[book.categoryKey] || CATEGORY_GRADIENTS.default
+                          } flex flex-col items-center justify-center p-8 text-center`}
+                        >
                           {/* Book title on cover */}
                           <div className="relative z-10 space-y-4">
                             <div className="w-16 h-16 mx-auto mb-4 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/20">
@@ -311,10 +318,10 @@ const LibraryBooksCarousel = () => {
                             <div className="flex items-center justify-center gap-4 text-xs text-white/60">
                               <span className="flex items-center gap-1">
                                 <FileText className="w-3 h-3" />
-                                {book.pages} {t('carousel.pages')}
+                                {book.displayPages} {t('carousel.pages')}
                               </span>
                               <span>•</span>
-                              <span>{book.year}</span>
+                              <span>{book.displayYear}</span>
                             </div>
                           </div>
                           

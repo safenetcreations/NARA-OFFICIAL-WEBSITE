@@ -157,5 +157,179 @@
     "hours": "24/7 Operations",
     "emergency": "Emergency Hotline",
     "email": "maritime@nara.ac.lk"
+  },
+  "serviceCard": {
+    "turnaroundTime": "Turnaround Time",
+    "nextAvailable": "Next Available",
+    "currentQueue": "Current Queue",
+    "bookService": "Book Service",
+    "viewDetails": "View Details",
+    "status": {
+      "available": "Available",
+      "limited": "Limited",
+      "busy": "Busy"
+    }
+  },
+  "bookingModal": {
+    "headers": {
+      "businessInfo": "Business Information",
+      "serviceDetails": "Service Details",
+      "notifications": "Notification Preferences"
+    },
+    "labels": {
+      "businessName": "Business/Organization Name",
+      "contactPerson": "Contact Person",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "businessType": "Business Type",
+      "serviceDate": "Preferred Service Date",
+      "specialRequirements": "Special Requirements"
+    },
+    "placeholders": {
+      "businessName": "Enter business name",
+      "contactPerson": "Enter contact person name",
+      "email": "Enter email address",
+      "phone": "+94 XX XXX XXXX",
+      "businessType": "Select your business type",
+      "specialRequirements": "Any specific requirements or notes"
+    },
+    "descriptions": {
+      "specialRequirements": "Optional: Describe any specific needs or constraints"
+    },
+    "businessTypes": {
+      "fishingCooperative": "Fishing Cooperative",
+      "individualFisherman": "Individual Fisherman",
+      "aquaculture": "Aquaculture Operation",
+      "shippingCompany": "Shipping Company",
+      "marineTourism": "Marine Tourism",
+      "researchInstitution": "Research Institution",
+      "governmentAgency": "Government Agency",
+      "other": "Other"
+    },
+    "urgency": {
+      "label": "Service Urgency",
+      "options": {
+        "standard": {
+          "label": "Standard (7-14 days)",
+          "description": "Regular processing time"
+        },
+        "priority": {
+          "label": "Priority (3-5 days)",
+          "description": "+50% fee"
+        },
+        "urgent": {
+          "label": "Urgent (24-48 hours)",
+          "description": "+100% fee"
+        }
+      }
+    },
+    "notifications": {
+      "sms": {
+        "label": "SMS Alerts",
+        "description": "Receive critical updates and reminders via SMS"
+      },
+      "email": {
+        "label": "Email Notifications",
+        "description": "Receive detailed reports and documentation via email"
+      }
+    },
+    "costSummary": {
+      "baseCost": "Base Service Cost:",
+      "priorityFee": "Priority Fee (+50%):",
+      "urgentFee": "Urgent Fee (+100%):",
+      "total": "Total Estimated Cost:"
+    },
+    "buttons": {
+      "submit": "Submit Booking Request"
+    },
+    "errors": {
+      "businessName": "Business name is required",
+      "contactPerson": "Contact person is required",
+      "email": "Email is required",
+      "phone": "Phone number is required",
+      "businessType": "Business type is required",
+      "serviceDate": "Service date is required"
+    },
+    "messages": {
+      "success": "Booking request submitted for {{service}}!",
+      "reference": "Reference: {{reference}}",
+      "estimatedCost": "Estimated cost: {{cost}}",
+      "followUp": "You will receive confirmation via SMS and email within 2 hours."
+    }
+  },
+  "alertsBanner": {
+    "title": "Moderate Sea Conditions Advisory",
+    "message": "Southwest monsoon conditions expected. Wave heights 2-3m in deep sea areas. Small fishing boats advised to stay close to shore.",
+    "affectedAreas": ["Colombo", "Galle", "Matara", "Hambantota"],
+    "issuedBy": "NARA Marine Weather Division",
+    "labels": {
+      "affectedAreas": "Affected Areas",
+      "validUntil": "Valid Until",
+      "issuedBy": "Issued by {{issuer}} • Alert ID: {{id}}"
+    },
+    "buttons": {
+      "details": "Full Details",
+      "subscribe": "Subscribe"
+    }
+  },
+  "industryInsights": {
+    "updated": "Updated",
+    "buttons": {
+      "viewReport": "View Full Report"
+    },
+    "types": {
+      "fishing": "Fishing",
+      "aquaculture": "Aquaculture",
+      "shipping": "Shipping"
+    }
+  },
+  "serviceAvailability": {
+    "title": "Real-Time Availability",
+    "subtitle": "Current service status and queue times",
+    "updated": "Updated: {{time}}",
+    "next": "Next: {{slot}}",
+    "queue": "{{count}} in queue",
+    "items": {
+      "waterQuality": {
+        "service": "Water Quality Testing",
+        "nextSlot": "Today 2:30 PM"
+      },
+      "environmentalAssessment": {
+        "service": "Environmental Assessment",
+        "nextSlot": "Tomorrow 9:00 AM"
+      },
+      "marineSurvey": {
+        "service": "Marine Survey",
+        "nextSlot": "Dec 22, 10:00 AM"
+      },
+      "equipmentCalibration": {
+        "service": "Equipment Calibration",
+        "nextSlot": "Today 4:00 PM"
+      }
+    },
+    "tips": {
+      "title": "Quick Booking Tips",
+      "items": [
+        "Book 2-3 days in advance for standard services",
+        "Priority booking available for urgent needs (+50% fee)",
+        "Group discounts available for fishing cooperatives"
+      ]
+    }
+  },
+  "successStory": {
+    "label": "Success Story",
+    "serviceUsed": "Service Used:",
+    "impact": "Impact:",
+    "timeline": "Timeline:",
+    "businessTypes": {
+      "fishingCooperative": "Fishing Cooperative",
+      "aquaculture": "Aquaculture",
+      "shippingCompany": "Shipping Company",
+      "marineTourism": "Marine Tourism",
+      "researchInstitution": "Research Institution",
+      "governmentAgency": "Government Agency",
+      "individualFisherman": "Individual Fisherman",
+      "other": "Other"
+    }
   }
 }

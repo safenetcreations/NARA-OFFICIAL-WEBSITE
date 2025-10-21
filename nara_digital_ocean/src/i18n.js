@@ -27,8 +27,14 @@ import enMediaGallery from './locales/en/mediaGallery.json';
 import enVesselBooking from './locales/en/vesselBooking.json';
 import enMedia from './locales/en/media.json';
 import enLibrary from './locales/en/library.json';
+import enLibraryAuth from './locales/en/libraryAuth.json';
+import enLibraryDashboard from './locales/en/libraryDashboard.json';
 import enProjectPipeline from './locales/en/project-pipeline.json';
 import enScientificEvidence from './locales/en/scientific-evidence.json';
+import enRegistration from './locales/en/registration.json';
+import enResearchPortal from './locales/en/researchPortal.json';
+import enDivisions from './locales/en/divisions.json';
+import enAnalytics from './locales/en/analytics.json';
 import taCommon from './locales/ta/common.json';
 import taLda from './locales/ta/lda.json';
 import taMarketplace from './locales/ta/marketplace.json';
@@ -55,8 +61,14 @@ import taMediaGallery from './locales/ta/mediaGallery.json';
 import taVesselBooking from './locales/ta/vesselBooking.json';
 import taMedia from './locales/ta/media.json';
 import taLibrary from './locales/ta/library.json';
+import taLibraryAuth from './locales/ta/libraryAuth.json';
+import taLibraryDashboard from './locales/ta/libraryDashboard.json';
 import taProjectPipeline from './locales/ta/project-pipeline.json';
 import taScientificEvidence from './locales/ta/scientific-evidence.json';
+import taRegistration from './locales/ta/registration.json';
+import taResearchPortal from './locales/ta/researchPortal.json';
+import taDivisions from './locales/ta/divisions.json';
+import taAnalytics from './locales/ta/analytics.json';
 import siCommon from './locales/si/common.json';
 import siLda from './locales/si/lda.json';
 import siMarketplace from './locales/si/marketplace.json';
@@ -83,8 +95,14 @@ import siMediaGallery from './locales/si/mediaGallery.json';
 import siVesselBooking from './locales/si/vesselBooking.json';
 import siMedia from './locales/si/media.json';
 import siLibrary from './locales/si/library.json';
+import siLibraryAuth from './locales/si/libraryAuth.json';
+import siLibraryDashboard from './locales/si/libraryDashboard.json';
 import siProjectPipeline from './locales/si/project-pipeline.json';
 import siScientificEvidence from './locales/si/scientific-evidence.json';
+import siRegistration from './locales/si/registration.json';
+import siResearchPortal from './locales/si/researchPortal.json';
+import siDivisions from './locales/si/divisions.json';
+import siAnalytics from './locales/si/analytics.json';
 
 const resources = {
   en: {
@@ -114,8 +132,14 @@ const resources = {
     vesselBooking: enVesselBooking,
     media: enMedia,
     library: enLibrary,
+    libraryAuth: enLibraryAuth,
+    libraryDashboard: enLibraryDashboard,
     'project-pipeline': enProjectPipeline,
-    'scientific-evidence': enScientificEvidence
+    'scientific-evidence': enScientificEvidence,
+    registration: enRegistration,
+    researchPortal: enResearchPortal,
+    divisions: enDivisions,
+    analytics: enAnalytics
   },
   ta: {
     common: taCommon,
@@ -144,8 +168,14 @@ const resources = {
     vesselBooking: taVesselBooking,
     media: taMedia,
     library: taLibrary,
+    libraryAuth: taLibraryAuth,
+    libraryDashboard: taLibraryDashboard,
     'project-pipeline': taProjectPipeline,
-    'scientific-evidence': taScientificEvidence
+    'scientific-evidence': taScientificEvidence,
+    registration: taRegistration,
+    researchPortal: taResearchPortal,
+    divisions: taDivisions,
+    analytics: taAnalytics
   },
   si: {
     common: siCommon,
@@ -174,8 +204,14 @@ const resources = {
     vesselBooking: siVesselBooking,
     media: siMedia,
     library: siLibrary,
+    libraryAuth: siLibraryAuth,
+    libraryDashboard: siLibraryDashboard,
     'project-pipeline': siProjectPipeline,
-    'scientific-evidence': siScientificEvidence
+    'scientific-evidence': siScientificEvidence,
+    registration: siRegistration,
+    researchPortal: siResearchPortal,
+    divisions: siDivisions,
+    analytics: siAnalytics
   }
 };
 
@@ -203,7 +239,7 @@ i18n
     resources,
     lng: getStoredLanguage(),
     fallbackLng: 'en',
-    ns: ['common', 'home', 'about', 'research', 'collaboration', 'procurement', 'news', 'researchEnhanced', 'digitalLibrary', 'knowledge', 'labResults', 'lda', 'marketplace', 'maritime', 'integration', 'fishAdvisory', 'audiences', 'contact', 'publicConsultation', 'openData', 'marineIncident', 'exportMarket', 'mediaGallery', 'vesselBooking', 'media', 'library', 'project-pipeline', 'scientific-evidence'],
+    ns: ['common', 'home', 'about', 'research', 'collaboration', 'procurement', 'news', 'researchEnhanced', 'digitalLibrary', 'knowledge', 'labResults', 'lda', 'marketplace', 'maritime', 'integration', 'fishAdvisory', 'audiences', 'contact', 'publicConsultation', 'openData', 'marineIncident', 'exportMarket', 'mediaGallery', 'vesselBooking', 'media', 'library', 'libraryAuth', 'libraryDashboard', 'project-pipeline', 'scientific-evidence', 'registration', 'researchPortal', 'divisions', 'analytics'],
     defaultNS: 'common',
     interpolation: {
       escapeValue: false

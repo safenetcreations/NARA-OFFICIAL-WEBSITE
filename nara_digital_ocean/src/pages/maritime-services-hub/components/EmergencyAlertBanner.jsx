@@ -1,19 +1,24 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
+import { useTranslation } from 'react-i18next';
 
 const EmergencyAlertBanner = () => {
+  const { t, i18n } = useTranslation('maritime');
   const [isVisible, setIsVisible] = useState(true);
-  const [alertData] = useState({
-    type: 'weather',
-    severity: 'moderate',
-    title: 'Moderate Sea Conditions Advisory',
-    message: 'Southwest monsoon conditions expected. Wave heights 2-3m in deep sea areas. Small fishing boats advised to stay close to shore.',
-    validUntil: '2025-01-20 18:00',
-    affectedAreas: ['Colombo', 'Galle', 'Matara', 'Hambantota'],
-    issuedBy: 'NARA Marine Weather Division',
-    alertId: 'NARA-WX-2025-001'
-  });
+  const alertData = useMemo(
+    () => ({
+      type: 'weather',
+      severity: 'moderate',
+      title: t('alertsBanner.title'),
+      message: t('alertsBanner.message'),
+      validUntil: '2025-01-20T18:00:00+05:30',
+      affectedAreas: t('alertsBanner.affectedAreas', { returnObjects: true }),
+      issuedBy: t('alertsBanner.issuedBy'),
+      alertId: 'NARA-WX-2025-001'
+    }),
+    [t]
+  );
 
   const getSeverityColor = (severity) => {
     switch (severity) {
@@ -43,6 +48,9 @@ const EmergencyAlertBanner = () => {
 
   if (!isVisible) return null;
 
+  const locale =
+    i18n.language === 'si' ? 'si-LK' : i18n.language === 'ta' ? 'ta-LK' : 'en-US';
+
   return (
     <div className={`rounded-lg border-2 p-4 mb-6 ${getSeverityColor(alertData?.severity)}`}>
       <div className="flex items-start justify-between">
@@ -54,7 +62,7 @@ const EmergencyAlertBanner = () => {
             <div className="flex items-center space-x-2 mb-2">
               <h3 className="font-headline text-lg font-bold">{alertData?.title}</h3>
               <div className="px-2 py-1 bg-white/20 rounded-full text-xs font-cta-medium uppercase">
-                {alertData?.severity}
+                {t(`alerts.severity.${alertData?.severity}`)}
               </div>
             </div>
             
@@ -62,18 +70,23 @@ const EmergencyAlertBanner = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
-                <div className="font-cta-medium mb-1">Affected Areas:</div>
+                <div className="font-cta-medium mb-1">
+                  {t('alertsBanner.labels.affectedAreas')}
+                </div>
                 <div className="font-body opacity-90">{alertData?.affectedAreas?.join(', ')}</div>
               </div>
               <div>
-                <div className="font-cta-medium mb-1">Valid Until:</div>
+                <div className="font-cta-medium mb-1">
+                  {t('alertsBanner.labels.validUntil')}
+                </div>
                 <div className="font-body opacity-90">
-                  {new Date(alertData.validUntil)?.toLocaleString('en-US', {
+                  {new Date(alertData.validUntil)?.toLocaleString(locale, {
                     month: 'short',
                     day: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit',
-                    hour12: true
+                    hour12: true,
+                    timeZone: 'Asia/Colombo'
                   })}
                 </div>
               </div>
@@ -81,7 +94,10 @@ const EmergencyAlertBanner = () => {
             
             <div className="flex items-center justify-between mt-4">
               <div className="text-xs opacity-75">
-                Issued by {alertData?.issuedBy} • Alert ID: {alertData?.alertId}
+                {t('alertsBanner.labels.issuedBy', {
+                  issuer: alertData?.issuedBy,
+                  id: alertData?.alertId
+                })}
               </div>
               <div className="flex items-center space-x-2">
                 <Button
@@ -91,7 +107,7 @@ const EmergencyAlertBanner = () => {
                   iconName="ExternalLink"
                   iconPosition="right"
                 >
-                  Full Details
+                  {t('alertsBanner.buttons.details')}
                 </Button>
                 <Button
                   variant="ghost"
@@ -99,7 +115,7 @@ const EmergencyAlertBanner = () => {
                   className="text-current hover:bg-white/20"
                   iconName="Bell"
                 >
-                  Subscribe
+                  {t('alertsBanner.buttons.subscribe')}
                 </Button>
               </div>
             </div>

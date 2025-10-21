@@ -592,6 +592,67 @@ export const searchService = {
     const queryString = new URLSearchParams({ q: query, ...params }).toString();
     const result = await publicApiRequest(`/search?${queryString}`);
     if (!result.success) {
+      // Fallback to client-side search in static catalogue
+      const catalogue = await fetchStaticCatalogue();
+      if (catalogue && query) {
+        const searchQuery = query.toLowerCase();
+
+        // Search in title, author, subject, keywords, AND translations
+        const filtered = catalogue.filter(item => {
+          const titleMatch = item.title?.toLowerCase().includes(searchQuery);
+          const authorMatch = item.author?.toLowerCase().includes(searchQuery);
+          const subjectMatch = item.subject_headings?.some(s => s.toLowerCase().includes(searchQuery));
+          const keywordMatch = item.keywords?.some(k => k.toLowerCase().includes(searchQuery));
+          const abstractMatch = item.abstract?.toLowerCase().includes(searchQuery);
+
+          // Check if searching for Tamil or Sinhala
+          const isTamilSearch = searchQuery.includes('tamil') || searchQuery.includes('தமிழ்');
+          const isSinhalaSearch = searchQuery.includes('sinhala') || searchQuery.includes('සිංහල');
+
+          // If searching for translations, only show books with translations
+          if (isTamilSearch || isSinhalaSearch) {
+            const hasTranslations = item.translations_available && item.translations_available.length > 0;
+            if (isTamilSearch) {
+              return hasTranslations && item.translations_available.includes('tamil');
+            }
+            if (isSinhalaSearch) {
+              return hasTranslations && item.translations_available.includes('sinhala');
+            }
+          }
+
+          return titleMatch || authorMatch || subjectMatch || keywordMatch || abstractMatch;
+        });
+
+        // Apply additional filters if provided
+        let finalFiltered = filtered;
+        if (params.material_type) {
+          finalFiltered = filtered.filter(item => item.material_type_code === params.material_type);
+        }
+        if (params.year) {
+          finalFiltered = finalFiltered.filter(item => item.publication_year === parseInt(params.year));
+        }
+        if (params.language) {
+          finalFiltered = finalFiltered.filter(item => item.language === params.language);
+        }
+
+        // Pagination
+        const page = parseInt(params.page) || 1;
+        const limit = parseInt(params.limit) || 20;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedItems = finalFiltered.slice(startIndex, endIndex);
+
+        return {
+          success: true,
+          data: paginatedItems,
+          pagination: {
+            page,
+            limit,
+            total: finalFiltered.length,
+            totalPages: Math.ceil(finalFiltered.length / limit)
+          }
+        };
+      }
       return { success: true, data: [], pagination: { total: 0, page: 1, limit: 20 } };
     }
     return result;
@@ -658,6 +719,64 @@ export const searchService = {
    */
   getRelatedItems: async (itemId, limit = 5) => {
     return await publicApiRequest(`/search/related/${itemId}?limit=${limit}`);
+  },
+
+  /**
+   * Get Tamil translations (recent books)
+   */
+  getTamilTranslations: async (limit = 6) => {
+    try {
+      const catalogue = await fetchStaticCatalogue();
+      if (catalogue) {
+        const tamilBooks = catalogue
+          .filter(item => item.translations_available && item.translations_available.includes('tamil'))
+          .sort((a, b) => {
+            // Sort by translated_at timestamp (most recent first)
+            const dateA = a.translations?.tamil?.translated_at || '2000-01-01';
+            const dateB = b.translations?.tamil?.translated_at || '2000-01-01';
+            return new Date(dateB) - new Date(dateA);
+          })
+          .slice(0, limit);
+
+        return {
+          success: true,
+          data: tamilBooks
+        };
+      }
+      return { success: false, data: [] };
+    } catch (error) {
+      console.error('Failed to get Tamil translations:', error);
+      return { success: false, data: [] };
+    }
+  },
+
+  /**
+   * Get Sinhala translations (recent books)
+   */
+  getSinhalaTranslations: async (limit = 6) => {
+    try {
+      const catalogue = await fetchStaticCatalogue();
+      if (catalogue) {
+        const sinhalaBooks = catalogue
+          .filter(item => item.translations_available && item.translations_available.includes('sinhala'))
+          .sort((a, b) => {
+            // Sort by translated_at timestamp (most recent first)
+            const dateA = a.translations?.sinhala?.translated_at || '2000-01-01';
+            const dateB = b.translations?.sinhala?.translated_at || '2000-01-01';
+            return new Date(dateB) - new Date(dateA);
+          })
+          .slice(0, limit);
+
+        return {
+          success: true,
+          data: sinhalaBooks
+        };
+      }
+      return { success: false, data: [] };
+    } catch (error) {
+      console.error('Failed to get Sinhala translations:', error);
+      return { success: false, data: [] };
+    }
   },
 };
 

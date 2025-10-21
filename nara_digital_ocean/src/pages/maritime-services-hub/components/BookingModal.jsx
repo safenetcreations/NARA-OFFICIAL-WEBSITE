@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
 import { Checkbox } from '../../../components/ui/Checkbox';
+import { useTranslation } from 'react-i18next';
 
 const BookingModal = ({ isOpen, onClose, service }) => {
+  const { t } = useTranslation(['maritime', 'common']);
   const [formData, setFormData] = useState({
     businessName: '',
     contactPerson: '',
@@ -21,22 +23,40 @@ const BookingModal = ({ isOpen, onClose, service }) => {
 
   const [errors, setErrors] = useState({});
 
-  const businessTypeOptions = [
-    { value: 'fishing-cooperative', label: 'Fishing Cooperative' },
-    { value: 'individual-fisherman', label: 'Individual Fisherman' },
-    { value: 'aquaculture', label: 'Aquaculture Operation' },
-    { value: 'shipping-company', label: 'Shipping Company' },
-    { value: 'marine-tourism', label: 'Marine Tourism' },
-    { value: 'research-institution', label: 'Research Institution' },
-    { value: 'government-agency', label: 'Government Agency' },
-    { value: 'other', label: 'Other' }
-  ];
+  const businessTypeOptions = useMemo(
+    () => [
+      { value: 'fishing-cooperative', label: t('bookingModal.businessTypes.fishingCooperative') },
+      { value: 'individual-fisherman', label: t('bookingModal.businessTypes.individualFisherman') },
+      { value: 'aquaculture', label: t('bookingModal.businessTypes.aquaculture') },
+      { value: 'shipping-company', label: t('bookingModal.businessTypes.shippingCompany') },
+      { value: 'marine-tourism', label: t('bookingModal.businessTypes.marineTourism') },
+      { value: 'research-institution', label: t('bookingModal.businessTypes.researchInstitution') },
+      { value: 'government-agency', label: t('bookingModal.businessTypes.governmentAgency') },
+      { value: 'other', label: t('bookingModal.businessTypes.other') }
+    ],
+    [t]
+  );
 
-  const urgencyOptions = [
-    { value: 'standard', label: 'Standard (7-14 days)', description: 'Regular processing time' },
-    { value: 'priority', label: 'Priority (3-5 days)', description: '+50% fee' },
-    { value: 'urgent', label: 'Urgent (24-48 hours)', description: '+100% fee' }
-  ];
+  const urgencyOptions = useMemo(
+    () => [
+      {
+        value: 'standard',
+        label: t('bookingModal.urgency.options.standard.label'),
+        description: t('bookingModal.urgency.options.standard.description')
+      },
+      {
+        value: 'priority',
+        label: t('bookingModal.urgency.options.priority.label'),
+        description: t('bookingModal.urgency.options.priority.description')
+      },
+      {
+        value: 'urgent',
+        label: t('bookingModal.urgency.options.urgent.label'),
+        description: t('bookingModal.urgency.options.urgent.description')
+      }
+    ],
+    [t]
+  );
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -48,12 +68,12 @@ const BookingModal = ({ isOpen, onClose, service }) => {
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formData?.businessName?.trim()) newErrors.businessName = 'Business name is required';
-    if (!formData?.contactPerson?.trim()) newErrors.contactPerson = 'Contact person is required';
-    if (!formData?.email?.trim()) newErrors.email = 'Email is required';
-    if (!formData?.phone?.trim()) newErrors.phone = 'Phone number is required';
-    if (!formData?.businessType) newErrors.businessType = 'Business type is required';
-    if (!formData?.serviceDate) newErrors.serviceDate = 'Service date is required';
+    if (!formData?.businessName?.trim()) newErrors.businessName = t('bookingModal.errors.businessName');
+    if (!formData?.contactPerson?.trim()) newErrors.contactPerson = t('bookingModal.errors.contactPerson');
+    if (!formData?.email?.trim()) newErrors.email = t('bookingModal.errors.email');
+    if (!formData?.phone?.trim()) newErrors.phone = t('bookingModal.errors.phone');
+    if (!formData?.businessType) newErrors.businessType = t('bookingModal.errors.businessType');
+    if (!formData?.serviceDate) newErrors.serviceDate = t('bookingModal.errors.serviceDate');
 
     setErrors(newErrors);
     return Object.keys(newErrors)?.length === 0;
@@ -62,8 +82,13 @@ const BookingModal = ({ isOpen, onClose, service }) => {
   const handleSubmit = (e) => {
     e?.preventDefault();
     if (validateForm()) {
-      // Mock booking submission
-      alert(`Booking request submitted for ${service?.name}!\n\nReference: NARA-${Date.now()}\nEstimated cost: ${calculateTotalCost()}\n\nYou will receive confirmation via SMS and email within 2 hours.`);
+      const referenceId = `NARA-${Date.now()}`;
+      alert(
+        `${t('bookingModal.messages.success', { service: service?.name })}\n\n` +
+        `${t('bookingModal.messages.reference', { reference: referenceId })}\n` +
+        `${t('bookingModal.messages.estimatedCost', { cost: calculateTotalCost() })}\n\n` +
+        `${t('bookingModal.messages.followUp')}`
+      );
       onClose();
     }
   };
@@ -95,7 +120,9 @@ const BookingModal = ({ isOpen, onClose, service }) => {
                 <Icon name={service?.icon} size={20} color="white" />
               </div>
               <div>
-                <h2 className="font-headline text-xl font-bold text-text-primary">Book Service</h2>
+                <h2 className="font-headline text-xl font-bold text-text-primary">
+                  {t('serviceCard.bookService')}
+                </h2>
                 <p className="text-sm text-text-secondary">{service?.name}</p>
               </div>
             </div>
@@ -108,13 +135,15 @@ const BookingModal = ({ isOpen, onClose, service }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Business Information */}
           <div className="space-y-4">
-            <h3 className="font-headline text-lg font-bold text-text-primary">Business Information</h3>
+            <h3 className="font-headline text-lg font-bold text-text-primary">
+              {t('bookingModal.headers.businessInfo')}
+            </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
-                label="Business/Organization Name"
+                label={t('bookingModal.labels.businessName')}
                 type="text"
-                placeholder="Enter business name"
+                placeholder={t('bookingModal.placeholders.businessName')}
                 value={formData?.businessName}
                 onChange={(e) => handleInputChange('businessName', e?.target?.value)}
                 error={errors?.businessName}
@@ -122,9 +151,9 @@ const BookingModal = ({ isOpen, onClose, service }) => {
               />
               
               <Input
-                label="Contact Person"
+                label={t('bookingModal.labels.contactPerson')}
                 type="text"
-                placeholder="Enter contact person name"
+                placeholder={t('bookingModal.placeholders.contactPerson')}
                 value={formData?.contactPerson}
                 onChange={(e) => handleInputChange('contactPerson', e?.target?.value)}
                 error={errors?.contactPerson}
@@ -134,9 +163,9 @@ const BookingModal = ({ isOpen, onClose, service }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
-                label="Email Address"
+                label={t('bookingModal.labels.email')}
                 type="email"
-                placeholder="Enter email address"
+                placeholder={t('bookingModal.placeholders.email')}
                 value={formData?.email}
                 onChange={(e) => handleInputChange('email', e?.target?.value)}
                 error={errors?.email}
@@ -144,9 +173,9 @@ const BookingModal = ({ isOpen, onClose, service }) => {
               />
               
               <Input
-                label="Phone Number"
+                label={t('bookingModal.labels.phone')}
                 type="tel"
-                placeholder="+94 XX XXX XXXX"
+                placeholder={t('bookingModal.placeholders.phone')}
                 value={formData?.phone}
                 onChange={(e) => handleInputChange('phone', e?.target?.value)}
                 error={errors?.phone}
@@ -155,8 +184,8 @@ const BookingModal = ({ isOpen, onClose, service }) => {
             </div>
 
             <Select
-              label="Business Type"
-              placeholder="Select your business type"
+              label={t('bookingModal.labels.businessType')}
+              placeholder={t('bookingModal.placeholders.businessType')}
               options={businessTypeOptions}
               value={formData?.businessType}
               onChange={(value) => handleInputChange('businessType', value)}
@@ -167,11 +196,13 @@ const BookingModal = ({ isOpen, onClose, service }) => {
 
           {/* Service Details */}
           <div className="space-y-4">
-            <h3 className="font-headline text-lg font-bold text-text-primary">Service Details</h3>
+            <h3 className="font-headline text-lg font-bold text-text-primary">
+              {t('bookingModal.headers.serviceDetails')}
+            </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
-                label="Preferred Service Date"
+                label={t('bookingModal.labels.serviceDate')}
                 type="date"
                 value={formData?.serviceDate}
                 onChange={(e) => handleInputChange('serviceDate', e?.target?.value)}
@@ -181,7 +212,7 @@ const BookingModal = ({ isOpen, onClose, service }) => {
               />
               
               <Select
-                label="Service Urgency"
+                label={t('bookingModal.urgency.label')}
                 options={urgencyOptions}
                 value={formData?.urgency}
                 onChange={(value) => handleInputChange('urgency', value)}
@@ -189,30 +220,32 @@ const BookingModal = ({ isOpen, onClose, service }) => {
             </div>
 
             <Input
-              label="Special Requirements"
+              label={t('bookingModal.labels.specialRequirements')}
               type="text"
-              placeholder="Any specific requirements or notes"
+              placeholder={t('bookingModal.placeholders.specialRequirements')}
               value={formData?.specialRequirements}
               onChange={(e) => handleInputChange('specialRequirements', e?.target?.value)}
-              description="Optional: Describe any specific needs or constraints"
+              description={t('bookingModal.descriptions.specialRequirements')}
             />
           </div>
 
           {/* Notification Preferences */}
           <div className="space-y-4">
-            <h3 className="font-headline text-lg font-bold text-text-primary">Notification Preferences</h3>
+            <h3 className="font-headline text-lg font-bold text-text-primary">
+              {t('bookingModal.headers.notifications')}
+            </h3>
             
             <div className="space-y-3">
               <Checkbox
-                label="SMS Alerts"
-                description="Receive critical updates and reminders via SMS"
+                label={t('bookingModal.notifications.sms.label')}
+                description={t('bookingModal.notifications.sms.description')}
                 checked={formData?.smsAlerts}
                 onChange={(e) => handleInputChange('smsAlerts', e?.target?.checked)}
               />
               
               <Checkbox
-                label="Email Notifications"
-                description="Receive detailed reports and documentation via email"
+                label={t('bookingModal.notifications.email.label')}
+                description={t('bookingModal.notifications.email.description')}
                 checked={formData?.emailAlerts}
                 onChange={(e) => handleInputChange('emailAlerts', e?.target?.checked)}
               />
@@ -222,7 +255,9 @@ const BookingModal = ({ isOpen, onClose, service }) => {
           {/* Cost Summary */}
           <div className="bg-muted rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-cta text-text-secondary">Base Service Cost:</span>
+              <span className="font-cta text-text-secondary">
+                {t('bookingModal.costSummary.baseCost')}
+              </span>
               <span className="font-cta-medium text-text-primary">
                 {new Intl.NumberFormat('en-LK', {
                   style: 'currency',
@@ -235,7 +270,9 @@ const BookingModal = ({ isOpen, onClose, service }) => {
             {formData?.urgency !== 'standard' && (
               <div className="flex items-center justify-between mb-2">
                 <span className="font-cta text-text-secondary">
-                  {formData?.urgency === 'priority' ? 'Priority Fee (+50%):' : 'Urgent Fee (+100%):'}
+                  {formData?.urgency === 'priority'
+                    ? t('bookingModal.costSummary.priorityFee')
+                    : t('bookingModal.costSummary.urgentFee')}
                 </span>
                 <span className="font-cta-medium text-warning">
                   +{new Intl.NumberFormat('en-LK', {
@@ -249,7 +286,9 @@ const BookingModal = ({ isOpen, onClose, service }) => {
             )}
             <div className="border-t border-border pt-2">
               <div className="flex items-center justify-between">
-                <span className="font-headline text-lg font-bold text-text-primary">Total Estimated Cost:</span>
+                <span className="font-headline text-lg font-bold text-text-primary">
+                  {t('bookingModal.costSummary.total')}
+                </span>
                 <span className="font-headline text-lg font-bold text-primary">{calculateTotalCost()}</span>
               </div>
             </div>
@@ -263,7 +302,7 @@ const BookingModal = ({ isOpen, onClose, service }) => {
               className="flex-1"
               onClick={onClose}
             >
-              Cancel
+              {t('common:cancel')}
             </Button>
             <Button
               type="submit"
@@ -272,7 +311,7 @@ const BookingModal = ({ isOpen, onClose, service }) => {
               iconName="Calendar"
               iconPosition="left"
             >
-              Submit Booking Request
+              {t('bookingModal.buttons.submit')}
             </Button>
           </div>
         </form>

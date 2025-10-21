@@ -3,10 +3,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
 import { useFirebaseAuth } from '../../contexts/FirebaseAuthContext';
+import { useTranslation } from 'react-i18next';
 
 const UnifiedRegistration = () => {
   const navigate = useNavigate();
   const { signUp, signInWithGoogle, error, setError } = useFirebaseAuth();
+  const { t } = useTranslation(['registration', 'common']);
 
   const [step, setStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState('');
@@ -28,8 +30,8 @@ const UnifiedRegistration = () => {
     {
       id: 'student',
       icon: Icons.GraduationCap,
-      title: 'Student',
-      description: 'Undergraduate or postgraduate student',
+      title: t('roles.student.title'),
+      description: t('roles.student.description'),
       services: ['library', 'ecommerce'],
       libraryAccess: {
         borrowLimit: 5,
@@ -37,21 +39,15 @@ const UnifiedRegistration = () => {
         canSubmitResearch: false,
         canAccessPremium: false
       },
-      features: [
-        'Borrow up to 5 books',
-        '14-day loan period',
-        'Purchase publications',
-        'Access student resources',
-        'Free membership'
-      ],
+      features: t('roles.student.features', { returnObjects: true }),
       color: 'from-blue-500 to-cyan-500',
-      badge: 'Most Popular'
+      badge: t('roles.student.badge')
     },
     {
       id: 'researcher',
       icon: Icons.Microscope,
-      title: 'Researcher / Faculty',
-      description: 'Academic researchers, professors, and faculty members',
+      title: t('roles.researcher.title'),
+      description: t('roles.researcher.description'),
       services: ['library', 'ecommerce', 'images', 'data'],
       libraryAccess: {
         borrowLimit: 10,
@@ -59,23 +55,15 @@ const UnifiedRegistration = () => {
         canSubmitResearch: true,
         canAccessPremium: true
       },
-      features: [
-        'Borrow up to 10 books',
-        '30-day loan period',
-        'Submit research papers',
-        'Access premium resources',
-        'Purchase images & datasets',
-        'API access for data',
-        'Priority support'
-      ],
+      features: t('roles.researcher.features', { returnObjects: true }),
       color: 'from-purple-500 to-pink-500',
-      badge: 'Full Access'
+      badge: t('roles.researcher.badge')
     },
     {
       id: 'professor',
       icon: Icons.Award,
-      title: 'Professor / Senior Researcher',
-      description: 'Senior faculty and principal investigators',
+      title: t('roles.professor.title'),
+      description: t('roles.professor.description'),
       services: ['library', 'ecommerce', 'images', 'data', 'collaboration'],
       libraryAccess: {
         borrowLimit: 15,
@@ -84,24 +72,15 @@ const UnifiedRegistration = () => {
         canAccessPremium: true,
         canReview: true
       },
-      features: [
-        'Borrow up to 15 books',
-        '60-day loan period',
-        'Submit & review research',
-        'Full premium access',
-        'Unlimited image downloads',
-        'Full dataset access',
-        'Research collaboration tools',
-        'Dedicated support'
-      ],
+      features: t('roles.professor.features', { returnObjects: true }),
       color: 'from-amber-500 to-orange-500',
-      badge: 'Premium'
+      badge: t('roles.professor.badge')
     },
     {
       id: 'public',
       icon: Icons.Users,
-      title: 'Public Member',
-      description: 'General public and marine enthusiasts',
+      title: t('roles.public.title'),
+      description: t('roles.public.description'),
       services: ['library', 'ecommerce'],
       libraryAccess: {
         borrowLimit: 3,
@@ -109,22 +88,15 @@ const UnifiedRegistration = () => {
         canSubmitResearch: false,
         canAccessPremium: false
       },
-      features: [
-        'Borrow up to 3 books',
-        '7-day loan period',
-        'View catalogue',
-        'Reserve books',
-        'Purchase publications',
-        'Community access'
-      ],
+      features: t('roles.public.features', { returnObjects: true }),
       color: 'from-green-500 to-teal-500',
-      badge: 'Basic'
+      badge: t('roles.public.badge')
     },
     {
       id: 'institution',
       icon: Icons.Building2,
-      title: 'Institution / Organization',
-      description: 'Universities, research institutions, and organizations',
+      title: t('roles.institution.title'),
+      description: t('roles.institution.description'),
       services: ['library', 'ecommerce', 'images', 'data', 'bulk'],
       libraryAccess: {
         borrowLimit: 25,
@@ -133,17 +105,9 @@ const UnifiedRegistration = () => {
         canAccessPremium: true,
         bulkAccess: true
       },
-      features: [
-        'Borrow up to 25 books',
-        '90-day loan period',
-        'Bulk purchases available',
-        'Institutional licensing',
-        'Multiple user accounts',
-        'Custom data packages',
-        'Dedicated account manager'
-      ],
+      features: t('roles.institution.features', { returnObjects: true }),
       color: 'from-indigo-500 to-purple-500',
-      badge: 'Enterprise'
+      badge: t('roles.institution.badge')
     }
   ];
 
@@ -170,17 +134,17 @@ const UnifiedRegistration = () => {
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('errors.passwordMismatch'));
       return;
     }
 
     if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters');
+      setError(t('errors.passwordTooShort'));
       return;
     }
 
     if (!formData.agreeTerms) {
-      setError('You must agree to the terms and conditions');
+      setError(t('errors.agreeTermsRequired'));
       return;
     }
 
@@ -246,15 +210,15 @@ const UnifiedRegistration = () => {
         >
           <Link to="/" className="inline-flex items-center gap-2 mb-6 text-slate-600 hover:text-slate-900">
             <Icons.ArrowLeft className="w-5 h-5" />
-            Back to Home
+            {t('common:navbar.back')}
           </Link>
           
           <div className="flex items-center justify-center gap-3 mb-4">
             <img src="/assets/nara-logo.png" alt="NARA" className="w-16 h-16 object-contain" />
-            <h1 className="text-4xl font-bold text-slate-900">NARA Account Registration</h1>
+            <h1 className="text-4xl font-bold text-slate-900">{t('title')}</h1>
           </div>
           <p className="text-xl text-slate-600">
-            One account for all NARA digital services
+            {t('subtitle')}
           </p>
         </motion.div>
 
@@ -283,11 +247,8 @@ const UnifiedRegistration = () => {
             exit={{ opacity: 0, x: -20 }}
           >
             <h2 className="text-2xl font-bold text-slate-900 mb-6 text-center">
-              What best describes you?
+              {t('selectRole')}
             </h2>
-            <p className="text-slate-600 text-center mb-8">
-              Select your role to get access to the appropriate NARA services
-            </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {userRoles.map((role) => {
@@ -404,7 +365,7 @@ const UnifiedRegistration = () => {
               className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6 transition-colors"
             >
               <Icons.ArrowLeft className="w-5 h-5" />
-              Back to role selection
+              {t('backToRoleSelection')}
             </button>
 
             <div className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl mx-auto">
@@ -418,10 +379,10 @@ const UnifiedRegistration = () => {
                       </div>
                       <div>
                         <h2 className="text-2xl font-bold text-slate-900">
-                          Create Your NARA Account
+                          {t('createAccount')}
                         </h2>
                         <p className="text-slate-600">
-                          Registering as: <strong>{role?.title}</strong>
+                          {role?.title}
                         </p>
                       </div>
                     </div>
@@ -454,7 +415,7 @@ const UnifiedRegistration = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">First Name *</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">{t('form.firstName')} {t('form.required')}</label>
                     <input
                       type="text"
                       name="firstName"
@@ -466,7 +427,7 @@ const UnifiedRegistration = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Last Name *</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">{t('form.lastName')} {t('form.required')}</label>
                     <input
                       type="text"
                       name="lastName"
@@ -479,7 +440,7 @@ const UnifiedRegistration = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Email *</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">{t('form.email')} {t('form.required')}</label>
                   <input
                     type="email"
                     name="email"
@@ -492,7 +453,7 @@ const UnifiedRegistration = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Password *</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">{t('form.password')} {t('form.required')}</label>
                     <input
                       type="password"
                       name="password"
@@ -505,7 +466,7 @@ const UnifiedRegistration = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Confirm Password *</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">{t('form.confirmPassword')} {t('form.required')}</label>
                     <input
                       type="password"
                       name="confirmPassword"
@@ -518,7 +479,7 @@ const UnifiedRegistration = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Phone Number</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">{t('form.phoneNumber')}</label>
                   <input
                     type="tel"
                     name="phoneNumber"
@@ -529,7 +490,7 @@ const UnifiedRegistration = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Organization/Institution</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">{t('form.organization')}</label>
                   <input
                     type="text"
                     name="organization"
@@ -550,10 +511,10 @@ const UnifiedRegistration = () => {
                     className="mt-1 w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
                   />
                   <label className="text-sm text-slate-700">
-                    I agree to the{' '}
-                    <Link to="/terms" className="text-blue-600 hover:underline">Terms of Service</Link>
-                    {' '}and{' '}
-                    <Link to="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>
+                    {t('form.agreeTerms')}{' '}
+                    <Link to="/terms" className="text-blue-600 hover:underline">{t('form.termsAndConditions')}</Link>
+                    {' '}{t('form.and')}{' '}
+                    <Link to="/privacy" className="text-blue-600 hover:underline">{t('form.privacyPolicy')}</Link>
                   </label>
                 </div>
 
@@ -565,12 +526,12 @@ const UnifiedRegistration = () => {
                   {loading ? (
                     <>
                       <Icons.Loader2 className="w-5 h-5 animate-spin" />
-                      Creating Account...
+                      {t('form.creating')}
                     </>
                   ) : (
                     <>
                       <Icons.UserPlus className="w-5 h-5" />
-                      Create NARA Account
+                      {t('createAccount')}
                     </>
                   )}
                 </button>
@@ -578,7 +539,7 @@ const UnifiedRegistration = () => {
 
               <div className="my-6 flex items-center">
                 <div className="flex-1 border-t border-slate-300"></div>
-                <span className="px-4 text-sm text-slate-500">or</span>
+                <span className="px-4 text-sm text-slate-500">{t('orContinueWith')}</span>
                 <div className="flex-1 border-t border-slate-300"></div>
               </div>
 
@@ -588,13 +549,13 @@ const UnifiedRegistration = () => {
                 className="w-full bg-white hover:bg-slate-50 text-slate-700 font-semibold py-3 px-4 rounded-lg border border-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
               >
                 <Icons.Chrome className="w-5 h-5 text-blue-500" />
-                Continue with Google
+                {t('signUpWithGoogle')}
               </button>
 
               <p className="text-center text-sm text-slate-600 mt-6">
-                Already have an account?{' '}
+                {t('alreadyHaveAccount')}{' '}
                 <Link to="/login" className="text-blue-600 hover:underline font-medium">
-                  Sign in
+                  {t('signIn')}
                 </Link>
               </p>
             </div>

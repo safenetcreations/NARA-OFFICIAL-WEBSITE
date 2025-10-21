@@ -281,5 +281,73 @@ service cloud.firestore {
       // Only the system (via Cloud Functions) or admins should write to activity logs
       allow write: if isAdmin();
     }
+    
+    // ============================================
+    // RESEARCH EXCELLENCE PORTAL COLLECTIONS
+    // ============================================
+    
+    // Research Content Collection
+    match /researchContent/{contentId} {
+      // Published content can be read by authenticated users
+      // Draft content can only be read by the author or admins
+      allow read: if (resource.data.status == 'published' && isAuthenticated()) ||
+                     isOwner(resource.data.uploadedBy) ||
+                     isAdmin() ||
+                     isLibrarian();
+      
+      // Only researchers, professors, and admins can create content
+      allow create: if isAuthenticated() &&
+                       request.resource.data.uploadedBy == request.auth.uid &&
+                       (isResearcher() || isAdmin() || isLibrarian());
+      
+      // Authors can update their own content
+      // Admins can update any content
+      allow update: if isOwner(resource.data.uploadedBy) ||
+                       isAdmin() ||
+                       isLibrarian();
+      
+      // Only admins can delete content
+      allow delete: if isAdmin();
+    }
+    
+    // User Bookmarks for Research Content
+    match /userBookmarks/{userId}/bookmarks/{bookmarkId} {
+      // Users can only access their own bookmarks
+      allow read, write: if isOwner(userId);
+    }
+    
+    // ============================================
+    // ANALYTICS & IMPACT ASSESSMENT COLLECTIONS
+    // ============================================
+    
+    // Impact Assessments - Public read, admin write
+    match /impactAssessments/{assessmentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Policy Impacts - Public read, admin write
+    match /policyImpacts/{impactId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Stakeholder Feedback - Public read, admin write
+    match /stakeholderFeedback/{feedbackId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Project Outcomes - Public read, admin write
+    match /projectOutcomes/{outcomeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // ROI Calculations - Public read, admin write
+    match /roiCalculations/{calculationId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
   }
 }

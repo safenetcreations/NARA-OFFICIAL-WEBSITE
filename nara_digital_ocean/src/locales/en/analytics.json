@@ -90,5 +90,8 @@
     "projectsMeasured": "projects measured",
     "netValue": "Net value",
     "avgROI": "Average ROI"
+  },
+  "messages": {
+    "fallback": "Showing sample analytics because live metrics are unavailable. Connect Firebase to display real-time data."
   }
 }

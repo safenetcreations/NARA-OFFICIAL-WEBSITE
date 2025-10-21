@@ -1,8 +1,11 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
+import { useTranslation } from 'react-i18next';
 
 const ServiceCard = ({ service, onBookService }) => {
+  const { t } = useTranslation('maritime');
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'Available':
@@ -14,6 +17,15 @@ const ServiceCard = ({ service, onBookService }) => {
       default:
         return 'text-text-secondary bg-muted';
     }
+  };
+
+  const getStatusLabel = (status) => {
+    if (!status) return '';
+
+    const normalizedStatus = status.toLowerCase();
+    return t(`serviceCard.status.${normalizedStatus}`, {
+      defaultValue: status
+    });
   };
 
   const formatPrice = (price) => {
@@ -36,7 +48,7 @@ const ServiceCard = ({ service, onBookService }) => {
             <h3 className="font-headline text-lg font-bold text-text-primary">{service?.name}</h3>
             <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-cta-medium ${getStatusColor(service?.status)}`}>
               <div className="w-2 h-2 rounded-full bg-current mr-2"></div>
-              {service?.status}
+              {getStatusLabel(service?.status)}
             </div>
           </div>
         </div>
@@ -48,16 +60,22 @@ const ServiceCard = ({ service, onBookService }) => {
       <p className="font-body text-text-secondary mb-4 line-clamp-3">{service?.description}</p>
       <div className="space-y-3 mb-6">
         <div className="flex items-center justify-between text-sm">
-          <span className="font-cta text-text-secondary">Turnaround Time:</span>
+          <span className="font-cta text-text-secondary">
+            {t('serviceCard.turnaroundTime')}
+          </span>
           <span className="font-cta-medium text-text-primary">{service?.turnaroundTime}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
-          <span className="font-cta text-text-secondary">Next Available:</span>
+          <span className="font-cta text-text-secondary">
+            {t('serviceCard.nextAvailable')}
+          </span>
           <span className="font-cta-medium text-text-primary">{service?.nextAvailable}</span>
         </div>
         {service?.queueTime && (
           <div className="flex items-center justify-between text-sm">
-            <span className="font-cta text-text-secondary">Current Queue:</span>
+            <span className="font-cta text-text-secondary">
+              {t('serviceCard.currentQueue')}
+            </span>
             <span className="font-cta-medium text-warning">{service?.queueTime}</span>
           </div>
         )}
@@ -70,7 +88,7 @@ const ServiceCard = ({ service, onBookService }) => {
           iconPosition="left"
           onClick={() => onBookService(service)}
         >
-          Book Service
+          {t('serviceCard.bookService')}
         </Button>
         <Button
           variant="outline"
@@ -78,6 +96,7 @@ const ServiceCard = ({ service, onBookService }) => {
           iconName="Info"
           onClick={() => window.open(`#service-${service?.id}`, '_self')}
         >
+          {t('serviceCard.viewDetails')}
         </Button>
       </div>
       {service?.specialOffer && (

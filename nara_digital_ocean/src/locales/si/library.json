@@ -139,6 +139,56 @@
     "pages": "පිටු",
     "viewDetails": "විස්තර බලන්න",
     "exploreFullLibrary": "සම්පූර්ණ පුස්තකාලය ගවේෂණය කරන්න",
-    "accessInfo": "පර්යේෂණ ලිපි දහස් ගණනක්, ප්‍රකාශන සහ සාගර විද්‍යා සම්පත් වෙත ප්‍රවේශ වන්න"
+    "accessInfo": "පර්යේෂණ ලිපි දහස් ගණනක්, ප්‍රකාශන සහ සාගර විද්‍යා සම්පත් වෙත ප්‍රවේශ වන්න",
+    "books": [
+      {
+        "id": "marine-biodiversity",
+        "title": "ශ්‍රී ලංකා මුහුදු ජලයේ ජීව විවිධත්වය",
+        "author": "Dr. Arjan Rajasuriya",
+        "category": "මුහුදු ජීව විද්‍යාව",
+        "description": "ශ්‍රී ලංකාවේ වෙරළ ජලාංශවල මුහුදු ජීව විවිධත්වය පිළිබඳ සම්පූර්ණ අධ්‍යයනයක්.",
+        "language": "ඉංග්‍රීසි"
+      },
+      {
+        "id": "sustainable-fisheries",
+        "title": "තිරසාර ධීවර කළමනාකරණය",
+        "author": "Prof. Nimal Fernando",
+        "category": "ධීවර",
+        "description": "උෂ්ණ කලාපීය ජලාංශවල තිරසාර මසුන් අල්ලීම සඳහා හොඳම ක්‍රියා මාර්ග.",
+        "language": "ඉංග්‍රීසි"
+      },
+      {
+        "id": "coastal-restoration",
+        "title": "වෙරළ පරිසර පද්ධති නැවත පිරිනැමීම",
+        "author": "Dr. Chamari Silva",
+        "category": "සංරක්ෂණය",
+        "description": "වෙරළ පරිසර පද්ධති නැවත සකස් කිරීම සඳහා නව්‍ය ක්‍රමවේද.",
+        "language": "ඉංග්‍රීසි"
+      },
+      {
+        "id": "climate-ocean-acidification",
+        "title": "කාලගුණ වෙනස්වීම සහ මුහුදු අම්ලිකරණය",
+        "author": "Dr. Sampath Perera",
+        "category": "කාලගුණ විද්‍යාව",
+        "description": "කාලගුණ වෙනස්වීම ශ්‍රී ලංකාවේ මුහුදු පරිසර පද්ධතිවලට ඇති බලපෑම.",
+        "language": "ඉංග්‍රීසි"
+      },
+      {
+        "id": "marine-spatial-planning",
+        "title": "දකුණු ආසියාවේ මුහුදු අවකාශ සැලසුම් කිරීම",
+        "author": "Prof. Nilanthi Jayasuriya",
+        "category": "ප්‍රතිපත්ති",
+        "description": "දකුණු ආසියාවේ කාර්යක්ෂම මුහුදු අවකාශ සැලසුම් කිරීම සඳහා රාමුවක්.",
+        "language": "ඉංග්‍රීසි"
+      },
+      {
+        "id": "aquaculture-innovations",
+        "title": "ජලකර්මාන්ත නව්‍යතා",
+        "author": "Dr. Rohan de Silva",
+        "category": "ජලකර්මාන්තය",
+        "description": "තිරසාර ජලකර්මාන්ත ක්‍රියාකාරකම් සඳහා නවීන තාක්ෂණ.",
+        "language": "ඉංග්‍රීසි"
+      }
+    ]
   }
 }

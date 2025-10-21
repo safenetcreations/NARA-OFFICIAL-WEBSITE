@@ -139,6 +139,56 @@
     "pages": "pages",
     "viewDetails": "View Details",
     "exploreFullLibrary": "Explore Full Library",
-    "accessInfo": "Access thousands of research papers, publications, and marine science resources"
+    "accessInfo": "Access thousands of research papers, publications, and marine science resources",
+    "books": [
+      {
+        "id": "marine-biodiversity",
+        "title": "Marine Biodiversity of Sri Lankan Waters",
+        "author": "Dr. Arjan Rajasuriya",
+        "category": "Marine Biology",
+        "description": "A comprehensive study of marine biodiversity in Sri Lankan coastal waters",
+        "language": "English"
+      },
+      {
+        "id": "sustainable-fisheries",
+        "title": "Sustainable Fisheries Management",
+        "author": "Prof. Nimal Fernando",
+        "category": "Fisheries",
+        "description": "Best practices for sustainable fisheries in tropical waters",
+        "language": "English"
+      },
+      {
+        "id": "coastal-restoration",
+        "title": "Coastal Ecosystem Restoration",
+        "author": "Dr. Chamari Silva",
+        "category": "Conservation",
+        "description": "Innovative approaches to coastal ecosystem restoration",
+        "language": "English"
+      },
+      {
+        "id": "climate-ocean-acidification",
+        "title": "Climate Change and Ocean Acidification",
+        "author": "Dr. Sampath Perera",
+        "category": "Climate Science",
+        "description": "Impact of climate change on Sri Lankan marine ecosystems",
+        "language": "English"
+      },
+      {
+        "id": "marine-spatial-planning",
+        "title": "Marine Spatial Planning in South Asia",
+        "author": "Prof. Nilanthi Jayasuriya",
+        "category": "Policy",
+        "description": "Framework for effective marine spatial planning",
+        "language": "English"
+      },
+      {
+        "id": "aquaculture-innovations",
+        "title": "Aquaculture Innovations",
+        "author": "Dr. Rohan de Silva",
+        "category": "Aquaculture",
+        "description": "Modern techniques in sustainable aquaculture",
+        "language": "English"
+      }
+    ]
   }
 }

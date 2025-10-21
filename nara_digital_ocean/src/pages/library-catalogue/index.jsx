@@ -54,13 +54,17 @@ const LibraryCatalogue = () => {
   const [showCategories, setShowCategories] = useState(true);
   const [popularItems, setPopularItems] = useState([]);
   const [newArrivals, setNewArrivals] = useState([]);
+  const [tamilTranslations, setTamilTranslations] = useState([]);
+  const [sinhalaTranslations, setSinhalaTranslations] = useState([]);
   const [categoryStats, setCategoryStats] = useState({});
 
   useEffect(() => {
     loadFacets();
     loadPopularItems();
     loadNewArrivals();
-    
+    loadTamilTranslations();
+    loadSinhalaTranslations();
+
     if (searchQuery) {
       performSearch();
     }
@@ -96,6 +100,28 @@ const LibraryCatalogue = () => {
       }
     } catch (err) {
       console.error('Failed to load new arrivals:', err);
+    }
+  };
+
+  const loadTamilTranslations = async () => {
+    try {
+      const response = await searchService.getTamilTranslations(6);
+      if (response.success) {
+        setTamilTranslations(response.data);
+      }
+    } catch (err) {
+      console.error('Failed to load Tamil translations:', err);
+    }
+  };
+
+  const loadSinhalaTranslations = async () => {
+    try {
+      const response = await searchService.getSinhalaTranslations(6);
+      if (response.success) {
+        setSinhalaTranslations(response.data);
+      }
+    } catch (err) {
+      console.error('Failed to load Sinhala translations:', err);
     }
   };
 
@@ -821,7 +847,7 @@ const LibraryCatalogue = () => {
 
         {/* New Arrivals */}
         {!searchQuery && !filters.material_type && newArrivals.length > 0 && (
-          <div>
+          <div className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
               <Icons.Sparkles className="w-6 h-6 text-cyan-600" />
               {t('sections.newArrivals')}
@@ -844,6 +870,106 @@ const LibraryCatalogue = () => {
                     <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{item.title}</h3>
                     <p className="text-sm text-gray-600 mb-2 line-clamp-1">{item.author}</p>
                     {getAvailabilityBadge(item)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Tamil Translations */}
+        {!searchQuery && !filters.material_type && tamilTranslations.length > 0 && (
+          <div className="mb-12">
+            <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-xl p-6 mb-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 text-white">
+                  <Icons.Globe className="w-8 h-8" />
+                  <div>
+                    <h2 className="text-2xl font-bold">Tamil Translations (தமிழ் மொழிபெயர்ப்புகள்)</h2>
+                    <p className="text-orange-100">AI-powered translations using Google Gemini</p>
+                  </div>
+                </div>
+                <div className="bg-white bg-opacity-20 rounded-lg px-4 py-2">
+                  <p className="text-white font-semibold">{tamilTranslations.length} Books</p>
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {tamilTranslations.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => handleItemClick(item.id)}
+                  className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer p-4 flex gap-4 border-l-4 border-orange-500"
+                >
+                  <div className="w-20 h-28 bg-gradient-to-br from-orange-100 to-red-100 rounded flex-shrink-0 flex items-center justify-center">
+                    {item.cover_image_url ? (
+                      <img src={item.cover_image_url} alt={item.title} className="w-full h-full object-cover rounded" />
+                    ) : (
+                      <Icons.Languages className="w-8 h-8 text-orange-600" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="px-2 py-0.5 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">தமிழ்</span>
+                      <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs">AI Translated</span>
+                    </div>
+                    <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{item.title}</h3>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-1">{item.author}</p>
+                    <p className="text-xs text-gray-500">
+                      {item.translations?.tamil?.translated_at &&
+                        `Translated ${new Date(item.translations.tamil.translated_at).toLocaleDateString()}`
+                      }
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Sinhala Translations */}
+        {!searchQuery && !filters.material_type && sinhalaTranslations.length > 0 && (
+          <div className="mb-12">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-6 mb-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 text-white">
+                  <Icons.Globe className="w-8 h-8" />
+                  <div>
+                    <h2 className="text-2xl font-bold">Sinhala Translations (සිංහල පරිවර්තන)</h2>
+                    <p className="text-blue-100">AI-powered translations using Google Gemini</p>
+                  </div>
+                </div>
+                <div className="bg-white bg-opacity-20 rounded-lg px-4 py-2">
+                  <p className="text-white font-semibold">{sinhalaTranslations.length} Books</p>
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sinhalaTranslations.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => handleItemClick(item.id)}
+                  className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer p-4 flex gap-4 border-l-4 border-blue-600"
+                >
+                  <div className="w-20 h-28 bg-gradient-to-br from-blue-100 to-indigo-100 rounded flex-shrink-0 flex items-center justify-center">
+                    {item.cover_image_url ? (
+                      <img src={item.cover_image_url} alt={item.title} className="w-full h-full object-cover rounded" />
+                    ) : (
+                      <Icons.Languages className="w-8 h-8 text-blue-600" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">සිංහල</span>
+                      <span className="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded-full text-xs">AI Translated</span>
+                    </div>
+                    <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{item.title}</h3>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-1">{item.author}</p>
+                    <p className="text-xs text-gray-500">
+                      {item.translations?.sinhala?.translated_at &&
+                        `Translated ${new Date(item.translations.sinhala.translated_at).toLocaleDateString()}`
+                      }
+                    </p>
                   </div>
                 </div>
               ))}

@@ -1,0 +1,25 @@
+{
+  "hero": {
+    "title": "NARA Research Divisions",
+    "subtitle": "Explore nine centers of excellence advancing marine science, aquatic stewardship, and resilient blue-economy solutions for Sri Lanka.",
+    "searchPlaceholder": "Search by division, expertise, or keywords...",
+    "searchAria": "Search divisions"
+  },
+  "empty": {
+    "message": "No divisions match your search. Try a different keyword or clear the filter."
+  },
+  "stats": {
+    "focusAreas": "Focus areas",
+    "services": "Specialised services",
+    "team": "Expert team"
+  },
+  "cta": {
+    "heading": "Partner With Us",
+    "description": "Collaborate with NARA's specialist teams for mission-critical research, policy insight, and sustainable maritime innovation.",
+    "primary": "Contact the divisions office",
+    "secondary": "Explore active research"
+  },
+  "card": {
+    "learnMore": "Learn more"
+  }
+}

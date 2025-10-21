@@ -1,0 +1,25 @@
+{
+  "login": {
+    "title": "Welcome Back",
+    "subtitle": "Sign in to access your library account",
+    "errors": {
+      "generic": "Login Failed"
+    },
+    "fields": {
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password"
+    },
+    "links": {
+      "forgotPassword": "Forgot password?"
+    },
+    "rememberMe": "Remember me for 30 days",
+    "divider": "Or continue with",
+    "buttons": {
+      "signIn": "Sign In",
+      "signingIn": "Signing in...",
+      "google": "Sign in with Google"
+    }
+  }
+}

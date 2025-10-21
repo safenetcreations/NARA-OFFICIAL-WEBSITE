@@ -3,6 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import * as Icons from 'lucide-react';
 import { catalogueService, circulationService, searchService } from '../../services/libraryService';
 import { useFirebaseAuth } from '../../contexts/FirebaseAuthContext';
+import DownloadManager from '../../components/library/DownloadManager';
+import { useLibraryUser } from '../../contexts/LibraryUserContext';
+import LanguageSelector from '../../components/library/LanguageSelector';
+import MultiLanguagePreview from '../../components/library/MultiLanguagePreview';
 
 const ItemDetail = () => {
   const { id } = useParams();
@@ -14,10 +18,19 @@ const ItemDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [placingHold, setPlacingHold] = useState(false);
+  const [showPdfViewer, setShowPdfViewer] = useState(true); // Show PDF preview by default
+  const [currentPdfUrl, setCurrentPdfUrl] = useState('');
+  const [currentLanguage, setCurrentLanguage] = useState('english');
 
   useEffect(() => {
     loadItem();
   }, [id]);
+
+  useEffect(() => {
+    if (item && item.url) {
+      setCurrentPdfUrl(item.url);
+    }
+  }, [item]);
 
   const loadItem = async () => {
     try {
@@ -67,6 +80,12 @@ const ItemDetail = () => {
     } finally {
       setPlacingHold(false);
     }
+  };
+
+  const handleLanguageChange = (url, langCode, langName) => {
+    setCurrentPdfUrl(url);
+    setCurrentLanguage(langCode);
+    console.log(`Switched to ${langName} (${langCode})`);
   };
 
   if (loading) {
@@ -179,16 +198,42 @@ const ItemDetail = () => {
 
               {/* Actions */}
               <div className="mt-6 space-y-3">
-                {item.url && (
+                {/* External Source Link (if available) */}
+                {item.source_url ? (
                   <a
-                    href={item.url}
+                    href={item.source_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full px-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg hover:from-cyan-700 hover:to-blue-700 transition flex items-center justify-center gap-2 font-semibold"
+                    className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition flex items-center justify-center gap-2 font-semibold"
                   >
                     <Icons.ExternalLink className="w-5 h-5" />
-                    Access Digital Copy
+                    View on {item.download_source || 'External Source'}
                   </a>
+                ) : item.url ? (
+                  <>
+                    {/* Firebase PDF Available */}
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg p-3 mb-3">
+                      <div className="flex items-center gap-2 text-green-800 mb-2">
+                        <Icons.CheckCircle className="w-5 h-5" />
+                        <span className="font-semibold">Free PDF Available!</span>
+                      </div>
+                      <p className="text-sm text-green-700">Read online for free or download the full PDF</p>
+                    </div>
+                    <button
+                      onClick={() => setShowPdfViewer(!showPdfViewer)}
+                      className="w-full px-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg hover:from-cyan-700 hover:to-blue-700 transition flex items-center justify-center gap-2 font-semibold shadow-lg"
+                    >
+                      <Icons.Eye className="w-5 h-5" />
+                      {showPdfViewer ? 'Hide Preview' : 'Show Preview'}
+                    </button>
+                    <DownloadManager book={item} pdfUrl={currentPdfUrl} language={currentLanguage} />
+                  </>
+                ) : (
+                  /* PDF Coming Soon */
+                  <div className="w-full px-4 py-3 bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-lg flex items-center justify-center gap-2 font-semibold opacity-75">
+                    <Icons.Clock className="w-5 h-5" />
+                    PDF Coming Soon
+                  </div>
                 )}
                 
                 <button
@@ -378,6 +423,38 @@ const ItemDetail = () => {
                 <div className="mb-8">
                   <h2 className="text-xl font-semibold text-gray-900 mb-3">Notes</h2>
                   <p className="text-gray-700">{item.notes}</p>
+                </div>
+              )}
+
+              {/* Multi-Language Preview - Shows all 3 languages in tabs */}
+              {item.url && (
+                <div className="mb-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                      <Icons.FileText className="w-5 h-5 text-cyan-600" />
+                      Read Online - All Languages
+                    </h2>
+                    <button
+                      onClick={() => setShowPdfViewer(!showPdfViewer)}
+                      className="px-4 py-2 bg-cyan-100 text-cyan-700 rounded-lg hover:bg-cyan-200 transition flex items-center gap-2"
+                    >
+                      {showPdfViewer ? (
+                        <>
+                          <Icons.ChevronUp className="w-4 h-4" />
+                          Hide Preview
+                        </>
+                      ) : (
+                        <>
+                          <Icons.ChevronDown className="w-4 h-4" />
+                          Show Preview
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {showPdfViewer && (
+                    <MultiLanguagePreview book={item} />
+                  )}
                 </div>
               )}
             </div>

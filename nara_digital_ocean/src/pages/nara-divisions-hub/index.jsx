@@ -6,7 +6,7 @@ import * as LucideIcons from 'lucide-react';
 import { DIVISIONS_CONFIG, getDivisionById } from '../../data/divisionsConfig';
 
 const DivisionsHub = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('divisions');
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredDivisions, setFilteredDivisions] = useState(DIVISIONS_CONFIG);
@@ -64,14 +64,10 @@ const DivisionsHub = () => {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              {currentLang === 'en' && 'NARA Divisions'}
-              {currentLang === 'si' && 'NARA අංශ'}
-              {currentLang === 'ta' && 'NARA பிரிவுகள்'}
+              {t('hero.title')}
             </h1>
             <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-              {currentLang === 'en' && 'Explore our 9 specialized divisions dedicated to marine research, aquatic conservation, and sustainable development'}
-              {currentLang === 'si' && 'සමුද්‍ර පර්යේෂණ, ජලජ සංරක්ෂණ සහ තිරසාර සංවර්ධනය සඳහා කැප වූ අපගේ විශේෂිත අංශ 9 ගවේෂණය කරන්න'}
-              {currentLang === 'ta' && 'கடல் ஆராய்ச்சி, நீர்வாழ் பாதுகாப்பு மற்றும் நிலையான வளர்ச்சிக்கு அர்ப்பணிக்கப்பட்ட எங்கள் 9 சிறப்புப் பிரிவுகளை ஆராயுங்கள்'}
+              {t('hero.subtitle')}
             </p>
 
             {/* Search Bar */}
@@ -80,11 +76,8 @@ const DivisionsHub = () => {
                 <LucideIcons.Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={24} />
                 <input
                   type="text"
-                  placeholder={
-                    currentLang === 'en' ? 'Search divisions...' :
-                    currentLang === 'si' ? 'අංශ සොයන්න...' :
-                    'பிரிவுகளைத் தேடுங்கள்...'
-                  }
+                  placeholder={t('hero.searchPlaceholder')}
+                  aria-label={t('hero.searchAria')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-14 pr-6 py-4 rounded-full text-gray-900 text-lg focus:outline-none focus:ring-4 focus:ring-blue-300 shadow-xl"
@@ -101,9 +94,7 @@ const DivisionsHub = () => {
           <div className="text-center py-20">
             <LucideIcons.SearchX size={64} className="mx-auto text-gray-400 mb-4" />
             <p className="text-xl text-gray-600">
-              {currentLang === 'en' && 'No divisions found matching your search'}
-              {currentLang === 'si' && 'ඔබේ සෙවුමට ගැලපෙන අංශ කිසිවක් හමු නොවීය'}
-              {currentLang === 'ta' && 'உங்கள் தேடலுக்குப் பொருந்தும் பிரிவுகள் எதுவும் இல்லை'}
+              {t('empty.message')}
             </p>
           </div>
         ) : (
@@ -154,9 +145,7 @@ const DivisionsHub = () => {
                             {division.focusAreas.length}
                           </div>
                           <div className="text-xs text-gray-500">
-                            {currentLang === 'en' && 'Focus Areas'}
-                            {currentLang === 'si' && 'අවධානය'}
-                            {currentLang === 'ta' && 'கவனம்'}
+                            {t('stats.focusAreas')}
                           </div>
                         </div>
                         <div>
@@ -164,9 +153,7 @@ const DivisionsHub = () => {
                             {division.services.length}
                           </div>
                           <div className="text-xs text-gray-500">
-                            {currentLang === 'en' && 'Services'}
-                            {currentLang === 'si' && 'සේවා'}
-                            {currentLang === 'ta' && 'சேவைகள்'}
+                            {t('stats.services')}
                           </div>
                         </div>
                         <div>
@@ -174,18 +161,14 @@ const DivisionsHub = () => {
                             <LucideIcons.Users size={24} className="mx-auto" />
                           </div>
                           <div className="text-xs text-gray-500">
-                            {currentLang === 'en' && 'Team'}
-                            {currentLang === 'si' && 'කණ්ඩායම'}
-                            {currentLang === 'ta' && 'குழு'}
+                            {t('stats.team')}
                           </div>
                         </div>
                       </div>
 
                       {/* Learn More Button */}
                       <button className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2">
-                        {currentLang === 'en' && 'Learn More'}
-                        {currentLang === 'si' && 'වැඩිදුර දැනගන්න'}
-                        {currentLang === 'ta' && 'மேலும் அறிக'}
+                        {t('card.learnMore')}
                         <LucideIcons.ChevronRight size={20} />
                       </button>
                     </div>
@@ -201,14 +184,10 @@ const DivisionsHub = () => {
       <section className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6">
-            {currentLang === 'en' && 'Partner With Us'}
-            {currentLang === 'si' && 'අප සමඟ හවුල් වන්න'}
-            {currentLang === 'ta' && 'எங்களுடன் கூட்டு சேருங்கள்'}
+            {t('cta.heading')}
           </h2>
           <p className="text-xl mb-8 opacity-90">
-            {currentLang === 'en' && 'Collaborate with NARA\'s expert divisions for cutting-edge marine research and sustainable solutions'}
-            {currentLang === 'si' && 'අති නවීන සමුද්‍ර පර්යේෂණ සහ තිරසාර විසඳුම් සඳහා NARA හි විශේෂඥ අංශ සමඟ සහයෝගයෙන් කටයුතු කරන්න'}
-            {currentLang === 'ta' && 'அதிநவீன கடல் ஆராய்ச்சி மற்றும் நிலையான தீர்வுகளுக்காக NARA இன் நிபுணர் பிரிவுகளுடன் ஒத்துழைக்கவும்'}
+            {t('cta.description')}
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <button
@@ -216,18 +195,14 @@ const DivisionsHub = () => {
               className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:shadow-xl transition-all duration-300 flex items-center gap-2"
             >
               <LucideIcons.Mail size={20} />
-              {currentLang === 'en' && 'Contact Us'}
-              {currentLang === 'si' && 'අප අමතන්න'}
-              {currentLang === 'ta' && 'தொடர்பு கொள்ளுங்கள்'}
+              {t('cta.primary')}
             </button>
             <button
               onClick={() => navigate('/research-excellence-portal')}
               className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 flex items-center gap-2"
             >
               <LucideIcons.FileText size={20} />
-              {currentLang === 'en' && 'View Research'}
-              {currentLang === 'si' && 'පර්යේෂණ බලන්න'}
-              {currentLang === 'ta' && 'ஆராய்ச்சியைப் பார்க்கவும்'}
+              {t('cta.secondary')}
             </button>
           </div>
         </div>

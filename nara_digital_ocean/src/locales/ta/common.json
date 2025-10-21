@@ -7,6 +7,8 @@
   "navbar": {
     "languageLabel": "மொழி",
     "back": "பின் செல்ல",
+    "register": "பதிவு செய்க",
+    "profile": "சுயவிவரம்",
     "brand": {
       "title": "NARA",
       "subtitle": "கடல் ஆராய்ச்சி"

@@ -157,5 +157,179 @@
     "hours": "24/7 මෙහෙයුම්",
     "emergency": "හදිසි හොට්ලයින්",
     "email": "maritime@nara.ac.lk"
+  },
+  "serviceCard": {
+    "turnaroundTime": "සේවාව සම්පූර්ණ කිරීමට කාලය",
+    "nextAvailable": "ඊළඟට ලබාගත හැකි කාලය",
+    "currentQueue": "දැනට පෝලිම",
+    "bookService": "සේවාව වෙන්කරගන්න",
+    "viewDetails": "විස්තර බලන්න",
+    "status": {
+      "available": "ලබාගත හැක",
+      "limited": "සීමිත",
+      "busy": "ක්‍රියාකාරී"
+    }
+  },
+  "bookingModal": {
+    "headers": {
+      "businessInfo": "ව්‍යාපාර තොරතුරු",
+      "serviceDetails": "සේවා තොරතුරු",
+      "notifications": "දැනුම්දීමේ අභිප්‍රේත"
+    },
+    "labels": {
+      "businessName": "ව්‍යාපාර/ආයතන නාමය",
+      "contactPerson": "සම්බන්ධීකරණ පුද්ගලයා",
+      "email": "වි-තැපැල් ලිපිනය",
+      "phone": "දුරකථන අංකය",
+      "businessType": "ව්‍යාපාර වර්ගය",
+      "serviceDate": "වඩා කැමති සේවා දිනය",
+      "specialRequirements": "විශේෂ අවශ්‍යතා"
+    },
+    "placeholders": {
+      "businessName": "ව්‍යාපාර නාමය ඇතුළත් කරන්න",
+      "contactPerson": "සම්බන්ධීකරණ පුද්ගලයාගේ නම ඇතුළත් කරන්න",
+      "email": "විද්‍යුත් තැපැල් ලිපිනය ඇතුළත් කරන්න",
+      "phone": "+94 XX XXX XXXX",
+      "businessType": "ඔබගේ ව්‍යාපාර වර්ගය තෝරන්න",
+      "specialRequirements": "විශේෂ අවශ්‍යතා හෝ සටහන් ඇතුළත් කරන්න"
+    },
+    "descriptions": {
+      "specialRequirements": "විකල්ප: විශේෂ අවශ්‍යතා හෝ සීමා විස්තර කරන්න"
+    },
+    "businessTypes": {
+      "fishingCooperative": "මාළු අස්වැන්න සංවිධානය",
+      "individualFisherman": "තනි ධීවරයා",
+      "aquaculture": "ජල කෘෂිකාර්මික මෙහෙයුම",
+      "shippingCompany": "නාවික සමාගම",
+      "marineTourism": "සාගර සංචාරක සේවාව",
+      "researchInstitution": "ගවේෂණ ආයතනය",
+      "governmentAgency": "රජයේ ආයතනය",
+      "other": "වෙනත්"
+    },
+    "urgency": {
+      "label": "සේවා හදිසිභාවය",
+      "options": {
+        "standard": {
+          "label": "සම්මත (දින 7-14)",
+          "description": "සාමාන්‍ය සැකසීම් කාලය"
+        },
+        "priority": {
+          "label": "ප්‍රමුඛ (දින 3-5)",
+          "description": "+50% ගාස්තුව"
+        },
+        "urgent": {
+          "label": "හදිසි (පැය 24-48)",
+          "description": "+100% ගාස්තුව"
+        }
+      }
+    },
+    "notifications": {
+      "sms": {
+        "label": "SMS දැනුම්දීම්",
+        "description": "අත්‍යවශ්‍ය යාවත්කාලීන හා මතක්කිරීම් SMS මගින් ලබාගන්න"
+      },
+      "email": {
+        "label": "වි-තැපැල් දැනුම්දීම්",
+        "description": "විස්තරාත්මක වාර්තා සහ ලේඛන වි-තැපැල් මගින් ලබාගන්න"
+      }
+    },
+    "costSummary": {
+      "baseCost": "මූලික සේවා ගාස්තුව:",
+      "priorityFee": "ප්‍රමුඛ ගාස්තුව (+50%):",
+      "urgentFee": "හදිසි ගාස්තුව (+100%):",
+      "total": "මුළු ඇස්තමේන්තු ගාස්තුව:"
+    },
+    "buttons": {
+      "submit": "වෙන්කිරීම ඉදිරිපත් කරන්න"
+    },
+    "errors": {
+      "businessName": "ව්‍යාපාර නාමය අවශ්‍යයි",
+      "contactPerson": "සම්බන්ධීකරණ පුද්ගලයා අවශ්‍යයි",
+      "email": "විද්‍යුත් තැපැල් ලිපිනය අවශ්‍යයි",
+      "phone": "දුරකථන අංකය අවශ්‍යයි",
+      "businessType": "ව්‍යාපාර වර්ගය අවශ්‍යයි",
+      "serviceDate": "සේවා දිනය අවශ්‍යයි"
+    },
+    "messages": {
+      "success": "{{service}} සඳහා වෙන්කිරීම ඉදිරිපත් විය!",
+      "reference": "යොමුව: {{reference}}",
+      "estimatedCost": "ඇස්තමේන්තු ගාස්තුව: {{cost}}",
+      "followUp": "පැය 2ක් තුළ SMS සහ වි-තැපෑල මගින් තහවුරු කිරීමක් ලැබෙනු ඇත."
+    }
+  },
+  "alertsBanner": {
+    "title": "මධ්‍යම මුහුදු තත්ත්ව අනතුරු ඇඟවීම",
+    "message": "දකුණු-බස්නාහිර මෝසමික සුළං තත්ත්වය බලාපොරොත්තු වේ. ගැඹුරු මුහුදේ තරංග උස මීටර් 2-3 අතර. කුඩා ධීවර යාත්‍රා වෙරළට ආසන්නව රැඳී සිටීමට උපදෙස් දේ.",
+    "affectedAreas": ["කොළඹ", "ගාල්ල", "මාතර", "හම්බන්තොට"],
+    "issuedBy": "නාරා සාගර වාතව්‍යංශ අංශය",
+    "labels": {
+      "affectedAreas": "බාධිත ප්‍රදේශ",
+      "validUntil": "වලංගු වන තෙක්",
+      "issuedBy": "{{issuer}} නිකුත් කළයි • අනතුරු අංකය: {{id}}"
+    },
+    "buttons": {
+      "details": "සම්පූර්ණ විස්තර",
+      "subscribe": "දායක වන්න"
+    }
+  },
+  "industryInsights": {
+    "updated": "යාවත්කාලීන",
+    "buttons": {
+      "viewReport": "සම්පූර්ණ වාර්තාව බලන්න"
+    },
+    "types": {
+      "fishing": "මාළුකම්",
+      "aquaculture": "ජල කෘෂිකාර්මිකය",
+      "shipping": "නාවික ප්‍රවාහනය"
+    }
+  },
+  "serviceAvailability": {
+    "title": "සජීවී ලබාගත හැකි තත්ත්වය",
+    "subtitle": "දැනට ඇති සේවා තත්ත්වය සහ පෝලිම් කාලයන්",
+    "updated": "යාවත්කාලීන: {{time}}",
+    "next": "මීළඟ: {{slot}}",
+    "queue": "{{count}} දෙනෙක් පෝලිමේ",
+    "items": {
+      "waterQuality": {
+        "service": "ජල ගුණාත්මක පරීක්ෂණ",
+        "nextSlot": "අද ප.ව. 2.30"
+      },
+      "environmentalAssessment": {
+        "service": "පාරිසරික ඇගයීම්",
+        "nextSlot": "හෙට පෙ.ව. 9.00"
+      },
+      "marineSurvey": {
+        "service": "සාගර සමීක්ෂණ",
+        "nextSlot": "දෙසැ 22, පෙ.ව. 10.00"
+      },
+      "equipmentCalibration": {
+        "service": "උපාංග සකස් කිරීම",
+        "nextSlot": "අද ප.ව. 4.00"
+      }
+    },
+    "tips": {
+      "title": "ඉක්මන් වෙන්කිරීමේ උපදෙස්",
+      "items": [
+        "සම්මත සේවා සඳහා දින 2-3 කට පෙර වෙන්කරගන්න",
+        "හදිසි අවශ්‍යතා සඳහා ප්‍රමුඛ වෙන්කිරීම් (+50% ගාස්තුව)",
+        "මාළු අස්වැන්න සංවිධාන සඳහා කණ්ඩායම් වට්ටම් ලබා ගත හැක"
+      ]
+    }
+  },
+  "successStory": {
+    "label": "සාර්ථක කතාව",
+    "serviceUsed": "භාවිත කළ සේවාව:",
+    "impact": "ප්‍රභලතාව:",
+    "timeline": "කාල සටහන:",
+    "businessTypes": {
+      "fishingCooperative": "මාළු අස්වැන්න සංවිධානය",
+      "aquaculture": "ජල කෘෂිකාර්මිකය",
+      "shippingCompany": "නාවික සමාගම",
+      "marineTourism": "සාගර සංචාරක සේවාව",
+      "researchInstitution": "ගවේෂණ ආයතනය",
+      "governmentAgency": "රජයේ ආයතනය",
+      "individualFisherman": "තනි ධීවරයා",
+      "other": "වෙනත්"
+    }
   }
 }
