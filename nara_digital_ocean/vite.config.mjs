@@ -1,10 +1,18 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
+import path from "path";
 // import { VitePWA } from 'vite-plugin-pwa'; // Temporarily disabled for Vite 7 compatibility
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      'react': path.resolve('./node_modules/react'),
+      'react-dom': path.resolve('./node_modules/react-dom')
+    },
+    dedupe: ['react', 'react-dom']
+  },
   // This changes the out put dir from dist to build
   // comment this out if that isn't relevant for your project
   build: {

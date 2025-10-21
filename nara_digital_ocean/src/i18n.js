@@ -246,7 +246,13 @@ i18n
     },
     returnObjects: true,
     react: {
-      useSuspense: false
+      useSuspense: false,
+      bindI18n: 'languageChanged',
+      bindI18nStore: '',
+      transEmptyNodeValue: '',
+      transSupportBasicHtmlNodes: true,
+      transKeepBasicHtmlNodesFor: ['br', 'strong', 'i'],
+      nsMode: 'default'
     }
   });
 
