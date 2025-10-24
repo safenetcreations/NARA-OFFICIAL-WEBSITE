@@ -10,6 +10,7 @@ import APIIntegrationShowcase from '../../components/sections/APIIntegrationShow
 import AcademyShowcase from '../../components/sections/AcademyShowcase';
 import LibraryBooksCarousel from '../../components/library/LibraryBooksCarousel';
 import GovFooter from '../../components/compliance/GovFooter';
+import DIVISIONS_CONFIG from '../../data/divisionsConfig';
 
 const NewHomePage = () => {
   const [lastUpdate, setLastUpdate] = useState(new Date());
@@ -91,12 +92,16 @@ const NewHomePage = () => {
   const missionStatsIcons = [Icons.Award, Icons.Users, Icons.Globe2];
 
   const divisionsConfig = [
-    { icon: Icons.Fish, gradient: 'from-blue-500 to-cyan-500', slug: 'marine-biological-division' },
-    { icon: Icons.Waves, gradient: 'from-green-500 to-teal-500', slug: 'inland-aquatic-aquaculture-division' },
-    { icon: Icons.Satellite, gradient: 'from-purple-500 to-pink-500', slug: 'oceanography-marine-sciences-division' },
-    { icon: Icons.Shield, gradient: 'from-emerald-500 to-green-500', slug: 'environmental-studies-division' },
-    { icon: Icons.Droplets, gradient: 'from-cyan-500 to-blue-500', slug: 'hydrographic-division' },
-    { icon: Icons.Microscope, gradient: 'from-orange-500 to-red-500', slug: 'aquaculture-research-center' }
+    { icon: Icons.Leaf, gradient: 'from-green-500 to-emerald-500', slug: 'environmental-studies-division' },
+    { icon: Icons.Anchor, gradient: 'from-indigo-500 to-purple-500', slug: 'fishing-technology-division' },
+    { icon: Icons.Droplets, gradient: 'from-cyan-500 to-blue-500', slug: 'inland-aquatic-aquaculture-division' },
+    { icon: Icons.Award, gradient: 'from-purple-500 to-pink-500', slug: 'post-harvest-technology-division' },
+    { icon: Icons.Waves, gradient: 'from-teal-500 to-emerald-500', slug: 'marine-biological-division' },
+    { icon: Icons.Compass, gradient: 'from-blue-500 to-indigo-500', slug: 'oceanography-marine-sciences-division' },
+    { icon: Icons.Map, gradient: 'from-sky-500 to-blue-500', slug: 'hydrographic-division' },
+    { icon: Icons.TrendingUp, gradient: 'from-orange-500 to-red-500', slug: 'socio-economic-marketing-division' },
+    { icon: Icons.BarChart3, gradient: 'from-violet-500 to-purple-500', slug: 'monitoring-evaluation-division' },
+    { icon: Icons.Building2, gradient: 'from-emerald-500 to-green-500', slug: 'aquaculture-research-center' }
   ];
 
   const servicesConfig = [
@@ -367,14 +372,21 @@ const NewHomePage = () => {
                       </motion.div>
                     </motion.div>
 
-                    <div className="mt-4 grid grid-cols-2 gap-3 rounded-2xl border border-cyan-500/10 bg-slate-950/80 p-4">
-                      {(heroStats?.grid || []).map((item, index) => (
-                        <div key={item?.label || index} className="rounded-xl bg-slate-900/80 p-3 text-left">
-                          <p className="text-[11px] uppercase tracking-wide text-slate-500">{item?.label}</p>
-                          <p className="text-base font-semibold text-white">{item?.value}</p>
-                          <p className="text-[11px] text-cyan-300/80">{item?.status}</p>
-                        </div>
-                      ))}
+                    <div className="mt-4 rounded-2xl border border-cyan-500/10 bg-slate-950/80 p-2">
+                      <div className="mb-1.5">
+                        <p className="text-center text-sm md:text-base font-semibold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-500 bg-clip-text text-transparent leading-tight">
+                          National Aquatic Resources Research & Development Agency
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {(heroStats?.grid || []).map((item, index) => (
+                          <div key={item?.label || index} className="rounded-xl bg-slate-900/80 p-2 text-left">
+                            <p className="text-[11px] uppercase tracking-wide text-slate-500">{item?.label}</p>
+                            <p className="text-base font-semibold text-white">{item?.value}</p>
+                            <p className="text-[11px] text-cyan-300/80">{item?.status}</p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -526,50 +538,149 @@ const NewHomePage = () => {
               </div>
             </div>
 
-            {divisionsContent?.list?.length > 0 && (
-              <div>
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-                  <div>
-                    <h3 className="text-2xl md:text-3xl font-bold text-white font-space">
-                      {divisionsContent?.heading}
-                    </h3>
-                    <p className="text-sm md:text-base text-slate-400 max-w-3xl">
-                      {divisionsContent?.subheading}
-                    </p>
-                  </div>
-                  <Link
-                    to="/divisions"
-                    className="inline-flex items-center gap-2 rounded-xl border border-cyan-500/40 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10"
-                  >
-                    <Icons.LayoutGrid className="h-4 w-4" />
-                    {t('mission.viewAllDivisions', {
+            <div>
+              <div className="text-center mb-12">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <span className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-5 py-2.5 text-sm uppercase tracking-[0.3em] text-cyan-200/80 mb-6">
+                    <Icons.LayoutGrid className="h-5 w-5" />
+                    {t('divisions.badge', { ns: 'home', defaultValue: 'Research Excellence' })}
+                  </span>
+                  <h3 className="text-4xl md:text-5xl font-bold text-white font-space mb-4 leading-tight">
+                    {t('divisions.heading', { ns: 'home', defaultValue: 'Our Research Divisions' })}
+                  </h3>
+                  <p className="text-lg text-slate-400 max-w-3xl mx-auto leading-relaxed">
+                    {t('divisions.subheading', {
                       ns: 'home',
-                      defaultValue: 'View all divisions'
+                      defaultValue: 'Ten specialized divisions advancing marine and freshwater science, conservation, and innovation across Sri Lanka'
                     })}
-                  </Link>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {divisionsConfig.map((config, index) => {
-                    const division = divisionsContent?.list?.[index] || {};
-                    const IconComponent = config.icon;
-                    return (
-                      <Link key={config.slug || index} to={`/divisions/${config.slug}`} className="group h-full">
-                        <div className="relative h-full overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-6 transition hover:border-cyan-500/40">
-                          <div className={`mb-4 inline-flex items-center justify-center rounded-xl bg-gradient-to-r ${config.gradient} p-3 text-white`}>
-                            <IconComponent className="h-6 w-6" />
+                  </p>
+                </motion.div>
+              </div>
+
+              <div className="space-y-6 overflow-hidden -mx-4 md:mx-0">
+                {/* First Row - Scrolling Left to Right */}
+                <div className="relative">
+                  <div className="flex gap-4 md:gap-6 animate-scroll-right">
+                    {[...divisionsConfig.slice(0, 5), ...divisionsConfig.slice(0, 5)].map((config, idx) => {
+                      const index = idx % 5;
+                      const division = divisionsContent?.list?.[index] || {};
+                      const IconComponent = config.icon;
+                      const realDivision = DIVISIONS_CONFIG[index];
+                      const heroImage = realDivision?.heroImage || 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&q=85';
+                      
+                      if (!division?.name) return null;
+                      
+                      return (
+                        <Link
+                          key={`row1-${idx}`}
+                          to={`/divisions/${config.slug}`}
+                          className="group flex-shrink-0 w-[340px] md:w-[480px] block touch-manipulation"
+                        >
+                          <div className="relative h-[280px] md:h-[360px] overflow-hidden rounded-2xl md:rounded-3xl border border-slate-800/50 bg-slate-900 shadow-xl transition-all duration-300 hover:border-cyan-500/60 hover:shadow-2xl hover:shadow-cyan-500/20 active:scale-[0.98]">
+                            {/* Hero Image Background */}
+                            <div className="absolute inset-0">
+                              <img
+                                src={heroImage}
+                                alt={division?.name}
+                                className="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-700 group-hover:scale-105 transform transition-transform duration-1000"
+                                loading="lazy"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/90 to-slate-900/40" />
+                              <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-10 mix-blend-overlay`} />
+                            </div>
+                            
+                            {/* Content */}
+                            <div className="relative h-full flex flex-col justify-end p-6 md:p-8">
+                              <div>
+                                <h4 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3 group-hover:text-cyan-300 transition-colors leading-tight tracking-tight">
+                                  {division?.name}
+                                </h4>
+                                <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-cyan-400 uppercase tracking-wider">
+                                  <span>Explore</span>
+                                  <Icons.ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:translate-x-2" />
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                          <h4 className="text-xl font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">
-                            {division?.name}
-                          </h4>
-                          <p className="text-sm text-slate-400 leading-relaxed">{division?.description}</p>
-                          <Icons.ArrowRight className="mt-6 h-5 w-5 text-cyan-300 opacity-0 group-hover:translate-x-1 group-hover:opacity-100 transition-all" />
-                        </div>
-                      </Link>
-                    );
-                  })}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Second Row - Scrolling Right to Left */}
+                <div className="relative">
+                  <div className="flex gap-4 md:gap-6 animate-scroll-left">
+                    {[...divisionsConfig.slice(5, 10), ...divisionsConfig.slice(5, 10)].map((config, idx) => {
+                      const index = (idx % 5) + 5;
+                      const division = divisionsContent?.list?.[index] || {};
+                      const IconComponent = config.icon;
+                      const realDivision = DIVISIONS_CONFIG[index];
+                      const heroImage = realDivision?.heroImage || 'https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=1200&q=85';
+                      
+                      if (!division?.name) return null;
+                      
+                      return (
+                        <Link
+                          key={`row2-${idx}`}
+                          to={`/divisions/${config.slug}`}
+                          className="group flex-shrink-0 w-[340px] md:w-[480px] block touch-manipulation"
+                        >
+                          <div className="relative h-[280px] md:h-[360px] overflow-hidden rounded-2xl md:rounded-3xl border border-slate-800/50 bg-slate-900 shadow-xl transition-all duration-300 hover:border-cyan-500/60 hover:shadow-2xl hover:shadow-cyan-500/20 active:scale-[0.98]">
+                            {/* Hero Image Background */}
+                            <div className="absolute inset-0">
+                              <img
+                                src={heroImage}
+                                alt={division?.name}
+                                className="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-700 group-hover:scale-105 transform transition-transform duration-1000"
+                                loading="lazy"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/90 to-slate-900/40" />
+                              <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-10 mix-blend-overlay`} />
+                            </div>
+                            
+                            {/* Content */}
+                            <div className="relative h-full flex flex-col justify-end p-6 md:p-8">
+                              <div>
+                                <h4 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3 group-hover:text-cyan-300 transition-colors leading-tight tracking-tight">
+                                  {division?.name}
+                                </h4>
+                                <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-cyan-400 uppercase tracking-wider">
+                                  <span>Explore</span>
+                                  <Icons.ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:translate-x-2" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            )}
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="mt-12 text-center"
+              >
+                <Link
+                  to="/divisions"
+                  className="inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-cyan-500/25 transition-all hover:shadow-cyan-500/40 hover:scale-105"
+                >
+                  <Icons.Microscope className="h-5 w-5" />
+                  {t('mission.viewAllDivisions', { ns: 'home', defaultValue: 'Explore All Divisions' })}
+                  <Icons.ArrowRight className="h-5 w-5" />
+                </Link>
+              </motion.div>
+            </div>
           </div>
         </section>
 
@@ -734,72 +845,6 @@ const NewHomePage = () => {
           </div>
         </section>
 
-        <section className="relative bg-gradient-to-b from-slate-950 via-blue-950/30 to-slate-950 py-20 px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-              <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-white font-space">
-                  {newsContent?.heading}
-                </h2>
-                <p className="text-sm md:text-base text-slate-400">{newsContent?.subheading}</p>
-              </div>
-              <Link
-                to="/nara-news-updates-center"
-                className="inline-flex items-center gap-2 rounded-xl border border-cyan-500/40 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10"
-              >
-                <Icons.Rss className="h-4 w-4" />
-                {newsContent?.viewAll}
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {newsContent?.articles?.map((article, index) => {
-                const IconComponent = newsIcons[index] || Icons.Newspaper;
-                const gradient = newsGradients[index] || 'from-cyan-500 to-blue-500';
-                const linkText = index === 2 ? newsContent?.learnMore : newsContent?.readMore;
-                return (
-                  <Link key={`${article?.title}-${index}`} to="/nara-news-updates-center" className="group">
-                    <div className="h-full rounded-2xl border border-slate-800 bg-slate-900/60 p-6 transition hover:border-cyan-500/40">
-                      <div className="mb-3 flex items-center gap-2">
-                        <div className={`rounded-lg bg-gradient-to-r ${gradient} p-2 text-white`}>
-                          <IconComponent className="h-4 w-4" />
-                        </div>
-                        <span className="text-xs text-slate-400">{article?.date}</span>
-                      </div>
-                      <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">
-                        {article?.title}
-                      </h3>
-                      <p className="text-sm text-slate-400 leading-relaxed mb-4 line-clamp-3">
-                        {article?.description}
-                      </p>
-                      <div className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-300">
-                        {linkText}
-                        <Icons.ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-            <div className="mt-8 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-6">
-              <div className="flex items-start gap-4">
-                <div className="rounded-lg bg-amber-500/20 p-3">
-                  <Icons.AlertTriangle className="h-6 w-6 text-amber-400" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-amber-300 mb-2">{newsContent?.advisory?.title}</h3>
-                  <p className="text-sm text-amber-100/80 mb-3">{newsContent?.advisory?.description}</p>
-                  <Link
-                    to="/fish-advisory-system"
-                    className="inline-flex items-center gap-2 text-sm font-semibold text-amber-200 hover:text-amber-100 transition-colors"
-                  >
-                    {newsContent?.advisory?.link}
-                    <Icons.ExternalLink className="h-4 w-4" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-20 px-4">
           <div className="max-w-7xl mx-auto">
@@ -819,35 +864,8 @@ const NewHomePage = () => {
               </p>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-8 backdrop-blur">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {knowledgeTiles.map(({ key, icon: TileIcon, title, description, link, cta }) => (
-                    <Link
-                      key={key}
-                      to={link}
-                      className="group flex items-start gap-3 rounded-xl border border-slate-800 bg-slate-900/80 p-4 transition hover:border-cyan-400/40 hover:bg-slate-900"
-                    >
-                      <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-cyan-500/10 text-cyan-200">
-                        <TileIcon className="h-5 w-5" />
-                      </span>
-                      <div className="flex-1 text-left">
-                        <h3 className="text-sm font-semibold text-white group-hover:text-cyan-100 transition-colors">
-                          {title}
-                        </h3>
-                        <p className="mt-1 text-xs text-slate-400 leading-relaxed">{description}</p>
-                        <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-cyan-300">
-                          {cta}
-                          <Icons.ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 backdrop-blur">
-                <LibraryBooksCarousel />
-              </div>
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 backdrop-blur">
+              <LibraryBooksCarousel />
             </div>
           </div>
         </section>

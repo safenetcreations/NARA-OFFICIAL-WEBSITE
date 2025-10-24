@@ -70,6 +70,11 @@ const MaritimeDataAdmin = lazy(() => import('./pages/admin/MaritimeDataAdmin'));
 // Live Ocean Data
 const LiveOceanDataView = lazy(() => import('./pages/live-ocean-data/LiveOceanDataView'));
 
+// Ocean Data Sources
+const StormglassMaritimePage = lazy(() => import('./pages/stormglass-maritime'));
+const NASAOceanColorPage = lazy(() => import('./pages/nasa-ocean-color'));
+const OpenWeatherDashboard = lazy(() => import('./pages/openweather-dashboard'));
+
 // Analytics Admin - Phase 5
 const AnalyticsAdmin = lazy(() => import('./pages/admin/AnalyticsAdmin'));
 const PredictionsAdmin = lazy(() => import('./pages/admin/PredictionsAdmin'));
@@ -261,6 +266,9 @@ function Routes() {
               <Route path="/regional-impact-network" element={<RegionalImpactNetwork />} />
               <Route path="/maritime-services-hub" element={<MaritimeServicesHub />} />
               <Route path="/live-ocean-data" element={<LiveOceanDataView />} />
+              <Route path="/stormglass-maritime" element={<StormglassMaritimePage />} />
+              <Route path="/nasa-ocean-color" element={<NASAOceanColorPage />} />
+              <Route path="/weather-dashboard" element={<OpenWeatherDashboard />} />
               <Route path="/knowledge-discovery-center" element={<KnowledgeDiscoveryCenter />} />
               <Route path="/partnership-innovation-gateway" element={<PartnershipInnovationGateway />} />
               <Route path="/digital-product-library" element={<DigitalProductLibrary />} />
