@@ -183,55 +183,55 @@
     },
     "tabs": {
       "partners": {
-        "label": "For Partners",
-        "heading": "A guided hand-off for external teams",
-        "body": "Partners receive clear documentation, a sandbox key, and a support contact to keep them moving.",
+        "label": "සහබාගීත්වයට",
+        "heading": "බාහිර සඳහා වෙනුවෙන් රහස් හස්තාන්තරණය",
+        "body": "සහබාගීත්වයට ස්පෂ්ට දර්ශන, sandbox කිලිය සහ තරම් සහාය සම්බන්ධ්කරණයක් ලබා දී ඇත.",
         "benefits": [
-          "Step-by-step quick start guide with sample requests",
-          "Sandbox and production keys managed from one place",
-          "Status alerts so partners know when data refreshes"
+          "නිදර්ශ අනුරොධ සහිත පව්දි පව්දිය ඉඩු විවිධ මාර්ගදර්ශිය",
+          "ඉකම ස්තානයකින් sandbox සහ ප්‍රජනන කිලි පරිපාලනය කරනු ලබයි",
+          "තත්‍රපදය නවීන් කරන විට සහබාගීත්වයට ධානම් වන ප්‍රතිපෝෂණ එජ්ජ ස්ථිති එජ්ජ"
         ],
         "actions": [
-          { "label": "Share the partner console", "to": "/integration-systems-platform" },
-          { "label": "Download quick-start kit", "to": "/media-press-kit" }
+          { "label": "සහබාගී කන්සොල් ප්‍රකට කරන්න", "to": "/integration-systems-platform" },
+          { "label": "ඉඩු විවිධ කිට් ජමා කරන්න", "to": "/media-press-kit" }
         ]
       },
       "admin": {
-        "label": "For NARA Teams",
-        "heading": "Keep manual control when you need it",
-        "body": "The admin panel lets staff post new data, approve changes, and pause access without touching code.",
+        "label": "NARA සඳහා වෙනුවෙන්",
+        "heading": "ඔන්ත අවශ්‍ය විට හස්ත නියන්ත්‍රණය රගන්න",
+        "body": "පරිපාලන හැරුණුව කර්මිකයැට අලුත් තත්‍රපදය පොස්ට් කිරීමට, වෙනස්කම් අනුමත කිරීමට සහ කොඩය සම්පන්ධය නොකර අණුමතිය ලබා දී සිටීමට අවකාශය රගනියි.",
         "benefits": [
-          "Upload files or edit copy with built-in checks",
-          "Optional approvals so sensitive updates get reviewed",
-          "Pause or resume feeds with a single toggle"
+          "අන්තර්ගත පරීක්ෂාවෙන් සහිතව හොඩිරර් ඉපරිම කිරීම සහා නකලය සම්පාදනය කිරීම",
+          "සන්වේදී නවීන් කිරීම් පරීක්ෂා කිරීමට සීදිය සෙඛීරීම විකල්ප අනුමතය",
+          "කලින් එකක් මාරු කිරීමකින් ඉදරිපත් ලබාගැනීම් සහා අලුතින් සුයුම් නැවුම් කිරීම"
         ],
         "actions": [
-          { "label": "Open the admin panel", "to": "/admin/dashboard" },
-          { "label": "Read the operations guide", "to": "/admin/content" }
+          { "label": "පරිපාලන හැරුණුව විවෘත කරන්න", "to": "/admin/dashboard" },
+          { "label": "ක්‍රියාකාරි මාර්ගදර්ශිය කියවන්න", "to": "/admin/content" }
         ]
       },
       "playground": {
-        "label": "Try It First",
-        "heading": "Experiment safely before you go live",
-        "body": "A ready-made playground mirrors the live endpoints so teams can prototype and learn quickly.",
+        "label": "පරීක්ෂා කරන්න",
+        "heading": "නෙතිවට යාමට පසු බාහුකාකිව පරීක්ෂා කරන්න",
+        "body": "සුදුසු විළයාට්මක අවකාශයක් නේති endpoints ප්‍රතිබිම්බීත කරයි, එබාවින් සඳහාවට ඉපක්‍රම කිරීමට සහ ඉගෙන ගැනීමට හැකියාව.",
         "benefits": [
-          "Mock responses that mirror live payloads",
-          "Copy-and-paste examples for popular languages",
-          "Notifications when an endpoint changes"
+          "නේති payloads ප්‍රතිබිම්බීත කරන mock ප්‍රතික්‍රියා",
+          "ප්‍රචලිත භාෂා වලට නකලය කිරීම සහ ඔබ් කිරීම මිසාල",
+          "endpoint වෙනස් වෙණවිට සූචනය"
         ],
         "actions": [
-          { "label": "Launch the playground", "to": "/open-data-portal" },
-          { "label": "Talk to the integration desk", "to": "/contact-us" }
+          { "label": "විළයාට්මක අවකාශය සෘචාරන්න", "to": "/open-data-portal" },
+          { "label": "ඉදරිපත් මේෂය සඹඟ වාර්තාව කරන්න", "to": "/contact-us" }
         ]
       }
     },
     "security": {
-      "title": "Trust built in",
-      "body": "Role-based access, audit history, and automated alerts protect national data while keeping partners informed.",
+      "title": "සැලකී නැම්ගීම",
+      "body": "භූමිකාව අනුව අණුමති, තේරුම් ඉතිහාසය සහ ස්වයංක්‍රීය එජ්ජ රටට සහබාගීත්වයට විද්‍යුත්හැටිම සිටියමෙන් රටට තත්‍රපදය රකින්න.",
       "checklist": [
-        "Separate sandbox and production keys for every partner",
-        "Automatic email when thresholds or quotas are reached",
-        "Exportable audit trail for compliance reviews"
+        "සියලුම සහබාගීත්වයා සඳහා වෙනම sandbox සහ ප්‍රජනන කිලි",
+        "සීමාවක් සහා අනුපාතයට පැමිණෙන ස්වයංක්‍රීය මිනිතුරු",
+        "සමුපකාරී මතිප්‍රකාශනය සඳහා නිකුත් කරැකි තේරුම් ප්‍රශ්නය"
       ]
     }
   },

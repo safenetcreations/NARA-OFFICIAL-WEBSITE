@@ -262,17 +262,17 @@ const NewHomePage = () => {
                     <div className="relative h-16 md:h-20 flex items-center justify-center">
                       <div className="text-center text-2xl md:text-4xl font-bold welcome-text-si absolute inset-0 flex items-center justify-center">
                         <span className="typewriter-wrapper bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-300 bg-clip-text text-transparent">
-                          NARA වෙත සාදරයෙන් පිළිගනිමු
+                          {t('hero.welcome.sinhala', { ns: 'home', defaultValue: 'NARA වෙත සාදරයෙන් පිළිගනිමු' })}
                         </span>
                       </div>
                       <div className="text-center text-2xl md:text-4xl font-bold welcome-text-ta opacity-0 absolute inset-0 flex items-center justify-center">
                         <span className="typewriter-wrapper bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-300 bg-clip-text text-transparent">
-                          NARA க்கு வரவேற்கிறோம்
+                          {t('hero.welcome.tamil', { ns: 'home', defaultValue: 'NARA க்கு வரவேற்கிறோம்' })}
                         </span>
                       </div>
                       <div className="text-center text-2xl md:text-4xl font-bold welcome-text-en opacity-0 absolute inset-0 flex items-center justify-center">
                         <span className="typewriter-wrapper bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-300 bg-clip-text text-transparent">
-                          Welcome to NARA
+                          {t('hero.welcome.english', { ns: 'home', defaultValue: 'Welcome to NARA' })}
                         </span>
                       </div>
                     </div>
