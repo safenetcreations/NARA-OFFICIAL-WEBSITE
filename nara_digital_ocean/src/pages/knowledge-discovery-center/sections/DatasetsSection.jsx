@@ -18,12 +18,12 @@ const DatasetsSection = () => {
   return (
     <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="py-20 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-white mb-4">{t('datasets.title')}</h2>
-          <p className="text-xl text-slate-400">{t('datasets.subtitle')}</p>
+        <div className="text-center mb-12 px-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">{t('datasets.title')}</h2>
+          <p className="text-base sm:text-lg md:text-xl text-slate-400">{t('datasets.subtitle')}</p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4">
           {datasets.map((dataset, index) => (
             <motion.div key={dataset.id} initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.1 }} whileHover={{ scale: 1.02 }} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-cyan-500/50 transition-all">
               <div className="flex items-start gap-4">

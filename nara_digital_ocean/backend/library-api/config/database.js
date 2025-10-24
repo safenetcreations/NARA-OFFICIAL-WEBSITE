@@ -1,85 +1,44 @@
 const { Pool } = require('pg');
-require('dotenv').config();
 
-// PostgreSQL connection pool
+// Database configuration for nara_library
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || 5432,
   database: process.env.DB_NAME || 'nara_library',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD,
-  max: 20, // Maximum number of clients in the pool
+  user: process.env.DB_USER || process.env.USER,
+  password: process.env.DB_PASSWORD || '',
+  max: 20,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 10000,
 });
+
+// Get a client from the pool
+async function getClient() {
+  return await pool.connect();
+}
 
 // Test database connection
-pool.on('connect', () => {
-  console.log('✅ Connected to PostgreSQL database');
-});
+async function testConnection() {
+  try {
+    const client = await getClient();
+    const result = await client.query('SELECT NOW()');
+    console.log('✅ Database connected successfully at', result.rows[0].now);
+    client.release();
+    return true;
+  } catch (error) {
+    console.error('❌ Database connection failed:', error.message);
+    return false;
+  }
+}
 
-pool.on('error', (err) => {
-  console.error('❌ Unexpected error on idle client', err);
+// Handle pool errors
+pool.on('error', (err, client) => {
+  console.error('Unexpected error on idle client', err);
   process.exit(-1);
 });
 
-// Helper function to execute queries
-const query = async (text, params) => {
-  const start = Date.now();
-  try {
-    const res = await pool.query(text, params);
-    const duration = Date.now() - start;
-    console.log('Executed query', { text, duration, rows: res.rowCount });
-    return res;
-  } catch (error) {
-    console.error('Database query error:', error);
-    throw error;
-  }
-};
-
-// Helper function to get a client from the pool (for transactions)
-const getClient = async () => {
-  const client = await pool.connect();
-  const query = client.query.bind(client);
-  const release = client.release.bind(client);
-  
-  // Set a timeout of 5 seconds, after which we will log this client's last query
-  const timeout = setTimeout(() => {
-    console.error('A client has been checked out for more than 5 seconds!');
-  }, 5000);
-  
-  // Monkey patch the query method to keep track of the last query executed
-  client.query = (...args) => {
-    client.lastQuery = args;
-    return query(...args);
-  };
-  
-  client.release = () => {
-    clearTimeout(timeout);
-    client.query = query;
-    client.release = release;
-    return release();
-  };
-  
-  return client;
-};
-
-// Test connection function
-const testConnection = async () => {
-  try {
-    const result = await query('SELECT NOW()');
-    console.log('✅ Database connection test successful:', result.rows[0]);
-    return true;
-  } catch (error) {
-    console.error('❌ Database connection test failed:', error.message);
-    return false;
-  }
-};
-
 module.exports = {
   pool,
-  query,
   getClient,
   testConnection
 };
-

@@ -1,5 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, Download, RefreshCw } from 'lucide-react';
+
+const PWA_TRI_LINGUAL_TEXT = [
+  {
+    key: 'si',
+    heading: 'නාරා යෙදුම ස්ථාපනය කරන්න',
+    subheading: 'ඕනෑම වේලාවක ඉක්මන් ප්‍රවේශයක්',
+    description: 'ඕනෑම අවස්ථාවක ඉක්මන් ප්‍රවේශය සහ නොබැඳි සහය සඳහා නාරා ඔබේ මුල් පිටුවට එකතු කරන්න.'
+  },
+  {
+    key: 'ta',
+    heading: 'நாரா செயலியை நிறுவுங்கள்',
+    subheading: 'எப்போதும் விரைவான அணுகல்',
+    description: 'வேகமான அணுகலும் இணையதளமற்ற ஆதரவும் பெற உங்கள் முகப்பு திரையில் நாராவைச் சேர்க்கவும்.'
+  },
+  {
+    key: 'en',
+    heading: 'Install NARA App',
+    subheading: 'Quick access anytime',
+    description: 'Add NARA to your home screen for quick access and offline support.'
+  }
+];
+
+const PWA_INSTALL_DISMISS_KEY = 'pwa-install-dismissed';
+const PWA_INSTALL_COMPLETE_KEY = 'pwa-install-complete';
 
 /**
  * PWA Install Prompt Component
@@ -8,22 +32,48 @@ import { X, Download, RefreshCw } from 'lucide-react';
 export const InstallPrompt = () => {
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
+  const markInstalled = useCallback(() => {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return;
+    }
+    localStorage.setItem(PWA_INSTALL_COMPLETE_KEY, 'true');
+    localStorage.removeItem(PWA_INSTALL_DISMISS_KEY);
+    setShowPrompt(false);
+  }, []);
 
   useEffect(() => {
-    // Listen for install availability
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return undefined;
+    }
+
+    const hasCompletedInstall = localStorage.getItem(PWA_INSTALL_COMPLETE_KEY);
+    const isStandalone =
+      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+      // iOS PWA mode
+      window.navigator.standalone;
+
+    if (hasCompletedInstall || isStandalone) {
+      markInstalled();
+      return undefined;
+    }
+
     const handleInstallAvailable = () => {
-      setShowPrompt(true);
+      if (!localStorage.getItem(PWA_INSTALL_COMPLETE_KEY) && !localStorage.getItem(PWA_INSTALL_DISMISS_KEY)) {
+        setShowPrompt(true);
+      }
     };
 
     const handleInstalled = () => {
-      setShowPrompt(false);
+      markInstalled();
     };
 
+    // Listen for install availability
     window.addEventListener('pwa-install-available', handleInstallAvailable);
     window.addEventListener('pwa-installed', handleInstalled);
+    window.addEventListener('appinstalled', handleInstalled);
 
     // Check if already dismissed
-    const dismissed = localStorage.getItem('pwa-install-dismissed');
+    const dismissed = localStorage.getItem(PWA_INSTALL_DISMISS_KEY);
     if (dismissed) {
       setShowPrompt(false);
     }
@@ -31,18 +81,18 @@ export const InstallPrompt = () => {
     return () => {
       window.removeEventListener('pwa-install-available', handleInstallAvailable);
       window.removeEventListener('pwa-installed', handleInstalled);
+      window.removeEventListener('appinstalled', handleInstalled);
     };
-  }, []);
+  }, [markInstalled]);
 
   const handleInstall = async () => {
     setIsInstalling(true);
-    
+
     try {
       const { showInstallPrompt } = await import('../../utils/pwa');
       const result = await showInstallPrompt();
-      
-      if (result.outcome === 'accepted') {
-        setShowPrompt(false);
+      if (result?.outcome === 'accepted') {
+        markInstalled();
       }
     } catch (error) {
       console.error('Install error:', error);
@@ -53,7 +103,10 @@ export const InstallPrompt = () => {
 
   const handleDismiss = () => {
     setShowPrompt(false);
-    localStorage.setItem('pwa-install-dismissed', Date.now().toString());
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return;
+    }
+    localStorage.setItem(PWA_INSTALL_DISMISS_KEY, Date.now().toString());
   };
 
   if (!showPrompt) return null;
@@ -66,18 +119,42 @@ export const InstallPrompt = () => {
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
-                  <img 
-                    src="/favicon.ico" 
-                    alt="NARA" 
-                    className="w-8 h-8"
+                  <img
+                    src="/assets/nara-logo.png"
+                    alt="NARA logo"
+                    className="w-10 h-10 object-contain"
                     onError={(e) => {
                       e.target.style.display = 'none';
                     }}
                   />
                 </div>
-                <div>
-                  <h3 className="font-bold text-lg">Install NARA App</h3>
-                  <p className="text-sm opacity-90">Quick access anytime</p>
+                <div className="flex flex-col gap-1">
+                  <div className="flex flex-col leading-tight">
+                    {PWA_TRI_LINGUAL_TEXT.map(({ key, heading }, index) => (
+                      <span
+                        key={`pwa-heading-${key}`}
+                        className={
+                          index === 0
+                            ? 'font-bold text-lg'
+                            : index === 1
+                              ? 'font-semibold text-base'
+                              : 'font-semibold text-base'
+                        }
+                      >
+                        {heading}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex flex-col leading-tight">
+                    {PWA_TRI_LINGUAL_TEXT.map(({ key, subheading }, index) => (
+                      <span
+                        key={`pwa-subheading-${key}`}
+                        className={index === 0 ? 'text-sm opacity-90' : 'text-xs opacity-80'}
+                      >
+                        {subheading}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -90,9 +167,13 @@ export const InstallPrompt = () => {
             </button>
           </div>
 
-          <p className="text-sm opacity-90 mb-4">
-            Add NARA to your home screen for quick access and offline support.
-          </p>
+          <div className="flex flex-col gap-0.5 text-sm opacity-90 mb-4 leading-tight">
+            {PWA_TRI_LINGUAL_TEXT.map(({ key, description }, index) => (
+              <span key={`pwa-description-${key}`} className={index === 0 ? '' : 'text-xs opacity-80'}>
+                {description}
+              </span>
+            ))}
+          </div>
 
           <div className="flex gap-3">
             <button

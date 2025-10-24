@@ -256,6 +256,19 @@ i18n
     }
   });
 
+// Set initial language on HTML element
+if (typeof document !== 'undefined') {
+  document.documentElement.lang = i18n.language;
+}
+
+// Update HTML lang attribute when language changes
+i18n.on('languageChanged', (lng) => {
+  if (typeof document !== 'undefined') {
+    document.documentElement.lang = lng;
+    console.log(`✅ Language set to ${lng === 'en' ? 'English' : lng === 'ta' ? 'Tamil' : 'Sinhala'}`);
+  }
+});
+
 export const AVAILABLE_LANGUAGES = [
   { code: 'si', labelKey: 'language.sinhala' },
   { code: 'ta', labelKey: 'language.tamil' },

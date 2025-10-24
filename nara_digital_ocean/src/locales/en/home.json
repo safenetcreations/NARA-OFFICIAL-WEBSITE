@@ -100,6 +100,7 @@
     }
   },
   "mission": {
+    "badge": "National Aquatic Research Authority",
     "heading": "Safeguarding Sri Lanka's Aquatic Wealth Through Science",
     "description": "The National Aquatic Resources Research & Development Agency (NARA) is Sri Lanka's premier institute for marine and freshwater science, dedicated to safeguarding and sustainably developing the nation's aquatic wealth. We conduct cutting-edge research, guide policy on fisheries and ocean resources, and drive innovation in the Blue Economy to benefit ecosystems and communities.",
     "stats": [
@@ -115,7 +116,14 @@
         "value": "100+",
         "label": "Completed Research Projects"
       }
-    ]
+    ],
+    "focusResearch": "Coastal, deep sea, and inland water programmes powering national policy and the blue economy.",
+    "focusCommunity": "Alliances with fishing communities, academia, and defence agencies safeguard livelihoods and maritime security.",
+    "ctaLearn": "About NARA",
+    "ctaConsult": "Request a briefing",
+    "telemetryLabel": "Mission telemetry online",
+    "briefing": "Live observatories, ocean drones, and GovCERT-secured data streams coordinate a 200 NM protective radius across Sri Lanka’s sovereign waters.",
+    "viewAllDivisions": "View all divisions"
   },
   "portal": {
     "heading": "Quick Access Portal",
@@ -225,16 +233,65 @@
         "Automatic email when thresholds or quotas are reached",
         "Exportable audit trail for compliance reviews"
       ]
+    }
+  },
+  "academy": {
+    "badge": "NARA Academy",
+    "titleLine1": "Nurturing Future",
+    "titleLine2": "Ocean Leaders",
+    "subtitle": "Comprehensive marine education programs from school students to advanced researchers",
+    "updated": "Updated",
+    "programs": {
+      "aquaSchool": {
+        "title": "Aqua School",
+        "subtitle": "Marine Education for Young Minds",
+        "description": "Inspiring the next generation of ocean guardians through interactive learning and hands-on marine science education.",
+        "features": [
+          "Interactive Marine Science Courses",
+          "Virtual Ocean Explorations",
+          "Student Research Projects",
+          "Environmental Awareness Programs"
+        ],
+        "stats": [
+          { "label": "Students", "value": "5,000+" },
+          { "label": "Courses", "value": "25+" },
+          { "label": "Schools", "value": "150+" }
+        ]
+      },
+      "nexus": {
+        "title": "Nexus Graduate Program",
+        "subtitle": "Advanced Marine Research & Innovation",
+        "description": "Empowering graduate students and researchers with cutting-edge marine science education and research opportunities.",
+        "features": [
+          "Master's & PhD Programs",
+          "Research Fellowships",
+          "Industry Partnerships",
+          "International Collaborations"
+        ],
+        "stats": [
+          { "label": "Graduates", "value": "1,200+" },
+          { "label": "Projects", "value": "300+" },
+          { "label": "Partners", "value": "50+" }
+        ]
+      }
     },
-    "cta": {
-      "primary": { "label": "Explore the API catalogue", "to": "/open-data-portal" },
-      "secondary": { "label": "Book an onboarding call", "to": "/contact-us" }
+    "keyFeatures": "Key Features",
+    "visitWebsite": "Visit Website",
+    "explore": "Explore",
+    "preview": "Preview",
+    "loadingPreview": "Loading preview...",
+    "badges": {
+      "accredited": "Accredited Programs",
+      "industryAligned": "Industry Aligned",
+      "expertFaculty": "Expert Faculty",
+      "globalRecognition": "Global Recognition"
     }
   },
   "missionControl": {
     "badge": "National Mission Control",
     "title": "Safeguarding Sri Lanka's Blue Economy",
     "description": "The National Aquatic Resources Research & Development Agency orchestrates ocean intelligence, policy, and innovation to secure a resilient maritime future for the nation.",
+    "learnMore": "Review mandate brief",
     "form": {
       "title": "Request a Strategic Briefing",
       "description": "Receive monthly intelligence dispatches, mission updates, and collaboration windows from the command center.",
@@ -247,6 +304,8 @@
     }
   },
   "highlights": {
+    "heading": "Impact at a Glance",
+    "description": "A national command centre powering real-time ocean intelligence, policy enforcement, and blue economy resilience.",
     "cards": {
       "programs": {
         "label": "Research Programs",
@@ -448,31 +507,30 @@
       "link": "View full advisory"
     }
   },
-  "cta": {
-    "heading": "How Can We Help You?",
-    "subheading": "Whether you're a researcher, partner, or community member, find the right resources for your needs",
-    "cards": [
-      {
-        "title": "Explore Research & Data",
-        "description": "Access scientific publications, research findings, and marine datasets for academic and policy research.",
-        "button": "Browse Research Projects"
+  "knowledge": {
+    "badge": "Knowledge Hub",
+    "heading": "Discover the latest publications",
+    "description": "Browse curated research, advisories, and technical publications powering Sri Lanka’s aquatic stewardship.",
+    "tiles": {
+      "library": {
+        "title": "Research Library",
+        "description": "Access peer-reviewed studies, policy briefs, and technical reports across every marine discipline.",
+        "cta": "Open library"
       },
-      {
-        "title": "Get Involved & Collaborate",
-        "description": "Partner with us on research projects, volunteer opportunities, or explore funding and collaboration options.",
-        "button": "View Partnership Options"
+      "advisory": {
+        "title": "Advisory Notices",
+        "description": "Track the latest fisheries, safety, and environmental advisories issued by NARA command.",
+        "cta": "View advisories"
       },
-      {
-        "title": "Contact Our Experts",
-        "description": "Seek guidance from our marine scientists on aquaculture, fisheries management, or environmental concerns.",
-        "button": "Request Expert Advice"
-      },
-      {
-        "title": "Publications Library",
-        "description": "Browse our archive of research papers, technical reports, journals, and educational materials.",
-        "button": "Access Publications"
+      "datasets": {
+        "title": "Open Data Portal",
+        "description": "Download validated datasets, bathymetry, and satellite feeds supporting national planning.",
+        "cta": "Explore datasets"
       }
-    ]
+    },
+    "defaultTitle": "Knowledge Resource",
+    "defaultDescription": "Discover curated resources supporting Sri Lanka’s aquatic stewardship.",
+    "defaultCta": "Explore"
   },
   "footer": {
     "badge": "This is an Official Sri Lanka Government Website",

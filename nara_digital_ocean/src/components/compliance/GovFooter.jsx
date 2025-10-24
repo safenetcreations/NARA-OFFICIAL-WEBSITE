@@ -17,7 +17,7 @@ const navigationColumns = [
   {
     key: 'missionPillars',
     links: [
-      { key: 'dashboard', to: '/ocean-intelligence-dashboard-homepage', type: 'link' },
+      { key: 'dashboard', to: '/', type: 'link' },
       { key: 'research', to: '/research-excellence-portal', type: 'link' },
       { key: 'knowledge', to: '/knowledge-discovery-center', type: 'link' },
       { key: 'partnership', to: '/partnership-innovation-gateway', type: 'link' }
@@ -103,10 +103,10 @@ const GovFooter = () => {
             const columnCopy = navigationContent[key] || {};
             return (
               <div key={key} className="space-y-2">
-                <h4 className="text-sm font-semibold tracking-[0.3em] uppercase text-cyan-200">
+                <h4 className="pl-2 text-sm font-semibold uppercase text-cyan-200">
                   {columnCopy.heading || ''}
                 </h4>
-                <ul className="text-sm text-slate-300 leading-tight">
+                <ul className="pl-2 text-sm text-slate-300 leading-tight space-y-1.5 list-none">
                   {links.map((link) => {
                     const label = columnCopy.links?.[link.key];
                     if (!label) {
@@ -115,7 +115,7 @@ const GovFooter = () => {
                     if (link.type === 'anchor') {
                       return (
                         <li key={link.key}>
-                          <a href={link.href || '#'} className="hover:text-cyan-300 transition">
+                          <a href={link.href || '#'} className="block hover:text-cyan-300 transition">
                             {label}
                           </a>
                         </li>
@@ -123,7 +123,7 @@ const GovFooter = () => {
                     }
                     return (
                       <li key={link.key}>
-                        <Link to={link.to || '#'} className="hover:text-cyan-300 transition">
+                        <Link to={link.to || '#'} className="block hover:text-cyan-300 transition">
                           {label}
                         </Link>
                       </li>
@@ -133,9 +133,8 @@ const GovFooter = () => {
               </div>
             );
           })}
-
           <div className="space-y-2">
-            <h4 className="text-sm font-semibold tracking-[0.3em] uppercase text-cyan-200">
+            <h4 className="pl-2 text-sm font-semibold uppercase text-cyan-200">
               {contactContent.heading || 'Contact & Duty Desk'}
             </h4>
             <div className="text-sm text-slate-300 leading-tight space-y-2">

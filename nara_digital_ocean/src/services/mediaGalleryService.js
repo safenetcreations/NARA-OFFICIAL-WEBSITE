@@ -42,19 +42,48 @@ export const fetchMediaItems = async ({
   limitResults = DEFAULT_LIMIT,
   onlyApproved = true
 } = {}) => {
-  const collectionName = COLLECTION_MAP[type] || COLLECTION_MAP.images;
-  let composedQuery = query(
-    collection(db, collectionName),
-    orderBy('createdAt', 'desc'),
-    limit(limitResults)
-  );
-
-  if (onlyApproved) {
-    composedQuery = query(composedQuery, where('approved', '==', true));
+  try {
+    const collectionName = COLLECTION_MAP[type] || COLLECTION_MAP.images;
+    
+    // First try with approved filter
+    if (onlyApproved) {
+      try {
+        const approvedQuery = query(
+          collection(db, collectionName),
+          where('approved', '==', true),
+          orderBy('createdAt', 'desc'),
+          limit(limitResults)
+        );
+        const snapshot = await getDocs(approvedQuery);
+        
+        if (snapshot.docs.length > 0) {
+          return snapshot.docs.map((docSnap) => normalizeMediaRecord(docSnap, type));
+        }
+      } catch (approvedError) {
+        console.warn('Query with approved filter failed, trying without filter:', approvedError);
+      }
+    }
+    
+    // Fallback: query without approved filter, then filter in memory
+    const basicQuery = query(
+      collection(db, collectionName),
+      orderBy('createdAt', 'desc'),
+      limit(limitResults * 2) // Get more to compensate for filtering
+    );
+    
+    const snapshot = await getDocs(basicQuery);
+    let results = snapshot.docs.map((docSnap) => normalizeMediaRecord(docSnap, type));
+    
+    // Filter approved items in memory if needed
+    if (onlyApproved) {
+      results = results.filter(item => item.approved === true);
+    }
+    
+    return results.slice(0, limitResults);
+  } catch (error) {
+    console.error(`Error fetching ${type}:`, error);
+    throw error;
   }
-
-  const snapshot = await getDocs(composedQuery);
-  return snapshot.docs.map((docSnap) => normalizeMediaRecord(docSnap, type));
 };
 
 export const incrementMediaMetric = async (type, id, field = 'views', amount = 1) => {

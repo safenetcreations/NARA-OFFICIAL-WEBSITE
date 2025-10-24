@@ -19,7 +19,7 @@
     },
     "menu": {
       "research": {
-        "title": "Research & Intelligence",
+        "title": "Research",
         "links": {
           "researchExcellencePortal": "Research Excellence Portal",
           "researchCollaboration": "Research Collaboration",
@@ -32,7 +32,7 @@
         }
       },
       "services": {
-        "title": "Services & Operations",
+        "title": "Services",
         "links": {
           "digitalMarketplace": "Digital Marketplace",
           "maritimeServices": "Maritime Services",
@@ -94,6 +94,22 @@
         "links": {
           "mediaPressKit": "Media Press Kit"
         }
+      },
+      "academy": {
+        "title": "NARA Academy",
+        "links": {
+          "aquaSchool": "Aqua School",
+          "nexus": "Nexus Graduate Program",
+          "schoolDirectory": "School Directory"
+        }
+      },
+      "education": {
+        "title": "Education",
+        "links": {}
+      },
+      "community": {
+        "title": "Community",
+        "links": {}
       },
       "contact": {
         "title": "Contact",

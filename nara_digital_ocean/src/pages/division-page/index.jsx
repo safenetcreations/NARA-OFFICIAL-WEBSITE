@@ -9,6 +9,10 @@ import { getDefaultTeamMembers } from '../../data/divisionTeams';
 import { getDefaultProjects } from '../../data/divisionProjects';
 import { getDefaultImpact } from '../../data/divisionImpact';
 import { getLabel } from '../../utils/divisionTranslations';
+import { getDivisionImages } from '../../services/divisionImagesService';
+import { getRandomDivisionImage } from '../../services/geminiImageService';
+import { getDivisionHeroImages } from '../../data/divisionHeroImages';
+import { getLocalDivisionImages, saveLocalDivisionImages } from '../../utils/localImageStorage';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area
@@ -28,6 +32,9 @@ const DivisionPage = () => {
   const [activeSection, setActiveSection] = useState('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [projectFilter, setProjectFilter] = useState('all');
+  const [heroImages, setHeroImages] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [imageSource, setImageSource] = useState('default'); // 'firebase' or 'default'
   
   // Sample data for visualizations
   const researchOutputData = [
@@ -97,6 +104,57 @@ const DivisionPage = () => {
         // Load impact data
         const impact = getDefaultImpact(configData.id);
         setImpactData(impact);
+
+        // Load division images - Try multiple sources (Firebase → localStorage → Default)
+        let imagesLoaded = false;
+        
+        try {
+          // PRIORITY 1: Try localStorage first (works immediately!)
+          console.log('🔍 Checking localStorage for division:', configData.id);
+          const localImages = getLocalDivisionImages(configData.id);
+          
+          if (localImages && localImages.length > 0) {
+            console.log('💾 SUCCESS! Loaded', localImages.length, 'images from localStorage');
+            console.log('📸 Image URLs:', localImages);
+            console.log('%c🎉 AI IMAGES CONNECTED TO HERO SECTION!', 'background: #10b981; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
+            setHeroImages(localImages);
+            setImageSource('firebase'); // Set as firebase for badge display
+            imagesLoaded = true;
+          }
+        } catch (localError) {
+          console.log('localStorage check failed:', localError);
+        }
+
+        if (!imagesLoaded) {
+          try {
+            // PRIORITY 2: Try Firebase (requires permissions)
+            console.log('🔍 Attempting to load images from Firebase:', configData.id);
+            const imagesResult = await getDivisionImages(configData.id);
+            
+            if (imagesResult.success && imagesResult.images.length > 0) {
+              console.log('✅ Loaded', imagesResult.images.length, 'images from Firebase');
+              const firebaseUrls = imagesResult.images.map(img => img.url);
+              setHeroImages(firebaseUrls);
+              setImageSource('firebase');
+              imagesLoaded = true;
+              
+              // Also save to localStorage for future use
+              saveLocalDivisionImages(configData.id, firebaseUrls);
+              
+              console.log('%c🎉 FIREBASE IMAGES CONNECTED!', 'background: #3b82f6; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
+            }
+          } catch (firebaseError) {
+            console.log('Firebase not accessible (permissions):', firebaseError.message);
+          }
+        }
+
+        if (!imagesLoaded) {
+          // PRIORITY 3: Use pre-configured default images (always works!)
+          const defaultHeroImages = getDivisionHeroImages(configData.id);
+          console.log('📸 Using default hero images:', defaultHeroImages.length);
+          setHeroImages(defaultHeroImages);
+          setImageSource('default');
+        }
       } catch (error) {
         console.error('Error loading division data:', error);
       } finally {
@@ -106,6 +164,17 @@ const DivisionPage = () => {
 
     loadDivisionData();
   }, [slug, currentLang, navigate]);
+
+  // Auto-rotate hero images
+  useEffect(() => {
+    if (heroImages.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [heroImages]);
 
   const filteredProjects = useMemo(() => {
     let filtered = projects;
@@ -319,43 +388,87 @@ const DivisionPage = () => {
 
   return (
     <div className={`min-h-screen ${pageTheme.bg}`}>
-      {/* COMPACT HERO SECTION - 45-50vh */}
+      {/* COMPACT HERO SECTION - 45-50vh with Image Carousel */}
       <section className={`relative ${pageTheme.heroHeight} overflow-hidden`}>
-        {/* Animated Gradient Background */}
+        {/* Background Image Carousel with Ken Burns Effect */}
         <div className="absolute inset-0">
-          <motion.div
-            animate={{
-              backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-            }}
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: 'linear'
-            }}
-            className={`absolute inset-0 bg-gradient-to-br ${divisionAnim.gradientFrom} ${divisionAnim.gradientVia} ${divisionAnim.gradientTo}`}
-            style={{ backgroundSize: '200% 200%' }}
-          />
-          
-          {/* Overlay Pattern */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentImageIndex}
+              initial={{ opacity: 0, scale: 1.1 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 1.5, ease: 'easeInOut' }}
+              className="absolute inset-0"
+              onAnimationStart={() => {
+                const imageUrl = heroImages[currentImageIndex] || divisionData.heroImage;
+                console.log(`🖼️ Displaying image ${currentImageIndex + 1}/${heroImages.length}:`, imageUrl);
+              }}
+            >
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  backgroundImage: `url("${heroImages[currentImageIndex] || divisionData.heroImage}")`,
+                  filter: 'brightness(0.9)'
+                }}
+              />
+              {/* Gradient Overlay for Better Text Visibility */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${divisionAnim.gradientFrom} ${divisionAnim.gradientVia} ${divisionAnim.gradientTo} opacity-40`} />
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Image Source Badge */}
+          {imageSource === 'firebase' && (
+            <div className="absolute top-4 right-4 z-10">
+              <div className="bg-green-500/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2">
+                <LucideIcons.CheckCircle size={16} />
+                AI Images Active
+              </div>
+            </div>
+          )}
+
+          {/* Image Navigation Dots */}
+          {heroImages.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 z-10">
+              <div className="flex gap-2">
+                {heroImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentImageIndex(idx)}
+                    className={`w-2.5 h-2.5 rounded-full transition-all ${
+                      idx === currentImageIndex
+                        ? 'bg-white w-8'
+                        : 'bg-white/40 hover:bg-white/60'
+                    }`}
+                    aria-label={`Go to image ${idx + 1}`}
+                  />
+                ))}
+              </div>
+              <div className="text-white/80 text-xs font-medium bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full">
+                {currentImageIndex + 1} / {heroImages.length}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Animated Gradient Overlay - Reduced opacity */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Overlay Pattern - Very subtle */}
           <motion.div
             animate={{ backgroundPosition: ['0px 0px', '60px 60px'] }}
             transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            className="absolute inset-0 opacity-10"
+            className="absolute inset-0 opacity-5"
             style={{
               backgroundImage: `
-                linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
-                linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.1) 75%),
-                linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.1) 75%)
+                linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.05) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.05) 75%)
               `,
               backgroundSize: '60px 60px',
               backgroundPosition: '0 0, 0 30px, 30px -30px, -30px 0px'
             }}
           />
-
-          {/* Radial Glow Effects */}
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
 
         {/* Floating Animated Particles - Division Specific */}
@@ -513,24 +626,236 @@ const DivisionPage = () => {
 
       {/* Content Sections */}
       <div className="max-w-7xl mx-auto px-4 py-12">
-        {/* Overview Section */}
+        {/* Overview Section - Enhanced */}
         {activeSection === 'overview' && (
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="mb-12"
+            className="space-y-6"
           >
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-3xl font-bold mb-6 flex items-center gap-3 text-gray-900">
-                <LucideIcons.Info className="text-blue-600" size={32} />
-                {currentLang === 'en' && 'About This Division'}
-                {currentLang === 'si' && 'මෙම අංශය ගැන'}
-                {currentLang === 'ta' && 'இந்தப் பிரிவு பற்றி'}
-              </h2>
-              <p className="text-lg text-gray-700 leading-relaxed">
+            {/* Main Description Card */}
+            <div className="bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-xl p-8 border border-blue-100">
+              <div className="flex items-start gap-4 mb-6">
+                <div className={`bg-gradient-to-r ${divisionData.gradient} p-4 rounded-2xl text-white`}>
+                  <IconComponent size={40} />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-3xl font-bold mb-2 text-gray-900">
+                    {currentLang === 'en' && 'About This Division'}
+                    {currentLang === 'si' && 'මෙම අංශය ගැන'}
+                    {currentLang === 'ta' && 'இந்தப் பிரிவு பற்றி'}
+                  </h2>
+                  <div className="flex gap-2 flex-wrap">
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+                      {divisionData.color} Division
+                    </span>
+                    {divisionData.pdfResource && (
+                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold flex items-center gap-1">
+                        <LucideIcons.FileText size={14} />
+                        PDF Available
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
                 {divisionData.description[currentLang]}
               </p>
+
+              {/* Quick Stats Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 p-4 bg-blue-50 rounded-xl">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-blue-600">{divisionData.focusAreas.length}</div>
+                  <div className="text-sm text-gray-600 font-medium">
+                    {currentLang === 'en' && 'Focus Areas'}
+                    {currentLang === 'si' && 'අවධාන ක්ෂේත්‍ර'}
+                    {currentLang === 'ta' && 'கவன பகுதிகள்'}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-green-600">{divisionData.services.length}</div>
+                  <div className="text-sm text-gray-600 font-medium">
+                    {currentLang === 'en' && 'Services'}
+                    {currentLang === 'si' && 'සේවා'}
+                    {currentLang === 'ta' && 'சேவைகள்'}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-purple-600">{projects.length || '10+'}</div>
+                  <div className="text-sm text-gray-600 font-medium">
+                    {currentLang === 'en' && 'Projects'}
+                    {currentLang === 'si' && 'ව්‍යාපෘති'}
+                    {currentLang === 'ta' && 'திட்டங்கள்'}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-orange-600">{teamMembers.length || '15+'}</div>
+                  <div className="text-sm text-gray-600 font-medium">
+                    {currentLang === 'en' && 'Experts'}
+                    {currentLang === 'si' && 'ප්‍රවීණයින්'}
+                    {currentLang === 'ta' && 'நிபுணர்கள்'}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Mission & Vision Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-600">
+                <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                  <LucideIcons.Target size={24} className="text-blue-600" />
+                  {currentLang === 'en' && 'Our Mission'}
+                  {currentLang === 'si' && 'අපගේ මෙහෙවර'}
+                  {currentLang === 'ta' && 'எங்கள் நோக்கம்'}
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  {currentLang === 'en' && `To advance ${divisionData.name.en.toLowerCase()} through cutting-edge research, innovation, and sustainable practices that benefit Sri Lanka's marine and aquatic resources.`}
+                  {currentLang === 'si' && `ශ්‍රී ලංකාවේ සමුද්‍ර සහ ජලජ සම්පත් වලට ප්‍රයෝජන වන අති නවීන පර්යේෂණ, නවෝත්පාදන සහ තිරසාර පිළිවෙත් හරහා ${divisionData.name.si} දියුණු කිරීම.`}
+                  {currentLang === 'ta' && `இலங்கையின் கடல் மற்றும் நீர்வள வளங்களுக்கு பயனளிக்கும் அதிநவீன ஆராய்ச்சி, புதுமை மற்றும் நிலையான நடைமுறைகள் மூலம் ${divisionData.name.ta} முன்னேற்றுதல்.`}
+                </p>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-600">
+                <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                  <LucideIcons.Eye size={24} className="text-green-600" />
+                  {currentLang === 'en' && 'Our Vision'}
+                  {currentLang === 'si' && 'අපගේ දැක්ම'}
+                  {currentLang === 'ta' && 'எங்கள் பார்வை'}
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  {currentLang === 'en' && 'To be a regional leader in marine and aquatic research, recognized for scientific excellence, innovation, and positive impact on sustainable development and community well-being.'}
+                  {currentLang === 'si' && 'විද්‍යාත්මක විශිෂ්ටත්වය, නවෝත්පාදනය සහ තිරසාර සංවර්ධනය සහ ප්‍රජා යහපැවැත්ම කෙරෙහි ධනාත්මක බලපෑම සඳහා පිළිගත් සමුද්‍ර සහ ජලජ පර්යේෂණ පිළිබඳ කලාපීය ප්‍රමුඛයා වීම.'}
+                  {currentLang === 'ta' && 'அறிவியல் சிறப்பு, புதுமை மற்றும் நிலையான வளர்ச்சி மற்றும் சமூக நல்வாழ்வில் நேர்மறை தாக்கத்திற்காக அங்கீகரிக்கப்பட்ட கடல் மற்றும் நீர்வள ஆராய்ச்சியில் பிராந்திய தலைவராக இருத்தல்.'}
+                </p>
+              </div>
+            </div>
+
+            {/* Key Highlights */}
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <LucideIcons.Star size={24} className="text-yellow-500" />
+                {currentLang === 'en' && 'Key Highlights'}
+                {currentLang === 'si' && 'ප්‍රධාන ඉස්මතු කිරීම්'}
+                {currentLang === 'ta' && 'முக்கிய சிறப்பம்சங்கள்'}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {projects.length > 0 && (
+                  <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-xl">
+                    <LucideIcons.Rocket size={24} className="text-blue-600 flex-shrink-0 mt-1" />
+                    <div>
+                      <div className="font-bold text-gray-900">
+                        {currentLang === 'en' && 'Active Research Projects'}
+                        {currentLang === 'si' && 'ක්‍රියාත්මක පර්යේෂණ ව්‍යාපෘති'}
+                        {currentLang === 'ta' && 'செயலில் உள்ள ஆராய்ச்சி திட்டங்கள்'}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {projects.length} {currentLang === 'en' && 'ongoing projects with international funding'}
+                        {currentLang === 'si' && 'ජාත්‍යන්තර අරමුදල් සමඟ ක්‍රියාත්මක ව්‍යාපෘති'}
+                        {currentLang === 'ta' && 'சர்வதேச நிதியுதவியுடன் நடந்துகொண்டிருக்கும் திட்டங்கள்'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {teamMembers.length > 0 && (
+                  <div className="flex items-start gap-3 p-4 bg-green-50 rounded-xl">
+                    <LucideIcons.Users size={24} className="text-green-600 flex-shrink-0 mt-1" />
+                    <div>
+                      <div className="font-bold text-gray-900">
+                        {currentLang === 'en' && 'Expert Research Team'}
+                        {currentLang === 'si' && 'ප්‍රවීණ පර්යේෂණ කණ්ඩායම'}
+                        {currentLang === 'ta' && 'நிபுணர் ஆராய்ச்சி குழு'}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {teamMembers.length} {currentLang === 'en' && 'scientists with advanced degrees and international experience'}
+                        {currentLang === 'si' && 'උසස් උපාධි සහ ජාත්‍යන්තර අත්දැකීම් ඇති විද්‍යාඥයින්'}
+                        {currentLang === 'ta' && 'மேம்பட்ட பட்டங்கள் மற்றும் சர்வதேச அனுபவம் கொண்ட விஞ்ஞானிகள்'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {impactData && (
+                  <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-xl">
+                    <LucideIcons.TrendingUp size={24} className="text-purple-600 flex-shrink-0 mt-1" />
+                    <div>
+                      <div className="font-bold text-gray-900">
+                        {currentLang === 'en' && 'Measurable Impact'}
+                        {currentLang === 'si' && 'මැනිය හැකි බලපෑම'}
+                        {currentLang === 'ta' && 'அளவிடக்கூடிய தாக்கம்'}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {impactData.economicImpact?.valueGenerated} {currentLang === 'en' && 'in economic value with'}
+                        {currentLang === 'si' && 'ආර්ථික වටිනාකම සමඟ'}
+                        {currentLang === 'ta' && 'பொருளாதார மதிப்புடன்'} {impactData.economicImpact?.jobsCreated}+ {currentLang === 'en' && 'jobs created'}
+                        {currentLang === 'si' && 'රැකියා නිර්මාණය'}
+                        {currentLang === 'ta' && 'வேலைகள் உருவாக்கப்பட்டன'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-start gap-3 p-4 bg-orange-50 rounded-xl">
+                  <LucideIcons.Award size={24} className="text-orange-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <div className="font-bold text-gray-900">
+                      {currentLang === 'en' && 'International Recognition'}
+                      {currentLang === 'si' && 'ජාත්‍යන්තර පිළිගැනීම'}
+                      {currentLang === 'ta' && 'சர்வதேச அங்கீகாரம்'}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {currentLang === 'en' && 'Collaborating with leading global organizations and research institutions'}
+                      {currentLang === 'si' && 'ප්‍රමුඛ ගෝලීය සංවිධාන සහ පර්යේෂණ ආයතන සමඟ සහයෝගයෙන්'}
+                      {currentLang === 'ta' && 'முன்னணி உலகளாவிய அமைப்புகள் மற்றும் ஆராய்ச்சி நிறுவனங்களுடன் ஒத்துழைத்தல்'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Information Card */}
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <LucideIcons.Contact size={24} className="text-blue-600" />
+                {currentLang === 'en' && 'Contact Information'}
+                {currentLang === 'si' && 'සම්බන්ධතා තොරතුරු'}
+                {currentLang === 'ta' && 'தொடர்பு தகவல்'}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <LucideIcons.Mail size={20} className="text-blue-600" />
+                  <div>
+                    <div className="text-xs text-gray-500">Email</div>
+                    <a href={`mailto:${divisionData.contactEmail}`} className="text-blue-600 font-medium hover:underline">
+                      {divisionData.contactEmail}
+                    </a>
+                  </div>
+                </div>
+                {divisionData.contactPhone && (
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <LucideIcons.Phone size={20} className="text-green-600" />
+                    <div>
+                      <div className="text-xs text-gray-500">Phone</div>
+                      <a href={`tel:${divisionData.contactPhone}`} className="text-green-600 font-medium hover:underline">
+                        {divisionData.contactPhone}
+                      </a>
+                    </div>
+                  </div>
+                )}
+                {divisionData.location && (
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <LucideIcons.MapPin size={20} className="text-purple-600" />
+                    <div>
+                      <div className="text-xs text-gray-500">Location</div>
+                      <div className="text-purple-600 font-medium text-sm">
+                        {divisionData.location}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </motion.section>
         )}
@@ -565,7 +890,7 @@ const DivisionPage = () => {
                         <AreaIcon size={24} />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-xl font-bold mb-2">
+                        <h3 className="text-xl font-bold mb-2 text-gray-900">
                           {area.title[currentLang]}
                         </h3>
                         <p className="text-gray-600">
@@ -608,7 +933,7 @@ const DivisionPage = () => {
                     <div className={`bg-gradient-to-r ${divisionData.gradient} w-16 h-16 rounded-xl flex items-center justify-center text-white mb-4`}>
                       <ServiceIcon size={28} />
                     </div>
-                    <h3 className="text-xl font-bold mb-2">
+                    <h3 className="text-xl font-bold mb-2 text-gray-900">
                       {service.title[currentLang]}
                     </h3>
                     <p className="text-gray-600 mb-4">

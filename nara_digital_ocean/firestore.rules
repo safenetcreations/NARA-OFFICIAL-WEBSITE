@@ -37,6 +37,22 @@ service cloud.firestore {
     // EXISTING COLLECTIONS (Keep these)
     // ============================================
     
+    // Division Collections (Public Read Access)
+    match /divisions/{divisionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /divisionContent/{contentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /divisionImages/{imageId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
     // Publications Collection
     match /publications/{publicationId} {
       allow read: if true;
@@ -45,12 +61,29 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
     
+    // Division-related subcollections
+    match /divisions/{divisionId}/projects/{projectId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /divisions/{divisionId}/teamMembers/{memberId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
     // Projects Collection
     match /projects/{projectId} {
       allow read: if true;
       allow create: if isAdmin();
       allow update: if isAdmin();
       allow delete: if isAdmin();
+    }
+    
+    // Team Members Collection
+    match /teamMembers/{memberId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
     
     // Partners Collection
@@ -348,6 +381,235 @@ service cloud.firestore {
     match /roiCalculations/{calculationId} {
       allow read: if true;
       allow write: if isAdmin();
+    }
+
+    // ============================================
+    // PHYSICAL LIBRARY MANAGEMENT SYSTEM COLLECTIONS
+    // ============================================
+
+    // Library Members Collection
+    match /library_members/{memberId} {
+      // Members can read their own profile, librarians and admins can read all
+      allow read: if isAuthenticated() &&
+                     (request.auth.uid == resource.data.uid ||
+                      isAdmin() ||
+                      isLibrarian());
+
+      // Anyone authenticated can create a membership (registration)
+      allow create: if isAuthenticated() &&
+                       request.resource.data.uid == request.auth.uid &&
+                       request.resource.data.email == request.auth.token.email &&
+                       request.resource.data.status == 'active';
+
+      // Members can update their own contact info only
+      // Librarians and admins can update any field
+      allow update: if (isAuthenticated() &&
+                        request.auth.uid == resource.data.uid &&
+                        request.resource.data.member_id == resource.data.member_id &&
+                        request.resource.data.status == resource.data.status &&
+                        request.resource.data.max_books_allowed == resource.data.max_books_allowed) ||
+                       isAdmin() ||
+                       isLibrarian();
+
+      // Only admins can delete members
+      allow delete: if isAdmin();
+    }
+
+    // Book Reservations Collection
+    match /book_reservations/{reservationId} {
+      // Members can read their own reservations, librarians can read all
+      allow read: if isAuthenticated() &&
+                     (request.auth.uid == resource.data.uid ||
+                      isAdmin() ||
+                      isLibrarian());
+
+      // Members can create reservations for themselves
+      allow create: if isAuthenticated() &&
+                       request.resource.data.uid == request.auth.uid &&
+                       request.resource.data.status == 'pending';
+
+      // Members can cancel their own pending reservations
+      // Librarians can update any reservation (mark as ready/collected)
+      allow update: if (isAuthenticated() &&
+                        request.auth.uid == resource.data.uid &&
+                        resource.data.status == 'pending' &&
+                        request.resource.data.status == 'cancelled') ||
+                       isAdmin() ||
+                       isLibrarian();
+
+      // Only admins can delete reservations
+      allow delete: if isAdmin();
+    }
+
+    // Book Loans Collection
+    match /book_loans/{loanId} {
+      // Members can read their own loans, librarians can read all
+      allow read: if isAuthenticated() &&
+                     (request.auth.uid == resource.data.uid ||
+                      isAdmin() ||
+                      isLibrarian());
+
+      // Only librarians and admins can create/update loans
+      allow create, update: if isAdmin() || isLibrarian();
+
+      // Only admins can delete loans
+      allow delete: if isAdmin();
+    }
+
+    // Borrowing History Collection
+    match /borrowing_history/{historyId} {
+      // Members can read their own history, librarians can read all
+      allow read: if isAuthenticated() &&
+                     (request.auth.uid == resource.data.uid ||
+                      isAdmin() ||
+                      isLibrarian());
+
+      // Only librarians and admins can create history records
+      allow create: if isAdmin() || isLibrarian();
+
+      // Members can add ratings/reviews to their own history
+      // Librarians can update any history
+      allow update: if (isAuthenticated() &&
+                        request.auth.uid == resource.data.uid) ||
+                       isAdmin() ||
+                       isLibrarian();
+
+      // Only admins can delete history
+      allow delete: if isAdmin();
+    }
+
+    // Library Fines Collection (Physical Library)
+    match /library_fines/{fineId} {
+      // Members can read their own fines, librarians can read all
+      allow read: if isAuthenticated() &&
+                     (request.auth.uid == resource.data.uid ||
+                      isAdmin() ||
+                      isLibrarian());
+
+      // Only librarians and admins can create/update fines
+      allow create, update: if isAdmin() || isLibrarian();
+
+      // Only admins can delete fines
+      allow delete: if isAdmin();
+    }
+
+    // Library Inventory Collection
+    match /library_inventory/{inventoryId} {
+      // Anyone can read inventory (to check availability)
+      allow read: if true;
+
+      // Only librarians and admins can update inventory
+      allow create, update: if isAdmin() || isLibrarian();
+
+      // Only admins can delete inventory records
+      allow delete: if isAdmin();
+    }
+
+    // Library Transactions Collection
+    match /library_transactions/{transactionId} {
+      // Members can read their own transactions, librarians can read all
+      allow read: if isAuthenticated() &&
+                     (request.auth.uid == resource.data.uid ||
+                      isAdmin() ||
+                      isLibrarian());
+
+      // Only librarians and admins can create transactions
+      allow create: if isAdmin() || isLibrarian();
+
+      // No updates or deletes (audit trail)
+      allow update, delete: if false;
+    }
+
+    // Library Settings Collection
+    match /library_settings/{settingId} {
+      // Anyone can read settings (loan periods, fines, etc.)
+      allow read: if true;
+
+      // Only admins can update settings
+      allow write: if isAdmin();
+    }
+
+    // ============================================
+    // MARITIME SERVICES HUB COLLECTIONS
+    // ============================================
+
+    // Maritime Vessels Collection
+    match /maritime_vessels/{vesselId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Maritime Ports Collection
+    match /maritime_ports/{portId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Maritime Services Collection
+    match /maritime_services/{serviceId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Hydrographic Charts Collection
+    match /hydro_charts/{chartId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Hydrographic Chart Requests Collection
+    match /hydro_chart_requests/{requestId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Hydrographic Survey Requests Collection
+    match /hydro_survey_requests/{requestId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Hydrographic Data Requests Collection
+    match /hydro_data_requests/{requestId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Crowd Bathymetry Collection
+    match /hydro_crowd_bathymetry/{dataId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Maritime Permits Collection
+    match /maritime_permits/{permitId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Maritime Alerts Collection
+    match /maritime_alerts/{alertId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Maritime Safety Reports Collection
+    match /maritime_safety_reports/{reportId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Maritime Bookings Collection
+    match /maritime_bookings/{bookingId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
     }
   }
 }

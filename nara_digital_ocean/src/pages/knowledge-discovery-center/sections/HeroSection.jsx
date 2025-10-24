@@ -99,10 +99,10 @@ const HeroSection = () => {
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-5xl md:text-7xl font-bold mb-6"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 px-4"
         >
-          <span className="block text-white mb-2">{t('hero.title')}</span>
-          <span className="block bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+          <span className="block text-white mb-3 leading-tight">{t('hero.title')}</span>
+          <span className="block bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent leading-tight">
             {t('hero.titleHighlight')}
           </span>
         </motion.h1>
@@ -112,7 +112,7 @@ const HeroSection = () => {
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-xl text-slate-300 max-w-4xl mx-auto mb-12 leading-relaxed"
+          className="text-base sm:text-lg md:text-xl text-slate-300 max-w-4xl mx-auto mb-12 leading-relaxed px-4"
         >
           {t('hero.subtitle')}
         </motion.p>

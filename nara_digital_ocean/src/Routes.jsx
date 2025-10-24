@@ -48,6 +48,7 @@ const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const ContentManager = lazy(() => import('./pages/admin/ContentManager'));
+const MasterAdminPanel = lazy(() => import('./pages/admin/MasterAdminPanel'));
 
 // Research Data Admin
 const ResearchAdminLogin = lazy(() => import('./pages/admin/ResearchAdminLogin'));
@@ -64,6 +65,10 @@ const GovernmentServicesAdmin = lazy(() => import('./pages/admin/GovernmentServi
 
 // Maritime Admin
 const MaritimeAdmin = lazy(() => import('./pages/admin/MaritimeAdmin'));
+const MaritimeDataAdmin = lazy(() => import('./pages/admin/MaritimeDataAdmin'));
+
+// Live Ocean Data
+const LiveOceanDataView = lazy(() => import('./pages/live-ocean-data/LiveOceanDataView'));
 
 // Analytics Admin - Phase 5
 const AnalyticsAdmin = lazy(() => import('./pages/admin/AnalyticsAdmin'));
@@ -97,6 +102,10 @@ const OpenDataPortal = lazy(() => import('./pages/open-data-portal'));
 // Marine Incident Portal
 const MarineIncidentPortal = lazy(() => import('./pages/marine-incident-portal'));
 const MarineIncidentAdmin = lazy(() => import('./pages/admin/MarineIncidentAdmin'));
+
+// Aqua School Directory
+const AquaSchoolDirectory = lazy(() => import('./pages/aqua-school-directory'));
+const EnhancedSchoolDirectory = lazy(() => import('./pages/enhanced-school-directory'));
 
 // Project Pipeline Tracker
 const ProjectPipelineTracker = lazy(() => import('./pages/project-pipeline-tracker'));
@@ -136,6 +145,8 @@ const LDALogin = lazy(() => import('./pages/lda-login'));
 // Divisions Pages
 const DivisionsHub = lazy(() => import('./pages/nara-divisions-hub'));
 const DivisionPage = lazy(() => import('./pages/division-page'));
+const DivisionImagesAdmin = lazy(() => import('./pages/admin/DivisionImagesAdmin'));
+const DivisionContentAdmin = lazy(() => import('./pages/admin/DivisionContentAdmin'));
 
 // Library System Pages
 const LibraryCatalogue = lazy(() => import('./pages/library-catalogue'));
@@ -154,6 +165,11 @@ const EnhancedCataloguingManager = lazy(() => import('./pages/library-admin/Enha
 const CirculationManager = lazy(() => import('./pages/library-admin/CirculationManager'));
 const PatronManager = lazy(() => import('./pages/library-admin/PatronManager'));
 const AcquisitionsManager = lazy(() => import('./pages/library-admin/AcquisitionsManager'));
+
+// Physical Library Management System Pages
+const LibraryMembershipRegister = lazy(() => import('./pages/library-membership-register'));
+const LibraryMemberDashboard = lazy(() => import('./pages/library-member-dashboard'));
+const LibrarianDesk = lazy(() => import('./pages/library-librarian-desk'));
 
 // Checkout & Payment
 const CheckoutPage = lazy(() => import('./pages/checkout'));
@@ -189,6 +205,8 @@ function Layout({ children }) {
     '/admin/phase4-seeder',
     '/admin/analytics',
     '/admin/library',
+    '/admin/division-images',
+    '/admin/division-content',
     '/admin'
   ];
   
@@ -242,6 +260,7 @@ function Routes() {
               <Route path="/lda-login" element={<LDALogin />} />
               <Route path="/regional-impact-network" element={<RegionalImpactNetwork />} />
               <Route path="/maritime-services-hub" element={<MaritimeServicesHub />} />
+              <Route path="/live-ocean-data" element={<LiveOceanDataView />} />
               <Route path="/knowledge-discovery-center" element={<KnowledgeDiscoveryCenter />} />
               <Route path="/partnership-innovation-gateway" element={<PartnershipInnovationGateway />} />
               <Route path="/digital-product-library" element={<DigitalProductLibrary />} />
@@ -260,10 +279,16 @@ function Routes() {
               <Route path="/contact-us" element={<ContactUs />} />
               <Route path="/audiences" element={<Navigate to="/audiences/general-public" replace />} />
               <Route path="/audiences/:slug" element={<AudiencePage />} />
+              
+              {/* Aqua School Directory */}
+              <Route path="/aqua-school-directory" element={<AquaSchoolDirectory />} />
+              <Route path="/enhanced-school-directory" element={<EnhancedSchoolDirectory />} />
 
               {/* Divisions Routes */}
               <Route path="/divisions" element={<DivisionsHub />} />
               <Route path="/divisions/:slug" element={<DivisionPage />} />
+              <Route path="/admin/division-images" element={<DivisionImagesAdmin />} />
+              <Route path="/admin/division-content" element={<DivisionContentAdmin />} />
 
               {/* Library System Routes */}
               <Route path="/library" element={<LibraryCatalogue />} />
@@ -288,13 +313,32 @@ function Routes() {
                   </ProtectedRoute>
                 } 
               />
-              <Route 
-                path="/library-research-submit" 
+              <Route
+                path="/library-research-submit"
                 element={
                   <ProtectedRoute requiredRole="researcher">
                     <LibraryResearchSubmit />
                   </ProtectedRoute>
-                } 
+                }
+              />
+
+              {/* Physical Library Management System Routes */}
+              <Route path="/library-membership-register" element={<LibraryMembershipRegister />} />
+              <Route
+                path="/library-member-dashboard"
+                element={
+                  <ProtectedRoute>
+                    <LibraryMemberDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/library-librarian-desk"
+                element={
+                  <ProtectedRoute>
+                    <LibrarianDesk />
+                  </ProtectedRoute>
+                }
               />
 
               {/* Library Admin Routes */}
@@ -328,6 +372,10 @@ function Routes() {
 
               {/* New Admin Panel Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
+              
+              {/* Master Admin Panel - Unified Admin Dashboard */}
+              <Route path="/admin/master" element={<MasterAdminPanel />} />
+              
               <Route path="/admin" element={<AdminLayout />}>
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="content" element={<ContentManager />} />
@@ -348,6 +396,7 @@ function Routes() {
 
               {/* Maritime Admin Route */}
               <Route path="/admin/maritime" element={<MaritimeAdmin />} />
+              <Route path="/admin/maritime-data" element={<MaritimeDataAdmin />} />
 
               {/* Analytics Admin Routes - Phase 5 */}
               <Route path="/admin/analytics" element={<AnalyticsAdmin />} />

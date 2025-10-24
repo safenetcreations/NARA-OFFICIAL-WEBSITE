@@ -13,9 +13,13 @@
  * 8. Sends notifications
  */
 
+const path = require('path');
+
+// Load environment variables from parent directory
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
+
 const axios = require('axios');
 const fs = require('fs').promises;
-const path = require('path');
 const { createHash } = require('crypto');
 
 // Configuration
@@ -27,13 +31,15 @@ const CONFIG = {
       apiUrl: 'https://api.core.ac.uk/v3',
       apiKey: process.env.CORE_API_KEY || '',
       queries: [
-        'marine biodiversity',
-        'fisheries management',
-        'ocean conservation',
-        'aquatic resources',
-        'coastal ecosystem'
+        'marine biodiversity Sri Lanka',
+        'fisheries management Bay of Bengal'
       ],
-      limit: 20
+      limit: 10, // Reduced from 20 to be less aggressive
+      // Rate limiting configuration
+      requestDelay: 60000, // 60 seconds between requests (increased from 3s)
+      maxRetries: 3,
+      retryDelay: 10000, // 10 seconds initial retry delay (increased from 5s)
+      timeout: 30000 // Request timeout
     }
   },
   notification: {
@@ -82,40 +88,123 @@ class DailyEbookAgent {
   }
 
   /**
-   * Scan CORE API for new publications
+   * Scan CORE API for new publications with rate limiting
    */
   async scanCoreAPI() {
     this.log('info', '🔍 Scanning CORE API for new publications...');
 
-    const { apiUrl, apiKey, queries, limit } = CONFIG.sources.core;
+    const { apiUrl, apiKey, queries, limit, requestDelay } = CONFIG.sources.core;
 
-    for (const query of queries) {
+    // Warn if no API key
+    if (!apiKey || apiKey === '') {
+      this.log('warning', '⚠️  WARNING: No CORE API key configured!');
+      this.log('warning', '⚠️  Rate limits will be very restrictive without an API key.');
+      this.log('warning', '⚠️  Get a free API key at: https://core.ac.uk/services/api');
+      this.log('warning', '⚠️  Add CORE_API_KEY to your .env file');
+    }
+
+    for (let i = 0; i < queries.length; i++) {
+      const query = queries[i];
+
       try {
         this.log('info', `   Searching: "${query}"`);
 
-        const response = await axios.get(`${apiUrl}/search/works`, {
-          params: {
-            q: query,
-            limit: limit,
-            sort: 'datePublished:desc'
-          },
-          headers: {
-            'Authorization': `Bearer ${apiKey}`
+        // Make API request with retry logic
+        const response = await this.makeRequestWithRetry(
+          `${apiUrl}/search/works`,
+          {
+            params: {
+              q: query,
+              limit: limit,
+              sort: 'datePublished:desc'
+            },
+            headers: {
+              'Authorization': `Bearer ${apiKey}`
+            }
           }
-        });
+        );
 
         const results = response.data.results || [];
-        this.log('info', `   Found ${results.length} results`);
+        this.log('info', `   ✓ Found ${results.length} results`);
 
         // Process each result
         for (const work of results) {
           await this.processWork(work);
         }
+
+        // Rate limiting: wait before next request (except for last query)
+        if (i < queries.length - 1) {
+          this.log('info', `   ⏳ Waiting ${requestDelay / 1000}s before next query...`);
+          await this.sleep(requestDelay);
+        }
       } catch (error) {
-        this.log('error', `   Failed to search "${query}": ${error.message}`);
-        this.errorCount++;
+        if (error.response?.status === 429) {
+          this.log('error', `   ❌ Rate limit hit for "${query}" - skipping remaining queries`);
+          this.errorCount++;
+          break; // Stop further queries if rate limited
+        } else {
+          this.log('error', `   ❌ Failed to search "${query}": ${error.message}`);
+          this.errorCount++;
+        }
       }
     }
+  }
+
+  /**
+   * Make HTTP request with exponential backoff retry logic
+   */
+  async makeRequestWithRetry(url, config, retryCount = 0) {
+    const { maxRetries, retryDelay, timeout } = CONFIG.sources.core;
+
+    try {
+      const response = await axios.get(url, {
+        ...config,
+        timeout: timeout
+      });
+      return response;
+    } catch (error) {
+      // Handle rate limiting (429)
+      if (error.response?.status === 429) {
+        if (retryCount < maxRetries) {
+          const delay = retryDelay * Math.pow(2, retryCount); // Exponential backoff
+          this.log('warning', `   ⚠️  Rate limited (429). Retrying in ${delay / 1000}s... (Attempt ${retryCount + 1}/${maxRetries})`);
+          await this.sleep(delay);
+          return this.makeRequestWithRetry(url, config, retryCount + 1);
+        } else {
+          this.log('error', `   ❌ Max retries reached for rate limit`);
+          throw error;
+        }
+      }
+
+      // Handle other errors
+      if (retryCount < maxRetries && this.isRetryableError(error)) {
+        const delay = retryDelay * Math.pow(2, retryCount);
+        this.log('warning', `   ⚠️  Request failed. Retrying in ${delay / 1000}s... (Attempt ${retryCount + 1}/${maxRetries})`);
+        await this.sleep(delay);
+        return this.makeRequestWithRetry(url, config, retryCount + 1);
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Check if error is retryable
+   */
+  isRetryableError(error) {
+    // Network errors, timeouts, and 5xx server errors are retryable
+    return (
+      !error.response || // Network error
+      error.code === 'ECONNABORTED' || // Timeout
+      (error.response.status >= 500 && error.response.status < 600) // Server error
+    );
+  }
+
+  /**
+   * Sleep utility for delays
+   */
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**

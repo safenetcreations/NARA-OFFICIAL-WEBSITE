@@ -4,7 +4,7 @@ import {
   Search, Image as ImageIcon, Video, Download, Share2,
   Calendar, Tag, MapPin, ExternalLink, Eye, Heart,
   Grid3x3, List, SlidersHorizontal, X, Play,
-  Facebook, Linkedin, AlertCircle
+  Facebook, Linkedin, AlertCircle, CheckCircle
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { fetchMediaItems, incrementMediaMetric } from '../../services/mediaGalleryService';
@@ -53,6 +53,8 @@ const MediaGallery = () => {
   const [mediaItems, setMediaItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState([]);
+  const [connectionError, setConnectionError] = useState(null);
+  const [dataSource, setDataSource] = useState(null); // 'firebase' or 'fallback'
 
   const baseCategories = [
     { id: 'all', icon: Grid3x3 },
@@ -369,28 +371,56 @@ const MediaGallery = () => {
 
     const load = async () => {
       setLoading(true);
+      setConnectionError(null);
       try {
         const items = await fetchMediaItems({
           type: activeTab,
           limitResults: 100,
           onlyApproved: true
         });
-        const processed = (items.length ? items : getFallbackData(activeTab)).map(item => ({
-          ...item,
-          type: activeTab
-        }));
+        
+        if (items.length > 0) {
+          const processed = items.map(item => ({
+            ...item,
+            type: activeTab
+          }));
 
-        if (!isMounted) {
-          return;
-        }
+          if (!isMounted) {
+            return;
+          }
 
-        mediaCacheRef.current[activeTab] = processed;
-        setMediaItems(processed);
-        setUsingFallback(!items.length);
-        updateInsights();
+          mediaCacheRef.current[activeTab] = processed;
+          setMediaItems(processed);
+          setUsingFallback(false);
+          setDataSource('firebase');
+          setConnectionError(null);
+          updateInsights();
 
-        if (!mediaCacheRef.current[alternateType]) {
-          loadType(alternateType);
+          if (!mediaCacheRef.current[alternateType]) {
+            loadType(alternateType);
+          }
+        } else {
+          // No items found in Firebase, use fallback
+          console.log('No items found in Firebase, using fallback data');
+          const fallbackItems = getFallbackData(activeTab).map(item => ({
+            ...item,
+            type: activeTab
+          }));
+
+          if (!isMounted) {
+            return;
+          }
+
+          mediaCacheRef.current[activeTab] = fallbackItems;
+          setMediaItems(fallbackItems);
+          setUsingFallback(true);
+          setDataSource('fallback');
+          setConnectionError('No media items found in database. Showing sample data. Please add media via the admin panel.');
+          updateInsights();
+
+          if (!mediaCacheRef.current[alternateType]) {
+            loadType(alternateType);
+          }
         }
       } catch (error) {
         console.error('Error loading media:', error);
@@ -404,6 +434,8 @@ const MediaGallery = () => {
         mediaCacheRef.current[activeTab] = fallbackItems;
         setMediaItems(fallbackItems);
         setUsingFallback(true);
+        setDataSource('fallback');
+        setConnectionError(`Failed to load data from Firebase: ${error.message}. Showing sample data.`);
         updateInsights();
 
         if (!mediaCacheRef.current[alternateType]) {
@@ -1141,7 +1173,35 @@ const MediaGallery = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {usingFallback && (
+        {/* Connection Status Messages */}
+        {connectionError && (
+          <div className="mb-6 flex items-start gap-3 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-400/30 text-amber-100">
+            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold mb-1">
+                {dataSource === 'fallback' ? 'Using Sample Data' : 'Notice'}
+              </p>
+              <p className="text-sm">{connectionError}</p>
+              {dataSource === 'fallback' && (
+                <a 
+                  href="/admin/media" 
+                  className="inline-flex items-center gap-2 mt-2 text-sm font-semibold text-cyan-300 hover:text-cyan-200 underline"
+                >
+                  Go to Admin Panel to Add Media →
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+
+        {dataSource === 'firebase' && !connectionError && (
+          <div className="mb-6 flex items-center gap-3 px-4 py-3 rounded-xl bg-green-500/10 border border-green-400/30 text-green-100">
+            <CheckCircle className="w-5 h-5 flex-shrink-0" />
+            <span>✅ Connected to live database - Showing {filteredData.length} media items</span>
+          </div>
+        )}
+
+        {usingFallback && !connectionError && (
           <div className="mb-6 flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-400/30 text-amber-100">
             <AlertCircle className="w-5 h-5 flex-shrink-0" />
             <span>{t('mediaGallery:fallback.notice', 'Showing curated sample media while the live gallery loads from the admin panel.')}</span>

@@ -100,6 +100,10 @@ export default {
         body: ['Inter', 'sans-serif'],
         cta: ['Space Grotesk', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
+        // Multi-language support fonts
+        'tamil': ['Noto Sans Tamil', 'sans-serif'],
+        'sinhala': ['Noto Sans Sinhala', 'sans-serif'],
+        'multi-lang': ['Inter', 'Noto Sans Tamil', 'Noto Sans Sinhala', 'sans-serif'],
       },
       fontSize: {
         // NASA/Scientific Typography Scale

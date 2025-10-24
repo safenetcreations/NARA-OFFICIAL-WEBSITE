@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import * as Icons from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -7,8 +7,9 @@ import AppImage from '../../components/AppImage';
 import { useOceanData } from '../../hooks/useOceanData';
 import SriLankaEEZMap from '../../components/SriLankaEEZMap';
 import APIIntegrationShowcase from '../../components/sections/APIIntegrationShowcase';
-import GovFooter from '../../components/compliance/GovFooter';
+import AcademyShowcase from '../../components/sections/AcademyShowcase';
 import LibraryBooksCarousel from '../../components/library/LibraryBooksCarousel';
+import GovFooter from '../../components/compliance/GovFooter';
 
 const NewHomePage = () => {
   const [lastUpdate, setLastUpdate] = useState(new Date());
@@ -16,33 +17,23 @@ const NewHomePage = () => {
   const heroRef = useRef(null);
   const { t } = useTranslation(['home', 'common']);
 
-  // Real-time ocean data
-  const {
-    oceanData,
-    isLoading,
-    refreshData
-  } = useOceanData();
-
-  // Parallax transforms
-  const y1 = useTransform(scrollY, [0, 300], [0, 100]);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const { oceanData, refreshData } = useOceanData();
+  const opacity = useTransform(scrollY, [0, 300], [1, 0.85]);
 
   const heroTitle = t('hero.title', { ns: 'home', returnObjects: true });
   const heroStats = t('hero.stats', { ns: 'home', returnObjects: true });
   const heroOverview = t('hero.overview', { ns: 'home', returnObjects: true });
-  const researchContent = t('research', { ns: 'home', returnObjects: true });
-  const intelligenceContent = t('intelligence', { ns: 'home', returnObjects: true });
   const missionContent = t('mission', { ns: 'home', returnObjects: true });
+  const researchContent = t('research', { ns: 'home', returnObjects: true });
   const divisionsContent = t('divisions', { ns: 'home', returnObjects: true });
   const servicesContent = t('services', { ns: 'home', returnObjects: true });
+  const highlightsContent = t('highlights', { ns: 'home', returnObjects: true });
+  const portalContent = t('portal', { ns: 'home', returnObjects: true });
   const milestonesContent = t('milestones', { ns: 'home', returnObjects: true });
   const newsContent = t('news', { ns: 'home', returnObjects: true });
-  const ctaContent = t('cta', { ns: 'home', returnObjects: true });
   const integrationContent = t('integration', { ns: 'home', returnObjects: true });
   const missionControlContent = t('missionControl', { ns: 'home', returnObjects: true });
-  const highlightsContent = t('highlights', { ns: 'home', returnObjects: true });
 
-  // Auto-refresh data every 5 minutes
   useEffect(() => {
     const interval = setInterval(() => {
       refreshData();
@@ -51,7 +42,6 @@ const NewHomePage = () => {
     return () => clearInterval(interval);
   }, [refreshData]);
 
-  // Enhanced research areas data with real-time integration
   const researchAreasConfig = [
     {
       key: 'marineBiodiversity',
@@ -98,36 +88,65 @@ const NewHomePage = () => {
     };
   });
 
-  const livePointColors = ['bg-green-500', 'bg-blue-500', 'bg-yellow-500'];
   const missionStatsIcons = [Icons.Award, Icons.Users, Icons.Globe2];
 
-  // Divisions config
   const divisionsConfig = [
-    { icon: Icons.Fish, gradient: 'from-blue-500 to-cyan-500', link: '/research-divisions/marine-biology' },
-    { icon: Icons.Waves, gradient: 'from-green-500 to-teal-500', link: '/research-divisions/fisheries-aquaculture' },
-    { icon: Icons.Satellite, gradient: 'from-purple-500 to-pink-500', link: '/research-divisions/oceanography' },
-    { icon: Icons.Shield, gradient: 'from-emerald-500 to-green-500', link: '/research-divisions/environmental-management' },
-    { icon: Icons.Droplets, gradient: 'from-cyan-500 to-blue-500', link: '/research-divisions/inland-water' },
-    { icon: Icons.Microscope, gradient: 'from-orange-500 to-red-500', link: '/research-divisions/biotechnology' }
+    { icon: Icons.Fish, gradient: 'from-blue-500 to-cyan-500', slug: 'marine-biological-division' },
+    { icon: Icons.Waves, gradient: 'from-green-500 to-teal-500', slug: 'inland-aquatic-aquaculture-division' },
+    { icon: Icons.Satellite, gradient: 'from-purple-500 to-pink-500', slug: 'oceanography-marine-sciences-division' },
+    { icon: Icons.Shield, gradient: 'from-emerald-500 to-green-500', slug: 'environmental-studies-division' },
+    { icon: Icons.Droplets, gradient: 'from-cyan-500 to-blue-500', slug: 'hydrographic-division' },
+    { icon: Icons.Microscope, gradient: 'from-orange-500 to-red-500', slug: 'aquaculture-research-center' }
   ];
 
-  // Services config
   const servicesConfig = [
-    { icon: Icons.FlaskConical, gradient: 'from-cyan-500 to-blue-500', link: '/services/laboratory' },
-    { icon: Icons.Info, gradient: 'from-green-500 to-teal-500', link: '/services/fisheries-advisory' },
-    { icon: Icons.Database, gradient: 'from-purple-500 to-pink-500', link: '/services/data-portal' },
-    { icon: Icons.GraduationCap, gradient: 'from-orange-500 to-amber-500', link: '/services/training' }
+    { icon: Icons.FlaskConical, gradient: 'from-cyan-500 to-blue-500', link: '/lab-results' },
+    { icon: Icons.Info, gradient: 'from-green-500 to-teal-500', link: '/fish-advisory-system' },
+    { icon: Icons.Database, gradient: 'from-purple-500 to-pink-500', link: '/open-data-portal' },
+    { icon: Icons.GraduationCap, gradient: 'from-orange-500 to-amber-500', link: '/learning-development-academy' }
   ];
 
-  // CTA config
-  const ctaConfig = [
-    { icon: Icons.Database, gradient: 'from-cyan-500 to-blue-500', link: '/research-excellence-portal' },
-    { icon: Icons.Users, gradient: 'from-purple-500 to-pink-500', link: '/partnerships/collaboration-opportunities' },
-    { icon: Icons.MessageSquare, gradient: 'from-green-500 to-teal-500', link: '/contact-us/expert-consultation' },
-    { icon: Icons.BookOpen, gradient: 'from-orange-500 to-amber-500', link: '/resources/digital-library' }
+  const highlightCards = Object.entries(highlightsContent?.cards || {}).map(([key, item]) => {
+    const iconMap = {
+      programs: Icons.Microscope,
+      observatories: Icons.Satellite,
+      dataAssets: Icons.Database,
+      partners: Icons.Users
+    };
+    const IconComponent = iconMap[key] || Icons.Sparkles;
+    return {
+      key,
+      IconComponent,
+      label: item.label,
+      value: item.value,
+      description: item.description
+    };
+  });
+
+  const portalCards = [
+    {
+      key: 'research',
+      icon: Icons.Microscope,
+      gradient: 'from-purple-600 to-pink-600',
+      link: '/research-excellence-portal',
+      copy: portalContent?.cards?.research || {}
+    },
+    {
+      key: 'maritime',
+      icon: Icons.Ship,
+      gradient: 'from-blue-600 to-cyan-600',
+      link: '/maritime-services-hub',
+      copy: portalContent?.cards?.maritime || {}
+    },
+    {
+      key: 'marketplace',
+      icon: Icons.ShoppingBag,
+      gradient: 'from-green-600 to-teal-600',
+      link: '/nara-digital-marketplace',
+      copy: portalContent?.cards?.marketplace || {}
+    }
   ];
 
-  // Milestones config
   const milestonesIcons = [Icons.Flag, Icons.Ship, Icons.Waves, Icons.TreePine];
   const milestonesGradients = [
     'from-cyan-500 to-blue-500',
@@ -136,7 +155,6 @@ const NewHomePage = () => {
     'from-green-500 to-teal-500'
   ];
 
-  // Achievements config
   const achievementsIcons = [Icons.Search, Icons.Shield, Icons.Globe2, Icons.GraduationCap];
   const achievementsGradients = [
     'from-cyan-500 to-blue-500',
@@ -145,7 +163,6 @@ const NewHomePage = () => {
     'from-orange-500 to-amber-500'
   ];
 
-  // News icons config
   const newsIcons = [Icons.TreePine, Icons.Handshake, Icons.Calendar];
   const newsGradients = [
     'from-green-500 to-teal-500',
@@ -153,58 +170,50 @@ const NewHomePage = () => {
     'from-blue-500 to-cyan-500'
   ];
 
-  const portalCardsConfig = [
-    {
-      key: 'research',
-      icon: Icons.Microscope,
-      gradient: 'from-purple-600 to-pink-600',
-      link: '/research-excellence-portal'
-    },
-    {
-      key: 'maritime',
-      icon: Icons.Ship,
-      gradient: 'from-blue-600 to-cyan-600',
-      link: '/maritime-services-hub'
-    },
-    {
-      key: 'marketplace',
-      icon: Icons.ShoppingBag,
-      gradient: 'from-green-600 to-teal-600',
-      link: '/nara-digital-marketplace'
-    }
-  ];
+  const livePointColors = ['bg-green-500', 'bg-blue-500', 'bg-yellow-500'];
 
-  const highlightCardsConfig = [
+  const knowledgeTilesConfig = [
     {
-      key: 'programs',
-      icon: Icons.Microscope,
-      accent: 'from-cyan-500/0 via-cyan-500/20 to-blue-600/0',
-      iconColor: 'text-cyan-300'
+      key: 'library',
+      icon: Icons.BookOpen,
+      link: '/library'
     },
     {
-      key: 'observatories',
-      icon: Icons.Satellite,
-      accent: 'from-blue-500/0 via-blue-500/20 to-cyan-500/0',
-      iconColor: 'text-blue-300'
+      key: 'advisory',
+      icon: Icons.AlertTriangle,
+      link: '/fish-advisory-system'
     },
     {
-      key: 'dataAssets',
+      key: 'datasets',
       icon: Icons.Database,
-      accent: 'from-teal-500/0 via-teal-500/20 to-blue-600/0',
-      iconColor: 'text-teal-300'
-    },
-    {
-      key: 'partners',
-      icon: Icons.Users,
-      accent: 'from-cyan-500/0 via-blue-500/20 to-cyan-500/0',
-      iconColor: 'text-cyan-200'
+      link: '/open-data-portal'
     }
   ];
 
+  const knowledgeTiles = knowledgeTilesConfig.map(({ key, icon, link }) => {
+    const copy =
+      t(`knowledge.tiles.${key}`, {
+        ns: 'home',
+        returnObjects: true,
+        defaultValue: {}
+      }) || {};
+
+    return {
+      key,
+      icon,
+      link,
+      title: copy.title || t('home:knowledge.defaultTitle', { defaultValue: 'Knowledge Resource' }),
+      description:
+        copy.description ||
+        t('home:knowledge.defaultDescription', {
+          defaultValue: 'Discover curated resources supporting Sri Lanka’s aquatic stewardship.'
+        }),
+      cta: copy.cta || t('home:knowledge.defaultCta', { defaultValue: 'Explore' })
+    };
+  });
 
   return (
     <div className="bg-black text-white overflow-hidden">
-      {/* Live Data Indicator */}
       <div className="fixed top-20 right-4 z-50 glass" style={{ padding: '8px 12px', borderRadius: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
@@ -215,533 +224,670 @@ const NewHomePage = () => {
       </div>
 
       <main>
-      {/* Hero Section - Sri Lanka Sovereign Waters */}
-      <section ref={heroRef} className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-[#03101d] to-blue-950">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-32 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-cyan-500/15 blur-3xl" />
-          <div className="absolute top-1/2 right-0 h-[420px] w-[420px] rounded-full bg-blue-500/20 blur-3xl" />
-          <div
-            className="absolute inset-0 opacity-30"
-            style={{
-              backgroundImage:
-                'radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.12) 1px, transparent 0)',
-              backgroundSize: '60px 60px'
-            }}
-          />
-        </div>
+        <section
+          ref={heroRef}
+          className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-[#03101d] to-blue-950"
+        >
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute -top-32 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-cyan-500/15 blur-3xl" />
+            <div className="absolute top-1/2 right-0 h-[420px] w-[420px] rounded-full bg-blue-500/20 blur-3xl" />
+            <div
+              className="absolute inset-0 opacity-30"
+              style={{
+                backgroundImage:
+                  'radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.12) 1px, transparent 0)',
+                backgroundSize: '60px 60px'
+              }}
+            />
+          </div>
 
-        <div className="relative z-10 w-full">
-          <motion.div
-            style={{ opacity }}
-            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-14"
-          >
-            <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)] items-center">
-              <motion.div
-                initial={{ y: 60, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8 }}
-                className="space-y-5"
-              >
+          <div className="relative z-10 w-full">
+            <motion.div
+              style={{ opacity }}
+              className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-14"
+            >
+              <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)] items-center">
+                <motion.div
+                  initial={{ y: 60, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.8 }}
+                  className="space-y-5"
+                >
                   <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-slate-900/60 px-4 py-2 text-xs uppercase tracking-[0.35em] text-cyan-200/90 backdrop-blur">
                     <Icons.ShieldCheck className="h-4 w-4" />
-                    {heroOverview?.badge || t('hero.badge', { ns: 'home', defaultValue: 'Sri Lanka Government Research Agency' })}
+                    {heroOverview?.badge ||
+                      t('hero.badge', { ns: 'home', defaultValue: 'Sri Lanka Government Research Agency' })}
                   </div>
-                
-                <div className="space-y-3">
-                  <h1 className="text-4xl md:text-6xl font-bold font-space leading-tight">
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-                      {heroTitle?.lineOne || 'Pioneering Aquatic'}
-                    </span>
-                    <br />
-                    <span className="text-white">{heroTitle?.lineTwo || 'Stewardship in Sri Lanka'}</span>
-                  </h1>
-                  <p className="text-base md:text-lg text-cyan-300/90 font-semibold">
-                    {heroOverview?.tagline || 'Sri Lanka\'s Premier Marine & Freshwater Research Agency'}
+
+                  <div className="space-y-3">
+                    <h1 className="text-4xl md:text-6xl font-bold font-space leading-tight">
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+                        {heroTitle?.lineOne || 'Pioneering Aquatic'}
+                      </span>
+                      <br />
+                      <span className="text-white">{heroTitle?.lineTwo || 'Stewardship in Sri Lanka'}</span>
+                    </h1>
+                    <p className="text-base md:text-lg text-cyan-300/90 font-semibold">
+                      {heroOverview?.tagline || "Sri Lanka's Premier Marine & Freshwater Research Agency"}
+                    </p>
+                  </div>
+
+                  <p className="text-sm md:text-base text-slate-300/90 max-w-2xl leading-relaxed">
+                    {heroOverview?.description ||
+                      "Advancing scientific research and innovation in marine and aquatic resources to protect ecosystems, support sustainable fisheries, and drive the nation's blue economy."}
                   </p>
-                </div>
-                
-                <p className="text-sm md:text-base text-slate-300/90 max-w-2xl leading-relaxed">
-                  {heroOverview?.description || 'Advancing scientific research and innovation in marine and aquatic resources to protect ecosystems, support sustainable fisheries, and drive the nation\'s blue economy.'}
-                </p>
-                
-                <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400">
-                  <div className="flex items-center gap-2">
-                    <Icons.Calendar className="h-4 w-4 text-cyan-400" />
-                    <span>{heroOverview?.since || 'Since 1981'}</span>
-                  </div>
-                  <span>•</span>
-                  <div className="flex items-center gap-2">
-                    <Icons.Layers className="h-4 w-4 text-cyan-400" />
-                    <span>{heroOverview?.divisions || '9 Research Divisions'}</span>
-                  </div>
-                  <span>•</span>
-                  <div className="flex items-center gap-2">
-                    <Icons.Users className="h-4 w-4 text-cyan-400" />
-                    <span>{heroOverview?.scientists || '100+ Scientists'}</span>
-                  </div>
-                </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                  <Link
-                    to="/research-excellence-portal"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/25 transition hover:shadow-cyan-400/40"
-                  >
-                    <Icons.Microscope className="h-4 w-4" />
-                    {heroOverview?.primaryCta || 'Explore Research'}
-                  </Link>
-                  <Link
-                    to="/about-nara-our-story"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-500/30 px-6 py-3 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400/60 hover:text-cyan-100"
-                  >
-                    <Icons.Info className="h-4 w-4" />
-                    {heroOverview?.secondaryCta || 'About NARA'}
-                  </Link>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ y: 80, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 1, delay: 0.2 }}
-                className="relative"
-              >
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/20 via-transparent to-blue-500/10 blur-3xl" />
-                <div className="relative rounded-3xl border border-cyan-500/20 bg-slate-950/70 p-4 backdrop-blur-2xl shadow-[0_25px_80px_-40px_rgba(8,145,178,0.6)]">
-                  <motion.div
-                    className="relative mx-auto w-full max-w-[380px] h-[540px]"
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.9, delay: 0.2 }}
-                  >
-                    {/* Google Maps with EEZ Highlight */}
-                    <div className="relative h-full w-full rounded-3xl overflow-hidden">
-                      <SriLankaEEZMap className="h-full w-full" showMarkers={true} />
-                      
-                      {/* Sri Lanka Flag - Top Right Corner */}
-                      <div className="absolute top-4 right-4 z-10">
-                        <img
-                          src="/assets/images/sri-lanka-flag.png"
-                          alt="Sri Lanka Flag"
-                          className="h-12 w-20 object-cover rounded shadow-lg border-2 border-white/20"
-                        />
-                      </div>
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400">
+                    <div className="flex items-center gap-2">
+                      <Icons.Calendar className="h-4 w-4 text-cyan-400" />
+                      <span>{heroOverview?.since || 'Since 1981'}</span>
                     </div>
+                    <span>•</span>
+                    <div className="flex items-center gap-2">
+                      <Icons.Layers className="h-4 w-4 text-cyan-400" />
+                      <span>{heroOverview?.divisions || '9 Research Divisions'}</span>
+                    </div>
+                    <span>•</span>
+                    <div className="flex items-center gap-2">
+                      <Icons.Users className="h-4 w-4 text-cyan-400" />
+                      <span>{heroOverview?.scientists || '100+ Scientists'}</span>
+                    </div>
+                  </div>
 
-                    {/* NARA Logo Overlay - Animated Flash */}
-                    <motion.div 
-                      className="pointer-events-none absolute inset-0 flex items-center justify-center"
-                      animate={{ 
-                        scale: [1, 1.05, 1],
-                      }}
-                      transition={{ 
-                        duration: 2, 
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <Link
+                      to="/research-excellence-portal"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/25 transition hover:shadow-cyan-400/40"
                     >
-                      <motion.div 
-                        className="flex items-center justify-center rounded-full bg-slate-900/90 shadow-lg backdrop-blur-md border-2 w-28 h-28"
-                        animate={{
-                          borderColor: ['rgba(34,211,238,0.4)', 'rgba(6,182,212,0.8)', 'rgba(34,211,238,0.4)'],
-                          boxShadow: [
-                            '0 0 20px rgba(34,211,238,0.3)',
-                            '0 0 40px rgba(6,182,212,0.6)',
-                            '0 0 20px rgba(34,211,238,0.3)'
-                          ]
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
+                      <Icons.Microscope className="h-4 w-4" />
+                      {heroOverview?.primaryCta || 'Explore Research'}
+                    </Link>
+                    <Link
+                      to="/contact-us"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-500/40 px-6 py-3 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10"
+                    >
+                    <Icons.Send className="h-4 w-4" />
+                    {heroOverview?.secondaryCta ||
+                      t('hero.secondaryCta', {
+                        ns: 'home',
+                        defaultValue: 'Connect with our mission team'
+                      })}
+                    </Link>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ y: 80, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 1, delay: 0.2 }}
+                  className="relative"
+                >
+                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/20 via-transparent to-blue-500/10 blur-3xl" />
+                  <div className="relative rounded-3xl border border-cyan-500/20 bg-slate-950/70 p-4 backdrop-blur-2xl shadow-[0_25px_80px_-40px_rgba(8,145,178,0.6)]">
+                    <motion.div
+                      className="relative mx-auto h-[540px] w-full max-w-[380px]"
+                      initial={{ scale: 0.92, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.9, delay: 0.2 }}
+                    >
+                      <div className="relative h-full w-full overflow-hidden rounded-3xl">
+                        <SriLankaEEZMap className="h-full w-full" showMarkers />
+                        <div className="absolute top-4 right-4 z-10">
+                          <img
+                            src="/assets/images/sri-lanka-flag.png"
+                            alt="Sri Lanka Flag"
+                            className="h-12 w-20 rounded border-2 border-white/20 object-cover shadow-lg"
+                          />
+                        </div>
+                      </div>
+
+                      <motion.div
+                        className="pointer-events-none absolute inset-0 flex items-center justify-center"
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                       >
-                        <AppImage
-                          src="/assets/nara-logo.png"
-                          alt="NARA crest"
-                          className="object-contain w-20 h-20"
-                        />
+                        <motion.div
+                          className="flex h-28 w-28 items-center justify-center rounded-full border-2 bg-slate-900/90 shadow-lg backdrop-blur-md"
+                          animate={{
+                            borderColor: [
+                              'rgba(34,211,238,0.4)',
+                              'rgba(6,182,212,0.8)',
+                              'rgba(34,211,238,0.4)'
+                            ],
+                            boxShadow: [
+                              '0 0 20px rgba(34,211,238,0.3)',
+                              '0 0 40px rgba(6,182,212,0.6)',
+                              '0 0 20px rgba(34,211,238,0.3)'
+                            ]
+                          }}
+                          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                        >
+                          <AppImage src="/assets/nara-logo.png" alt="NARA crest" className="h-20 w-20 object-contain" />
+                        </motion.div>
                       </motion.div>
                     </motion.div>
-                  </motion.div>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
 
-      {/* Mission Statement & Overview */}
-      <section className="relative py-20 px-4 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-        <div className="max-w-6xl mx-auto">
-          {/* Mission Statement */}
-          <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 font-space">
-              {missionContent?.heading}
-            </h2>
-            <p className="text-base md:text-lg text-slate-300 leading-relaxed max-w-4xl mx-auto">
-              {missionContent?.description}
-            </p>
-          </div>
-
-          {/* Key Impact Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(missionContent?.stats || []).map((stat, index) => {
-              const StatIcon = missionStatsIcons[index] || Icons.Award;
-              const gradientClasses = [
-                'from-cyan-500 to-blue-500',
-                'from-blue-500 to-purple-500',
-                'from-purple-500 to-pink-500'
-              ];
-              const colorClasses = ['text-cyan-400', 'text-blue-400', 'text-purple-400'];
-
-              return (
-                <div key={stat.label || index} className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 text-center backdrop-blur">
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r ${gradientClasses[index] || 'from-cyan-500 to-blue-500'} mb-4`}>
-                    <StatIcon className="w-6 h-6 text-white" />
+                    <div className="mt-4 grid grid-cols-2 gap-3 rounded-2xl border border-cyan-500/10 bg-slate-950/80 p-4">
+                      {(heroStats?.grid || []).map((item, index) => (
+                        <div key={item?.label || index} className="rounded-xl bg-slate-900/80 p-3 text-left">
+                          <p className="text-[11px] uppercase tracking-wide text-slate-500">{item?.label}</p>
+                          <p className="text-base font-semibold text-white">{item?.value}</p>
+                          <p className="text-[11px] text-cyan-300/80">{item?.status}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className={`text-3xl font-bold ${colorClasses[index] || 'text-cyan-400'} mb-2`}>{stat.value}</div>
-                  <div className="text-sm text-slate-400">{stat.label}</div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Research Excellence - Optimized Design */}
-      <section className="relative py-16 px-4 bg-slate-950">
-        <div className="max-w-7xl mx-auto">
-          {/* Compact Header */}
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-              {researchContent?.heading}
-            </h2>
-            <p className="text-base text-slate-400 max-w-2xl mx-auto">
-              {researchContent?.description}
-            </p>
-          </div>
-
-          {/* Lightweight Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {researchAreas.map((area, index) => (
-              <div
-                key={area.key || index}
-                className="group relative bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-cyan-500/50 transition-colors"
-              >
-                {/* Minimal Icon Badge */}
-                <div className={`inline-flex p-2.5 rounded-lg bg-gradient-to-r ${area.color} mb-3`}>
-                  <area.icon className="w-5 h-5 text-white" />
-                </div>
-                
-                {/* Content */}
-                <h3 className="text-lg font-semibold mb-1.5 text-white">{area.title}</h3>
-                <p className="text-slate-400 text-xs mb-3 line-clamp-2">{area.description}</p>
-                
-                {/* Stats - Compact */}
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-2xl font-bold text-cyan-400">{area.stat}</span>
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wide">{area.unit}</span>
-                </div>
-                
-                {/* Simple Hover Indicator */}
-                <Icons.ArrowUpRight className="absolute top-4 right-4 w-4 h-4 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </motion.div>
               </div>
-            ))}
+            </motion.div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Key Focus Areas & Services */}
-      <section className="relative py-20 px-4 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-        <div className="max-w-7xl mx-auto">
-          {/* Research Divisions */}
-          <div className="mb-16">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 font-space">
-                {divisionsContent?.heading}
-              </h2>
-              <p className="text-base text-slate-400 max-w-2xl mx-auto">
-                {divisionsContent?.subheading}
-              </p>
+        {highlightCards.length > 0 && (
+          <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-16 px-4">
+            <div className="max-w-7xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-white font-space">
+                  {highlightsContent?.heading || 'Impact at a Glance'}
+                </h2>
+                <p className="text-base md:text-lg text-slate-400 max-w-3xl mx-auto">
+                  {highlightsContent?.description ||
+                    'A national command centre synchronising research, compliance, and frontline intelligence for Sri Lanka’s blue economy.'}
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {highlightCards.map(({ key, IconComponent, label, value, description }) => (
+                  <div
+                    key={key}
+                    className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-6 backdrop-blur transition hover:border-cyan-500/40"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-blue-500/10 opacity-0 transition-opacity duration-300 hover:opacity-100" />
+                    <div className="relative flex items-center justify-between mb-4">
+                      <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-200">
+                        <IconComponent className="h-6 w-6" />
+                      </span>
+                      <span className="text-xs uppercase tracking-[0.25em] text-slate-500">{label}</span>
+                    </div>
+                    <div className="relative">
+                      <p className="text-4xl font-space font-bold text-white mb-2">{value}</p>
+                      <p className="text-sm text-slate-300 leading-relaxed">{description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
+          </section>
+        )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {divisionsConfig.map((config, index) => {
-                const division = divisionsContent?.list?.[index] || {};
-                const IconComponent = config.icon;
-                return (
-                  <Link key={index} to={config.link} className="group">
-                    <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 hover:border-cyan-500/50 transition-all">
-                      <div className="flex items-start gap-4">
-                        <div className={`p-3 rounded-lg bg-gradient-to-r ${config.gradient}`}>
-                          <IconComponent className="w-6 h-6 text-white" />
+        <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-20 px-4 md:px-8 lg:px-12">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-cyan-500/15 blur-3xl" />
+            <div className="absolute bottom-0 left-24 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" />
+          </div>
+
+          <div className="relative max-w-[1600px] mx-auto space-y-16">
+            <div className="grid gap-8 lg:grid-cols-2">
+              {/* Left Tile - Mission Info */}
+              <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-8 md:p-10 backdrop-blur h-full flex flex-col">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 border border-cyan-500/20">
+                    <AppImage
+                      src="/assets/nara-logo.png"
+                      alt="NARA crest"
+                      className="h-10 w-10 object-contain"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.3em] text-cyan-200/80">
+                      {t('mission.badge', {
+                        ns: 'home',
+                        defaultValue: 'National Aquatic Research Authority'
+                      })}
+                    </p>
+                    <p className="text-[11px] uppercase tracking-[0.4em] text-slate-400">
+                      {t('hero.overview.sovereignWaters.label', {
+                        ns: 'home',
+                        defaultValue: 'Sovereign Waters'
+                      })}
+                    </p>
+                  </div>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold text-white font-space mb-4">
+                  {missionContent?.heading}
+                </h2>
+                <p className="text-base text-slate-300/90 leading-relaxed mb-6">
+                  {missionContent?.description}
+                </p>
+
+                <div className="grid gap-4 sm:grid-cols-2 mb-6">
+                  <div className="flex items-start gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                    <Icons.Compass className="h-5 w-5 text-cyan-300 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      {t('mission.focusResearch', {
+                        ns: 'home',
+                        defaultValue:
+                          'Coastal, deep sea, and inland water programmes powering national policy and the blue economy.'
+                      })}
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                    <Icons.UserCheck className="h-5 w-5 text-cyan-300 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      {t('mission.focusCommunity', {
+                        ns: 'home',
+                        defaultValue:
+                          'Alliances with fishing communities, academia, and defence agencies safeguard livelihoods and maritime security.'
+                      })}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-auto flex flex-col sm:flex-row sm:items-center gap-3">
+                  <Link
+                    to="/about-nara-our-story"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+                  >
+                    <Icons.BookOpen className="h-4 w-4" />
+                    {t('mission.ctaLearn', { ns: 'home', defaultValue: 'About NARA' })}
+                  </Link>
+                  <Link
+                    to="/contact-us"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-500/40 px-5 py-3 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10"
+                  >
+                    <Icons.MessageCircle className="h-4 w-4" />
+                    {t('mission.ctaConsult', { ns: 'home', defaultValue: 'Request a briefing' })}
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right Tile - Stats */}
+              <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-8 md:p-10 backdrop-blur h-full flex flex-col justify-center">
+                <div className="space-y-8">
+                  {(missionContent?.stats || []).map((stat, index) => {
+                    const StatIcon = missionStatsIcons[index] || Icons.Award;
+                    const gradient = ['from-cyan-500 to-blue-500', 'from-blue-500 to-purple-500', 'from-purple-500 to-pink-500'][index];
+                    const colorClass = ['text-cyan-300', 'text-blue-300', 'text-purple-300'][index] || 'text-cyan-300';
+                    return (
+                      <div
+                        key={stat?.label || index}
+                        className="flex items-center gap-6 rounded-2xl border border-slate-800 bg-slate-900/80 p-6 backdrop-blur"
+                      >
+                        <div className={`flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r ${gradient || 'from-cyan-500 to-blue-500'}`}>
+                          <StatIcon className="w-8 h-8 text-white" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-400 transition-colors">
-                            {division.name}
-                          </h3>
-                          <p className="text-sm text-slate-400">{division.description}</p>
+                          <div className={`text-4xl font-bold ${colorClass} mb-1`}>{stat?.value}</div>
+                          <div className="text-sm uppercase tracking-wide text-slate-400">{stat?.label}</div>
                         </div>
-                        <Icons.ArrowRight className="w-5 h-5 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
-                    </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {divisionsContent?.list?.length > 0 && (
+              <div>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+                  <div>
+                    <h3 className="text-2xl md:text-3xl font-bold text-white font-space">
+                      {divisionsContent?.heading}
+                    </h3>
+                    <p className="text-sm md:text-base text-slate-400 max-w-3xl">
+                      {divisionsContent?.subheading}
+                    </p>
+                  </div>
+                  <Link
+                    to="/divisions"
+                    className="inline-flex items-center gap-2 rounded-xl border border-cyan-500/40 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10"
+                  >
+                    <Icons.LayoutGrid className="h-4 w-4" />
+                    {t('mission.viewAllDivisions', {
+                      ns: 'home',
+                      defaultValue: 'View all divisions'
+                    })}
                   </Link>
-                );
-              })}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {divisionsConfig.map((config, index) => {
+                    const division = divisionsContent?.list?.[index] || {};
+                    const IconComponent = config.icon;
+                    return (
+                      <Link key={config.slug || index} to={`/divisions/${config.slug}`} className="group h-full">
+                        <div className="relative h-full overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-6 transition hover:border-cyan-500/40">
+                          <div className={`mb-4 inline-flex items-center justify-center rounded-xl bg-gradient-to-r ${config.gradient} p-3 text-white`}>
+                            <IconComponent className="h-6 w-6" />
+                          </div>
+                          <h4 className="text-xl font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                            {division?.name}
+                          </h4>
+                          <p className="text-sm text-slate-400 leading-relaxed">{division?.description}</p>
+                          <Icons.ArrowRight className="mt-6 h-5 w-5 text-cyan-300 opacity-0 group-hover:translate-x-1 group-hover:opacity-100 transition-all" />
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-16 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 font-space">
+                {researchContent?.heading}
+              </h2>
+              <p className="text-base text-slate-400 max-w-3xl mx-auto">
+                {researchContent?.description}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+              {researchAreas.map((area, index) => (
+                <div
+                  key={area.key || index}
+                  className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-5 transition hover:border-cyan-500/40"
+                >
+                  <div className={`inline-flex p-2.5 rounded-lg bg-gradient-to-r ${area.color} mb-3`}>
+                    <area.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-white mb-2">{area.title}</h3>
+                  <p className="text-xs text-slate-400 leading-relaxed mb-3 line-clamp-3">{area.description}</p>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-2xl font-bold text-cyan-400">{area.stat}</span>
+                    <span className="text-[10px] uppercase tracking-wide text-slate-500">{area.unit}</span>
+                  </div>
+                  <Icons.ArrowUpRight className="absolute top-4 right-4 h-4 w-4 text-cyan-300 opacity-0 transition group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:opacity-100" />
+                </div>
+              ))}
             </div>
           </div>
+        </section>
 
-          {/* Services to Stakeholders */}
-          <div>
-            <div className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 font-space">
+        <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-blue-950/40 py-20 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 font-space">
+                {portalContent?.heading || 'Navigate Our Flagship Platforms'}
+              </h2>
+              <p className="text-base md:text-lg text-slate-300 max-w-3xl mx-auto">
+                {portalContent?.subheading ||
+                  'Dive into specialised environments built for scientists, maritime teams, and policy makers.'}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {portalCards.map(({ key, icon: IconComponent, gradient, link, copy }) => (
+                <Link key={key} to={link} className="group">
+                  <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-6 transition hover:border-cyan-500/40">
+                    <div className={`inline-flex items-center justify-center rounded-xl bg-gradient-to-r ${gradient} p-3 text-white mb-4`}>
+                      <IconComponent className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                      {copy?.title}
+                    </h3>
+                    <p className="text-sm text-slate-400 leading-relaxed">{copy?.description}</p>
+                    <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-cyan-300">
+                      {portalContent?.cta || 'Enter portal'}
+                      <Icons.ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-slate-950 py-20 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-white font-space">
                 {servicesContent?.heading}
               </h2>
-              <p className="text-base text-slate-400 max-w-2xl mx-auto">
+              <p className="text-base md:text-lg text-slate-400 max-w-3xl mx-auto">
                 {servicesContent?.subheading}
               </p>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {servicesConfig.map((config, index) => {
                 const service = servicesContent?.list?.[index] || {};
                 const IconComponent = config.icon;
                 return (
-                  <Link key={index} to={config.link} className="group">
-                    <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 hover:border-cyan-500/50 transition-all text-center">
-                      <div className={`inline-flex p-4 rounded-full bg-gradient-to-r ${config.gradient} mb-4`}>
-                        <IconComponent className="w-8 h-8 text-white" />
+                  <Link key={config.link} to={config.link} className="group">
+                    <div className="relative h-full overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-center transition hover:border-cyan-500/40">
+                      <div className={`mx-auto mb-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r ${config.gradient} p-4`}>
+                        <IconComponent className="h-8 w-8 text-white" />
                       </div>
-                      <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-400 transition-colors">
-                        {service.name}
+                      <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                        {service?.name}
                       </h3>
-                      <p className="text-sm text-slate-400">{service.description}</p>
+                      <p className="text-sm text-slate-400 leading-relaxed">{service?.description}</p>
                     </div>
                   </Link>
                 );
               })}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <APIIntegrationShowcase content={integrationContent} />
+        <APIIntegrationShowcase content={integrationContent} />
+        <AcademyShowcase />
 
-      {/* Achievements & Milestones */}
-      <section className="relative py-20 px-4 bg-gradient-to-b from-slate-800 via-slate-700 to-slate-800">
-        <div className="max-w-7xl mx-auto">
-          {/* Section Header */}
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 font-space">
-              {milestonesContent?.heading}
-            </h2>
-            <p className="text-base text-slate-300 max-w-2xl mx-auto">
-              {milestonesContent?.subheading}
-            </p>
-          </div>
-
-          {/* Timeline Highlights */}
-          <div className="mb-16">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <section className="relative bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-20 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-14">
+              <h2 className="text-3xl md:text-4xl font-bold text-white font-space">
+                {milestonesContent?.heading}
+              </h2>
+              <p className="text-base md:text-lg text-slate-300 max-w-3xl mx-auto">
+                {milestonesContent?.subheading}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
               {milestonesContent?.timeline?.map((milestone, index) => {
                 const IconComponent = milestonesIcons[index] || Icons.Flag;
                 const gradient = milestonesGradients[index] || 'from-cyan-500 to-blue-500';
                 const colorClass = ['text-cyan-400', 'text-blue-400', 'text-purple-400', 'text-green-400'][index] || 'text-cyan-400';
                 return (
-                  <div key={index} className="bg-slate-900/50 border border-slate-600 rounded-xl p-6 hover:border-cyan-400 transition-all">
+                  <div
+                    key={`${milestone?.title}-${index}`}
+                    className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 transition hover:border-cyan-500/40"
+                  >
                     <div className="flex items-center gap-3 mb-4">
-                      <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${gradient} flex items-center justify-center`}>
-                        <IconComponent className="w-6 h-6 text-white" />
+                      <div className={`h-12 w-12 rounded-full bg-gradient-to-r ${gradient} flex items-center justify-center`}>
+                        <IconComponent className="h-6 w-6 text-white" />
                       </div>
-                      <span className={`text-2xl font-bold ${colorClass}`}>{milestone.year}</span>
+                      <span className={`text-2xl font-bold ${colorClass}`}>{milestone?.year}</span>
                     </div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{milestone.title}</h3>
-                    <p className="text-sm text-slate-300">{milestone.description}</p>
+                    <h3 className="text-lg font-semibold text-white mb-2">{milestone?.title}</h3>
+                    <p className="text-sm text-slate-300 leading-relaxed">{milestone?.description}</p>
                   </div>
                 );
               })}
             </div>
-          </div>
-
-          {/* Notable Achievements */}
-          <div>
-            <h3 className="text-2xl md:text-3xl font-bold text-white text-center mb-10">
-              {milestonesContent?.achievementsHeading}
-            </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {milestonesContent?.achievements?.map((achievement, index) => {
                 const IconComponent = achievementsIcons[index] || Icons.Award;
                 const gradient = achievementsGradients[index] || 'from-cyan-500 to-blue-500';
                 const colorClass = ['text-cyan-400', 'text-green-400', 'text-purple-400', 'text-orange-400'][index] || 'text-cyan-400';
                 return (
-                  <div key={index} className="text-center">
-                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r ${gradient} mb-4`}>
-                      <IconComponent className="w-8 h-8 text-white" />
+                  <div key={`${achievement?.label}-${index}`} className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 text-center">
+                    <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r ${gradient}`}>
+                      <IconComponent className="h-8 w-8 text-white" />
                     </div>
-                    <div className={`text-3xl font-bold ${colorClass} mb-2`}>{achievement.number}</div>
-                    <div className="text-sm text-slate-300">{achievement.label}</div>
+                    <div className={`text-3xl font-space font-bold ${colorClass} mb-2`}>{achievement?.number}</div>
+                    <p className="text-xs uppercase tracking-wide text-slate-400">{achievement?.label}</p>
                   </div>
                 );
               })}
             </div>
-
-            {/* Link to Full History */}
-            <div className="text-center mt-12">
-              <Link 
-                to="/about-nara-our-story" 
-                className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold rounded-xl transition-all"
+            <div className="mt-12 text-center">
+              <Link
+                to="/about-nara-our-story"
+                className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
               >
-                <Icons.BookOpen className="w-5 h-5" />
+                <Icons.BookOpen className="h-5 w-5" />
                 {milestonesContent?.cta}
-                <Icons.ArrowRight className="w-5 h-5" />
+                <Icons.ArrowRight className="h-5 w-5" />
               </Link>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Latest News & Updates */}
-      <section className="relative py-20 px-4 bg-gradient-to-b from-slate-900 via-blue-950/30 to-slate-900">
-        <div className="max-w-7xl mx-auto">
-          {/* Section Header */}
-          <div className="flex items-center justify-between mb-12">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-2 font-space">
-                {newsContent?.heading}
+        <section className="relative bg-gradient-to-b from-slate-950 via-blue-950/30 to-slate-950 py-20 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-bold text-white font-space">
+                  {newsContent?.heading}
+                </h2>
+                <p className="text-sm md:text-base text-slate-400">{newsContent?.subheading}</p>
+              </div>
+              <Link
+                to="/nara-news-updates-center"
+                className="inline-flex items-center gap-2 rounded-xl border border-cyan-500/40 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10"
+              >
+                <Icons.Rss className="h-4 w-4" />
+                {newsContent?.viewAll}
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {newsContent?.articles?.map((article, index) => {
+                const IconComponent = newsIcons[index] || Icons.Newspaper;
+                const gradient = newsGradients[index] || 'from-cyan-500 to-blue-500';
+                const linkText = index === 2 ? newsContent?.learnMore : newsContent?.readMore;
+                return (
+                  <Link key={`${article?.title}-${index}`} to="/nara-news-updates-center" className="group">
+                    <div className="h-full rounded-2xl border border-slate-800 bg-slate-900/60 p-6 transition hover:border-cyan-500/40">
+                      <div className="mb-3 flex items-center gap-2">
+                        <div className={`rounded-lg bg-gradient-to-r ${gradient} p-2 text-white`}>
+                          <IconComponent className="h-4 w-4" />
+                        </div>
+                        <span className="text-xs text-slate-400">{article?.date}</span>
+                      </div>
+                      <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                        {article?.title}
+                      </h3>
+                      <p className="text-sm text-slate-400 leading-relaxed mb-4 line-clamp-3">
+                        {article?.description}
+                      </p>
+                      <div className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-300">
+                        {linkText}
+                        <Icons.ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="mt-8 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-6">
+              <div className="flex items-start gap-4">
+                <div className="rounded-lg bg-amber-500/20 p-3">
+                  <Icons.AlertTriangle className="h-6 w-6 text-amber-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-amber-300 mb-2">{newsContent?.advisory?.title}</h3>
+                  <p className="text-sm text-amber-100/80 mb-3">{newsContent?.advisory?.description}</p>
+                  <Link
+                    to="/fish-advisory-system"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-amber-200 hover:text-amber-100 transition-colors"
+                  >
+                    {newsContent?.advisory?.link}
+                    <Icons.ExternalLink className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-20 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-12 text-center">
+              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-5 py-2.5 text-sm uppercase tracking-[0.3em] text-cyan-200/80">
+                <Icons.BookMarked className="h-5 w-5" />
+                {t('home:knowledge.badge', { defaultValue: 'Knowledge Hub' })}
+              </span>
+              <h2 className="mt-6 text-3xl md:text-4xl lg:text-5xl font-bold text-white font-space leading-tight">
+                {t('home:knowledge.heading', { defaultValue: 'Discover the latest publications' })}
               </h2>
-              <p className="text-base text-slate-400">
-                {newsContent?.subheading}
+              <p className="mt-4 text-lg text-slate-400 leading-relaxed max-w-3xl mx-auto">
+                {t('home:knowledge.description', {
+                  defaultValue:
+                    "Browse curated research, advisories, and technical publications powering Sri Lanka's aquatic stewardship."
+                })}
               </p>
             </div>
-            <Link 
-              to="/media-center/news" 
-              className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 border border-cyan-500/50 hover:bg-cyan-500/10 text-cyan-400 rounded-xl transition-all"
-            >
-              {newsContent?.viewAll}
-              <Icons.ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
 
-          {/* News Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {newsContent?.articles?.map((article, index) => {
-              const IconComponent = newsIcons[index] || Icons.Newspaper;
-              const gradient = newsGradients[index] || 'from-cyan-500 to-blue-500';
-              const linkText = index === 2 ? newsContent?.learnMore : newsContent?.readMore;
-              return (
-                <Link key={index} to={`/news/article-${index + 1}`} className="group">
-                  <div className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden hover:border-cyan-500/50 transition-all">
-                    <div className="p-6">
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className={`p-2 rounded-lg bg-gradient-to-r ${gradient}`}>
-                          <IconComponent className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="text-xs text-slate-400">{article.date}</span>
+            <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-8 backdrop-blur">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {knowledgeTiles.map(({ key, icon: TileIcon, title, description, link, cta }) => (
+                    <Link
+                      key={key}
+                      to={link}
+                      className="group flex items-start gap-3 rounded-xl border border-slate-800 bg-slate-900/80 p-4 transition hover:border-cyan-400/40 hover:bg-slate-900"
+                    >
+                      <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-cyan-500/10 text-cyan-200">
+                        <TileIcon className="h-5 w-5" />
+                      </span>
+                      <div className="flex-1 text-left">
+                        <h3 className="text-sm font-semibold text-white group-hover:text-cyan-100 transition-colors">
+                          {title}
+                        </h3>
+                        <p className="mt-1 text-xs text-slate-400 leading-relaxed">{description}</p>
+                        <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-cyan-300">
+                          {cta}
+                          <Icons.ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                        </span>
                       </div>
-                      <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-400 transition-colors">
-                        {article.title}
-                      </h3>
-                      <p className="text-sm text-slate-400 mb-4 line-clamp-2">
-                        {article.description}
-                      </p>
-                      <div className="flex items-center gap-2 text-cyan-400 text-sm">
-                        <span>{linkText}</span>
-                        <Icons.ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Public Notice/Alert */}
-          <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-6">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-amber-500/20">
-                <Icons.AlertTriangle className="w-6 h-6 text-amber-400" />
+                    </Link>
+                  ))}
+                </div>
               </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-amber-400 mb-2">{newsContent?.advisory?.title}</h3>
-                <p className="text-sm text-slate-300 mb-3">
-                  {newsContent?.advisory?.description}
-                </p>
-                <Link to="/services/fisheries-advisory" className="inline-flex items-center gap-2 text-amber-400 text-sm hover:text-amber-300 transition-colors">
-                  <span>{newsContent?.advisory?.link}</span>
-                  <Icons.ExternalLink className="w-4 h-4" />
-                </Link>
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 backdrop-blur">
+                <LibraryBooksCarousel />
               </div>
             </div>
           </div>
+        </section>
 
-          {/* Mobile "View All" Button */}
-          <div className="md:hidden mt-8 text-center">
-            <Link 
-              to="/media-center/news" 
-              className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold rounded-xl transition-all"
-            >
-              {newsContent?.viewAll}
-              <Icons.ArrowRight className="w-5 h-5" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* How Can We Help You - CTAs for Key Audiences */}
-      <section className="relative py-20 px-4 bg-gradient-to-br from-cyan-900/20 via-slate-900 to-blue-900/20">
-        <div className="max-w-7xl mx-auto">
-          {/* Section Header */}
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 font-space">
-              {ctaContent?.heading}
+        <section className="relative bg-gradient-to-br from-cyan-900/20 via-slate-900 to-blue-900/20 py-20 px-4">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(6,182,212,0.2),_transparent_60%)] opacity-40" />
+          <div className="relative max-w-5xl mx-auto rounded-3xl border border-cyan-500/30 bg-slate-950/80 p-10 md:p-14 text-center backdrop-blur">
+            <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-5 py-2 text-xs uppercase tracking-[0.3em] text-cyan-200">
+              <Icons.RadioTower className="h-4 w-4" />
+              {missionControlContent?.badge || 'National Mission Control'}
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-white font-space mb-4">
+              {missionControlContent?.title || "Safeguarding Sri Lanka's Blue Economy"}
             </h2>
-            <p className="text-base text-slate-300 max-w-2xl mx-auto">
-              {ctaContent?.subheading}
+            <p className="text-base md:text-lg text-slate-300 max-w-3xl mx-auto mb-8">
+              {missionControlContent?.description ||
+                'The NARA command centre synchronises research, policy, and frontline intelligence to secure resilient oceans and communities.'}
+            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4">
+              <Link
+                to="/contact-us"
+                className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+              >
+                <Icons.Navigation className="h-5 w-5" />
+                {missionControlContent?.form?.cta || 'Join the mission'}
+              </Link>
+              <Link
+                to="/about-nara-our-story"
+                className="inline-flex items-center gap-2 rounded-xl border border-cyan-500/40 px-6 py-3 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10"
+              >
+                <Icons.FileText className="h-5 w-5" />
+                {t('home:missionControl.learnMore', { defaultValue: 'Review mandate brief' })}
+              </Link>
+            </div>
+            <p className="mt-6 text-xs text-slate-400">
+              {missionControlContent?.form?.privacy ||
+                'We protect your data in alignment with GovCERT SL and international research ethics.'}
             </p>
           </div>
-
-          {/* CTA Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {ctaContent?.cards?.map((card, index) => {
-              const config = ctaConfig[index] || {};
-              const IconComponent = config.icon || Icons.ArrowRight;
-              const gradient = config.gradient || 'from-cyan-500 to-blue-500';
-              const buttonColors = [
-                'bg-cyan-500 hover:bg-cyan-400 text-slate-950',
-                'bg-purple-500 hover:bg-purple-400 text-white',
-                'bg-green-500 hover:bg-green-400 text-white',
-                'bg-orange-500 hover:bg-orange-400 text-white'
-              ][index] || 'bg-cyan-500 hover:bg-cyan-400 text-white';
-              
-              return (
-                <div key={index} className="group bg-slate-800/50 border border-slate-700 rounded-2xl p-8 hover:border-cyan-500/50 transition-all">
-                  <div className="flex items-start gap-6">
-                    <div className={`p-4 rounded-xl bg-gradient-to-r ${gradient} flex-shrink-0`}>
-                      <IconComponent className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-white mb-3">{card.title}</h3>
-                      <p className="text-sm text-slate-400 mb-6">
-                        {card.description}
-                      </p>
-                      <Link 
-                        to={config.link || '#'} 
-                        className={`inline-flex items-center gap-2 px-5 py-3 ${buttonColors} font-semibold rounded-xl transition-all`}
-                      >
-                        {card.button}
-                        <Icons.ArrowRight className="w-5 h-5" />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Library Books Carousel - Only on Homepage */}
-      <LibraryBooksCarousel />
+        </section>
       </main>
 
       <GovFooter />

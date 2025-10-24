@@ -250,44 +250,6 @@ const Header = ({ className = '' }) => {
               </Link>
             </div>
             <div className="flex items-center space-x-3">
-              {/* Language Selector */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsLanguageOpen(!isLanguageOpen);
-                  }}
-                  className="px-2 py-1 rounded-md hover:bg-slate-100 inline-flex items-center transition-colors"
-                  aria-label="Select language"
-                  aria-expanded={isLanguageOpen}
-                >
-                  <Icon name="Globe" size={14} className="mr-1" />
-                  <span className="uppercase font-medium">{language}</span>
-                  <Icon name="ChevronDown" size={12} className={`ml-1 transition-transform ${isLanguageOpen ? 'rotate-180' : ''}`} />
-                </button>
-                
-                {/* Language Dropdown */}
-                {isLanguageOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg z-50 py-1">
-                    {languageOptions.map((lang) => (
-                      <button
-                        key={lang.code}
-                        onClick={() => handleLanguageChange(lang.code)}
-                        className={`w-full px-4 py-2.5 text-left hover:bg-slate-50 transition-colors flex items-center gap-3 ${
-                          language === lang.code ? 'bg-cyan-50 text-cyan-700' : 'text-slate-700'
-                        }`}
-                      >
-                        <span className="text-lg">{lang.flag}</span>
-                        <span className="font-medium">{lang.name}</span>
-                        {language === lang.code && (
-                          <Icon name="Check" size={16} className="ml-auto text-cyan-600" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
               {/* Theme toggle */}
               <button
                 type="button"
@@ -301,60 +263,103 @@ const Header = ({ className = '' }) => {
               </button>
             </div>
           </div>
-          <div className="flex items-center justify-between h-20 px-4 lg:px-6">
+          <div className="flex items-center justify-between h-16 px-3 lg:px-4">
             {/* Back + Logo Section */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
               <button
                 onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/'); }}
-                className="px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-700 border border-slate-200 inline-flex items-center"
+                className="px-2 py-1.5 rounded-lg hover:bg-slate-100 text-slate-700 border border-slate-200 inline-flex items-center"
                 aria-label="Go back"
                 title="Back"
               >
-                <Icon name="ArrowLeft" size={18} className="mr-2" />
-                <span className="hidden sm:inline">Back</span>
+                <Icon name="ArrowLeft" size={16} className="mr-1" />
+                <span className="hidden sm:inline text-sm">Back</span>
               </button>
 
-              <Link 
-                to="/" 
-                className="flex items-center space-x-4 group"
+              <Link
+                to="/"
+                className="flex items-center space-x-2 group"
                 onClick={handleLinkClick}
               >
                 <div className="relative">
-                  <div className="w-14 h-14 rounded-xl overflow-hidden bg-white border border-slate-200 flex items-center justify-center shadow-md">
-                    <img src="/assets/nara-logo.png" alt="NARA logo" className="w-12 h-12 object-contain" />
+                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-white border border-slate-200 flex items-center justify-center shadow-md">
+                    <img src="/assets/nara-logo.png" alt="NARA logo" className="w-10 h-10 object-contain" />
                   </div>
                 </div>
                 <div className="hidden lg:block">
-                  <div className="text-xl font-bold text-slate-900 leading-tight">
+                  <div className="text-lg font-bold text-slate-900 leading-tight">
                     NARA Digital
                   </div>
-                  <div className="text-sm text-slate-600 font-medium">
+                  <div className="text-xs text-slate-600 font-medium">
                     Ocean Intelligence
                   </div>
                 </div>
               </Link>
+
+              {/* Language Selector - Moved here, always visible */}
+              <div className="relative ml-2">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsLanguageOpen(!isLanguageOpen);
+                  }}
+                  className="px-2 py-1.5 rounded-md hover:bg-slate-100 inline-flex items-center transition-colors border border-slate-200"
+                  aria-label="Select language"
+                  aria-expanded={isLanguageOpen}
+                >
+                  <Icon name="Globe" size={14} className="mr-1" />
+                  <span className="uppercase font-medium text-xs">{language}</span>
+                  <Icon name="ChevronDown" size={10} className={`ml-1 transition-transform ${isLanguageOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Language Dropdown */}
+                {isLanguageOpen && (
+                  <div className="absolute left-0 mt-2 w-44 bg-white border border-slate-200 rounded-lg shadow-lg z-50 py-1">
+                    {languageOptions.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => handleLanguageChange(lang.code)}
+                        className={`w-full px-3 py-2 text-left hover:bg-slate-50 transition-colors flex items-center gap-2 ${
+                          language === lang.code ? 'bg-cyan-50 text-cyan-700' : 'text-slate-700'
+                        }`}
+                      >
+                        <span className="text-base">{lang.flag}</span>
+                        <span className={`font-medium text-sm ${
+                          lang.code === 'ta' ? 'font-tamil' :
+                          lang.code === 'si' ? 'font-sinhala' :
+                          ''
+                        }`}>{lang.name}</span>
+                        {language === lang.code && (
+                          <Icon name="Check" size={14} className="ml-auto text-cyan-600" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-1">
+            {/* Desktop Navigation - Always visible */}
+            <nav className="flex items-center space-x-0.5">
               {Object.entries(navigationData)?.map(([categoryKey, category]) => (
                 <div key={categoryKey} className="relative">
                   <button
                     onClick={(e) => handleDropdownToggle(e, categoryKey)}
                     onKeyDown={(e) => handleDropdownKeyDown(e, categoryKey)}
-                    className={`flex items-center space-x-2 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    className={`flex items-center space-x-1 px-2 py-2 text-xs font-medium rounded-lg transition-all duration-200 ${
                       isCategoryActive(category?.items) || activeDropdown === categoryKey
-                        ? 'bg-blue-50 text-blue-700 shadow-sm' 
+                        ? 'bg-blue-50 text-blue-700 shadow-sm'
                         : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
                     }`}
                     aria-haspopup="menu"
                     aria-expanded={activeDropdown === categoryKey}
                     aria-controls={`menu-${categoryKey}`}
                   >
-                    <span>{category?.title}</span>
-                    <Icon 
-                      name="ChevronDown" 
-                      size={16} 
+                    <span className="whitespace-nowrap">{category?.title}</span>
+                    <Icon
+                      name="ChevronDown"
+                      size={12} 
                       className={`transition-transform duration-200 ${
                         activeDropdown === categoryKey ? 'rotate-180' : ''
                       }`}

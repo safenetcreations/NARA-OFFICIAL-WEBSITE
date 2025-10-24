@@ -6,9 +6,14 @@ const API_BASE_URL = import.meta.env.VITE_LIBRARY_API_URL || 'http://localhost:5
 // Static catalogue JSON URL (fallback when API is not available)
 const CATALOGUE_JSON_URL = import.meta.env.VITE_LIBRARY_CATALOGUE_URL;
 
+// Translations catalogue JSON URL
+const TRANSLATIONS_CATALOGUE_URL = import.meta.env.VITE_TRANSLATIONS_CATALOGUE_URL;
+
 // Cache for static catalogue data
 let catalogueCache = null;
 let catalogueCacheTime = null;
+let translationsCatalogueCache = null;
+let translationsCatalogueCacheTime = null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 /**
@@ -82,6 +87,41 @@ const fetchStaticCatalogue = async () => {
     return data;
   } catch (error) {
     console.error('Failed to fetch static catalogue:', error);
+    return null;
+  }
+};
+
+/**
+ * Fetch translations catalogue from static JSON
+ */
+const fetchTranslationsCatalogue = async () => {
+  // Check cache first
+  if (translationsCatalogueCache && translationsCatalogueCacheTime && (Date.now() - translationsCatalogueCacheTime < CACHE_DURATION)) {
+    console.log('Using cached translations catalogue data');
+    return translationsCatalogueCache;
+  }
+
+  if (!TRANSLATIONS_CATALOGUE_URL) {
+    console.warn('No translations catalogue URL configured');
+    return null;
+  }
+
+  try {
+    console.log('Fetching translations catalogue from:', TRANSLATIONS_CATALOGUE_URL);
+    const response = await fetch(TRANSLATIONS_CATALOGUE_URL);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch translations catalogue: ${response.statusText}`);
+    }
+    const data = await response.json();
+
+    // Cache the data
+    translationsCatalogueCache = data;
+    translationsCatalogueCacheTime = Date.now();
+
+    console.log(`Loaded ${data?.length || 0} items from translations catalogue`);
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch translations catalogue:', error);
     return null;
   }
 };
@@ -169,18 +209,42 @@ export const catalogueService = {
    * Get item by ID
    */
   getItemById: async (id) => {
+    console.log('[Library] Fetching book ID:', id);
     const apiResult = await publicApiRequest(`/catalogue/${id}`);
 
     // If API fails, use static catalogue
     if (!apiResult.success) {
-      const catalogue = await fetchStaticCatalogue();
-      if (catalogue) {
-        const item = catalogue.find(book => book.id === parseInt(id));
-        if (item) {
-          return {
-            success: true,
-            data: item
-          };
+      // Check if this is a translated book ID (e.g., "6-sinhala", "6-tamil")
+      const isTranslationId = typeof id === 'string' && (id.includes('-sinhala') || id.includes('-tamil'));
+
+      if (isTranslationId) {
+        // Search in translations catalogue
+        const translationsCatalogue = await fetchTranslationsCatalogue();
+        if (translationsCatalogue) {
+          const item = translationsCatalogue.find(book => book.id === id);
+          if (item) {
+            return {
+              success: true,
+              data: item
+            };
+          }
+        }
+      } else {
+        // Search in main catalogue
+        const catalogue = await fetchStaticCatalogue();
+        if (catalogue) {
+          // Handle both string and integer IDs
+          const item = catalogue.find(book =>
+            book.id === id ||
+            book.id === parseInt(id) ||
+            book.id === String(id)
+          );
+          if (item) {
+            return {
+              success: true,
+              data: item
+            };
+          }
         }
       }
       return { success: false, error: 'Item not found' };
@@ -544,44 +608,19 @@ const computeFacetsFromCatalogue = (catalogue) => {
   };
 };
 
-// Fallback data for when API is not available
+// Return empty data when API is not available (no fake data)
 const getFallbackFacets = () => ({
   success: true,
   data: {
-    material_types: [
-      { code: 'LBOOK', count: 1250 },
-      { code: 'RBOOK', count: 890 },
-      { code: 'THESIS', count: 456 },
-      { code: 'JR', count: 2340 },
-      { code: 'RPAPER', count: 1567 }
-    ],
-    years: ['2024', '2023', '2022', '2021', '2020'],
-    languages: ['English', 'Sinhala', 'Tamil']
+    material_types: [],
+    years: [],
+    languages: []
   }
 });
 
 const getFallbackPopularItems = () => ({
   success: true,
-  data: [
-    {
-      id: '1',
-      title: 'Marine Biodiversity of Sri Lanka',
-      author: 'Dr. Silva',
-      material_type: 'RBOOK',
-      year: 2023,
-      available_copies: 3,
-      total_copies: 5
-    },
-    {
-      id: '2',
-      title: 'Sustainable Fisheries Management',
-      author: 'Prof. Fernando',
-      material_type: 'LBOOK',
-      year: 2024,
-      available_copies: 5,
-      total_copies: 10
-    }
-  ]
+  data: []
 });
 
 export const searchService = {
@@ -726,9 +765,9 @@ export const searchService = {
    */
   getTamilTranslations: async (limit = 6) => {
     try {
-      const catalogue = await fetchStaticCatalogue();
-      if (catalogue) {
-        const tamilBooks = catalogue
+      const translationsCatalogue = await fetchTranslationsCatalogue();
+      if (translationsCatalogue) {
+        const tamilBooks = translationsCatalogue
           .filter(item => item.translations_available && item.translations_available.includes('tamil'))
           .sort((a, b) => {
             // Sort by translated_at timestamp (most recent first)
@@ -743,7 +782,9 @@ export const searchService = {
           data: tamilBooks
         };
       }
-      return { success: false, data: [] };
+
+      // No catalogue available - return empty (no fake data)
+      return { success: true, data: [] };
     } catch (error) {
       console.error('Failed to get Tamil translations:', error);
       return { success: false, data: [] };
@@ -755,9 +796,9 @@ export const searchService = {
    */
   getSinhalaTranslations: async (limit = 6) => {
     try {
-      const catalogue = await fetchStaticCatalogue();
-      if (catalogue) {
-        const sinhalaBooks = catalogue
+      const translationsCatalogue = await fetchTranslationsCatalogue();
+      if (translationsCatalogue) {
+        const sinhalaBooks = translationsCatalogue
           .filter(item => item.translations_available && item.translations_available.includes('sinhala'))
           .sort((a, b) => {
             // Sort by translated_at timestamp (most recent first)
@@ -772,7 +813,9 @@ export const searchService = {
           data: sinhalaBooks
         };
       }
-      return { success: false, data: [] };
+
+      // No catalogue available - return empty (no fake data)
+      return { success: true, data: [] };
     } catch (error) {
       console.error('Failed to get Sinhala translations:', error);
       return { success: false, data: [] };

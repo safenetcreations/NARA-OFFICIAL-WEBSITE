@@ -111,17 +111,41 @@ const ThemeNavbar = () => {
       ]
     },
     {
-      titleKey: 'navbar.menu.resources.title',
-      icon: Icons.FolderOpen,
+      titleKey: 'navbar.menu.education.title',
+      icon: Icons.GraduationCap,
       dropdown: [
-        { labelKey: 'navbar.menu.resources.links.libraryCatalogue', path: '/library', icon: Icons.BookOpen },
-        { labelKey: 'navbar.menu.resources.links.digitalProductLibrary', path: '/digital-product-library', icon: Icons.Archive },
-        { labelKey: 'navbar.menu.resources.links.learningAcademy', path: '/learning-development-academy', icon: Icons.GraduationCap },
-        { labelKey: 'navbar.menu.resources.links.regionalImpact', path: '/regional-impact-network', icon: Icons.Globe },
-        { labelKey: 'navbar.menu.resources.links.publicConsultation', path: '/public-consultation-portal', icon: Icons.MessageSquare },
+        { labelKey: 'navbar.menu.resources.links.learningAcademy', path: '/learning-development-academy', icon: Icons.BookOpen },
+        { 
+          labelKey: 'navbar.menu.academy.links.aquaSchool', 
+          path: 'https://nara-aquaschool.web.app/', 
+          icon: Icons.School,
+          isExternal: true 
+        },
+        { 
+          labelKey: 'navbar.menu.academy.links.nexus', 
+          path: 'https://nexus-nara.web.app/', 
+          icon: Icons.Users,
+          isExternal: true 
+        },
+        { 
+          labelKey: 'navbar.menu.academy.links.schoolDirectory', 
+          path: '/enhanced-school-directory', 
+          icon: Icons.Database,
+          isExternal: false 
+        },
+        { labelKey: 'navbar.menu.resources.links.libraryCatalogue', path: '/library', icon: Icons.Library },
+        { labelKey: 'navbar.menu.resources.links.digitalProductLibrary', path: '/digital-product-library', icon: Icons.Archive }
+      ]
+    },
+    {
+      titleKey: 'navbar.menu.community.title',
+      icon: Icons.Users,
+      dropdown: [
         { labelKey: 'audiences:nav.generalPublic', path: '/audiences/general-public', icon: Icons.Heart },
         { labelKey: 'audiences:nav.researchers', path: '/audiences/researchers-students', icon: Icons.Microscope },
-        { labelKey: 'audiences:nav.industry', path: '/audiences/industry-exporters', icon: Icons.BriefcaseBusiness }
+        { labelKey: 'audiences:nav.industry', path: '/audiences/industry-exporters', icon: Icons.BriefcaseBusiness },
+        { labelKey: 'navbar.menu.resources.links.regionalImpact', path: '/regional-impact-network', icon: Icons.Globe },
+        { labelKey: 'navbar.menu.resources.links.publicConsultation', path: '/public-consultation-portal', icon: Icons.MessageSquare }
       ]
     },
     {
@@ -342,51 +366,88 @@ const ThemeNavbar = () => {
                           border: '1px solid rgba(0, 86, 179, 0.18)'
                         }}
                       >
-                        {item.dropdown.map((subItem) => (
-                          <Link
-                            key={subItem.path}
-                            to={subItem.path}
-                            className="dropdown-item"
-                            onClick={handleDropdownLinkClick}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.65rem',
-                              padding: '0.6rem 0.85rem',
-                              borderRadius: '12px',
-                              background: isActivePath(subItem.path) ? 'rgba(100, 181, 246, 0.2)' : 'transparent',
-                              textDecoration: 'none',
-                              transition: 'all 0.2s ease',
-                              fontFamily: secondaryFont,
-                              borderLeft: isActivePath(subItem.path) ? '3px solid #64B5F6' : '3px solid transparent'
-                            }}
-                            onMouseEnter={(e) => {
-                              if (!isActivePath(subItem.path)) {
-                                e.currentTarget.style.background = 'rgba(0, 86, 179, 0.08)';
-                                e.currentTarget.style.transform = 'translateX(3px)';
-                              }
-                            }}
-                            onMouseLeave={(e) => {
-                              if (!isActivePath(subItem.path)) {
-                                e.currentTarget.style.background = 'transparent';
-                                e.currentTarget.style.transform = 'translateX(0)';
-                              }
-                            }}
-                          >
-                            <subItem.icon
-                              className="w-4 h-4"
-                              style={{
-                                color: isActivePath(subItem.path) ? '#0066CC' : '#005A9C'
+                        {item.dropdown.map((subItem) => {
+                          const isExternal = subItem.isExternal || subItem.path.startsWith('http');
+                          const linkStyle = {
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.65rem',
+                            padding: '0.6rem 0.85rem',
+                            borderRadius: '12px',
+                            background: isActivePath(subItem.path) ? 'rgba(100, 181, 246, 0.2)' : 'transparent',
+                            textDecoration: 'none',
+                            transition: 'all 0.2s ease',
+                            fontFamily: secondaryFont,
+                            borderLeft: isActivePath(subItem.path) ? '3px solid #64B5F6' : '3px solid transparent'
+                          };
+                          
+                          const handleMouseEnter = (e) => {
+                            if (!isActivePath(subItem.path)) {
+                              e.currentTarget.style.background = 'rgba(0, 86, 179, 0.08)';
+                              e.currentTarget.style.transform = 'translateX(3px)';
+                            }
+                          };
+                          
+                          const handleMouseLeave = (e) => {
+                            if (!isActivePath(subItem.path)) {
+                              e.currentTarget.style.background = 'transparent';
+                              e.currentTarget.style.transform = 'translateX(0)';
+                            }
+                          };
+                          
+                          const content = (
+                            <>
+                              <subItem.icon
+                                className="w-4 h-4"
+                                style={{
+                                  color: isActivePath(subItem.path) ? '#0066CC' : '#005A9C'
+                                }}
+                              />
+                              <span style={{
+                                fontSize: '0.88rem',
+                                fontWeight: isActivePath(subItem.path) ? 650 : 550,
+                                fontFamily: secondaryFont,
+                                color: isActivePath(subItem.path) ? '#0066CC' : '#003366'
+                              }}>{t(subItem.labelKey)}</span>
+                              {isExternal && (
+                                <Icons.ExternalLink 
+                                  className="w-3 h-3 ml-auto" 
+                                  style={{ color: '#005A9C', opacity: 0.6 }}
+                                />
+                              )}
+                            </>
+                          );
+                          
+                          return isExternal ? (
+                            <a
+                              key={subItem.path}
+                              href={subItem.path}
+                              className="dropdown-item"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                window.location.href = subItem.path;
+                                handleDropdownLinkClick();
                               }}
-                            />
-                            <span style={{
-                              fontSize: '0.88rem',
-                              fontWeight: isActivePath(subItem.path) ? 650 : 550,
-                              fontFamily: secondaryFont,
-                              color: isActivePath(subItem.path) ? '#0066CC' : '#003366'
-                            }}>{t(subItem.labelKey)}</span>
-                          </Link>
-                        ))}
+                              style={linkStyle}
+                              onMouseEnter={handleMouseEnter}
+                              onMouseLeave={handleMouseLeave}
+                            >
+                              {content}
+                            </a>
+                          ) : (
+                            <Link
+                              key={subItem.path}
+                              to={subItem.path}
+                              className="dropdown-item"
+                              onClick={handleDropdownLinkClick}
+                              style={linkStyle}
+                              onMouseEnter={handleMouseEnter}
+                              onMouseLeave={handleMouseLeave}
+                            >
+                              {content}
+                            </Link>
+                          );
+                        })}
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -691,29 +752,50 @@ const ThemeNavbar = () => {
                     {t(item.titleKey)}
                   </h3>
                   {hasDropdown ? (
-                    item.dropdown.map((subItem) => (
-                      <Link
-                        key={subItem.path}
-                        to={subItem.path}
-                        onClick={() => {
-                          setMobileMenuOpen(false);
-                          closeAllDropdowns();
-                        }}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.75rem',
-                          padding: '0.65rem 0.75rem',
-                          borderRadius: '8px',
-                          color: 'var(--text)',
-                          textDecoration: 'none',
-                          fontFamily: secondaryFont
-                        }}
-                      >
-                        <subItem.icon className="w-4 h-4" style={{ color: 'var(--primary)' }} />
-                        <span>{t(subItem.labelKey)}</span>
-                      </Link>
-                    ))
+                    item.dropdown.map((subItem) => {
+                      const isExternal = subItem.isExternal || subItem.path.startsWith('http');
+                      const linkStyle = {
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        padding: '0.65rem 0.75rem',
+                        borderRadius: '8px',
+                        color: 'var(--text)',
+                        textDecoration: 'none',
+                        fontFamily: secondaryFont
+                      };
+                      
+                      return isExternal ? (
+                        <a
+                          key={subItem.path}
+                          href={subItem.path}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            window.location.href = subItem.path;
+                            setMobileMenuOpen(false);
+                            closeAllDropdowns();
+                          }}
+                          style={linkStyle}
+                        >
+                          <subItem.icon className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                          <span>{t(subItem.labelKey)}</span>
+                          <Icons.ExternalLink className="w-3 h-3 ml-auto" style={{ opacity: 0.6 }} />
+                        </a>
+                      ) : (
+                        <Link
+                          key={subItem.path}
+                          to={subItem.path}
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            closeAllDropdowns();
+                          }}
+                          style={linkStyle}
+                        >
+                          <subItem.icon className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                          <span>{t(subItem.labelKey)}</span>
+                        </Link>
+                      );
+                    })
                   ) : (
                     <Link
                       to={item.path || '#'}

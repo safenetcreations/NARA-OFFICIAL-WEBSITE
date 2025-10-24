@@ -4,6 +4,54 @@
  */
 
 export const DIVISION_IMPACT = {
+  'environmental-studies': {
+    keyMetrics: [
+      { label: 'Monitoring Stations Active', value: '25', icon: 'Radio', trend: '+7', color: 'green' },
+      { label: 'Water Quality Improved', value: '68%', icon: 'TrendingUp', trend: '+18%', color: 'emerald' },
+      { label: 'Pollution Incidents Responded', value: '142', icon: 'AlertCircle', trend: '+28', color: 'teal' },
+      { label: 'Coastal Areas Protected', value: '15', icon: 'Shield', trend: '+5', color: 'cyan' }
+    ],
+    impactStories: [
+      {
+        title: 'Coastal Water Quality Success',
+        description: 'Continuous monitoring and intervention programs improved coastal water quality index by 68% across 12 key locations.',
+        metrics: { before: 58, after: 97, unit: 'WQI Score', improvement: '+67%' },
+        year: 2024
+      },
+      {
+        title: 'X-Press Pearl Response',
+        description: 'Rapid environmental assessment and monitoring during X-Press Pearl disaster provided critical data for recovery planning, tested 850+ samples.',
+        metrics: { before: 0, after: 850, unit: 'samples tested', improvement: 'NEW' },
+        year: 2021
+      },
+      {
+        title: 'Marine Protected Area Expansion',
+        description: 'Environmental baseline surveys supported establishment of 5 new Marine Protected Areas covering 2,400 km² of ocean.',
+        metrics: { before: 1800, after: 4200, unit: 'km² protected', improvement: '+133%' },
+        year: 2023
+      }
+    ],
+    researchOutput: {
+      publications: [
+        { year: 2020, count: 18 },
+        { year: 2021, count: 24 },
+        { year: 2022, count: 32 },
+        { year: 2023, count: 38 },
+        { year: 2024, count: 45 }
+      ],
+      citations: 850,
+      hIndex: 22
+    },
+    economicImpact: {
+      valueGenerated: 'USD 2.2M',
+      jobsCreated: 85,
+      communitiesBenefited: 45000
+    },
+    partnerships: [
+      'Ministry of Environment', 'UNEP', 'IOC-UNESCO', 'Marine Conservation Society', 'Universities'
+    ]
+  },
+
   'fisheries-science': {
     keyMetrics: [
       { label: 'Fish Stocks Assessed', value: '25+', icon: 'Fish', trend: '+15%', color: 'blue' },
@@ -337,6 +385,384 @@ export const DIVISION_IMPACT = {
     },
     partnerships: [
       'NSF', 'UNESCO', 'Universities', 'International Research Institutes', 'Private Foundations'
+    ]
+  },
+
+  'fishing-technology': {
+    keyMetrics: [
+      { label: 'Gear Innovations Developed', value: '18', icon: 'Wrench', trend: '+6', color: 'indigo' },
+      { label: 'Fuel Efficiency Improved', value: '35%', icon: 'TrendingDown', trend: '+12%', color: 'violet' },
+      { label: 'Bycatch Reduced', value: '52%', icon: 'Shield', trend: '-25%', color: 'purple' },
+      { label: 'Vessels Upgraded', value: '420', icon: 'Ship', trend: '+95', color: 'blue' }
+    ],
+    impactStories: [
+      {
+        title: 'Acoustic Pinger Success',
+        description: 'Deployment of 250 acoustic pingers reduced dolphin bycatch in gillnet fisheries by 65%, protecting over 400 dolphins annually.',
+        metrics: { before: 620, after: 217, unit: 'dolphin deaths', improvement: '-65%' },
+        year: 2024
+      },
+      {
+        title: 'Fuel-Efficient Vessel Revolution',
+        description: 'New hull designs and propulsion systems reduced fuel consumption by 35%, saving fishers USD 2.1M annually.',
+        metrics: { before: 52, after: 33.8, unit: 'liters/trip', improvement: '-35%' },
+        year: 2023
+      }
+    ],
+    researchOutput: {
+      publications: [
+        { year: 2020, count: 16 },
+        { year: 2021, count: 20 },
+        { year: 2022, count: 24 },
+        { year: 2023, count: 28 },
+        { year: 2024, count: 32 }
+      ],
+      citations: 650,
+      hIndex: 18
+    },
+    economicImpact: {
+      valueGenerated: 'USD 4.2M',
+      jobsCreated: 165,
+      fuelSavingsAnnual: 'USD 2.1M'
+    },
+    partnerships: [
+      'FAO', 'WWF', 'Private Boat Builders', 'Fisher Cooperatives', 'Universities'
+    ]
+  },
+
+  'inland-aquaculture': {
+    keyMetrics: [
+      { label: 'Farmers Trained', value: '1,350', icon: 'Users', trend: '+380', color: 'cyan' },
+      { label: 'Production Increased', value: '48%', icon: 'TrendingUp', trend: '+15%', color: 'blue' },
+      { label: 'New Species Introduced', value: '12', icon: 'Fish', trend: '+4', color: 'teal' },
+      { label: 'Hatcheries Established', value: '8', icon: 'Building2', trend: '+3', color: 'sky' }
+    ],
+    impactStories: [
+      {
+        title: 'Biofloc Shrimp Farming Success',
+        description: 'Biofloc technology adoption increased shrimp yields by 55% while reducing water usage by 90%.',
+        metrics: { before: 3.2, after: 4.96, unit: 'kg/m³', improvement: '+55%' },
+        year: 2024
+      },
+      {
+        title: 'Ornamental Fish Export Growth',
+        description: 'Improved breeding techniques boosted ornamental fish exports from USD 6M to USD 10.5M annually.',
+        metrics: { before: 6.0, after: 10.5, unit: 'USD Million', improvement: '+75%' },
+        year: 2023
+      }
+    ],
+    researchOutput: {
+      publications: [
+        { year: 2020, count: 22 },
+        { year: 2021, count: 28 },
+        { year: 2022, count: 34 },
+        { year: 2023, count: 40 },
+        { year: 2024, count: 46 }
+      ],
+      citations: 1050,
+      hIndex: 23
+    },
+    economicImpact: {
+      valueGenerated: 'USD 5.5M',
+      jobsCreated: 520,
+      farmsEstablished: 225
+    },
+    partnerships: [
+      'WorldFish', 'FAO', 'Export Development Board', 'Private Hatcheries', 'Farmer Organizations'
+    ]
+  },
+
+  'post-harvest': {
+    keyMetrics: [
+      { label: 'Facilities ISO Certified', value: '65', icon: 'Award', trend: '+22', color: 'purple' },
+      { label: 'Post-Harvest Loss Reduced', value: '58%', icon: 'TrendingDown', trend: '-23%', color: 'violet' },
+      { label: 'Export Value Increased', value: '45%', icon: 'DollarSign', trend: '+15%', color: 'fuchsia' },
+      { label: 'Cold Storage Capacity', value: '3,500 MT', icon: 'Snowflake', trend: '+800 MT', color: 'blue' }
+    ],
+    impactStories: [
+      {
+        title: 'Cold Chain Infrastructure Impact',
+        description: 'New ice plants and cold storage facilities reduced post-harvest losses from 28% to 12%, saving 4,200 tons of fish annually.',
+        metrics: { before: 28, after: 12, unit: '% loss', improvement: '-57%' },
+        year: 2024
+      },
+      {
+        title: 'ISO 17025 Accreditation Success',
+        description: 'Laboratory testing capacity increased to 600 samples/month, supporting USD 85M seafood export industry.',
+        metrics: { before: 250, after: 600, unit: 'samples/month', improvement: '+140%' },
+        year: 2023
+      }
+    ],
+    researchOutput: {
+      publications: [
+        { year: 2020, count: 14 },
+        { year: 2021, count: 18 },
+        { year: 2022, count: 22 },
+        { year: 2023, count: 26 },
+        { year: 2024, count: 30 }
+      ],
+      citations: 520,
+      hIndex: 16
+    },
+    economicImpact: {
+      valueGenerated: 'USD 6.8M',
+      jobsCreated: 385,
+      exportValueSupported: 'USD 85M'
+    },
+    partnerships: [
+      'ADB', 'EU', 'Export Development Board', 'Seafood Processors', 'Quality Certification Bodies'
+    ]
+  },
+
+  'marine-biology': {
+    keyMetrics: [
+      { label: 'Species Monitored', value: '215', icon: 'Fish', trend: '+35', color: 'teal' },
+      { label: 'Coral Fragments Planted', value: '15,800', icon: 'Leaf', trend: '+6200', color: 'emerald' },
+      { label: 'Turtle Nests Protected', value: '580', icon: 'Shield', trend: '+120', color: 'green' },
+      { label: 'Whale Strandings Responded', value: '165', icon: 'HeartPulse', trend: '+35', color: 'cyan' }
+    ],
+    impactStories: [
+      {
+        title: 'Blue Whale Population Monitoring',
+        description: 'Satellite tagging of 28 blue whales revealed migration patterns and critical habitats, leading to ship speed reduction zone establishment.',
+        metrics: { before: 15, after: 28, unit: 'whales tagged', improvement: '+87%' },
+        year: 2024
+      },
+      {
+        title: 'Coral Reef Restoration Success',
+        description: 'Restored coral reefs at Hikkaduwa and Pigeon Island showed 72% survival rate with 28% increase in fish diversity.',
+        metrics: { before: 52, after: 67, unit: 'fish species', improvement: '+29%' },
+        year: 2023
+      }
+    ],
+    researchOutput: {
+      publications: [
+        { year: 2020, count: 38 },
+        { year: 2021, count: 46 },
+        { year: 2022, count: 54 },
+        { year: 2023, count: 62 },
+        { year: 2024, count: 70 }
+      ],
+      citations: 2150,
+      hIndex: 34
+    },
+    economicImpact: {
+      valueGenerated: 'USD 3.2M',
+      jobsCreated: 120,
+      ecotourismValue: 'USD 8.5M'
+    },
+    partnerships: [
+      'National Geographic', 'IUCN', 'WWF', 'Blue Whale Study', 'Coral Reef Alliance'
+    ]
+  },
+
+  'oceanography': {
+    keyMetrics: [
+      { label: 'Ocean Cruises Conducted', value: '45', icon: 'Ship', trend: '+12', color: 'blue' },
+      { label: 'Data Points Collected', value: '2.5M', icon: 'Database', trend: '+800K', color: 'indigo' },
+      { label: 'Climate Models Developed', value: '8', icon: 'CloudRain', trend: '+3', color: 'cyan' },
+      { label: 'Deep Sea Discoveries', value: '28', icon: 'Compass', trend: '+12', color: 'sky' }
+    ],
+    impactStories: [
+      {
+        title: 'Indian Ocean Climate Prediction',
+        description: 'Ocean monitoring data improved monsoon prediction accuracy from 68% to 88%, benefiting agriculture and fisheries planning.',
+        metrics: { before: 68, after: 88, unit: '% accuracy', improvement: '+29%' },
+        year: 2024
+      },
+      {
+        title: 'Deep Sea Biodiversity Discovery',
+        description: 'ROV expeditions discovered 28 potentially new species in deep sea trenches around Sri Lanka.',
+        metrics: { before: 0, after: 28, unit: 'new species', improvement: 'NEW' },
+        year: 2023
+      }
+    ],
+    researchOutput: {
+      publications: [
+        { year: 2020, count: 32 },
+        { year: 2021, count: 38 },
+        { year: 2022, count: 44 },
+        { year: 2023, count: 52 },
+        { year: 2024, count: 58 }
+      ],
+      citations: 1680,
+      hIndex: 30
+    },
+    economicImpact: {
+      valueGenerated: 'USD 2.8M',
+      jobsCreated: 95,
+      dataValueToSector: 'USD 12M'
+    },
+    partnerships: [
+      'NOAA', 'IOC-UNESCO', 'Schmidt Ocean Institute', 'GEBCO', 'Regional Universities'
+    ]
+  },
+
+  'hydrography': {
+    keyMetrics: [
+      { label: 'Nautical Charts Produced', value: '52', icon: 'Map', trend: '+15', color: 'sky' },
+      { label: 'Vessels Served Annually', value: '9,800', icon: 'Ship', trend: '+1200', color: 'blue' },
+      { label: 'Safety Incidents Prevented', value: '45%', icon: 'Shield', trend: '-18%', color: 'green' },
+      { label: 'Seafloor Mapped', value: '58,000 km²', icon: 'Layers', trend: '+12000', color: 'cyan' }
+    ],
+    impactStories: [
+      {
+        title: 'Maritime Safety Revolution',
+        description: 'Updated electronic navigational charts and real-time monitoring reduced maritime accidents by 45% in Sri Lankan waters.',
+        metrics: { before: 156, after: 86, unit: 'accidents/year', improvement: '-45%' },
+        year: 2024
+      },
+      {
+        title: 'Seabed 2030 Contribution',
+        description: 'Multi-beam surveys mapped 58,000 km² of seafloor, contributing 12% to global ocean mapping initiative.',
+        metrics: { before: 28000, after: 58000, unit: 'km² mapped', improvement: '+107%' },
+        year: 2023
+      }
+    ],
+    researchOutput: {
+      publications: [
+        { year: 2020, count: 18 },
+        { year: 2021, count: 22 },
+        { year: 2022, count: 26 },
+        { year: 2023, count: 30 },
+        { year: 2024, count: 34 }
+      ],
+      citations: 680,
+      hIndex: 19
+    },
+    economicImpact: {
+      valueGenerated: 'USD 5.5M',
+      jobsCreated: 110,
+      maritimeTradeSupported: 'USD 2.8B'
+    },
+    partnerships: [
+      'IMO', 'IHO', 'NOAA', 'Sri Lanka Navy', 'Ports Authority', 'GEBCO'
+    ]
+  },
+
+  'socio-economics': {
+    keyMetrics: [
+      { label: 'Fisher Households Surveyed', value: '3,200', icon: 'Users', trend: '+800', color: 'orange' },
+      { label: 'Income Increase Achieved', value: '38%', icon: 'TrendingUp', trend: '+12%', color: 'amber' },
+      { label: 'Policy Recommendations', value: '32', icon: 'FileText', trend: '+10', color: 'yellow' },
+      { label: 'Market Linkages Created', value: '24', icon: 'Link', trend: '+8', color: 'red' }
+    ],
+    impactStories: [
+      {
+        title: 'Fisher Livelihood Transformation',
+        description: 'Value chain interventions and market linkages increased average fisher household income by 38% over 3 years.',
+        metrics: { before: 42000, after: 57960, unit: 'LKR/month', improvement: '+38%' },
+        year: 2024
+      },
+      {
+        title: 'Gender Inclusion Success',
+        description: 'Women empowerment programs increased female participation in seafood value addition from 28% to 62%.',
+        metrics: { before: 28, after: 62, unit: '% women in value chain', improvement: '+121%' },
+        year: 2023
+      }
+    ],
+    researchOutput: {
+      publications: [
+        { year: 2020, count: 20 },
+        { year: 2021, count: 24 },
+        { year: 2022, count: 28 },
+        { year: 2023, count: 34 },
+        { year: 2024, count: 40 }
+      ],
+      citations: 780,
+      hIndex: 20
+    },
+    economicImpact: {
+      valueGenerated: 'USD 2.5M',
+      jobsCreated: 340,
+      householdsBenefited: 3200
+    },
+    partnerships: [
+      'USAID', 'World Bank', 'ILO', 'FAO', 'UN Women', 'Local NGOs'
+    ]
+  },
+
+  'monitoring-evaluation': {
+    keyMetrics: [
+      { label: 'Projects Monitored', value: '85', icon: 'FolderKanban', trend: '+22', color: 'violet' },
+      { label: 'Performance Reports', value: '48', icon: 'FileBarChart', trend: '+15', color: 'purple' },
+      { label: 'Quality Audits Conducted', value: '32', icon: 'CheckCircle', trend: '+10', color: 'fuchsia' },
+      { label: 'Data Systems Integrated', value: '12', icon: 'Database', trend: '+5', color: 'indigo' }
+    ],
+    impactStories: [
+      {
+        title: 'Research Performance Improvement',
+        description: 'M&E framework implementation increased research output quality score from 72% to 91% across all divisions.',
+        metrics: { before: 72, after: 91, unit: '% quality score', improvement: '+26%' },
+        year: 2024
+      },
+      {
+        title: 'ISO 17025 Laboratory Network',
+        description: 'Quality management system implementation achieved ISO 17025 accreditation for 6 NARA laboratories.',
+        metrics: { before: 2, after: 6, unit: 'accredited labs', improvement: '+200%' },
+        year: 2023
+      }
+    ],
+    researchOutput: {
+      publications: [
+        { year: 2020, count: 12 },
+        { year: 2021, count: 16 },
+        { year: 2022, count: 20 },
+        { year: 2023, count: 24 },
+        { year: 2024, count: 28 }
+      ],
+      citations: 420,
+      hIndex: 14
+    },
+    economicImpact: {
+      valueGenerated: 'USD 1.8M',
+      jobsCreated: 75,
+      institutionalEfficiencyGain: '35%'
+    },
+    partnerships: [
+      'NSF', 'Quality Certification Bodies', 'International Auditors', 'Government Ministries'
+    ]
+  },
+
+  'aquaculture-center': {
+    keyMetrics: [
+      { label: 'Farmers Trained Annually', value: '850', icon: 'GraduationCap', trend: '+220', color: 'emerald' },
+      { label: 'Demonstration Farms', value: '12', icon: 'Home', trend: '+4', color: 'green' },
+      { label: 'Technology Packages', value: '15', icon: 'Package', trend: '+6', color: 'teal' },
+      { label: 'Extension Reach', value: '25 Districts', icon: 'MapPin', trend: '+8', color: 'cyan' }
+    ],
+    impactStories: [
+      {
+        title: 'Farmer Capacity Building Success',
+        description: 'Comprehensive training programs equipped 850 farmers annually with modern aquaculture techniques, increasing average farm productivity by 42%.',
+        metrics: { before: 2.8, after: 3.98, unit: 'tons/ha/year', improvement: '+42%' },
+        year: 2024
+      },
+      {
+        title: 'Climate-Smart Aquaculture',
+        description: 'Introduction of climate-resilient practices helped 320 farmers adapt to changing conditions, maintaining production during 2023 drought.',
+        metrics: { before: 45, after: 88, unit: '% climate-resilient', improvement: '+96%' },
+        year: 2023
+      }
+    ],
+    researchOutput: {
+      publications: [
+        { year: 2020, count: 16 },
+        { year: 2021, count: 20 },
+        { year: 2022, count: 24 },
+        { year: 2023, count: 28 },
+        { year: 2024, count: 32 }
+      ],
+      citations: 680,
+      hIndex: 18
+    },
+    economicImpact: {
+      valueGenerated: 'USD 4.2M',
+      jobsCreated: 420,
+      farmersEmpowered: 850
+    },
+    partnerships: [
+      'FAO', 'WorldFish', 'CGIAR', 'Farmer Organizations', 'Extension Services'
     ]
   },
 

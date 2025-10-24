@@ -159,15 +159,45 @@ const MultiLanguagePreview = ({ book }) => {
             </div>
           </div>
 
-          {/* PDF iframe */}
+          {/* PDF Viewer - Multiple Options */}
           <div className="bg-gray-100">
+            {/* Option 1: Direct embed (works best) */}
             <iframe
               key={activeTab} // Force reload when changing language
-              src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(currentLang.url)}`}
+              src={currentLang.url}
               className="w-full h-[800px] border-0"
               title={`PDF Viewer - ${book.title} (${currentLang.name})`}
-              allow="fullscreen"
+              type="application/pdf"
             />
+
+            {/* Fallback message if PDF doesn't display */}
+            <div className="bg-blue-50 border-t border-blue-200 p-4">
+              <div className="text-center">
+                <p className="text-sm text-gray-700 mb-3">
+                  <strong>Can't see the PDF?</strong> Try one of these options:
+                </p>
+                <div className="flex items-center justify-center gap-3">
+                  <a
+                    href={`https://docs.google.com/viewer?url=${encodeURIComponent(currentLang.url)}&embedded=true`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 flex items-center gap-2 font-medium transition"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    View in Google Docs Viewer
+                  </a>
+                  <a
+                    href={currentLang.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-cyan-600 text-white rounded-lg text-sm hover:bg-cyan-700 flex items-center gap-2 font-medium transition"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Open PDF Directly
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Quick Language Switcher (bottom) */}

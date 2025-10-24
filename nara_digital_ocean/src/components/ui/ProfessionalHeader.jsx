@@ -417,8 +417,8 @@ const ProfessionalHeader = ({ className = '' }) => {
                 } focus:outline-none focus:ring-2 focus:ring-blue-500`}
               >
                 <option value="en">English</option>
-                <option value="si">සිංහල</option>
-                <option value="ta">தமிழ்</option>
+                <option value="si" className="font-sinhala">සිංහල</option>
+                <option value="ta" className="font-tamil">தமிழ்</option>
               </select>
 
               {/* Theme Switcher */}
@@ -587,8 +587,8 @@ const ProfessionalHeader = ({ className = '' }) => {
                     } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   >
                     <option value="en">English</option>
-                    <option value="si">සිංහල</option>
-                    <option value="ta">தமிழ்</option>
+                    <option value="si" className="font-sinhala">සිංහල</option>
+                    <option value="ta" className="font-tamil">தමிழ்</option>
                   </select>
 
                   <Link to="/firebase-admin-authentication-portal">

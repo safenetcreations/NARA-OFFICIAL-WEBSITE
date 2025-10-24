@@ -18,7 +18,7 @@ const PublicationsSection = ({ publications, loading, searchQuery }) => {
   if (loading) {
     return (
       <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="bg-white/5 rounded-2xl p-6 animate-pulse">
               <div className="h-4 bg-white/10 rounded w-3/4 mb-4" />
@@ -39,14 +39,14 @@ const PublicationsSection = ({ publications, loading, searchQuery }) => {
       className="py-20 px-4"
     >
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-white mb-4">
+        <div className="text-center mb-12 px-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
             {t('publications.title')}
           </h2>
-          <p className="text-xl text-slate-400">{t('publications.subtitle')}</p>
+          <p className="text-base sm:text-lg md:text-xl text-slate-400">{t('publications.subtitle')}</p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
           {filteredPubs.map((pub, index) => (
             <motion.div
               key={pub.id}

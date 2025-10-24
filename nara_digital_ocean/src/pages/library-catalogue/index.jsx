@@ -38,7 +38,10 @@ const LibraryCatalogue = () => {
   const { t } = useTranslation('library');
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
+  // Library Type: 'physical' or 'digital'
+  const [libraryType, setLibraryType] = useState(searchParams.get('type') || 'physical');
+
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -260,7 +263,49 @@ const LibraryCatalogue = () => {
             <p className="text-xl text-cyan-100 mb-6">
               {t('hero.subtitle')}
             </p>
-            
+
+            {/* Library Type Selector */}
+            <div className="flex justify-center mb-8">
+              <div className="bg-white bg-opacity-20 backdrop-blur-md rounded-xl p-2 inline-flex gap-2 border border-white border-opacity-30">
+                <button
+                  onClick={() => {
+                    setLibraryType('physical');
+                    setSearchParams({ type: 'physical' });
+                    setFilters({ material_type: '', year: '', language: '' });
+                  }}
+                  className={`
+                    px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2
+                    ${libraryType === 'physical'
+                      ? 'bg-white text-blue-700 shadow-lg'
+                      : 'text-white hover:bg-white hover:bg-opacity-10'
+                    }
+                  `}
+                >
+                  <Icons.Building className="w-5 h-5" />
+                  <span>Physical Library</span>
+                  <span className="text-xs opacity-75">(26 Categories)</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setLibraryType('digital');
+                    setSearchParams({ type: 'digital' });
+                    setFilters({ material_type: '', year: '', language: '' });
+                  }}
+                  className={`
+                    px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2
+                    ${libraryType === 'digital'
+                      ? 'bg-white text-blue-700 shadow-lg'
+                      : 'text-white hover:bg-white hover:bg-opacity-10'
+                    }
+                  `}
+                >
+                  <Icons.Globe className="w-5 h-5" />
+                  <span>Digital Library</span>
+                  <span className="text-xs opacity-75">(Online/Translations)</span>
+                </button>
+              </div>
+            </div>
+
             {/* Statistics Bar */}
             <div className="max-w-4xl mx-auto mb-8">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -269,7 +314,7 @@ const LibraryCatalogue = () => {
                   <div className="text-sm text-cyan-100">{t('hero.stats.totalItems')}</div>
                 </div>
                 <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 border border-white border-opacity-20">
-                  <div className="text-3xl font-bold">26</div>
+                  <div className="text-3xl font-bold">{facets.material_types.length || 26}</div>
                   <div className="text-sm text-cyan-100">{t('hero.stats.categories')}</div>
                 </div>
                 <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 border border-white border-opacity-20">
@@ -508,12 +553,12 @@ const LibraryCatalogue = () => {
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Material Type Categories Browser */}
-        {showCategories && !searchQuery && !filters.material_type && (
+        {/* Physical Library: Material Type Categories Browser (26 Categories) */}
+        {libraryType === 'physical' && showCategories && !searchQuery && !filters.material_type && (
           <div className="mb-12">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-3">{t('browse.title')}</h2>
-              <p className="text-gray-600">{t('browse.subtitle')}</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-3">Physical Library - {t('browse.title')}</h2>
+              <p className="text-gray-600">Browse NARA's 26 physical collection categories</p>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -877,66 +922,16 @@ const LibraryCatalogue = () => {
           </div>
         )}
 
-        {/* Tamil Translations */}
-        {!searchQuery && !filters.material_type && tamilTranslations.length > 0 && (
-          <div className="mb-12">
-            <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-xl p-6 mb-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 text-white">
-                  <Icons.Globe className="w-8 h-8" />
-                  <div>
-                    <h2 className="text-2xl font-bold">Tamil Translations (தமிழ் மொழிபெயர்ப்புகள்)</h2>
-                    <p className="text-orange-100">AI-powered translations using Google Gemini</p>
-                  </div>
-                </div>
-                <div className="bg-white bg-opacity-20 rounded-lg px-4 py-2">
-                  <p className="text-white font-semibold">{tamilTranslations.length} Books</p>
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {tamilTranslations.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => handleItemClick(item.id)}
-                  className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer p-4 flex gap-4 border-l-4 border-orange-500"
-                >
-                  <div className="w-20 h-28 bg-gradient-to-br from-orange-100 to-red-100 rounded flex-shrink-0 flex items-center justify-center">
-                    {item.cover_image_url ? (
-                      <img src={item.cover_image_url} alt={item.title} className="w-full h-full object-cover rounded" />
-                    ) : (
-                      <Icons.Languages className="w-8 h-8 text-orange-600" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="px-2 py-0.5 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">தமிழ்</span>
-                      <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs">AI Translated</span>
-                    </div>
-                    <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{item.title}</h3>
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-1">{item.author}</p>
-                    <p className="text-xs text-gray-500">
-                      {item.translations?.tamil?.translated_at &&
-                        `Translated ${new Date(item.translations.tamil.translated_at).toLocaleDateString()}`
-                      }
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Sinhala Translations */}
-        {!searchQuery && !filters.material_type && sinhalaTranslations.length > 0 && (
+        {/* Digital Library: Sinhala Translations */}
+        {libraryType === 'digital' && !searchQuery && !filters.material_type && sinhalaTranslations.length > 0 && (
           <div className="mb-12">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-6 mb-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 text-white">
                   <Icons.Globe className="w-8 h-8" />
                   <div>
-                    <h2 className="text-2xl font-bold">Sinhala Translations (සිංහල පරිවර්තන)</h2>
-                    <p className="text-blue-100">AI-powered translations using Google Gemini</p>
+                    <h2 className="text-2xl font-bold font-sinhala">Sinhala Translations (සිංහල පරිවර්තන)</h2>
+                    <p className="text-blue-100">Recently uploaded - AI-powered translations</p>
                   </div>
                 </div>
                 <div className="bg-white bg-opacity-20 rounded-lg px-4 py-2">
@@ -960,16 +955,86 @@ const LibraryCatalogue = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">සිංහල</span>
+                      <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs font-medium font-sinhala">සිංහල</span>
                       <span className="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded-full text-xs">AI Translated</span>
+                      <span className="px-2 py-0.5 bg-green-100 text-green-800 rounded-full text-xs">NEW</span>
                     </div>
                     <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{item.title}</h3>
                     <p className="text-sm text-gray-600 mb-2 line-clamp-1">{item.author}</p>
-                    <p className="text-xs text-gray-500">
-                      {item.translations?.sinhala?.translated_at &&
-                        `Translated ${new Date(item.translations.sinhala.translated_at).toLocaleDateString()}`
-                      }
-                    </p>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <Icons.Clock className="w-3 h-3" />
+                      <p>
+                        {item.translations?.sinhala?.translated_at &&
+                          `Added ${new Date(item.translations.sinhala.translated_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}`
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Digital Library: Tamil Translations */}
+        {libraryType === 'digital' && !searchQuery && !filters.material_type && tamilTranslations.length > 0 && (
+          <div className="mb-12">
+            <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-xl p-6 mb-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 text-white">
+                  <Icons.Globe className="w-8 h-8" />
+                  <div>
+                    <h2 className="text-2xl font-bold font-tamil">Tamil Translations (தமிழ் மொழிபெயர்ப்புகள்)</h2>
+                    <p className="text-orange-100">Recently uploaded - AI-powered translations</p>
+                  </div>
+                </div>
+                <div className="bg-white bg-opacity-20 rounded-lg px-4 py-2">
+                  <p className="text-white font-semibold">{tamilTranslations.length} Books</p>
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {tamilTranslations.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => handleItemClick(item.id)}
+                  className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer p-4 flex gap-4 border-l-4 border-orange-500"
+                >
+                  <div className="w-20 h-28 bg-gradient-to-br from-orange-100 to-red-100 rounded flex-shrink-0 flex items-center justify-center">
+                    {item.cover_image_url ? (
+                      <img src={item.cover_image_url} alt={item.title} className="w-full h-full object-cover rounded" />
+                    ) : (
+                      <Icons.Languages className="w-8 h-8 text-orange-600" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="px-2 py-0.5 bg-orange-100 text-orange-800 rounded-full text-xs font-medium font-tamil">தமிழ்</span>
+                      <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs">AI Translated</span>
+                      <span className="px-2 py-0.5 bg-green-100 text-green-800 rounded-full text-xs">NEW</span>
+                    </div>
+                    <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{item.title}</h3>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-1">{item.author}</p>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <Icons.Clock className="w-3 h-3" />
+                      <p>
+                        {item.translations?.tamil?.translated_at &&
+                          `Added ${new Date(item.translations.tamil.translated_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}`
+                        }
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))}

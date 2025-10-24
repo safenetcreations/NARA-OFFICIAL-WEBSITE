@@ -19,7 +19,7 @@
     },
     "menu": {
       "research": {
-        "title": "ගවේෂණ හා බුද්ධිමතාත්මක සේවාවන්",
+        "title": "ගවේෂණ",
         "links": {
           "researchExcellencePortal": "ගවේෂණ ශ්‍රේෂ්ඨත්ව ද්වාරය",
           "researchCollaboration": "ගවේෂණ සමාන්විතතාව",
@@ -32,7 +32,7 @@
         }
       },
       "services": {
-        "title": "සේවා හා මෙහෙයුම්",
+        "title": "සේවා",
         "links": {
           "digitalMarketplace": "ඩිජිටල් වෙළඳ පොළ",
           "maritimeServices": "සාගරික සේවාවන්",
@@ -94,6 +94,22 @@
         "links": {
           "mediaPressKit": "මාධ්‍ය ප්‍රචාරක මෙවලම්"
         }
+      },
+      "academy": {
+        "title": "නාරා අකාඩමිය",
+        "links": {
+          "aquaSchool": "අක්වා පාසල",
+          "nexus": "නෙක්සස් උපාධි වැඩසටහන",
+          "schoolDirectory": "පාසල් නාමාවලිය"
+        }
+      },
+      "education": {
+        "title": "අධ්‍යාපනය",
+        "links": {}
+      },
+      "community": {
+        "title": "ප්‍රජාව",
+        "links": {}
       },
       "contact": {
         "title": "සම්බන්ධ වන්න",

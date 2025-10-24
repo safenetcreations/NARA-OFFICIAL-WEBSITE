@@ -7,6 +7,7 @@ import DownloadManager from '../../components/library/DownloadManager';
 import { useLibraryUser } from '../../contexts/LibraryUserContext';
 import LanguageSelector from '../../components/library/LanguageSelector';
 import MultiLanguagePreview from '../../components/library/MultiLanguagePreview';
+import PhysicalReservationButton from '../../components/library/PhysicalReservationButton';
 
 const ItemDetail = () => {
   const { id } = useParams();
@@ -36,9 +37,56 @@ const ItemDetail = () => {
     try {
       setLoading(true);
       const response = await catalogueService.getItemById(id);
-      
+
       if (response.success) {
-        setItem(response.data);
+        let bookData = response.data;
+
+        // If this is a translation ID (e.g., "6-sinhala"), fetch original and merge translations
+        if (typeof id === 'string' && (id.includes('-sinhala') || id.includes('-tamil'))) {
+          const originalId = bookData.original_id;
+
+          if (originalId) {
+            // Fetch the original book to get English PDF
+            const originalResponse = await catalogueService.getItemById(originalId);
+
+            if (originalResponse.success) {
+              const originalBook = originalResponse.data;
+
+              // Fetch all translations for this book
+              const sinhalaResponse = await catalogueService.getItemById(`${originalId}-sinhala`);
+              const tamilResponse = await catalogueService.getItemById(`${originalId}-tamil`);
+
+              // Merge data: use original book data but add all translation URLs
+              console.log('=== TRANSLATION MERGE DEBUG ===');
+              console.log('Original book:', originalBook);
+              console.log('Sinhala response:', sinhalaResponse);
+              console.log('Tamil response:', tamilResponse);
+
+              bookData = {
+                ...originalBook,
+                translations: {
+                  sinhala: sinhalaResponse.success ? {
+                    url: sinhalaResponse.data.url,
+                    translated_at: sinhalaResponse.data.translations?.sinhala?.translated_at
+                  } : null,
+                  tamil: tamilResponse.success ? {
+                    url: tamilResponse.data.url,
+                    translated_at: tamilResponse.data.translations?.tamil?.translated_at
+                  } : null
+                },
+                translations_available: [
+                  sinhalaResponse.success ? 'sinhala' : null,
+                  tamilResponse.success ? 'tamil' : null
+                ].filter(Boolean)
+              };
+
+              console.log('✅ Merged book data with translations:', bookData);
+              console.log('=== END TRANSLATION MERGE DEBUG ===');
+            }
+          }
+        }
+
+        setItem(bookData);
         loadRelatedItems(id);
       }
     } catch (err) {
@@ -229,13 +277,17 @@ const ItemDetail = () => {
                     <DownloadManager book={item} pdfUrl={currentPdfUrl} language={currentLanguage} />
                   </>
                 ) : (
-                  /* PDF Coming Soon */
-                  <div className="w-full px-4 py-3 bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-lg flex items-center justify-center gap-2 font-semibold opacity-75">
-                    <Icons.Clock className="w-5 h-5" />
-                    PDF Coming Soon
-                  </div>
+                  /* PDF Coming Soon or Physical Book Only */
+                  <>
+                    <div className="w-full px-4 py-3 bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-lg flex items-center justify-center gap-2 font-semibold opacity-75">
+                      <Icons.Clock className="w-5 h-5" />
+                      PDF Coming Soon
+                    </div>
+                    {/* Physical Book Reservation System */}
+                    <PhysicalReservationButton book={item} />
+                  </>
                 )}
-                
+
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(window.location.href);

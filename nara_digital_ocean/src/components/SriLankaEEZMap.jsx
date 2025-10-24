@@ -11,7 +11,9 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
 
     const initMap = async () => {
       try {
-        const apiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
+        // Try to get API key from environment, fallback to hardcoded for production
+        const apiKey =
+          import.meta.env.VITE_GOOGLE_MAPS_KEY || 'AIzaSyBuK3N924LRtseewgj_PNjdEOarlkax2pI';
         
         console.log('🔍 DEBUG: Checking API key...');
         console.log('🔍 DEBUG: API key exists?', !!apiKey);
@@ -19,7 +21,7 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
         console.log('🔍 DEBUG: API key first 20 chars:', apiKey?.substring(0, 20) || 'NONE');
         
         if (!apiKey) {
-          console.error('❌ FATAL: Google Maps API key not found in environment!');
+          console.error('❌ FATAL: Google Maps API key not found!');
           setError('Map visualization unavailable. API key not configured.');
           setMapLoaded(true);
           return;
@@ -29,31 +31,95 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
         console.log('📍 API Key configured - Length:', apiKey.length);
         
         // Check if Google Maps is already loaded
+        const mapId = import.meta.env.VITE_GOOGLE_MAP_ID;
+        const shouldLoadMarkerLibrary = Boolean(mapId);
+
         if (!window.google?.maps) {
           console.log('⏳ Loading Google Maps API...');
-          // Load Google Maps dynamically
-          const script = document.createElement('script');
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
-          script.async = true;
-          script.defer = true;
-          
-          await new Promise((resolve, reject) => {
-            script.onload = () => {
-              console.log('✅ Google Maps API loaded successfully');
-              resolve();
-            };
-            script.onerror = (err) => {
-              console.error('❌ Failed to load Google Maps API:', err);
-              reject(new Error('Failed to load Google Maps. Please check your API key.'));
-            };
-            document.head.appendChild(script);
-          });
+          const existingScript = document.querySelector('script[data-google-maps]');
+
+          if (!existingScript) {
+            const script = document.createElement('script');
+            const params = new URLSearchParams({
+              key: apiKey,
+              loading: 'async'
+            });
+            if (shouldLoadMarkerLibrary) {
+              params.set('libraries', 'marker');
+            }
+            script.src = `https://maps.googleapis.com/maps/api/js?${params.toString()}`;
+            script.async = true;
+            script.defer = true;
+            script.setAttribute('loading', 'async');
+            script.setAttribute('data-google-maps', 'true');
+
+            await new Promise((resolve, reject) => {
+              script.onerror = (err) => {
+                console.error('❌ Failed to load Google Maps API:', err);
+                reject(new Error('Failed to load Google Maps. Please check your API key.'));
+              };
+
+              script.onload = () => {
+                console.log('✅ Google Maps script loaded, waiting for Maps API...');
+                // Wait for google.maps.Map to be available
+                const checkMapsReady = setInterval(() => {
+                  if (window.google?.maps?.Map) {
+                    clearInterval(checkMapsReady);
+                    console.log('✅ Google Maps API fully initialized');
+                    resolve();
+                  }
+                }, 50);
+
+                // Timeout after 10 seconds
+                setTimeout(() => {
+                  clearInterval(checkMapsReady);
+                  if (!window.google?.maps?.Map) {
+                    reject(new Error('Google Maps API initialization timeout'));
+                  }
+                }, 10000);
+              };
+
+              document.head.appendChild(script);
+            });
+          } else {
+            await new Promise((resolve) => {
+              if (window.google?.maps?.Map) {
+                resolve();
+              } else {
+                // Wait for Maps API to be fully ready
+                const checkMapsReady = setInterval(() => {
+                  if (window.google?.maps?.Map) {
+                    clearInterval(checkMapsReady);
+                    resolve();
+                  }
+                }, 50);
+
+                // Also listen for script load if it hasn't loaded yet
+                existingScript.addEventListener('load', () => {
+                  const checkAfterLoad = setInterval(() => {
+                    if (window.google?.maps?.Map) {
+                      clearInterval(checkAfterLoad);
+                      resolve();
+                    }
+                  }, 50);
+                }, { once: true });
+              }
+            });
+          }
         } else {
           console.log('✅ Google Maps API already loaded');
         }
 
         if (!mapRef.current) {
           console.log('⚠️ Map container ref not ready');
+          return;
+        }
+
+        // Final check to ensure Google Maps API is fully loaded
+        if (!window.google?.maps?.Map) {
+          console.error('❌ Google Maps API not fully initialized');
+          setError('Map failed to load. Please refresh the page.');
+          setMapLoaded(true);
           return;
         }
 
@@ -121,7 +187,7 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
 
         // Initialize map
         console.log('🗺️ Creating Google Map instance...');
-        map = new window.google.maps.Map(mapRef.current, {
+        const mapOptions = {
           center: sriLankaCenter,
           zoom: 7.5,
           disableDefaultUI: true,
@@ -132,7 +198,13 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
           styles: darkOceanStyles,
           backgroundColor: '#001e3c',
           mapTypeId: 'terrain'
-        });
+        };
+
+        if (mapId) {
+          mapOptions.mapId = mapId;
+        }
+
+        map = new window.google.maps.Map(mapRef.current, mapOptions);
         console.log('✅ Map instance created - focused on Sri Lanka only');
 
         // Sri Lanka's ACTUAL EEZ boundary coordinates (follows coastline at 200nm)
@@ -194,20 +266,42 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
             { lat: 6.0329, lng: 80.2168, name: 'Galle Monitoring Post' }
           ];
 
-          stations.forEach(station => {
-            new window.google.maps.Marker({
-              position: { lat: station.lat, lng: station.lng },
-              map,
-              title: station.name,
-              icon: {
-                path: window.google.maps.SymbolPath.CIRCLE,
-                scale: 6,
-                fillColor: '#f97316',
-                fillOpacity: 0.9,
-                strokeColor: '#ffffff',
-                strokeWeight: 2
-              }
-            });
+          const supportsAdvancedMarkers =
+            !!mapId && !!window.google?.maps?.marker?.AdvancedMarkerElement;
+
+          stations.forEach((station) => {
+            const position = { lat: station.lat, lng: station.lng };
+
+            if (supportsAdvancedMarkers) {
+              const content = document.createElement('div');
+              content.style.width = '14px';
+              content.style.height = '14px';
+              content.style.borderRadius = '50%';
+              content.style.background = '#f97316';
+              content.style.border = '2px solid #fff';
+              content.style.boxShadow = '0 0 6px rgba(249, 115, 22, 0.6)';
+
+              new window.google.maps.marker.AdvancedMarkerElement({
+                position,
+                map,
+                title: station.name,
+                content
+              });
+            } else {
+              new window.google.maps.Marker({
+                position,
+                map,
+                title: station.name,
+                icon: {
+                  path: window.google.maps.SymbolPath.CIRCLE,
+                  scale: 6,
+                  fillColor: '#f97316',
+                  fillOpacity: 0.9,
+                  strokeColor: '#ffffff',
+                  strokeWeight: 2
+                }
+              });
+            }
           });
         }
 

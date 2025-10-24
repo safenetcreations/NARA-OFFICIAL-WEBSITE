@@ -18,12 +18,12 @@ const CollaborationSection = () => {
   return (
     <section className="py-20 px-4 bg-gradient-to-b from-transparent via-cyan-900/5 to-transparent">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-white mb-4">{t('collaboration.title')}</h2>
-          <p className="text-xl text-slate-400">{t('collaboration.subtitle')}</p>
+        <div className="text-center mb-12 px-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">{t('collaboration.title')}</h2>
+          <p className="text-base sm:text-lg md:text-xl text-slate-400">{t('collaboration.subtitle')}</p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12 px-4">
           {features.map((feature, index) => (
             <motion.div key={index} initial={{ y: 50, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: index * 0.1 }} className="text-center">
               <div className={`inline-flex p-6 rounded-2xl bg-gradient-to-r ${feature.color} mb-4`}>
