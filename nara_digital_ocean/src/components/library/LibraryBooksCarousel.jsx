@@ -180,7 +180,7 @@ const LibraryBooksCarousel = () => {
   if (books.length === 0) return null;
 
   return (
-    <section className="relative py-20 overflow-hidden bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900">
+    <section className="relative py-6 overflow-hidden bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Book shelf pattern */}
@@ -218,7 +218,7 @@ const LibraryBooksCarousel = () => {
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-6"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -244,14 +244,14 @@ const LibraryBooksCarousel = () => {
             <BookMarked className="w-6 h-6 text-cyan-400" />
           </div>
           
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3">
             {t('carousel.title')}{' '}
             <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
               {t('carousel.titleHighlight')}
             </span>
           </h2>
           
-          <p className="text-lg md:text-xl text-blue-200 max-w-3xl mx-auto">
+          <p className="text-sm md:text-base text-blue-200 max-w-3xl mx-auto">
             {t('carousel.description')}
           </p>
         </motion.div>
@@ -294,7 +294,7 @@ const LibraryBooksCarousel = () => {
                   >
                     <div className="relative h-full bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-white/10 rounded-2xl shadow-2xl hover:shadow-cyan-500/20 hover:border-cyan-500/30 transition-all duration-300 overflow-hidden group">
                       {/* Realistic Book Cover */}
-                      <div className="relative h-80 overflow-hidden">
+                      <div className="relative h-56 overflow-hidden">
                         {/* Book spine effect */}
                         <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/40 to-transparent z-10"></div>
                         
@@ -352,7 +352,7 @@ const LibraryBooksCarousel = () => {
                       </div>
 
                       {/* Book Description */}
-                      <div className="p-6 bg-gradient-to-b from-gray-800/30 to-transparent">
+                      <div className="p-4 bg-gradient-to-b from-gray-800/30 to-transparent">
                         <p className="text-sm text-gray-300 line-clamp-2 leading-relaxed">
                           {book.description}
                         </p>
@@ -370,7 +370,7 @@ const LibraryBooksCarousel = () => {
           </div>
 
           {/* Pagination Dots */}
-          <div className="flex justify-center gap-2 mt-12">
+          <div className="flex justify-center gap-2 mt-6">
             {Array.from({ length: Math.ceil(books.length / 3) }).map((_, index) => (
               <button
                 key={index}
@@ -391,7 +391,7 @@ const LibraryBooksCarousel = () => {
 
         {/* CTA Section */}
         <motion.div
-          className="text-center mt-16"
+          className="text-center mt-8"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}

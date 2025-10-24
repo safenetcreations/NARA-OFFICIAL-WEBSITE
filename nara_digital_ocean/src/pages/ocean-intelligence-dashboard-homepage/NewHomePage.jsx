@@ -256,15 +256,26 @@ const NewHomePage = () => {
                   initial={{ y: 60, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.8 }}
-                  className="space-y-5"
+                  className="space-y-3"
                 >
-                  <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-slate-900/60 px-4 py-2 text-xs uppercase tracking-[0.35em] text-cyan-200/90 backdrop-blur">
-                    <Icons.ShieldCheck className="h-4 w-4" />
-                    {heroOverview?.badge ||
-                      t('hero.badge', { ns: 'home', defaultValue: 'Sri Lanka Government Research Agency' })}
-                  </div>
-
-                  <div className="space-y-3">
+                  <div className="space-y-2">
+                    <div className="relative h-16 md:h-20 flex items-center justify-center">
+                      <div className="text-center text-2xl md:text-4xl font-bold welcome-text-si absolute inset-0 flex items-center justify-center">
+                        <span className="typewriter-wrapper bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                          NARA වෙත සාදරයෙන් පිළිගනිමු
+                        </span>
+                      </div>
+                      <div className="text-center text-2xl md:text-4xl font-bold welcome-text-ta opacity-0 absolute inset-0 flex items-center justify-center">
+                        <span className="typewriter-wrapper bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                          NARA க்கு வரவேற்கிறோம்
+                        </span>
+                      </div>
+                      <div className="text-center text-2xl md:text-4xl font-bold welcome-text-en opacity-0 absolute inset-0 flex items-center justify-center">
+                        <span className="typewriter-wrapper bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                          Welcome to NARA
+                        </span>
+                      </div>
+                    </div>
                     <h1 className="text-4xl md:text-6xl font-bold font-space leading-tight">
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
                         {heroTitle?.lineOne || 'Pioneering Aquatic'}
@@ -374,7 +385,7 @@ const NewHomePage = () => {
 
                     <div className="mt-4 rounded-2xl border border-cyan-500/10 bg-slate-950/80 p-2">
                       <div className="mb-1.5">
-                        <p className="text-center text-sm md:text-base font-semibold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-500 bg-clip-text text-transparent leading-tight">
+                        <p className="text-center text-sm md:text-base font-semibold text-sparkle leading-tight">
                           National Aquatic Resources Research & Development Agency
                         </p>
                       </div>
@@ -395,41 +406,6 @@ const NewHomePage = () => {
           </div>
         </section>
 
-        {highlightCards.length > 0 && (
-          <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-16 px-4">
-            <div className="max-w-7xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-white font-space">
-                  {highlightsContent?.heading || 'Impact at a Glance'}
-                </h2>
-                <p className="text-base md:text-lg text-slate-400 max-w-3xl mx-auto">
-                  {highlightsContent?.description ||
-                    'A national command centre synchronising research, compliance, and frontline intelligence for Sri Lanka’s blue economy.'}
-                </p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {highlightCards.map(({ key, IconComponent, label, value, description }) => (
-                  <div
-                    key={key}
-                    className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-6 backdrop-blur transition hover:border-cyan-500/40"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-blue-500/10 opacity-0 transition-opacity duration-300 hover:opacity-100" />
-                    <div className="relative flex items-center justify-between mb-4">
-                      <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-200">
-                        <IconComponent className="h-6 w-6" />
-                      </span>
-                      <span className="text-xs uppercase tracking-[0.25em] text-slate-500">{label}</span>
-                    </div>
-                    <div className="relative">
-                      <p className="text-4xl font-space font-bold text-white mb-2">{value}</p>
-                      <p className="text-sm text-slate-300 leading-relaxed">{description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
 
         <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-20 px-4 md:px-8 lg:px-12">
           <div className="absolute inset-0 pointer-events-none">
@@ -684,37 +660,6 @@ const NewHomePage = () => {
           </div>
         </section>
 
-        <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-16 px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 font-space">
-                {researchContent?.heading}
-              </h2>
-              <p className="text-base text-slate-400 max-w-3xl mx-auto">
-                {researchContent?.description}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-              {researchAreas.map((area, index) => (
-                <div
-                  key={area.key || index}
-                  className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-5 transition hover:border-cyan-500/40"
-                >
-                  <div className={`inline-flex p-2.5 rounded-lg bg-gradient-to-r ${area.color} mb-3`}>
-                    <area.icon className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{area.title}</h3>
-                  <p className="text-xs text-slate-400 leading-relaxed mb-3 line-clamp-3">{area.description}</p>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-2xl font-bold text-cyan-400">{area.stat}</span>
-                    <span className="text-[10px] uppercase tracking-wide text-slate-500">{area.unit}</span>
-                  </div>
-                  <Icons.ArrowUpRight className="absolute top-4 right-4 h-4 w-4 text-cyan-300 opacity-0 transition group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:opacity-100" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-blue-950/40 py-20 px-4">
           <div className="max-w-7xl mx-auto">
@@ -731,13 +676,10 @@ const NewHomePage = () => {
               {portalCards.map(({ key, icon: IconComponent, gradient, link, copy }) => (
                 <Link key={key} to={link} className="group">
                   <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-6 transition hover:border-cyan-500/40">
-                    <div className={`inline-flex items-center justify-center rounded-xl bg-gradient-to-r ${gradient} p-3 text-white mb-4`}>
-                      <IconComponent className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors font-mono tracking-tight">
                       {copy?.title}
                     </h3>
-                    <p className="text-sm text-slate-400 leading-relaxed">{copy?.description}</p>
+                    <p className="text-base text-slate-400 leading-relaxed">{copy?.description}</p>
                     <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-cyan-300">
                       {portalContent?.cta || 'Enter portal'}
                       <Icons.ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -766,9 +708,6 @@ const NewHomePage = () => {
                 return (
                   <Link key={config.link} to={config.link} className="group">
                     <div className="relative h-full overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-center transition hover:border-cyan-500/40">
-                      <div className={`mx-auto mb-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r ${config.gradient} p-4`}>
-                        <IconComponent className="h-8 w-8 text-white" />
-                      </div>
                       <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">
                         {service?.name}
                       </h3>
@@ -804,14 +743,9 @@ const NewHomePage = () => {
                     key={`${milestone?.title}-${index}`}
                     className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 transition hover:border-cyan-500/40"
                   >
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className={`h-12 w-12 rounded-full bg-gradient-to-r ${gradient} flex items-center justify-center`}>
-                        <IconComponent className="h-6 w-6 text-white" />
-                      </div>
-                      <span className={`text-2xl font-bold ${colorClass}`}>{milestone?.year}</span>
-                    </div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{milestone?.title}</h3>
-                    <p className="text-sm text-slate-300 leading-relaxed">{milestone?.description}</p>
+                    <span className={`text-4xl font-bold ${colorClass} font-mono mb-4 block`}>{milestone?.year}</span>
+                    <h3 className="text-2xl font-bold text-white mb-3 font-mono tracking-tight">{milestone?.title}</h3>
+                    <p className="text-base text-slate-300 leading-relaxed">{milestone?.description}</p>
                   </div>
                 );
               })}
@@ -823,11 +757,8 @@ const NewHomePage = () => {
                 const colorClass = ['text-cyan-400', 'text-green-400', 'text-purple-400', 'text-orange-400'][index] || 'text-cyan-400';
                 return (
                   <div key={`${achievement?.label}-${index}`} className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 text-center">
-                    <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r ${gradient}`}>
-                      <IconComponent className="h-8 w-8 text-white" />
-                    </div>
-                    <div className={`text-3xl font-space font-bold ${colorClass} mb-2`}>{achievement?.number}</div>
-                    <p className="text-xs uppercase tracking-wide text-slate-400">{achievement?.label}</p>
+                    <div className={`text-5xl font-bold ${colorClass} mb-3 font-mono`}>{achievement?.number}</div>
+                    <p className="text-sm uppercase tracking-wide text-slate-400 font-mono">{achievement?.label}</p>
                   </div>
                 );
               })}

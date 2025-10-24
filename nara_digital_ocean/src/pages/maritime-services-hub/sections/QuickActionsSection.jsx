@@ -32,6 +32,33 @@ const quickActions = [
     link: '/live-ocean-data'
   },
   {
+    id: 'stormglass-weather',
+    title: 'Maritime Weather Conditions',
+    description: 'Wave heights, tides & marine forecasts for Sri Lankan ports',
+    icon: Icons.Waves,
+    color: 'blue',
+    action: 'View Maritime Weather',
+    link: '/stormglass-maritime'
+  },
+  {
+    id: 'nasa-ocean',
+    title: 'NASA Ocean Color Data',
+    description: 'Satellite sea surface temperature & chlorophyll observations',
+    icon: Icons.Satellite,
+    color: 'green',
+    action: 'View NASA Data',
+    link: '/nasa-ocean-color'
+  },
+  {
+    id: 'weather-dashboard',
+    title: 'Coastal Weather Dashboard',
+    description: 'Real-time weather conditions & 5-day forecasts',
+    icon: Icons.CloudSun,
+    color: 'sky',
+    action: 'View Weather',
+    link: '/weather-dashboard'
+  },
+  {
     id: 'request-data',
     title: 'Request Historical Data',
     description: 'Access archived oceanographic datasets',

@@ -765,6 +765,115 @@ select.form-control {
   animation: pulse-glow 3s ease-in-out infinite;
 }
 
+/* Sparkling text shine animation */
+@keyframes sparkle-shine {
+  0% {
+    background-position: -250% center;
+  }
+  100% {
+    background-position: 250% center;
+  }
+}
+
+.text-sparkle {
+  background: linear-gradient(
+    90deg,
+    rgba(34, 211, 238, 0.6) 0%,
+    rgba(59, 130, 246, 0.7) 10%,
+    rgba(34, 211, 238, 0.8) 20%,
+    rgba(255, 255, 255, 0.3) 28%,
+    rgba(255, 255, 255, 1) 30%,
+    rgba(255, 255, 255, 1) 32%,
+    rgba(255, 255, 255, 0.3) 34%,
+    rgba(96, 165, 250, 0.8) 42%,
+    rgba(255, 255, 255, 0.4) 48%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(255, 255, 255, 1) 52%,
+    rgba(255, 255, 255, 0.4) 54%,
+    rgba(34, 211, 238, 0.8) 62%,
+    rgba(255, 255, 255, 0.3) 68%,
+    rgba(255, 255, 255, 1) 70%,
+    rgba(255, 255, 255, 1) 72%,
+    rgba(255, 255, 255, 0.3) 74%,
+    rgba(59, 130, 246, 0.7) 82%,
+    rgba(34, 211, 238, 0.6) 100%
+  );
+  background-size: 250% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: sparkle-shine 8s linear infinite;
+}
+
+/* Typewriter effect with looping */
+@keyframes typing {
+  0% {
+    max-width: 0;
+  }
+  70% {
+    max-width: 100%;
+  }
+  100% {
+    max-width: 100%;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+@keyframes show-text {
+  0%, 33% {
+    opacity: 1;
+  }
+  33.01%, 100% {
+    opacity: 0;
+  }
+}
+
+.welcome-text-si,
+.welcome-text-ta,
+.welcome-text-en {
+  animation: show-text 9s infinite;
+}
+
+.welcome-text-si {
+  animation-delay: 0s;
+}
+
+.welcome-text-ta {
+  animation-delay: 3s;
+}
+
+.welcome-text-en {
+  animation-delay: 6s;
+}
+
+.typewriter-wrapper {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 0;
+  border-right: 3px solid rgba(96, 165, 250, 1);
+  animation: 
+    typing 3s steps(50) forwards,
+    blink 0.75s step-end infinite;
+}
+
+.welcome-text-si .typewriter-wrapper {
+  animation-delay: 0s, 0s;
+}
+
+.welcome-text-ta .typewriter-wrapper {
+  animation-delay: 3s, 3s;
+}
+
+.welcome-text-en .typewriter-wrapper {
+  animation-delay: 6s, 6s;
+}
+
 /* Gradient text effect */
 .gradient-text {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal-400) 50%, var(--color-success) 100%);
