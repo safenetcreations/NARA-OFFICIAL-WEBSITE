@@ -329,11 +329,11 @@ function ForecastTable({ forecast }) {
       <tbody className="divide-y divide-gray-200">
         {forecast.map((item, idx) => (
           <tr key={idx} className="hover:bg-gray-50">
-            <td className="px-4 py-3">{new Date(item.time).toLocaleString()}</td>
-            <td className="px-4 py-3">{item.waveHeight?.toFixed(2) || 'N/A'}</td>
-            <td className="px-4 py-3">{item.waterTemperature?.toFixed(1) || 'N/A'}</td>
-            <td className="px-4 py-3">{item.currentSpeed?.toFixed(2) || 'N/A'}</td>
-            <td className="px-4 py-3">{item.windSpeed?.toFixed(2) || 'N/A'}</td>
+            <td className="px-4 py-3 text-gray-800">{new Date(item.time).toLocaleString()}</td>
+            <td className="px-4 py-3 text-gray-800">{item.waveHeight?.toFixed(2) || 'N/A'}</td>
+            <td className="px-4 py-3 text-gray-800">{item.waterTemperature?.toFixed(1) || 'N/A'}</td>
+            <td className="px-4 py-3 text-gray-800">{item.currentSpeed?.toFixed(2) || 'N/A'}</td>
+            <td className="px-4 py-3 text-gray-800">{item.windSpeed?.toFixed(2) || 'N/A'}</td>
           </tr>
         ))}
       </tbody>

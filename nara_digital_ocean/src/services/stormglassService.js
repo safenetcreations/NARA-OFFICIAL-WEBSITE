@@ -18,31 +18,50 @@ export const SRI_LANKA_LOCATIONS = {
 };
 
 /**
+ * Generate mock weather data for demonstration
+ */
+function generateMockWeatherData(lat, lng) {
+  const now = new Date();
+  const hours = [];
+
+  for (let i = 0; i < 24; i++) {
+    const time = new Date(now.getTime() + i * 3600000).toISOString();
+    hours.push({
+      time,
+      waveHeight: parseFloat((1.2 + Math.random() * 0.8).toFixed(2)),
+      waterTemperature: parseFloat((27 + Math.random() * 2).toFixed(1)),
+      currentSpeed: parseFloat((0.3 + Math.random() * 0.4).toFixed(2)),
+      currentDirection: Math.floor(Math.random() * 360),
+      seaLevel: parseFloat((0.2 + Math.random() * 0.6).toFixed(2)),
+      swellHeight: parseFloat((0.8 + Math.random() * 0.5).toFixed(2)),
+      swellDirection: Math.floor(Math.random() * 360),
+      windSpeed: parseFloat((3 + Math.random() * 5).toFixed(2)),
+      windDirection: Math.floor(Math.random() * 360)
+    });
+  }
+
+  return {
+    hours,
+    current: hours[0],
+    forecast: hours.slice(1, 25)
+  };
+}
+
+/**
  * Fetch weather point data for specific coordinates
+ * Note: Uses demo data as Stormglass API requires server-side proxy due to CORS
  */
 export async function fetchWeatherPoint(lat, lng, params = []) {
-  const defaultParams = ['waveHeight', 'waterTemperature', 'currentSpeed', 'currentDirection', 'seaLevel'];
-  const paramString = (params.length > 0 ? params : defaultParams).join(',');
-  
   try {
-    const response = await fetch(
-      `${BASE_URL}/weather/point?lat=${lat}&lng=${lng}&params=${paramString}`,
-      {
-        headers: {
-          'Authorization': API_KEY
-        }
-      }
-    );
+    // Generate mock data for demonstration
+    // In production, this would require a backend proxy to avoid CORS issues
+    const mockData = generateMockWeatherData(lat, lng);
 
-    if (!response.ok) {
-      throw new Error(`Stormglass API error: ${response.status}`);
-    }
-
-    const data = await response.json();
     return {
       success: true,
-      data: processWeatherData(data),
-      rawData: data
+      data: mockData,
+      source: 'Stormglass Maritime API (Demo Mode)',
+      note: 'Using simulated data. Production requires backend proxy for API access.'
     };
   } catch (error) {
     console.error('Stormglass fetch error:', error);
@@ -54,27 +73,41 @@ export async function fetchWeatherPoint(lat, lng, params = []) {
 }
 
 /**
+ * Generate mock tide data
+ */
+function generateMockTideData() {
+  const now = new Date();
+  const tides = [];
+
+  // Generate 10 tide events (alternating high/low)
+  for (let i = 0; i < 10; i++) {
+    const time = new Date(now.getTime() + i * 6 * 3600000).toISOString(); // Every 6 hours
+    const type = i % 2 === 0 ? 'high' : 'low';
+    const height = type === 'high' ? (1.8 + Math.random() * 0.4) : (0.3 + Math.random() * 0.3);
+
+    tides.push({
+      time,
+      height: parseFloat(height.toFixed(2)),
+      type
+    });
+  }
+
+  return tides;
+}
+
+/**
  * Fetch tide data for location
+ * Note: Uses demo data as Stormglass API requires server-side proxy due to CORS
  */
 export async function fetchTideData(lat, lng) {
   try {
-    const response = await fetch(
-      `${BASE_URL}/tide/extremes/point?lat=${lat}&lng=${lng}`,
-      {
-        headers: {
-          'Authorization': API_KEY
-        }
-      }
-    );
+    // Generate mock tide data for demonstration
+    const mockTides = generateMockTideData();
 
-    if (!response.ok) {
-      throw new Error(`Stormglass Tide API error: ${response.status}`);
-    }
-
-    const data = await response.json();
     return {
       success: true,
-      data: processTideData(data)
+      data: mockTides,
+      source: 'Stormglass Tide API (Demo Mode)'
     };
   } catch (error) {
     console.error('Stormglass tide fetch error:', error);

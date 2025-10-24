@@ -412,21 +412,21 @@ function ForecastTable({ forecast, getWeatherIcon }) {
               <tbody className="divide-y divide-gray-200">
                 {items.map((item, itemIdx) => (
                   <tr key={itemIdx} className="hover:bg-gray-50">
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 text-gray-800">
                       {new Date(item.time).toLocaleTimeString('en-US', {
                         hour: '2-digit',
                         minute: '2-digit'
                       })}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 text-gray-800">
                       <div className="flex items-center space-x-2">
                         <span className="text-xl">{getWeatherIcon(item.description)}</span>
                         <span className="capitalize">{item.description}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 font-semibold">{item.temp}°C</td>
-                    <td className="px-4 py-3">{item.humidity}%</td>
-                    <td className="px-4 py-3">{item.windSpeed}</td>
+                    <td className="px-4 py-3 font-semibold text-gray-800">{item.temp}°C</td>
+                    <td className="px-4 py-3 text-gray-800">{item.humidity}%</td>
+                    <td className="px-4 py-3 text-gray-800">{item.windSpeed}</td>
                   </tr>
                 ))}
               </tbody>
