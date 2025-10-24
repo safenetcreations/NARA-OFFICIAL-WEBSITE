@@ -102,11 +102,11 @@ const GovFooter = () => {
           {navigationColumns.map(({ key, links }) => {
             const columnCopy = navigationContent[key] || {};
             return (
-              <div key={key} className="space-y-2">
-                <h4 className="pl-2 text-sm font-semibold uppercase text-cyan-200">
+              <div key={key} className="space-y-1">
+                <h4 className="text-sm font-semibold uppercase text-cyan-200 mb-2 pl-3">
                   {columnCopy.heading || ''}
                 </h4>
-                <ul className="pl-2 text-sm text-slate-300 leading-tight space-y-1.5 list-none">
+                <ul className="text-sm text-slate-300 leading-tight space-y-1 list-none">
                   {links.map((link) => {
                     const label = columnCopy.links?.[link.key];
                     if (!label) {
@@ -133,11 +133,11 @@ const GovFooter = () => {
               </div>
             );
           })}
-          <div className="space-y-2">
-            <h4 className="pl-2 text-sm font-semibold uppercase text-cyan-200">
+          <div className="space-y-1">
+            <h4 className="text-sm font-semibold uppercase text-cyan-200 mb-2">
               {contactContent.heading || 'Contact & Duty Desk'}
             </h4>
-            <div className="text-sm text-slate-300 leading-tight space-y-2">
+            <div className="text-sm text-slate-300 leading-tight space-y-1.5">
               <p className="flex items-start gap-3">
                 <MapPin className="mt-0.5 w-4 h-4 text-cyan-300" />
                 <span>{contactContent.address || 'Crow Island, Colombo 15, Sri Lanka'}</span>
