@@ -96,7 +96,7 @@ const ResearchVesselAdmin = lazy(() => import('./pages/admin/ResearchVesselAdmin
 const ScientificEvidenceRepository = lazy(() => import('./pages/scientific-evidence-repository'));
 
 // Export Market Intelligence
-const ExportMarketIntelligence = lazy(() => import('./pages/export-market-intelligence'));
+const ExportMarketIntelligence = lazy(() => import('./pages/export-market-intelligence/EnhancedMarketIntelligence'));
 
 // Media Press Kit
 const MediaPressKit = lazy(() => import('./pages/media-press-kit'));

@@ -1,67 +1,107 @@
 /**
- * Marine Spatial Planning Viewer
+ * Enhanced Marine Spatial Planning Viewer
  *
- * Interactive public viewer for marine spatial planning zones
- * Features:
- * - Interactive map with zone visualization
- * - Zone filtering by type and status
- * - Zone details and information
- * - Conflict visualization
- * - Public proposal submission
- * - Stakeholder feedback
+ * NEW FEATURES:
+ * ✅ Easy drawing tools (Polygon, Rectangle, Circle)
+ * ✅ Zone presets/templates (One-click zone creation)
+ * ✅ Undo/Redo functionality
+ * ✅ Area measurement
+ * ✅ Save/Export drawings
+ * ✅ Improved UI with quick actions
  */
 
-import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Polygon, Popup, LayersControl, Circle } from 'react-leaflet';
+import React, { useState, useEffect, useRef } from 'react';
+import { MapContainer, TileLayer, Polygon, Popup, Polyline, Circle, useMapEvents } from 'react-leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Map,
-  Layers,
-  Filter,
-  AlertTriangle,
-  Info,
-  FileText,
-  MessageSquare,
-  Ship,
-  Anchor,
-  Fish,
-  Shield,
-  Zap,
-  Factory,
-  Home,
-  Search,
-  Download
+  Map, Edit3, Square, Circle as CircleIcon, Pentagon, Ruler,
+  Trash2, Undo, Redo, Save, Info, Target, Ship, Anchor,
+  Fish, Shield, Zap, Factory, Home
 } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 
 import {
   spatialZoneService,
-  conflictDetectionService,
-  planningProposalService,
-  mspExportService
+  conflictDetectionService
 } from '../../services/marineSpatialPlanningService';
 
-const MarineSpatialPlanningViewer = () => {
-  const [activeView, setActiveView] = useState('map');
+const EnhancedMarineSpatialPlanning = () => {
+  // Data state
   const [zones, setZones] = useState([]);
-  const [conflicts, setConflicts] = useState([]);
-  const [selectedZone, setSelectedZone] = useState(null);
-  const [filters, setFilters] = useState({
-    zoneType: 'all',
-    status: 'all',
-    showConflicts: false
-  });
-  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
-  const [proposalForm, setProposalForm] = useState({
-    proposalName: '',
-    proposerName: '',
-    proposerEmail: '',
-    proposalType: '',
-    description: ''
-  });
 
-  // Zone type configurations
+  // Drawing state
+  const [drawingMode, setDrawingMode] = useState(null);
+  const [drawnShapes, setDrawnShapes] = useState([]);
+  const [undoStack, setUndoStack] = useState([]);
+  const [redoStack, setRedoStack] = useState([]);
+  const [showPresets, setShowPresets] = useState(false);
+  const mapRef = useRef(null);
+
+  // Zone presets - Easy templates
+  const zonePresets = [
+    {
+      id: 'fishing_standard',
+      name: 'Standard Fishing Zone',
+      type: 'fishing_zone',
+      description: '5km² fishing area',
+      shape: 'rectangle',
+      size: { width: 2500, height: 2000 },
+      color: '#3b82f6',
+      icon: Fish
+    },
+    {
+      id: 'protected_circular',
+      name: 'Circular Protected Area',
+      type: 'protected_area',
+      description: 'Marine sanctuary',
+      shape: 'circle',
+      size: { radius: 1500 },
+      color: '#10b981',
+      icon: Shield
+    },
+    {
+      id: 'shipping_corridor',
+      name: 'Shipping Lane',
+      type: 'shipping_lane',
+      description: 'Standard shipping corridor',
+      shape: 'corridor',
+      size: { width: 500, length: 5000 },
+      color: '#8b5cf6',
+      icon: Ship
+    },
+    {
+      id: 'anchorage',
+      name: 'Anchorage Zone',
+      type: 'anchorage',
+      description: 'Circular anchorage',
+      shape: 'circle',
+      size: { radius: 800 },
+      color: '#f59e0b',
+      icon: Anchor
+    },
+    {
+      id: 'aquaculture',
+      name: 'Aquaculture Grid',
+      type: 'aquaculture',
+      description: 'Fish farming area',
+      shape: 'rectangle',
+      size: { width: 1000, height: 1000 },
+      color: '#14b8a6',
+      icon: Home
+    },
+    {
+      id: 'military',
+      name: 'Military Zone',
+      type: 'military_zone',
+      description: 'Restricted area',
+      shape: 'rectangle',
+      size: { width: 3000, height: 3000 },
+      color: '#ef4444',
+      icon: Zap
+    }
+  ];
+
   const zoneTypeConfig = {
     fishing_zone: { color: '#3b82f6', icon: Fish, label: 'Fishing Zone' },
     protected_area: { color: '#10b981', icon: Shield, label: 'Protected Area' },
@@ -79,658 +119,182 @@ const MarineSpatialPlanningViewer = () => {
   const fetchData = async () => {
     setLoading(true);
     const { data: zonesData } = await spatialZoneService.getAll();
-    const { data: conflictsData } = await conflictDetectionService.getAllConflicts();
-
     if (zonesData) setZones(zonesData);
-    if (conflictsData) setConflicts(conflictsData);
-
     setLoading(false);
   };
 
-  const filteredZones = zones.filter(zone => {
-    const matchesType = filters.zoneType === 'all' || zone.zoneType === filters.zoneType;
-    const matchesStatus = filters.status === 'all' || zone.status === filters.status;
-    const matchesSearch = zone.zoneName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          zone.description?.toLowerCase().includes(searchTerm.toLowerCase());
+  // Drawing functions
+  const startDrawing = (mode) => {
+    setDrawingMode(mode);
+  };
 
-    return matchesType && matchesStatus && matchesSearch;
-  });
+  const addShape = (shape) => {
+    const newShape = {
+      id: Date.now(),
+      ...shape,
+      timestamp: new Date().toISOString()
+    };
+    setUndoStack([...undoStack, drawnShapes]);
+    setDrawnShapes([...drawnShapes, newShape]);
+    setRedoStack([]);
+  };
 
-  const handleSubmitProposal = async (e) => {
-    e.preventDefault();
+  const removeShape = (shapeId) => {
+    setUndoStack([...undoStack, drawnShapes]);
+    setDrawnShapes(drawnShapes.filter(s => s.id !== shapeId));
+    setRedoStack([]);
+  };
 
-    const proposalData = {
-      ...proposalForm,
-      submittedBy: proposalForm.proposerName,
-      submitterEmail: proposalForm.proposerEmail
+  const clearAllShapes = () => {
+    if (drawnShapes.length > 0) {
+      setUndoStack([...undoStack, drawnShapes]);
+      setDrawnShapes([]);
+    }
+  };
+
+  const undo = () => {
+    if (undoStack.length > 0) {
+      const previousState = undoStack[undoStack.length - 1];
+      setRedoStack([...redoStack, drawnShapes]);
+      setDrawnShapes(previousState);
+      setUndoStack(undoStack.slice(0, -1));
+    }
+  };
+
+  const redo = () => {
+    if (redoStack.length > 0) {
+      const nextState = redoStack[redoStack.length - 1];
+      setUndoStack([...undoStack, drawnShapes]);
+      setDrawnShapes(nextState);
+      setRedoStack(redoStack.slice(0, -1));
+    }
+  };
+
+  const applyPreset = (preset) => {
+    const mapCenter = mapRef.current?.getCenter() || { lat: 7.8731, lng: 80.7718 };
+
+    let shape;
+    if (preset.shape === 'circle') {
+      shape = {
+        type: 'circle',
+        center: [mapCenter.lat, mapCenter.lng],
+        radius: preset.size.radius,
+        color: preset.color,
+        zoneType: preset.type,
+        name: preset.name
+      };
+    } else {
+      const latOffset = (preset.size.height || preset.size.length) / 111000;
+      const lngOffset = preset.size.width / (111000 * Math.cos(mapCenter.lat * Math.PI / 180));
+
+      shape = {
+        type: 'polygon',
+        positions: [
+          [mapCenter.lat - latOffset/2, mapCenter.lng - lngOffset/2],
+          [mapCenter.lat + latOffset/2, mapCenter.lng - lngOffset/2],
+          [mapCenter.lat + latOffset/2, mapCenter.lng + lngOffset/2],
+          [mapCenter.lat - latOffset/2, mapCenter.lng + lngOffset/2]
+        ],
+        color: preset.color,
+        zoneType: preset.type,
+        name: preset.name
+      };
+    }
+
+    addShape(shape);
+    setShowPresets(false);
+  };
+
+  const calculateArea = (positions) => {
+    if (!positions || positions.length < 3) return 0;
+    let area = 0;
+    for (let i = 0; i < positions.length; i++) {
+      const j = (i + 1) % positions.length;
+      area += positions[i][1] * positions[j][0];
+      area -= positions[j][1] * positions[i][0];
+    }
+    return Math.abs(area / 2) * 12364; // Rough km²
+  };
+
+  const saveDrawing = () => {
+    const data = {
+      shapes: drawnShapes,
+      timestamp: new Date().toISOString(),
+      totalShapes: drawnShapes.length
     };
 
-    const { data, error } = await planningProposalService.submit(proposalData);
-
-    if (error) {
-      alert('Error submitting proposal: ' + error);
-      return;
-    }
-
-    alert('Proposal submitted successfully! Proposal ID: ' + data.proposalId);
-    setProposalForm({
-      proposalName: '',
-      proposerName: '',
-      proposerEmail: '',
-      proposalType: '',
-      description: ''
-    });
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `marine-zones-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
-  const handleExport = async (format) => {
-    let result;
-    if (format === 'geojson') {
-      result = await mspExportService.exportGeoJSON(filters);
-    } else if (format === 'kml') {
-      result = await mspExportService.exportKML(filters);
-    }
+  // Drawing handler component
+  const DrawingHandler = () => {
+    const [tempPoints, setTempPoints] = useState([]);
 
-    if (result.data) {
-      const blob = new Blob([format === 'geojson' ? result.data.geojson : result.data.kml], {
-        type: format === 'geojson' ? 'application/json' : 'application/vnd.google-earth.kml+xml'
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = result.data.filename;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-  };
-
-  const getZoneColor = (zoneType) => {
-    return zoneTypeConfig[zoneType]?.color || '#64748b';
-  };
-
-  const getZoneIcon = (zoneType) => {
-    const IconComponent = zoneTypeConfig[zoneType]?.icon || Map;
-    return IconComponent;
-  };
-
-  const getStatusColor = (status) => {
-    const colors = {
-      proposed: 'bg-yellow-100 text-yellow-800',
-      approved: 'bg-blue-100 text-blue-800',
-      active: 'bg-green-100 text-green-800',
-      inactive: 'bg-gray-100 text-gray-800'
-    };
-    return colors[status] || 'bg-gray-100 text-gray-800';
-  };
-
-  // ========== RENDER FUNCTIONS ==========
-
-  const renderDashboard = () => {
-    const totalZones = zones.length;
-    const activeZones = zones.filter(z => z.status === 'active').length;
-    const totalAreaKm2 = zones.reduce((sum, z) => sum + (z.areaKm2 || 0), 0);
-    const conflictZones = zones.filter(z => z.hasConflicts).length;
-
-    const zoneTypeBreakdown = {};
-    zones.forEach(zone => {
-      zoneTypeBreakdown[zone.zoneType] = (zoneTypeBreakdown[zone.zoneType] || 0) + 1;
+    useMapEvents({
+      click(e) {
+        if (drawingMode === 'polygon') {
+          setTempPoints([...tempPoints, [e.latlng.lat, e.latlng.lng]]);
+        } else if (drawingMode === 'rectangle') {
+          if (tempPoints.length === 0) {
+            setTempPoints([[e.latlng.lat, e.latlng.lng]]);
+          } else {
+            const [lat1, lng1] = tempPoints[0];
+            addShape({
+              type: 'polygon',
+              positions: [
+                [lat1, lng1],
+                [e.latlng.lat, lng1],
+                [e.latlng.lat, e.latlng.lng],
+                [lat1, e.latlng.lng]
+              ],
+              color: '#3b82f6',
+              name: 'Custom Rectangle'
+            });
+            setTempPoints([]);
+            setDrawingMode(null);
+          }
+        } else if (drawingMode === 'circle') {
+          addShape({
+            type: 'circle',
+            center: [e.latlng.lat, e.latlng.lng],
+            radius: 1000,
+            color: '#10b981',
+            name: 'Custom Circle'
+          });
+          setDrawingMode(null);
+        }
+      },
+      dblclick() {
+        if (drawingMode === 'polygon' && tempPoints.length >= 3) {
+          addShape({
+            type: 'polygon',
+            positions: tempPoints,
+            color: '#8b5cf6',
+            name: 'Custom Polygon'
+          });
+          setTempPoints([]);
+          setDrawingMode(null);
+        }
+      }
     });
 
-    return (
-      <div className="p-8 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-7xl mx-auto"
-        >
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold text-white mb-4">
-              Marine Spatial Planning Viewer
-            </h1>
-            <p className="text-xl text-blue-200">
-              Explore Sri Lanka's Marine Spatial Planning Zones
-            </p>
-          </div>
-
-          {/* Statistics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <Map className="w-8 h-8 text-blue-400" />
-                <span className="text-3xl font-bold text-white">{totalZones}</span>
-              </div>
-              <p className="text-blue-200">Total Zones</p>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <Layers className="w-8 h-8 text-green-400" />
-                <span className="text-3xl font-bold text-white">{activeZones}</span>
-              </div>
-              <p className="text-blue-200">Active Zones</p>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <Map className="w-8 h-8 text-purple-400" />
-                <span className="text-3xl font-bold text-white">{Math.round(totalAreaKm2)}</span>
-              </div>
-              <p className="text-blue-200">Total Area (km²)</p>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <AlertTriangle className="w-8 h-8 text-yellow-400" />
-                <span className="text-3xl font-bold text-white">{conflictZones}</span>
-              </div>
-              <p className="text-blue-200">Zones with Conflicts</p>
-            </motion.div>
-          </div>
-
-          {/* Zone Type Breakdown */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20 mb-8">
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-              <Layers className="w-6 h-6 text-blue-400" />
-              Zone Type Distribution
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {Object.entries(zoneTypeBreakdown).map(([type, count]) => {
-                const IconComponent = getZoneIcon(type);
-                const config = zoneTypeConfig[type];
-
-                return (
-                  <div key={type} className="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <div className="flex items-center gap-3 mb-2">
-                      <IconComponent className="w-5 h-5" style={{ color: config?.color }} />
-                      <span className="text-white font-semibold">{count}</span>
-                    </div>
-                    <p className="text-sm text-blue-200">{config?.label || type}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    );
+    return tempPoints.length > 0 ? (
+      <Polyline positions={tempPoints} pathOptions={{ color: '#3b82f6', weight: 2, dashArray: '5, 5' }} />
+    ) : null;
   };
-
-  const renderInteractiveMap = () => {
-    return (
-      <div className="h-screen bg-slate-900">
-        {/* Map Controls */}
-        <div className="absolute top-4 left-4 z-[1000] bg-white/90 backdrop-blur-lg rounded-lg p-4 shadow-xl max-w-md">
-          <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-            <Filter className="w-5 h-5 text-blue-600" />
-            Filters
-          </h3>
-
-          {/* Search */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Search Zones</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by name..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-
-          {/* Zone Type Filter */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Zone Type</label>
-            <select
-              value={filters.zoneType}
-              onChange={(e) => setFilters({ ...filters, zoneType: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">All Types</option>
-              {Object.entries(zoneTypeConfig).map(([key, config]) => (
-                <option key={key} value={key}>{config.label}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Status Filter */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-            <select
-              value={filters.status}
-              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">All Status</option>
-              <option value="proposed">Proposed</option>
-              <option value="approved">Approved</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </div>
-
-          {/* Show Conflicts Toggle */}
-          <div className="mb-4">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={filters.showConflicts}
-                onChange={(e) => setFilters({ ...filters, showConflicts: e.target.checked })}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-              />
-              <span className="text-sm font-medium text-gray-700">Show Conflicts Only</span>
-            </label>
-          </div>
-
-          {/* Export Options */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Export Data</label>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleExport('geojson')}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-              >
-                <Download className="w-4 h-4" />
-                GeoJSON
-              </button>
-              <button
-                onClick={() => handleExport('kml')}
-                className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
-              >
-                <Download className="w-4 h-4" />
-                KML
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Map Container */}
-        <MapContainer
-          center={[7.8731, 80.7718]}
-          zoom={8}
-          style={{ height: '100%', width: '100%' }}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          />
-
-          {/* Render Zones */}
-          {filteredZones
-            .filter(zone => !filters.showConflicts || zone.hasConflicts)
-            .map((zone) => {
-              if (!zone.boundaries || zone.boundaries.length === 0) return null;
-
-              const positions = zone.boundaries.map(gp => [gp.latitude, gp.longitude]);
-              const color = getZoneColor(zone.zoneType);
-
-              return (
-                <Polygon
-                  key={zone.id}
-                  positions={positions}
-                  pathOptions={{
-                    color: color,
-                    fillColor: color,
-                    fillOpacity: zone.hasConflicts ? 0.6 : 0.3,
-                    weight: zone.hasConflicts ? 3 : 2
-                  }}
-                  eventHandlers={{
-                    click: () => setSelectedZone(zone)
-                  }}
-                >
-                  <Popup>
-                    <div className="p-2">
-                      <h3 className="font-bold text-lg mb-2">{zone.zoneName}</h3>
-                      <p className="text-sm text-gray-600 mb-2">
-                        <strong>Type:</strong> {zoneTypeConfig[zone.zoneType]?.label || zone.zoneType}
-                      </p>
-                      <p className="text-sm text-gray-600 mb-2">
-                        <strong>Status:</strong> {zone.status}
-                      </p>
-                      <p className="text-sm text-gray-600 mb-2">
-                        <strong>Area:</strong> {Math.round(zone.areaKm2)} km²
-                      </p>
-                      {zone.hasConflicts && (
-                        <p className="text-sm text-red-600 font-semibold flex items-center gap-1">
-                          <AlertTriangle className="w-4 h-4" />
-                          {zone.conflictCount} Conflict(s)
-                        </p>
-                      )}
-                      <button
-                        onClick={() => {
-                          setSelectedZone(zone);
-                          setActiveView('zones');
-                        }}
-                        className="mt-2 w-full px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
-                      >
-                        View Details
-                      </button>
-                    </div>
-                  </Popup>
-                </Polygon>
-              );
-            })}
-
-          {/* Render Conflict Markers */}
-          {filters.showConflicts && conflicts.map((conflict, idx) => {
-            const zone1 = zones.find(z => z.id === conflict.zoneId1);
-            if (!zone1 || !zone1.boundaries || zone1.boundaries.length === 0) return null;
-
-            const centerLat = zone1.boundaries.reduce((sum, gp) => sum + gp.latitude, 0) / zone1.boundaries.length;
-            const centerLng = zone1.boundaries.reduce((sum, gp) => sum + gp.longitude, 0) / zone1.boundaries.length;
-
-            return (
-              <Circle
-                key={`conflict-${idx}`}
-                center={[centerLat, centerLng]}
-                radius={1000}
-                pathOptions={{
-                  color: conflict.severity === 'high' ? '#ef4444' : '#f59e0b',
-                  fillColor: conflict.severity === 'high' ? '#ef4444' : '#f59e0b',
-                  fillOpacity: 0.5
-                }}
-              >
-                <Popup>
-                  <div className="p-2">
-                    <h3 className="font-bold text-red-600 flex items-center gap-2 mb-2">
-                      <AlertTriangle className="w-5 h-5" />
-                      Zone Conflict
-                    </h3>
-                    <p className="text-sm mb-1"><strong>Zone 1:</strong> {conflict.zoneName1}</p>
-                    <p className="text-sm mb-1"><strong>Zone 2:</strong> {conflict.zoneName2}</p>
-                    <p className="text-sm mb-1"><strong>Severity:</strong> {conflict.severity}</p>
-                    <p className="text-sm"><strong>Overlap:</strong> {conflict.overlapPercentage}%</p>
-                  </div>
-                </Popup>
-              </Circle>
-            );
-          })}
-        </MapContainer>
-      </div>
-    );
-  };
-
-  const renderZoneBrowser = () => {
-    return (
-      <div className="p-8 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-8 flex items-center gap-3">
-            <Layers className="w-8 h-8 text-blue-400" />
-            Browse Planning Zones
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredZones.map((zone) => {
-              const IconComponent = getZoneIcon(zone.zoneType);
-              const config = zoneTypeConfig[zone.zoneType];
-
-              return (
-                <motion.div
-                  key={zone.id}
-                  whileHover={{ scale: 1.02 }}
-                  className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 cursor-pointer"
-                  onClick={() => setSelectedZone(zone)}
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-12 h-12 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: config?.color + '33' }}
-                      >
-                        <IconComponent className="w-6 h-6" style={{ color: config?.color }} />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-white">{zone.zoneName}</h3>
-                        <p className="text-sm text-blue-200">{config?.label}</p>
-                      </div>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(zone.status)}`}>
-                      {zone.status}
-                    </span>
-                  </div>
-
-                  <p className="text-sm text-blue-200 mb-4 line-clamp-2">
-                    {zone.description}
-                  </p>
-
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-blue-300 font-semibold">Area</p>
-                      <p className="text-white">{Math.round(zone.areaKm2)} km²</p>
-                    </div>
-                    <div>
-                      <p className="text-blue-300 font-semibold">Depth Range</p>
-                      <p className="text-white">{zone.depthRange || 'N/A'}</p>
-                    </div>
-                  </div>
-
-                  {zone.hasConflicts && (
-                    <div className="mt-4 pt-4 border-t border-white/20">
-                      <p className="text-sm text-yellow-400 font-semibold flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4" />
-                        {zone.conflictCount} Conflict(s) Detected
-                      </p>
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Zone Details Modal */}
-        <AnimatePresence>
-          {selectedZone && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-              onClick={() => setSelectedZone(null)}
-            >
-              <motion.div
-                initial={{ scale: 0.9, y: 20 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.9, y: 20 }}
-                className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="p-8">
-                  <div className="flex items-start justify-between mb-6">
-                    <div>
-                      <h2 className="text-3xl font-bold text-gray-900 mb-2">{selectedZone.zoneName}</h2>
-                      <p className="text-gray-600">{zoneTypeConfig[selectedZone.zoneType]?.label}</p>
-                    </div>
-                    <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(selectedZone.status)}`}>
-                      {selectedZone.status}
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-6 mb-6">
-                    <div>
-                      <p className="text-sm font-semibold text-gray-600 mb-1">Area</p>
-                      <p className="text-lg text-gray-900">{Math.round(selectedZone.areaKm2)} km²</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-600 mb-1">Depth Range</p>
-                      <p className="text-lg text-gray-900">{selectedZone.depthRange || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-600 mb-1">Managing Authority</p>
-                      <p className="text-lg text-gray-900">{selectedZone.managingAuthority || 'NARA'}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-600 mb-1">Consultations</p>
-                      <p className="text-lg text-gray-900">{selectedZone.stakeholderConsultations || 0}</p>
-                    </div>
-                  </div>
-
-                  <div className="mb-6">
-                    <h3 className="font-bold text-lg mb-2">Description</h3>
-                    <p className="text-gray-700">{selectedZone.description}</p>
-                  </div>
-
-                  {selectedZone.regulations && (
-                    <div className="mb-6">
-                      <h3 className="font-bold text-lg mb-2">Regulations</h3>
-                      <p className="text-gray-700">{selectedZone.regulations}</p>
-                    </div>
-                  )}
-
-                  {selectedZone.hasConflicts && (
-                    <div className="mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                      <h3 className="font-bold text-lg mb-2 flex items-center gap-2 text-yellow-800">
-                        <AlertTriangle className="w-5 h-5" />
-                        Conflicts Detected
-                      </h3>
-                      <p className="text-yellow-700">
-                        This zone has {selectedZone.conflictCount} conflict(s) with other planning zones.
-                      </p>
-                    </div>
-                  )}
-
-                  <button
-                    onClick={() => setSelectedZone(null)}
-                    className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Close
-                  </button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    );
-  };
-
-  const renderProposalForm = () => {
-    return (
-      <div className="p-8 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
-        <div className="max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
-          >
-            <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-              <FileText className="w-8 h-8 text-blue-400" />
-              Submit Planning Proposal
-            </h2>
-
-            <form onSubmit={handleSubmitProposal} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-blue-200 mb-2">
-                  Proposal Name *
-                </label>
-                <input
-                  type="text"
-                  value={proposalForm.proposalName}
-                  onChange={(e) => setProposalForm({ ...proposalForm, proposalName: e.target.value })}
-                  required
-                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-blue-300 focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter proposal name"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-blue-200 mb-2">
-                    Your Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={proposalForm.proposerName}
-                    onChange={(e) => setProposalForm({ ...proposalForm, proposerName: e.target.value })}
-                    required
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-blue-300 focus:ring-2 focus:ring-blue-500"
-                    placeholder="Your name"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-blue-200 mb-2">
-                    Your Email *
-                  </label>
-                  <input
-                    type="email"
-                    value={proposalForm.proposerEmail}
-                    onChange={(e) => setProposalForm({ ...proposalForm, proposerEmail: e.target.value })}
-                    required
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-blue-300 focus:ring-2 focus:ring-blue-500"
-                    placeholder="your@email.com"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-blue-200 mb-2">
-                  Proposal Type *
-                </label>
-                <select
-                  value={proposalForm.proposalType}
-                  onChange={(e) => setProposalForm({ ...proposalForm, proposalType: e.target.value })}
-                  required
-                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select type...</option>
-                  <option value="new_zone">New Zone Proposal</option>
-                  <option value="zone_modification">Zone Modification</option>
-                  <option value="zone_removal">Zone Removal</option>
-                  <option value="regulation_change">Regulation Change</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-blue-200 mb-2">
-                  Description *
-                </label>
-                <textarea
-                  value={proposalForm.description}
-                  onChange={(e) => setProposalForm({ ...proposalForm, description: e.target.value })}
-                  required
-                  rows={6}
-                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-blue-300 focus:ring-2 focus:ring-blue-500"
-                  placeholder="Describe your proposal in detail..."
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg flex items-center justify-center gap-2"
-              >
-                <FileText className="w-5 h-5" />
-                Submit Proposal
-              </button>
-            </form>
-          </motion.div>
-        </div>
-      </div>
-    );
-  };
-
-  // ========== MAIN RENDER ==========
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-white text-xl">Loading Marine Spatial Planning Data...</p>
+          <p className="text-white text-xl">Loading Marine Spatial Planning...</p>
         </div>
       </div>
     );
@@ -738,49 +302,319 @@ const MarineSpatialPlanningViewer = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Navigation */}
+      {/* Header */}
       <nav className="bg-slate-900 border-b border-white/10 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
               <Map className="w-8 h-8 text-blue-400" />
-              <span className="text-white font-bold text-xl">Marine Spatial Planning</span>
-            </div>
-
-            <div className="flex gap-2">
-              {[
-                { id: 'dashboard', label: 'Dashboard', icon: Map },
-                { id: 'map', label: 'Interactive Map', icon: Layers },
-                { id: 'zones', label: 'Browse Zones', icon: Info },
-                { id: 'proposal', label: 'Submit Proposal', icon: FileText }
-              ].map(item => (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveView(item.id)}
-                  className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                    activeView === item.id
-                      ? 'bg-blue-600 text-white'
-                      : 'text-blue-200 hover:bg-white/10'
-                  }`}
-                >
-                  <item.icon className="w-4 h-4" />
-                  {item.label}
-                </button>
-              ))}
+              <span className="text-white font-bold text-xl">Enhanced Marine Spatial Planning</span>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Content */}
-      <AnimatePresence mode="wait">
-        {activeView === 'dashboard' && renderDashboard()}
-        {activeView === 'map' && renderInteractiveMap()}
-        {activeView === 'zones' && renderZoneBrowser()}
-        {activeView === 'proposal' && renderProposalForm()}
-      </AnimatePresence>
+      {/* Map */}
+      <div className="h-[calc(100vh-64px)] bg-slate-900 relative">
+        {/* Drawing Toolbar */}
+        <div className="absolute top-4 left-4 z-[1000] bg-white/95 backdrop-blur-lg rounded-xl p-4 shadow-2xl w-80">
+          <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+            <Edit3 className="w-5 h-5 text-blue-600" />
+            Drawing Tools
+          </h3>
+
+          {/* Quick Actions */}
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            <button
+              onClick={() => startDrawing('polygon')}
+              className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 flex flex-col items-center gap-1"
+              title="Draw Polygon"
+            >
+              <Pentagon className="w-5 h-5" />
+              <span className="text-xs">Polygon</span>
+            </button>
+            <button
+              onClick={() => startDrawing('rectangle')}
+              className="bg-purple-600 text-white px-3 py-2 rounded-lg hover:bg-purple-700 flex flex-col items-center gap-1"
+              title="Draw Rectangle"
+            >
+              <Square className="w-5 h-5" />
+              <span className="text-xs">Rectangle</span>
+            </button>
+            <button
+              onClick={() => startDrawing('circle')}
+              className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 flex flex-col items-center gap-1"
+              title="Draw Circle"
+            >
+              <CircleIcon className="w-5 h-5" />
+              <span className="text-xs">Circle</span>
+            </button>
+            <button
+              onClick={() => setShowPresets(true)}
+              className="bg-pink-600 text-white px-3 py-2 rounded-lg hover:bg-pink-700 flex flex-col items-center gap-1"
+              title="Zone Templates"
+            >
+              <Target className="w-5 h-5" />
+              <span className="text-xs">Templates</span>
+            </button>
+            <button
+              onClick={clearAllShapes}
+              className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 flex flex-col items-center gap-1"
+              title="Clear All"
+            >
+              <Trash2 className="w-5 h-5" />
+              <span className="text-xs">Clear</span>
+            </button>
+            <button
+              onClick={saveDrawing}
+              disabled={drawnShapes.length === 0}
+              className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 flex flex-col items-center gap-1"
+              title="Save Drawing"
+            >
+              <Save className="w-5 h-5" />
+              <span className="text-xs">Save</span>
+            </button>
+          </div>
+
+          {/* Undo/Redo */}
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={undo}
+              disabled={undoStack.length === 0}
+              className="flex-1 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <Undo className="w-4 h-4" />
+              <span className="text-sm">Undo</span>
+            </button>
+            <button
+              onClick={redo}
+              disabled={redoStack.length === 0}
+              className="flex-1 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <Redo className="w-4 h-4" />
+              <span className="text-sm">Redo</span>
+            </button>
+          </div>
+
+          {/* Drawing Mode Indicator */}
+          {drawingMode && (
+            <div className="p-3 bg-blue-50 rounded-lg border-2 border-blue-300 mb-4">
+              <p className="text-sm font-semibold text-blue-900 mb-1">
+                Drawing: {drawingMode}
+              </p>
+              <p className="text-xs text-blue-700 mb-2">
+                {drawingMode === 'polygon' ? 'Click to add points, double-click to finish' :
+                 drawingMode === 'rectangle' ? 'Click two opposite corners' :
+                 'Click to place circle'}
+              </p>
+              <button
+                onClick={() => setDrawingMode(null)}
+                className="w-full px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+
+          {/* Shapes List */}
+          {drawnShapes.length > 0 && (
+            <div className="border-t pt-4">
+              <h4 className="font-semibold text-sm mb-2">Shapes ({drawnShapes.length})</h4>
+              <div className="max-h-48 overflow-y-auto space-y-2">
+                {drawnShapes.map(shape => (
+                  <div key={shape.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded" style={{ backgroundColor: shape.color }} />
+                      <span className="text-xs font-medium">{shape.name}</span>
+                    </div>
+                    <button
+                      onClick={() => removeShape(shape.id)}
+                      className="p-1 text-red-600 hover:bg-red-50 rounded"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Zone Presets Panel */}
+        <AnimatePresence>
+          {showPresets && (
+            <motion.div
+              initial={{ opacity: 0, x: 300 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 300 }}
+              className="absolute top-4 right-4 z-[1000] bg-white/95 backdrop-blur-lg rounded-xl p-6 shadow-2xl w-96"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-lg flex items-center gap-2">
+                  <Target className="w-5 h-5 text-blue-600" />
+                  Zone Templates
+                </h3>
+                <button
+                  onClick={() => setShowPresets(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg text-xl"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                {zonePresets.map(preset => (
+                  <motion.div
+                    key={preset.id}
+                    whileHover={{ scale: 1.02 }}
+                    className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200 cursor-pointer"
+                    onClick={() => applyPreset(preset)}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="w-12 h-12 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: preset.color + '33' }}
+                      >
+                        <preset.icon className="w-6 h-6" style={{ color: preset.color }} />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900">{preset.name}</h4>
+                        <p className="text-xs text-gray-600 mt-1">{preset.description}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                <p className="text-xs text-blue-900">
+                  💡 <strong>Tip:</strong> Click any template to add it instantly to the map center.
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Help Panel */}
+        <div className="absolute bottom-4 right-4 z-[1000] bg-white/95 backdrop-blur-lg rounded-lg p-4 shadow-xl max-w-xs">
+          <h4 className="font-bold text-sm mb-2 flex items-center gap-2">
+            <Info className="w-4 h-4 text-blue-600" />
+            Quick Help
+          </h4>
+          <ul className="text-xs space-y-1 text-gray-700">
+            <li>• <strong>Polygon:</strong> Click points, double-click done</li>
+            <li>• <strong>Rectangle:</strong> Click 2 corners</li>
+            <li>• <strong>Circle:</strong> Click center</li>
+            <li>• <strong>Templates:</strong> One-click zones</li>
+            <li>• <strong>Undo/Redo:</strong> Step through changes</li>
+            <li>• <strong>Save:</strong> Download as JSON</li>
+          </ul>
+        </div>
+
+        {/* Map */}
+        <MapContainer
+          center={[7.8731, 80.7718]}
+          zoom={8}
+          style={{ height: '100%', width: '100%' }}
+          ref={mapRef}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; OpenStreetMap'
+          />
+
+          <DrawingHandler />
+
+          {/* Existing zones */}
+          {zones.map((zone) => {
+            if (!zone.boundaries || zone.boundaries.length === 0) return null;
+            const positions = zone.boundaries.map(gp => [gp.latitude, gp.longitude]);
+            const color = zoneTypeConfig[zone.zoneType]?.color || '#64748b';
+
+            return (
+              <Polygon
+                key={zone.id}
+                positions={positions}
+                pathOptions={{
+                  color: color,
+                  fillColor: color,
+                  fillOpacity: 0.3,
+                  weight: 2
+                }}
+              >
+                <Popup>
+                  <div className="p-2">
+                    <h3 className="font-bold">{zone.zoneName}</h3>
+                    <p className="text-sm">{zoneTypeConfig[zone.zoneType]?.label}</p>
+                  </div>
+                </Popup>
+              </Polygon>
+            );
+          })}
+
+          {/* Drawn shapes */}
+          {drawnShapes.map(shape => {
+            if (shape.type === 'polygon') {
+              return (
+                <Polygon
+                  key={shape.id}
+                  positions={shape.positions}
+                  pathOptions={{
+                    color: shape.color,
+                    fillColor: shape.color,
+                    fillOpacity: 0.4,
+                    weight: 3
+                  }}
+                >
+                  <Popup>
+                    <div className="p-2">
+                      <h3 className="font-bold mb-2">{shape.name}</h3>
+                      <p className="text-sm">Area: ~{calculateArea(shape.positions).toFixed(2)} km²</p>
+                      <button
+                        onClick={() => removeShape(shape.id)}
+                        className="mt-2 w-full px-3 py-1 bg-red-500 text-white rounded text-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </Popup>
+                </Polygon>
+              );
+            } else if (shape.type === 'circle') {
+              return (
+                <Circle
+                  key={shape.id}
+                  center={shape.center}
+                  radius={shape.radius}
+                  pathOptions={{
+                    color: shape.color,
+                    fillColor: shape.color,
+                    fillOpacity: 0.4,
+                    weight: 3
+                  }}
+                >
+                  <Popup>
+                    <div className="p-2">
+                      <h3 className="font-bold mb-2">{shape.name}</h3>
+                      <p className="text-sm">Radius: {shape.radius}m</p>
+                      <p className="text-sm">Area: ~{(Math.PI * shape.radius * shape.radius / 1000000).toFixed(2)} km²</p>
+                      <button
+                        onClick={() => removeShape(shape.id)}
+                        className="mt-2 w-full px-3 py-1 bg-red-500 text-white rounded text-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </Popup>
+                </Circle>
+              );
+            }
+            return null;
+          })}
+        </MapContainer>
+      </div>
     </div>
   );
 };
 
-export default MarineSpatialPlanningViewer;
+export default EnhancedMarineSpatialPlanning;
