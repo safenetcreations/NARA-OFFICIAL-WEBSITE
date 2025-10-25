@@ -26,7 +26,7 @@ import {
 import {
   generateDivisionImagesWithGemini
 } from '../../services/geminiNativeImageService';
-import { storage } from '../../firebase';
+import { storage, auth } from '../../firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 
 const DivisionImagesAdmin = () => {
@@ -315,6 +315,14 @@ const DivisionImagesAdmin = () => {
       let firebaseBackupsFailed = 0;
       let firebaseBackupsSucceeded = 0;
 
+      // Check if user is authenticated before attempting Firebase backup
+      const { currentUser } = auth;
+      const isAuthenticated = currentUser !== null;
+
+      if (!isAuthenticated) {
+        console.log('ℹ️ Firebase backup will be skipped (not authenticated)');
+      }
+
       for (let i = 0; i < successfulImages.length; i++) {
         const result = successfulImages[i];
 
@@ -325,42 +333,45 @@ const DivisionImagesAdmin = () => {
           console.log(`✅ Created data URL for image ${i + 1}/${successfulImages.length}`);
         }
 
-        // OPTIONAL: Try to upload to Firebase Storage (for backup/sharing)
-        // This will fail with 403 if not authenticated - that's OK!
-        try {
-          const timestamp = Date.now();
-          const filename = `${selectedDivision.id}_gemini_${timestamp}_${i}.png`;
-          const storageRef = ref(storage, `divisions/${selectedDivision.id}/${filename}`);
-
-          const uploadResult = await uploadString(storageRef, result.base64Data, 'base64', {
-            contentType: result.mimeType || 'image/png',
-            customMetadata: {
-              generatedBy: 'gemini-2.5-flash',
-              divisionId: selectedDivision.id,
-              prompt: 'AI generated',
-              timestamp: timestamp.toString()
-            }
-          });
-
-          const downloadURL = await getDownloadURL(uploadResult.ref);
-          console.log(`📤 Backed up to Firebase: ${downloadURL}`);
-          firebaseBackupsSucceeded++;
-
-          // Save metadata to Firestore
+        // OPTIONAL: Upload to Firebase Storage (only if authenticated)
+        if (isAuthenticated) {
           try {
-            await saveAIGeneratedImage(selectedDivision.id, downloadURL, {
-              prompt: 'Gemini 2.5 Flash Generated',
-              model: 'gemini-2.5-flash',
-              generatedAt: new Date().toISOString(),
-              storagePath: uploadResult.ref.fullPath
+            const timestamp = Date.now();
+            const filename = `${selectedDivision.id}_gemini_${timestamp}_${i}.png`;
+            const storageRef = ref(storage, `divisions/${selectedDivision.id}/${filename}`);
+
+            const uploadResult = await uploadString(storageRef, result.base64Data, 'base64', {
+              contentType: result.mimeType || 'image/png',
+              customMetadata: {
+                generatedBy: 'gemini-2.5-flash',
+                divisionId: selectedDivision.id,
+                prompt: 'AI generated',
+                timestamp: timestamp.toString()
+              }
             });
-          } catch (firestoreError) {
-            console.log('⚠️ Firestore metadata save skipped:', firestoreError.message);
+
+            const downloadURL = await getDownloadURL(uploadResult.ref);
+            console.log(`📤 Backed up to Firebase: ${downloadURL}`);
+            firebaseBackupsSucceeded++;
+
+            // Save metadata to Firestore
+            try {
+              await saveAIGeneratedImage(selectedDivision.id, downloadURL, {
+                prompt: 'Gemini 2.5 Flash Generated',
+                model: 'gemini-2.5-flash',
+                generatedAt: new Date().toISOString(),
+                storagePath: uploadResult.ref.fullPath
+              });
+            } catch (firestoreError) {
+              console.log('⚠️ Firestore metadata save skipped:', firestoreError.message);
+            }
+          } catch (uploadError) {
+            firebaseBackupsFailed++;
+            console.log(`⚠️ Firebase backup failed for image ${i + 1}:`, uploadError.message);
           }
-        } catch (uploadError) {
+        } else {
+          // Not authenticated - skip Firebase backup (no 403 errors!)
           firebaseBackupsFailed++;
-          console.log(`⚠️ Firebase backup skipped for image ${i + 1} (not authenticated - this is OK!)`);
-          // Continue anyway - data URL already added and will work perfectly!
         }
       }
       
