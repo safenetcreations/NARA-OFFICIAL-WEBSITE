@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import * as Icons from 'lucide-react';
 import {
   LineChart,
@@ -27,6 +28,7 @@ const formatCurrency = (value) =>
   }).format(value);
 
 export default function EnhancedMarketIntelligence() {
+  const { t } = useTranslation('exportMarket');
   const [activeView, setActiveView] = useState('dashboard');
   const [allPrices, setAllPrices] = useState([]);
   const [selectedSpecies, setSelectedSpecies] = useState(null);
@@ -146,12 +148,12 @@ export default function EnhancedMarketIntelligence() {
   };
 
   const navTabs = [
-    { id: 'dashboard', label: 'Live Market Dashboard', icon: Icons.LayoutDashboard },
-    { id: 'trends', label: 'Price Trends & Analysis', icon: Icons.TrendingUp },
-    { id: 'markets', label: 'Market Comparison', icon: Icons.MapPin },
-    { id: 'export', label: 'Export Intelligence', icon: Icons.Globe },
-    { id: 'budget', label: 'Budget & Subsidies', icon: Icons.DollarSign },
-    { id: 'seasonal', label: 'Seasonal Forecast', icon: Icons.Calendar }
+    { id: 'dashboard', label: t('tabs.dashboard'), icon: Icons.LayoutDashboard },
+    { id: 'trends', label: t('tabs.trends'), icon: Icons.TrendingUp },
+    { id: 'markets', label: t('tabs.comparison'), icon: Icons.MapPin },
+    { id: 'export', label: t('tabs.export'), icon: Icons.Globe },
+    { id: 'budget', label: t('tabs.budget'), icon: Icons.DollarSign },
+    { id: 'seasonal', label: t('tabs.forecast'), icon: Icons.Calendar }
   ];
 
   if (loading) {
@@ -159,7 +161,7 @@ export default function EnhancedMarketIntelligence() {
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-cyan-50">
         <div className="text-center">
           <Icons.Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
-          <div className="text-xl text-gray-600">Loading market data...</div>
+          <div className="text-xl text-gray-600">{t('loading.message')}</div>
         </div>
       </div>
     );
@@ -190,21 +192,21 @@ export default function EnhancedMarketIntelligence() {
               <Icons.TrendingUp className="h-16 w-16" />
             </div>
             <h1 className="mb-6 text-center text-5xl font-bold md:text-6xl">
-              Sri Lankan Fish Market Intelligence
+              {t('hero.title')}
             </h1>
             <p className="mx-auto mb-4 max-w-3xl text-center text-xl text-cyan-100">
-              Real-time prices, seasonal trends, and export data for fishermen, traders & researchers
+              {t('hero.subtitle')}
             </p>
             <p className="mx-auto max-w-3xl text-center text-lg text-cyan-50">
-              Live data from {marketsList.length} major markets covering {speciesList.length} commercial species
+              {t('hero.description', { markets: marketsList.length, species: speciesList.length })}
             </p>
 
             {/* Real Data Badge */}
             {allPrices.length > 0 && allPrices[0].source && (
               <div className="mx-auto mt-6 flex items-center justify-center gap-2 rounded-full border-2 border-green-400 bg-green-500/20 px-6 py-3 backdrop-blur-sm">
                 <Icons.CheckCircle className="h-5 w-5 text-green-300" />
-                <span className="font-bold text-green-100">REAL DATA</span>
-                <span className="text-green-200">from fisheries.gov.lk & malupola.com</span>
+                <span className="font-bold text-green-100">{t('hero.dataBadge.label')}</span>
+                <span className="text-green-200">{t('hero.dataBadge.source')}</span>
               </div>
             )}
 
@@ -213,22 +215,22 @@ export default function EnhancedMarketIntelligence() {
               <div className="rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-lg">
                 <Icons.Fish className="h-8 w-8 mb-2" />
                 <div className="text-3xl font-bold">{speciesList.length}</div>
-                <div className="text-sm text-cyan-200">Species Tracked</div>
+                <div className="text-sm text-cyan-200">{t('hero.stats.speciesTracked')}</div>
               </div>
               <div className="rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-lg">
                 <Icons.MapPin className="h-8 w-8 mb-2" />
                 <div className="text-3xl font-bold">{marketsList.length}</div>
-                <div className="text-sm text-cyan-200">Markets Covered</div>
+                <div className="text-sm text-cyan-200">{t('hero.stats.marketsCovered')}</div>
               </div>
               <div className="rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-lg">
                 <Icons.Clock className="h-8 w-8 mb-2" />
                 <div className="text-3xl font-bold">Live</div>
-                <div className="text-sm text-cyan-200">Real-time Updates</div>
+                <div className="text-sm text-cyan-200">{t('hero.stats.realtimeUpdates')}</div>
               </div>
               <div className="rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-lg">
                 <Icons.Database className="h-8 w-8 mb-2" />
                 <div className="text-3xl font-bold">90</div>
-                <div className="text-sm text-cyan-200">Days History</div>
+                <div className="text-sm text-cyan-200">{t('hero.stats.daysHistory')}</div>
               </div>
             </div>
           </motion.div>
@@ -267,11 +269,11 @@ export default function EnhancedMarketIntelligence() {
               exit={{ opacity: 0, y: -20 }}
             >
               <div className="mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
-                <h2 className="text-3xl font-bold text-gray-900">Live Market Prices</h2>
+                <h2 className="text-3xl font-bold text-gray-900">{t('dashboard.title')}</h2>
                 <div className="flex gap-3">
                   <input
                     type="text"
-                    placeholder="Search species..."
+                    placeholder={t('dashboard.search')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -283,7 +285,7 @@ export default function EnhancedMarketIntelligence() {
                   >
                     {categories.map(cat => (
                       <option key={cat} value={cat}>
-                        {cat === 'all' ? 'All Categories' : cat}
+                        {cat === 'all' ? t('dashboard.filterAll') : cat}
                       </option>
                     ))}
                   </select>
@@ -312,7 +314,7 @@ export default function EnhancedMarketIntelligence() {
                       <div className="text-3xl font-bold text-blue-600">
                         {formatCurrency(price.currentPrice)}
                       </div>
-                      <div className="text-sm text-gray-500">per kilogram</div>
+                      <div className="text-sm text-gray-500">{t('dashboard.priceCard.perKg')}</div>
                     </div>
 
                     <div className="mb-3">
@@ -327,13 +329,13 @@ export default function EnhancedMarketIntelligence() {
                         {price.trend7days > 0 ? '+' : ''}
                         {price.trend7days.toFixed(2)}%
                       </span>
-                      <span className="text-xs ml-1">7-day trend</span>
+                      <span className="text-xs ml-1">{t('dashboard.priceCard.trend7day')}</span>
                     </div>
 
                     {price.exportDemand === 'very_high' && (
                       <div className="mt-3 flex items-center gap-2 rounded-lg bg-green-50 p-2 text-xs text-green-800">
                         <Icons.Globe className="h-4 w-4" />
-                        High Export Demand
+                        {t('dashboard.priceCard.demandHigh')}
                       </div>
                     )}
                   </motion.div>
@@ -350,7 +352,7 @@ export default function EnhancedMarketIntelligence() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-              <h2 className="mb-6 text-3xl font-bold text-gray-900">Price Trends & Historical Analysis</h2>
+              <h2 className="mb-6 text-3xl font-bold text-gray-900">{t('trends.title')}</h2>
 
               <div className="mb-6 grid gap-4 md:grid-cols-2">
                 <select
@@ -358,7 +360,7 @@ export default function EnhancedMarketIntelligence() {
                   onChange={(e) => setSelectedSpecies(e.target.value)}
                   className="rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Select Species</option>
+                  <option value="">{t('trends.selectSpecies')}</option>
                   {speciesList.map(species => (
                     <option key={species.speciesKey} value={species.speciesKey}>
                       {species.name} ({species.category})
@@ -371,7 +373,7 @@ export default function EnhancedMarketIntelligence() {
                   onChange={(e) => setSelectedMarket(e.target.value)}
                   className="rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Select Market</option>
+                  <option value="">{t('trends.selectMarket')}</option>
                   {marketsList.map(market => (
                     <option key={market.marketKey} value={market.marketKey}>
                       {market.name} - {market.location}
@@ -385,25 +387,25 @@ export default function EnhancedMarketIntelligence() {
                   {/* Statistics Cards */}
                   <div className="mb-8 grid gap-6 md:grid-cols-4">
                     <div className="rounded-xl bg-white p-6 shadow-lg">
-                      <div className="mb-2 text-sm text-gray-600">Current Price</div>
+                      <div className="mb-2 text-sm text-gray-600">{t('trends.stats.currentPrice')}</div>
                       <div className="text-2xl font-bold text-blue-600">
                         {formatCurrency(trendData.statistics.currentPrice)}
                       </div>
                     </div>
                     <div className="rounded-xl bg-white p-6 shadow-lg">
-                      <div className="mb-2 text-sm text-gray-600">90-Day Average</div>
+                      <div className="mb-2 text-sm text-gray-600">{t('trends.stats.avg90Day')}</div>
                       <div className="text-2xl font-bold text-gray-800">
                         {formatCurrency(trendData.statistics.averagePrice)}
                       </div>
                     </div>
                     <div className="rounded-xl bg-white p-6 shadow-lg">
-                      <div className="mb-2 text-sm text-gray-600">Price Range</div>
+                      <div className="mb-2 text-sm text-gray-600">{t('trends.stats.priceRange')}</div>
                       <div className="text-2xl font-bold text-purple-600">
                         {formatCurrency(trendData.statistics.priceRange)}
                       </div>
                     </div>
                     <div className="rounded-xl bg-white p-6 shadow-lg">
-                      <div className="mb-2 text-sm text-gray-600">30-Day Trend</div>
+                      <div className="mb-2 text-sm text-gray-600">{t('trends.stats.trend30Day')}</div>
                       <div className={`text-2xl font-bold ${trendData.trends.trend30days > 0 ? 'text-red-600' : 'text-green-600'}`}>
                         {trendData.trends.trend30days > 0 ? '+' : ''}
                         {trendData.trends.trend30days.toFixed(2)}%
@@ -413,7 +415,7 @@ export default function EnhancedMarketIntelligence() {
 
                   {/* Price History Chart */}
                   <div className="mb-8 rounded-xl bg-white p-6 shadow-lg">
-                    <h3 className="mb-4 text-xl font-bold text-gray-900">90-Day Price History</h3>
+                    <h3 className="mb-4 text-xl font-bold text-gray-900">{t('trends.chartTitle')}</h3>
                     <ResponsiveContainer width="100%" height={400}>
                       <AreaChart data={trendData.historicalPrices}>
                         <defs>
