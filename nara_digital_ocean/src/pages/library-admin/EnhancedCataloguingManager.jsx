@@ -100,14 +100,20 @@ const EnhancedCataloguingManager = () => {
   const generateQRCode = async (barcode) => {
     try {
       setIsGeneratingQR(true);
-      // Generate QR code as data URL
-      const qrDataUrl = await QRCode.toDataURL(barcode, {
+
+      // Generate full URL for the book using barcode
+      // This allows users to scan and directly access the book details
+      const bookUrl = `${window.location.origin}/library/barcode/${barcode}`;
+
+      // Generate QR code with the full URL
+      const qrDataUrl = await QRCode.toDataURL(bookUrl, {
         width: 200,
         margin: 2,
         color: {
           dark: '#000000',
           light: '#FFFFFF'
-        }
+        },
+        errorCorrectionLevel: 'H' // High error correction for better scanning
       });
       setQrCodeUrl(qrDataUrl);
     } catch (error) {
@@ -128,18 +134,20 @@ const EnhancedCataloguingManager = () => {
 
   const printQRCode = () => {
     if (!qrCodeUrl) return;
-    
+
+    const bookUrl = `${window.location.origin}/library/barcode/${formData.barcode}`;
+
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
       <html>
         <head>
           <title>Print QR Code - ${formData.barcode}</title>
           <style>
-            body { 
-              display: flex; 
+            body {
+              display: flex;
               flex-direction: column;
-              align-items: center; 
-              justify-content: center; 
+              align-items: center;
+              justify-content: center;
               height: 100vh;
               margin: 0;
               font-family: Arial, sans-serif;
@@ -149,8 +157,8 @@ const EnhancedCataloguingManager = () => {
               padding: 20px;
               border: 2px solid #000;
             }
-            img { 
-              max-width: 300px; 
+            img {
+              max-width: 300px;
               margin: 20px 0;
             }
             .barcode-text {
@@ -162,6 +170,17 @@ const EnhancedCataloguingManager = () => {
               font-size: 14px;
               margin: 5px 0;
             }
+            .book-url {
+              font-size: 11px;
+              color: #666;
+              margin: 5px 0;
+              word-break: break-all;
+            }
+            .scan-instruction {
+              font-size: 12px;
+              color: #333;
+              margin-top: 10px;
+            }
           </style>
         </head>
         <body>
@@ -169,6 +188,8 @@ const EnhancedCataloguingManager = () => {
             <img src="${qrCodeUrl}" alt="QR Code" />
             <div class="barcode-text">${formData.barcode}</div>
             <div class="book-title">${formData.title || 'Untitled'}</div>
+            <div class="book-url">${bookUrl}</div>
+            <div class="scan-instruction">Scan QR code to view book details online</div>
           </div>
           <script>
             window.onload = function() {

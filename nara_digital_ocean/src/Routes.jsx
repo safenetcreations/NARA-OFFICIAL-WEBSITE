@@ -164,6 +164,7 @@ const DivisionContentAdmin = lazy(() => import('./pages/admin/DivisionContentAdm
 // Library System Pages
 const LibraryCatalogue = lazy(() => import('./pages/library-catalogue'));
 const ItemDetail = lazy(() => import('./pages/library-catalogue/ItemDetail'));
+const BarcodeLookup = lazy(() => import('./pages/library-catalogue/BarcodeLookup'));
 const PatronPortal = lazy(() => import('./pages/library-catalogue/PatronPortal'));
 const LibraryRegister = lazy(() => import('./pages/library-register'));
 const LibraryLogin = lazy(() => import('./pages/library-login'));
@@ -312,6 +313,7 @@ function Routes() {
               {/* Library System Routes */}
               <Route path="/library" element={<LibraryCatalogue />} />
               <Route path="/library/item/:id" element={<ItemDetail />} />
+              <Route path="/library/barcode/:barcode" element={<BarcodeLookup />} />
               <Route path="/library/patron-portal" element={<PatronPortal />} />
               <Route path="/register" element={<UnifiedRegistration />} />
               <Route path="/library-register" element={<LibraryRegister />} />
