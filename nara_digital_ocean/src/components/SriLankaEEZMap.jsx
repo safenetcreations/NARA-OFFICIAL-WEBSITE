@@ -257,13 +257,58 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
         
         console.log('✅ Simple boundary added');
 
-        // Add research station markers if enabled
+        // Add NARA office and branch markers if enabled
         if (showMarkers) {
           const stations = [
-            { lat: 6.9271, lng: 79.8612, name: 'Colombo Research Station' },
-            { lat: 9.6615, lng: 80.0255, name: 'Jaffna Marine Lab' },
-            { lat: 8.5874, lng: 81.2152, name: 'Trincomalee Station' },
-            { lat: 6.0329, lng: 80.2168, name: 'Galle Monitoring Post' }
+            {
+              lat: 6.9271,
+              lng: 79.8612,
+              name: 'NARA Head Office',
+              address: 'Nara Rd, Colombo 01500',
+              type: 'headquarters'
+            },
+            {
+              lat: 8.2167,
+              lng: 79.7697,
+              name: 'Nara Regional Center Kalpitiya',
+              address: 'Kalpitiya',
+              type: 'regional'
+            },
+            {
+              lat: 5.9592,
+              lng: 80.3743,
+              name: 'NARA Regional Research Center',
+              address: 'Kapparathota, Weligama',
+              type: 'regional'
+            },
+            {
+              lat: 6.6820,
+              lng: 79.9290,
+              name: 'NARA Regional Research Centre',
+              address: 'Panapitiya, Wadduwa',
+              type: 'regional'
+            },
+            {
+              lat: 6.0050,
+              lng: 80.7889,
+              name: 'NARA Regional Research Centre',
+              address: 'Rekawa, Tangalle',
+              type: 'regional'
+            },
+            {
+              lat: 6.4783,
+              lng: 79.9834,
+              name: 'Center for Ocean and Fisheries Information (COFI)',
+              address: 'Galle Rd, Beruwala',
+              type: 'center'
+            },
+            {
+              lat: 9.4040,
+              lng: 80.1622,
+              name: 'NARA Regional Center Poonakary',
+              address: 'Pooneryn',
+              type: 'regional'
+            }
           ];
 
           const supportsAdvancedMarkers =
@@ -272,30 +317,41 @@ const SriLankaEEZMap = ({ className = '', showMarkers = true }) => {
           stations.forEach((station) => {
             const position = { lat: station.lat, lng: station.lng };
 
+            // Different colors for different types
+            const markerColors = {
+              headquarters: { color: '#22d3ee', shadow: 'rgba(34, 211, 238, 0.6)', size: 16 },
+              regional: { color: '#f97316', shadow: 'rgba(249, 115, 22, 0.6)', size: 12 },
+              center: { color: '#3b82f6', shadow: 'rgba(59, 130, 246, 0.6)', size: 12 }
+            };
+
+            const markerStyle = markerColors[station.type] || markerColors.regional;
+
             if (supportsAdvancedMarkers) {
               const content = document.createElement('div');
-              content.style.width = '14px';
-              content.style.height = '14px';
+              content.style.width = `${markerStyle.size}px`;
+              content.style.height = `${markerStyle.size}px`;
               content.style.borderRadius = '50%';
-              content.style.background = '#f97316';
+              content.style.background = markerStyle.color;
               content.style.border = '2px solid #fff';
-              content.style.boxShadow = '0 0 6px rgba(249, 115, 22, 0.6)';
+              content.style.boxShadow = `0 0 8px ${markerStyle.shadow}`;
+              content.style.cursor = 'pointer';
+              content.title = `${station.name}\n${station.address}`;
 
               new window.google.maps.marker.AdvancedMarkerElement({
                 position,
                 map,
-                title: station.name,
+                title: `${station.name}\n${station.address}`,
                 content
               });
             } else {
               new window.google.maps.Marker({
                 position,
                 map,
-                title: station.name,
+                title: `${station.name}\n${station.address}`,
                 icon: {
                   path: window.google.maps.SymbolPath.CIRCLE,
-                  scale: 6,
-                  fillColor: '#f97316',
+                  scale: markerStyle.size / 2,
+                  fillColor: markerStyle.color,
                   fillOpacity: 0.9,
                   strokeColor: '#ffffff',
                   strokeWeight: 2
