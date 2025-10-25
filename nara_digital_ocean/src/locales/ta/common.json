@@ -40,7 +40,8 @@
           "emergencyResponse": "அவசர நடவடிக்கை",
           "fishAdvisory": "மீன் ஆலோசனை அமைப்பு",
           "exportIntelligence": "ஏற்றுமதி சந்தை நுண்ணறிவு",
-          "marineIncident": "கடல் சம்பவ தளம்"
+          "marineIncident": "கடல் சம்பவ தளம்",
+          "integrationSystems": "ஒடுங்கிணைப்பு அமைப்புகள்"
         }
       },
       "resources": {

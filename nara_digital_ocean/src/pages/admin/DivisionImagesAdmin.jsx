@@ -300,18 +300,21 @@ const DivisionImagesAdmin = () => {
         }
       }
       
-      // FORCE CLEAR old images and save new ones to localStorage
-      console.log('🔄 Clearing old images from localStorage...');
-      localStorage.removeItem(`division-images-${selectedDivision.id}`);
+      // Save to localStorage (works immediately!)
+      console.log('%c� SAVING GEMINI IMAGES TO LOCALSTORAGE', 'background: #8b5cf6; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
+      console.log('   Division ID:', selectedDivision.id);
+      console.log('   Number of images:', imageUrls.length);
+      console.log('   Image format: base64 data URLs');
       
-      console.log('💾 Saving', imageUrls.length, 'NEW images to localStorage...');
-      saveLocalDivisionImages(selectedDivision.id, imageUrls);
+      const saveResult = saveLocalDivisionImages(selectedDivision.id, imageUrls);
+      console.log('   Save result:', saveResult);
       
-      // Verify sync
-      const verifyImages = JSON.parse(localStorage.getItem(`division-images-${selectedDivision.id}`) || '[]');
-      console.log('✅ Verified localStorage sync:', verifyImages.length, 'images');
-      console.log('📸 New image URLs:', imageUrls);
-      console.log('💾 Images saved to Firebase Storage with permanent URLs!');
+      // VERIFY it was saved using correct function
+      const verifyImages = getLocalDivisionImages(selectedDivision.id);
+      console.log('   ✅ VERIFICATION: Retrieved', verifyImages.length, 'images from localStorage');
+      console.log('   Storage key: nara_division_images');
+      console.log('   📸 First image preview:', imageUrls[0]?.substring(0, 100) + '...');
+      console.log('%c🎉 GEMINI IMAGES SAVED TO LOCALSTORAGE!', 'background: #10b981; color: white; padding: 8px; font-size: 16px; font-weight: bold;');
 
       // Update display
       setDivisionImages(imageUrls.map((url, idx) => ({
@@ -324,10 +327,21 @@ const DivisionImagesAdmin = () => {
 
       setMessage({ 
         type: 'success', 
-        text: `✅ Generated ${successfulImages.length} images with Gemini 2.5 Flash!` 
+        text: `✅ ${successfulImages.length} GEMINI images saved! Visit /divisions/${selectedDivision.slug} and REFRESH page to see them in hero carousel.` 
       });
       
-      console.log('%c🎉 GEMINI NATIVE IMAGES CREATED!', 'background: #8b5cf6; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
+      console.log('%c✅ GEMINI GENERATION COMPLETE!', 'background: #8b5cf6; color: white; padding: 8px; font-size: 16px; font-weight: bold;');
+      console.log('━'.repeat(80));
+      console.log('📌 Division:', selectedDivision.name.en);
+      console.log('📌 Division ID:', selectedDivision.id);
+      console.log('📌 Division Slug:', selectedDivision.slug);
+      console.log('📌 Model:', 'Gemini 2.5 Flash (Vertex AI)');
+      console.log('📌 Images Generated:', successfulImages.length);
+      console.log('📌 Storage:', 'localStorage (key: nara_division_images) + Firebase Storage');
+      console.log('━'.repeat(80));
+      console.log('🔗 VIEW AT:', `http://localhost:4028/divisions/${selectedDivision.slug}`);
+      console.log('⚠️  IMPORTANT: REFRESH the division page to see new images!');
+      console.log('━'.repeat(80));
     } catch (error) {
       setMessage({ type: 'error', text: `Error: ${error.message}` });
       console.error('Gemini Native error:', error);
@@ -399,20 +413,43 @@ const DivisionImagesAdmin = () => {
     const generatedUrls = [];
     
     for (let i = 0; i < prompts.length; i++) {
-      const prompt = prompts[i];
+      const basePrompt = prompts[i];
+      
+      // ENHANCE PROMPT for Pollinations.ai with Sri Lankan specifications
+      const enhancedPrompt = `Professional documentary photography, WIDE environmental shot. ${basePrompt}. 
+      MANDATORY: Show 3-5 SRI LANKAN people (South Asian features, authentic Sri Lankan skin tones, 60-70% male, ALWAYS include at least 1 female scientist/researcher). 
+      CAMERA DISTANCE: Medium to wide shot, people 5-10 meters away from camera, NEVER close-up faces. 
+      FRAMING: Full body or 3/4 body shots showing team working in environment, faces visible but NOT the main focus. 
+      SETTING: Sri Lankan coastal/marine environment with coconut palms, tropical waters, NARA branding visible. 
+      PEOPLE: Team collaboration, natural poses, professional scientific work, white lab coats or safety vests with NARA patches. 
+      STYLE: 8K photorealistic, National Geographic quality, government research documentation aesthetic.`;
       
       // Pollinations.ai API - generates unique images from text prompts
       // Add timestamp + index to ensure different images each time
       const seed = Date.now() + (i * 1000);
-      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1920&height=1080&seed=${seed}&enhance=true&model=flux`;
+      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1920&height=1080&seed=${seed}&enhance=true&model=flux`;
       
       generatedUrls.push(pollinationsUrl);
       
-      console.log(`🎨 Generating image ${i + 1}/${prompts.length}: ${prompt.substring(0, 50)}...`);
+      console.log(`🎨 Generating image ${i + 1}/${prompts.length}:`);
+      console.log('   Base:', basePrompt.substring(0, 60) + '...');
+      console.log('   Enhanced with: SRI LANKAN people, wide shot, team collaboration');
     }
     
     // Save to localStorage (works immediately!)
-    saveLocalDivisionImages(selectedDivision.id, generatedUrls);
+    console.log('%c💾 SAVING TO LOCALSTORAGE', 'background: #3b82f6; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
+    console.log('   Division ID:', selectedDivision.id);
+    console.log('   Number of images:', generatedUrls.length);
+    console.log('   URLs:', generatedUrls);
+    
+    const saveResult = saveLocalDivisionImages(selectedDivision.id, generatedUrls);
+    console.log('   Save result:', saveResult);
+    
+    // VERIFY it was saved
+    const verifyImages = getLocalDivisionImages(selectedDivision.id);
+    console.log('   ✅ VERIFICATION: Retrieved', verifyImages.length, 'images from localStorage');
+    console.log('   Storage key: nara_division_images');
+    console.log('%c🎉 POLLINATIONS IMAGES SAVED TO LOCALSTORAGE!', 'background: #10b981; color: white; padding: 8px; font-size: 16px; font-weight: bold;');
 
     // Try to save to Firebase too (for future when permissions are fixed)
     for (let i = 0; i < generatedUrls.length; i++) {
@@ -430,7 +467,7 @@ const DivisionImagesAdmin = () => {
     // Show success with action button
     setMessage({ 
       type: 'success', 
-      text: `✅ Generated ${generatedUrls.length} unique AI images with Pollinations.ai!` 
+      text: `✅ ${generatedUrls.length} POLLINATIONS images saved! Visit /divisions/${selectedDivision.slug} and REFRESH page to see them in hero carousel.` 
     });
     
     // Update local display with actual image objects
@@ -445,10 +482,18 @@ const DivisionImagesAdmin = () => {
     setGenerating(false);
     
     // Log confirmation
-    console.log('%c✅ UNIQUE AI IMAGES GENERATED!', 'background: #10b981; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
-    console.log('Division:', selectedDivision.id);
-    console.log('Using: Pollinations.ai Flux model');
-    console.log('Unique seeds for variation');
+    console.log('%c✅ POLLINATIONS GENERATION COMPLETE!', 'background: #8b5cf6; color: white; padding: 8px; font-size: 16px; font-weight: bold;');
+    console.log('━'.repeat(80));
+    console.log('📌 Division:', selectedDivision.name.en);
+    console.log('📌 Division ID:', selectedDivision.id);
+    console.log('📌 Division Slug:', selectedDivision.slug);
+    console.log('📌 Model:', 'Pollinations.ai Flux');
+    console.log('📌 Images Generated:', generatedUrls.length);
+    console.log('📌 Storage:', 'localStorage (key: nara_division_images)');
+    console.log('━'.repeat(80));
+    console.log('🔗 VIEW AT:', `http://localhost:4028/divisions/${selectedDivision.slug}`);
+    console.log('⚠️  IMPORTANT: REFRESH the division page to see new images!');
+    console.log('━'.repeat(80));
   };
 
   return (

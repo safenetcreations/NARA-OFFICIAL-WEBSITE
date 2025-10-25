@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   GraduationCap, 
@@ -44,7 +44,7 @@ const AcademyShowcase = () => {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-12">
+    <section className="relative overflow-hidden bg-slate-900 pt-2 pb-6">
       {/* Background Effects */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-cyan-500/10 blur-3xl" />
@@ -65,31 +65,29 @@ const AcademyShowcase = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8"
+          className="text-center mb-4"
         >
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-slate-900/60 px-4 py-2 text-xs uppercase tracking-[0.35em] text-cyan-200/90 backdrop-blur mb-6">
-            <GraduationCap className="h-4 w-4" />
-            <span>{t('academy.badge')}</span>
-          </div>
-          
-          <h2 className="text-3xl md:text-5xl font-bold font-space mb-4">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-              {t('academy.titleLine1')}
+          <h2 className="text-6xl md:text-7xl lg:text-8xl font-bold font-space mb-2">
+            <span className="inline-block overflow-hidden border-r-4 border-white whitespace-nowrap animate-typewriter">
+              <span className="text-[#003366]">NARA </span>
+              <span className="text-white">ACADEMY</span>
             </span>
-            <br />
-            <span className="text-white">{t('academy.titleLine2')}</span>
           </h2>
+          <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold font-space mb-2">
+            <span className="text-white">Nurturing Future Ocean Leaders</span>
+          </h3>
           
           <p className="text-base md:text-lg text-slate-300/90 max-w-3xl mx-auto">
             {t('academy.subtitle')}
           </p>
         </motion.div>
 
-        {/* Equal-Sized Program Tiles */}
-        <div className="grid md:grid-cols-2 gap-6 mb-12" key={currentLanguage}>
+        {/* Full-Width Video Cards */}
+        <div className="space-y-8 mb-12" key={currentLanguage}>
           {programsData.map((program, index) => {
             const Icon = program.icon;
             const isHovered = hoveredCard === program.id;
+            const videoRef = useRef(null);
             
             // Get translated content with fallbacks
             const programContent = t(`academy.programs.${program.id}`, { 
@@ -97,7 +95,7 @@ const AcademyShowcase = () => {
               defaultValue: {
                 title: program.id === 'aquaSchool' ? 'Aqua School' : 'Nexus Graduate Program',
                 subtitle: program.id === 'aquaSchool' ? 'Marine Education for Young Minds' : 'Advanced Marine Research & Innovation',
-                description: '',
+                description: program.id === 'aquaSchool' ? 'Comprehensive marine education programs from school students to advanced researchers' : 'Advanced graduate program for marine research and innovation',
                 features: [],
                 stats: []
               }
@@ -113,6 +111,20 @@ const AcademyShowcase = () => {
               ];
             }
             
+            // Video URLs - From Firebase Storage
+            const videoUrl = program.id === 'aquaSchool' 
+              ? 'https://firebasestorage.googleapis.com/v0/b/nara-web-73384.firebasestorage.app/o/NARA%20%20ACADEMY%2FAQUA%20SCHOOL.mp4?alt=media&token=e62474f4-2f79-4958-ab75-ad1150f8744b'
+              : 'https://firebasestorage.googleapis.com/v0/b/nara-web-73384.firebasestorage.app/o/NARA%20%20ACADEMY%2FNARA-NEXUS.mp4?alt=media&token=ae24c715-4776-4b7d-b967-76e2e75cd6c1';
+            
+            // Force video play on mount
+            useEffect(() => {
+              if (videoRef.current) {
+                videoRef.current.play().catch(err => {
+                  console.log('Video autoplay prevented:', err);
+                });
+              }
+            }, [videoUrl]);
+            
             return (
               <motion.div
                 key={program.id}
@@ -124,113 +136,50 @@ const AcademyShowcase = () => {
                 onMouseLeave={() => setHoveredCard(null)}
                 className="relative group"
               >
-                {/* Main Card */}
-                <div className="relative h-full rounded-2xl overflow-hidden border border-slate-700/50 bg-slate-900/60 backdrop-blur transition-all duration-300 hover:border-cyan-500/30">
-                  {/* Gradient Background */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${program.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                {/* Full-Width Video Card */}
+                <div className="relative w-full h-[500px] md:h-[600px] rounded-3xl overflow-hidden border border-slate-700/50 bg-slate-950 transition-all duration-500 hover:border-cyan-500/50 hover:shadow-2xl hover:shadow-cyan-500/20">
                   
-                  {/* Content Container */}
-                  <div className="relative h-full flex flex-col">
-                    {/* Website Preview Section */}
-                    <div className="relative flex-shrink-0">
-                      {/* Browser Header */}
-                      <div className="flex items-center justify-between px-4 py-3 bg-slate-800/80 border-b border-slate-700/50">
-                        <div className="flex items-center gap-2">
-                          <div className="flex gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                            <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                            <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-700/50">
-                          <Monitor className="w-3 h-3 text-slate-400" />
-                          <span className="text-xs text-slate-400">{t('academy.preview')}</span>
-                        </div>
-                      </div>
+                  {/* Background Video */}
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="auto"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    onError={(e) => console.error('Video error:', program.id, e)}
+                    onLoadedData={() => console.log('Video loaded successfully:', program.id)}
+                  >
+                    <source src={videoUrl} type="video/mp4" />
+                  </video>
+                  
+                  {/* Fallback gradient if video fails */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${program.bgGradient} opacity-30`} />
 
-                      {/* Live iframe Preview */}
-                      <div className="relative aspect-[16/9] bg-slate-950 overflow-hidden">
-                        <iframe
-                          src={program.url}
-                          className="w-full h-full"
-                          title={`${programContent.title} ${t('academy.preview')}`}
-                          sandbox="allow-scripts allow-same-origin"
-                          loading="lazy"
-                        />
-                        
-                        {/* Click Overlay */}
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: isHovered ? 1 : 0 }}
-                          className="absolute inset-0 bg-slate-900/95 backdrop-blur-sm flex items-center justify-center cursor-pointer"
-                          onClick={() => window.location.href = program.url}
-                        >
-                          <div className="text-center px-4">
-                            <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r ${program.gradient} text-white font-semibold shadow-lg transform transition-transform hover:scale-105`}>
-                              <span>{t('academy.visitWebsite')}</span>
-                              <ArrowUpRight className="w-5 h-5" />
-                            </div>
-                          </div>
-                        </motion.div>
-                      </div>
-                    </div>
-
-                    {/* Program Details Section */}
-                    <div className="flex-1 flex flex-col p-6">
-                      {/* Header */}
-                      <div className="mb-4">
-                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r ${program.gradient} bg-opacity-10 border border-slate-700/50 mb-3`}>
-                          <Icon className="w-4 h-4 text-cyan-400" />
-                          <span className="text-xs font-medium text-cyan-300">{programContent.subtitle}</span>
-                        </div>
-                        
-                        <h3 className="text-2xl font-bold font-space text-white mb-2">
-                          {programContent.title}
-                        </h3>
-                        
-                        <p className="text-sm text-slate-300/80 leading-relaxed">
-                          {programContent.description}
-                        </p>
-                      </div>
-
-                      {/* Stats Row */}
-                      <div className="grid grid-cols-3 gap-3 mb-4">
-                        {displayStats?.map((stat, idx) => (
-                          <div key={idx} className="text-center p-3 rounded-lg bg-slate-800/50 border border-slate-700/50">
-                            <div className="text-lg font-bold text-white font-space">{stat.value}</div>
-                            <div className="text-xs text-slate-400">{stat.label}</div>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Features List */}
-                      <div className="flex-1 mb-4">
-                        <div className="text-xs font-semibold text-cyan-400 uppercase tracking-wider mb-3">
-                          {t('academy.keyFeatures')}
-                        </div>
-                        <div className="space-y-2">
-                          {programContent.features?.map((feature, idx) => (
-                            <div key={idx} className="flex items-start gap-2 text-sm text-slate-300">
-                              <CheckCircle2 className={`w-4 h-4 flex-shrink-0 mt-0.5 text-cyan-400`} />
-                              <span>{feature}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* CTA Button */}
+                  {/* Overlay Gradient */}
+                  <div className={`absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/40 transition-opacity duration-500 ${isHovered ? 'opacity-60' : 'opacity-90'}`} />
+                  
+                  {/* Content Overlay - Button at Bottom */}
+                  <div className="absolute inset-0 flex items-end justify-center p-8 md:p-12">
+                    {/* CTA Button */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.2 + 0.3 }}
+                    >
                       <a
                         href={program.url}
                         onClick={(e) => {
                           e.preventDefault();
                           window.location.href = program.url;
                         }}
-                        className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r ${program.gradient} text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 mt-auto`}
+                        className={`inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r ${program.gradient} text-white font-bold text-lg shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300`}
                       >
-                        <span>{t('academy.explore')} {programContent.title}</span>
-                        <ExternalLink className="w-4 h-4" />
+                        <span>Visit {programContent.title}</span>
+                        <ExternalLink className="w-6 h-6" />
                       </a>
-                    </div>
+                    </motion.div>
                   </div>
                 </div>
               </motion.div>

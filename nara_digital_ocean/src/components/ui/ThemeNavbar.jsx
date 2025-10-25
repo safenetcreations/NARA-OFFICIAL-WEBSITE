@@ -106,7 +106,8 @@ const ThemeNavbar = () => {
         { labelKey: 'navbar.menu.services.links.fishAdvisory', path: '/fish-advisory-system', icon: Icons.Fish },
         { labelKey: 'navbar.menu.services.links.maritimeServices', path: '/maritime-services-hub', icon: Icons.Ship },
         { labelKey: 'navbar.menu.services.links.marineIncident', path: '/marine-incident-portal', icon: Icons.AlertCircle },
-        { labelKey: 'navbar.menu.services.links.exportIntelligence', path: '/export-market-intelligence', icon: Icons.TrendingUp }
+        { labelKey: 'navbar.menu.services.links.exportIntelligence', path: '/export-market-intelligence', icon: Icons.TrendingUp },
+        { labelKey: 'navbar.menu.services.links.integrationSystems', path: '/integration-systems-platform', icon: Icons.Workflow }
       ]
     },
     {

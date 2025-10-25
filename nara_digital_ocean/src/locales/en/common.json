@@ -40,7 +40,8 @@
           "emergencyResponse": "Emergency Response",
           "fishAdvisory": "Fish Advisory System",
           "exportIntelligence": "Export Market Intelligence",
-          "marineIncident": "Marine Incident Portal"
+          "marineIncident": "Marine Incident Portal",
+          "integrationSystems": "Integration Systems"
         }
       },
       "resources": {

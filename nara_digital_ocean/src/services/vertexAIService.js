@@ -134,10 +134,14 @@ VISUAL ULTRA-REALISM:
 
 PROFESSIONAL COMPOSITION:
 - Camera: Full-frame DSLR with 24-70mm f/2.8 lens at f/5.6
-- Framing: Rule of thirds with main subject at intersection points
+- Shot Type: MEDIUM to WIDE environmental shots showing people in context (NOT close-ups or tight portraits)
+- Camera Distance: 3-8 meters away from subjects to capture full scene and team interactions
+- Framing: Rule of thirds with human subjects as PART of the scene, not the primary focus
 - Depth of field: Selective focus with natural bokeh background blur
 - Angle: Eye-level or slightly elevated for authority and clarity
-- Elements: Foreground (detailed equipment), midground (subjects in action), background (Sri Lankan coastal landscape)
+- People Placement: Subjects working in midground with equipment in foreground and Sri Lankan environment in background
+- Group Dynamics: Show team collaboration and interaction, multiple people visible at different depths
+- Elements: Foreground (detailed equipment), midground (diverse team in action - 60-70% male, always include 1-2 females), background (Sri Lankan coastal landscape)
 
 SRI LANKAN ENVIRONMENTAL CONTEXT:
 - Time: Golden hour (warm tropical sunlight) or bright midday (harsh equatorial light with deep shadows)
@@ -147,11 +151,18 @@ SRI LANKAN ENVIRONMENTAL CONTEXT:
 - Architecture: White colonial buildings, modern research facilities, traditional fishing villages
 
 HUMAN SUBJECTS (MUST BE SRI LANKAN):
-- Ethnicity: South Asian (Sinhalese, Tamil, Burgher) with authentic features
+- Ethnicity: South Asian (Sinhalese, Tamil, Burgher) with authentic Sri Lankan features and skin tones
+- Group Composition: ALWAYS include 3-5 people with diverse gender representation (e.g., 3 males and 1-2 females, or 4 males and 1 female)
+- Female Presence: MANDATORY - at least ONE female scientist/researcher MUST be visible in every image
+- Male to Female Ratio: More males than females (approximately 60-70% male, 30-40% female)
+- Camera Distance: IMPORTANT - Keep people at MEDIUM to WIDE shot distance (3-8 meters away from camera)
+- Framing: NEVER close-up of faces - always show full body or 3/4 body shots in environmental context
+- Face Visibility: Faces should be clearly visible but NOT the main focus - keep them as part of the scene
 - Attire: White lab coats with NARA patches, safety vests with NARA logo, traditional sarongs for fishermen
-- Activities: Professional scientific work with proper technique and posture
+- Activities: Professional scientific work with proper technique and posture, team collaboration
 - Expressions: Focused, concentrated, professional (showing scientific dedication)
 - Details: Safety glasses, gloves, clipboards with NARA letterhead, ID badges
+- Natural Poses: People working together, discussing, examining equipment (not posed for camera)
 
 GOVERNMENT/OFFICIAL AESTHETIC:
 - Professional, authoritative, trustworthy appearance

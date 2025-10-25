@@ -10,7 +10,14 @@ import {
   Settings,
   Shield,
   Users,
-  Zap
+  Zap,
+  UserPlus,
+  Upload,
+  Eye,
+  Key,
+  Bell,
+  Download,
+  ArrowRight
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import GovernmentDatabaseSection from './components/GovernmentDatabaseSection';

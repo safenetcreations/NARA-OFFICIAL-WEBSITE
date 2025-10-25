@@ -40,7 +40,8 @@
           "emergencyResponse": "හදිසි ප්‍රතිචාර",
           "fishAdvisory": "මත්ස්‍ය උපදේශන පද්ධතිය",
           "exportIntelligence": "අපනයන වෙළඳපල බුද්ධිමතාත්මක සේවාව",
-          "marineIncident": "සමුද්‍ර සිද්ධි ද්වාරය"
+          "marineIncident": "සමුද්‍ර සිද්ධි ද්වාරය",
+          "integrationSystems": "ඒකාබද්ධ පද්ධති"
         }
       },
       "resources": {

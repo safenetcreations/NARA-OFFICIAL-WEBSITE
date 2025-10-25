@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import AppImage from '../../components/AppImage';
 import { useOceanData } from '../../hooks/useOceanData';
 import DIVISIONS_CONFIG from '../../data/divisionsConfig';
+import { getLocalDivisionImages } from '../../utils/localImageStorage';
 
 // Lazy load heavy components
 const SriLankaEEZMap = lazy(() => import('../../components/SriLankaEEZMap'));
@@ -24,6 +25,7 @@ const GovFooter = lazy(() => import('../../components/compliance/GovFooter'));
 
 const NewHomePage = () => {
   const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [divisionHeroImages, setDivisionHeroImages] = useState({});
   const { scrollY } = useScroll();
   const heroRef = useRef(null);
   const { t } = useTranslation(['home', 'common']);
@@ -44,6 +46,19 @@ const NewHomePage = () => {
   const newsContent = t('news', { ns: 'home', returnObjects: true });
   const integrationContent = t('integration', { ns: 'home', returnObjects: true });
   const missionControlContent = t('missionControl', { ns: 'home', returnObjects: true });
+
+  // Load division hero images from localStorage
+  useEffect(() => {
+    const loadedImages = {};
+    DIVISIONS_CONFIG.forEach(division => {
+      const images = getLocalDivisionImages(division.id);
+      if (images && images.length > 0) {
+        loadedImages[division.id] = images[0]; // Use first image as hero
+        console.log(`✅ Loaded custom hero for ${division.id}:`, images[0]?.substring(0, 80));
+      }
+    });
+    setDivisionHeroImages(loadedImages);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -554,105 +569,55 @@ const NewHomePage = () => {
                 </motion.div>
               </div>
 
-              <div className="space-y-6 overflow-hidden -mx-4 md:mx-0">
-                {/* First Row - Scrolling Left to Right */}
-                <div className="relative">
-                  <div className="flex gap-4 md:gap-6 animate-scroll-right">
-                    {[...divisionsConfig.slice(0, 5), ...divisionsConfig.slice(0, 5)].map((config, idx) => {
-                      const index = idx % 5;
-                      const division = divisionsContent?.list?.[index] || {};
-                      const IconComponent = config.icon;
-                      const realDivision = DIVISIONS_CONFIG[index];
-                      const heroImage = realDivision?.heroImage || 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&q=85';
-                      
-                      if (!division?.name) return null;
-                      
-                      return (
-                        <Link
-                          key={`row1-${idx}`}
-                          to={`/divisions/${config.slug}`}
-                          className="group flex-shrink-0 w-[280px] sm:w-[340px] md:w-[480px] block touch-manipulation"
-                        >
-                          <div className="relative h-[240px] sm:h-[280px] md:h-[360px] overflow-hidden rounded-2xl md:rounded-3xl border border-slate-800/50 bg-slate-900 shadow-xl transition-all duration-300 hover:border-cyan-500/60 hover:shadow-2xl hover:shadow-cyan-500/20 active:scale-[0.98]">
-                            {/* Hero Image Background */}
-                            <div className="absolute inset-0">
-                              <img
-                                src={heroImage}
-                                alt={division?.name}
-                                className="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-700 group-hover:scale-105 transform transition-transform duration-1000"
-                                loading="lazy"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/90 to-slate-900/40" />
-                              <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-10 mix-blend-overlay`} />
-                            </div>
-                            
-                            {/* Content */}
-                            <div className="relative h-full flex flex-col justify-end p-4 sm:p-6 md:p-8">
-                              <div>
-                                <h4 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3 group-hover:text-cyan-300 transition-colors leading-tight tracking-tight">
-                                  {division?.name}
-                                </h4>
-                                <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-cyan-400 uppercase tracking-wider">
-                                  <span>Explore</span>
-                                  <ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:translate-x-2" />
-                                </div>
+              {/* Animated Horizontal Ticker - All 10 Divisions */}
+              <div className="relative overflow-hidden py-8">
+                <div className="flex animate-scroll-smooth">
+                  {/* Render divisions 3 times for seamless infinite loop */}
+                  {[...divisionsConfig, ...divisionsConfig, ...divisionsConfig].map((config, idx) => {
+                    const index = idx % divisionsConfig.length;
+                    const realDivision = DIVISIONS_CONFIG[index];
+                    if (!realDivision) return null;
+                    
+                    const IconComponent = config.icon;
+                    const heroImage = divisionHeroImages[realDivision?.id] || realDivision?.heroImage || 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&q=85';
+                    const divisionName = realDivision.name.en;
+                    
+                    return (
+                      <Link
+                        key={`division-ticker-${idx}`}
+                        to={`/divisions/${config.slug}`}
+                        className="group flex-shrink-0 w-[320px] mx-3"
+                      >
+                        <div className="relative h-[140px] overflow-hidden rounded-xl border border-slate-800/50 bg-slate-900/80 backdrop-blur-sm shadow-xl transition-all duration-300 hover:border-cyan-500/60 hover:shadow-2xl hover:shadow-cyan-500/20 hover:scale-105">
+                          {/* Compact Hero Image Background */}
+                          <div className="absolute inset-0">
+                            <img
+                              src={heroImage}
+                              alt={divisionName}
+                              className="w-full h-full object-cover opacity-30 group-hover:opacity-50 transition-opacity duration-500"
+                              loading="lazy"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/80 to-transparent" />
+                            <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-20 mix-blend-overlay`} />
+                          </div>
+                          
+                          {/* Compact Content */}
+                          <div className="relative h-full flex flex-col justify-center p-6">
+                            {/* Text */}
+                            <div>
+                              <h4 className="text-xl md:text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors line-clamp-2 leading-tight mb-2">
+                                {divisionName}
+                              </h4>
+                              <div className="flex items-center gap-2 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
+                                <span>Explore</span>
+                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                               </div>
                             </div>
                           </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Second Row - Scrolling Right to Left */}
-                <div className="relative">
-                  <div className="flex gap-4 md:gap-6 animate-scroll-left">
-                    {[...divisionsConfig.slice(5, 10), ...divisionsConfig.slice(5, 10)].map((config, idx) => {
-                      const index = (idx % 5) + 5;
-                      const division = divisionsContent?.list?.[index] || {};
-                      const IconComponent = config.icon;
-                      const realDivision = DIVISIONS_CONFIG[index];
-                      const heroImage = realDivision?.heroImage || 'https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=1200&q=85';
-                      
-                      if (!division?.name) return null;
-                      
-                      return (
-                        <Link
-                          key={`row2-${idx}`}
-                          to={`/divisions/${config.slug}`}
-                          className="group flex-shrink-0 w-[280px] sm:w-[340px] md:w-[480px] block touch-manipulation"
-                        >
-                          <div className="relative h-[240px] sm:h-[280px] md:h-[360px] overflow-hidden rounded-2xl md:rounded-3xl border border-slate-800/50 bg-slate-900 shadow-xl transition-all duration-300 hover:border-cyan-500/60 hover:shadow-2xl hover:shadow-cyan-500/20 active:scale-[0.98]">
-                            {/* Hero Image Background */}
-                            <div className="absolute inset-0">
-                              <img
-                                src={heroImage}
-                                alt={division?.name}
-                                className="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-700 group-hover:scale-105 transform transition-transform duration-1000"
-                                loading="lazy"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/90 to-slate-900/40" />
-                              <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-10 mix-blend-overlay`} />
-                            </div>
-                            
-                            {/* Content */}
-                            <div className="relative h-full flex flex-col justify-end p-4 sm:p-6 md:p-8">
-                              <div>
-                                <h4 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3 group-hover:text-cyan-300 transition-colors leading-tight tracking-tight">
-                                  {division?.name}
-                                </h4>
-                                <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-cyan-400 uppercase tracking-wider">
-                                  <span>Explore</span>
-                                  <ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:translate-x-2" />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -676,6 +641,199 @@ const NewHomePage = () => {
           </div>
         </section>
 
+        {/* Key Services Section - Clean & Modern */}
+        <section className="relative bg-slate-950 py-16 md:py-24 px-4 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-blue-500/5" />
+          <div className="max-w-7xl mx-auto relative">
+            {/* Header */}
+            <div className="text-center mb-16">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                  Essential Services
+                </h2>
+                <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+                  Access critical marine research, testing, and advisory services for Sri Lanka's blue economy
+                </p>
+              </motion.div>
+            </div>
+
+            {/* Services Grid - Clean Cards */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Fish Advisory System */}
+              <Link to="/fish-advisory-system" className="group">
+                <div className="relative h-full p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-1">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-bl-full" />
+                  <div className="relative">
+                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">
+                      Fish Advisory System
+                    </h3>
+                    <p className="text-slate-400 leading-relaxed mb-4">
+                      Real-time safety alerts, water quality warnings, and consumption advisories for all Sri Lankan waters
+                    </p>
+                    <div className="inline-flex items-center gap-2 text-cyan-400 text-sm font-semibold">
+                      <span>View Advisories</span>
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Lab Testing Services */}
+              <Link to="/lab-results" className="group">
+                <div className="relative h-full p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 hover:border-purple-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-bl-full" />
+                  <div className="relative">
+                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors">
+                      Laboratory Testing
+                    </h3>
+                    <p className="text-slate-400 leading-relaxed mb-4">
+                      ISO-certified water quality, fish sample analysis, and environmental testing with rapid turnaround
+                    </p>
+                    <div className="inline-flex items-center gap-2 text-purple-400 text-sm font-semibold">
+                      <span>Request Testing</span>
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Marine Incident Reporting */}
+              <Link to="/marine-incident-portal" className="group">
+                <div className="relative h-full p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 hover:border-red-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-red-500/10 hover:-translate-y-1">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-bl-full" />
+                  <div className="relative">
+                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-red-400 transition-colors">
+                      Marine Incident Reporting
+                    </h3>
+                    <p className="text-slate-400 leading-relaxed mb-4">
+                      24/7 emergency response for oil spills, pollution incidents, and environmental hazards
+                    </p>
+                    <div className="inline-flex items-center gap-2 text-red-400 text-sm font-semibold">
+                      <span>Report Incident</span>
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Open Data Portal */}
+              <Link to="/open-data-portal" className="group">
+                <div className="relative h-full p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 hover:border-green-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-green-500/10 hover:-translate-y-1">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-bl-full" />
+                  <div className="relative">
+                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-green-400 transition-colors">
+                      Open Data Portal
+                    </h3>
+                    <p className="text-slate-400 leading-relaxed mb-4">
+                      Access research datasets, ocean monitoring data, and biodiversity records via API or download
+                    </p>
+                    <div className="inline-flex items-center gap-2 text-green-400 text-sm font-semibold">
+                      <span>Browse Data</span>
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Export Market Intelligence */}
+              <Link to="/export-market-intelligence" className="group">
+                <div className="relative h-full p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 hover:border-orange-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/10 hover:-translate-y-1">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-bl-full" />
+                  <div className="relative">
+                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-orange-400 transition-colors">
+                      Export Intelligence
+                    </h3>
+                    <p className="text-slate-400 leading-relaxed mb-4">
+                      Market trends, trade statistics, and export opportunities for Sri Lankan marine products
+                    </p>
+                    <div className="inline-flex items-center gap-2 text-orange-400 text-sm font-semibold">
+                      <span>View Insights</span>
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Public Consultation */}
+              <Link to="/public-consultation" className="group">
+                <div className="relative h-full p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-bl-full" />
+                  <div className="relative">
+                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
+                      Public Consultation
+                    </h3>
+                    <p className="text-slate-400 leading-relaxed mb-4">
+                      Participate in policy development, EIA reviews, and community engagement initiatives
+                    </p>
+                    <div className="inline-flex items-center gap-2 text-blue-400 text-sm font-semibold">
+                      <span>Join Discussion</span>
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Milestones Section - Moved here after Essential Services */}
+        <section className="relative bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-12 sm:py-16 md:py-20 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-14">
+              <h2 className="text-3xl md:text-4xl font-bold text-white font-space">
+                {milestonesContent?.heading}
+              </h2>
+              <p className="text-base md:text-lg text-slate-300 max-w-3xl mx-auto">
+                {milestonesContent?.subheading}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
+              {milestonesContent?.timeline?.map((milestone, index) => {
+                const IconComponent = milestonesIcons[index] || Icons.Flag;
+                const gradient = milestonesGradients[index] || 'from-cyan-500 to-blue-500';
+                const colorClass = ['text-cyan-400', 'text-blue-400', 'text-purple-400', 'text-green-400'][index] || 'text-cyan-400';
+                return (
+                  <div
+                    key={`${milestone?.title}-${index}`}
+                    className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6 transition hover:border-cyan-500/40"
+                  >
+                    <span className={`text-4xl font-bold ${colorClass} font-mono mb-4 block`}>{milestone?.year}</span>
+                    <h3 className="text-2xl font-bold text-white mb-3 font-mono tracking-tight">{milestone?.title}</h3>
+                    <p className="text-base text-slate-300 leading-relaxed">{milestone?.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+              {milestonesContent?.achievements?.map((achievement, index) => {
+                const IconComponent = achievementsIcons[index] || Icons.Award;
+                const gradient = achievementsGradients[index] || 'from-cyan-500 to-blue-500';
+                const colorClass = ['text-cyan-400', 'text-green-400', 'text-purple-400', 'text-orange-400'][index] || 'text-cyan-400';
+                return (
+                  <div key={`${achievement?.label}-${index}`} className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 text-center">
+                    <div className={`text-5xl font-bold ${colorClass} mb-3 font-mono`}>{achievement?.number}</div>
+                    <p className="text-sm uppercase tracking-wide text-slate-400 font-mono">{achievement?.label}</p>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-12 text-center">
+              <Link
+                to="/about-nara-our-story"
+                className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-slate-950 transition hover:bg-cyan-400 active:scale-95"
+              >
+                <Icons.BookOpen className="h-5 w-5" />
+                {milestonesContent?.cta}
+                <Icons.ArrowRight className="h-5 w-5" />
+              </Link>
+            </div>
+          </div>
+        </section>
 
         <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-blue-950/40 py-12 sm:py-16 md:py-20 px-4">
           <div className="max-w-7xl mx-auto">
@@ -741,88 +899,11 @@ const NewHomePage = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
           </div>
         }>
-          <APIIntegrationShowcase content={integrationContent} />
-        </Suspense>
-        <Suspense fallback={
-          <div className="py-20 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
-          </div>
-        }>
           <AcademyShowcase />
         </Suspense>
 
-        <section className="relative bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-12 sm:py-16 md:py-20 px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-14">
-              <h2 className="text-3xl md:text-4xl font-bold text-white font-space">
-                {milestonesContent?.heading}
-              </h2>
-              <p className="text-base md:text-lg text-slate-300 max-w-3xl mx-auto">
-                {milestonesContent?.subheading}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
-              {milestonesContent?.timeline?.map((milestone, index) => {
-                const IconComponent = milestonesIcons[index] || Icons.Flag;
-                const gradient = milestonesGradients[index] || 'from-cyan-500 to-blue-500';
-                const colorClass = ['text-cyan-400', 'text-blue-400', 'text-purple-400', 'text-green-400'][index] || 'text-cyan-400';
-                return (
-                  <div
-                    key={`${milestone?.title}-${index}`}
-                    className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6 transition hover:border-cyan-500/40"
-                  >
-                    <span className={`text-4xl font-bold ${colorClass} font-mono mb-4 block`}>{milestone?.year}</span>
-                    <h3 className="text-2xl font-bold text-white mb-3 font-mono tracking-tight">{milestone?.title}</h3>
-                    <p className="text-base text-slate-300 leading-relaxed">{milestone?.description}</p>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-              {milestonesContent?.achievements?.map((achievement, index) => {
-                const IconComponent = achievementsIcons[index] || Icons.Award;
-                const gradient = achievementsGradients[index] || 'from-cyan-500 to-blue-500';
-                const colorClass = ['text-cyan-400', 'text-green-400', 'text-purple-400', 'text-orange-400'][index] || 'text-cyan-400';
-                return (
-                  <div key={`${achievement?.label}-${index}`} className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 text-center">
-                    <div className={`text-5xl font-bold ${colorClass} mb-3 font-mono`}>{achievement?.number}</div>
-                    <p className="text-sm uppercase tracking-wide text-slate-400 font-mono">{achievement?.label}</p>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="mt-12 text-center">
-              <Link
-                to="/about-nara-our-story"
-                className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-slate-950 transition hover:bg-cyan-400 active:scale-95"
-              >
-                <Icons.BookOpen className="h-5 w-5" />
-                {milestonesContent?.cta}
-                <Icons.ArrowRight className="h-5 w-5" />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-
         <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-12 sm:py-16 md:py-20 px-4">
           <div className="max-w-7xl mx-auto">
-            <div className="mb-12 text-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-5 py-2.5 text-sm uppercase tracking-[0.3em] text-cyan-200/80">
-                <Icons.BookMarked className="h-5 w-5" />
-                {t('home:knowledge.badge', { defaultValue: 'Knowledge Hub' })}
-              </span>
-              <h2 className="mt-6 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white font-space leading-tight">
-                {t('home:knowledge.heading', { defaultValue: 'Discover the latest publications' })}
-              </h2>
-              <p className="mt-4 text-lg text-slate-400 leading-relaxed max-w-3xl mx-auto">
-                {t('home:knowledge.description', {
-                  defaultValue:
-                    "Browse curated research, advisories, and technical publications powering Sri Lanka's aquatic stewardship."
-                })}
-              </p>
-            </div>
-
             <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 sm:p-6 backdrop-blur">
               <LibraryBooksCarousel />
             </div>

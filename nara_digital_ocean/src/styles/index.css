@@ -1230,3 +1230,84 @@ select.form-control {
     color: var(--color-text) !important;
   }
 }
+
+/* Smooth horizontal ticker animation for divisions */
+@keyframes scroll-smooth {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-33.333%));
+  }
+}
+
+.animate-scroll-smooth {
+  animation: scroll-smooth 20s linear infinite;
+}
+
+.animate-scroll-smooth:hover {
+  animation-play-state: paused;
+}
+
+/* Gradient shimmer animation for NARA Academy */
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-x {
+  background-size: 200% auto;
+  animation: gradient-x 3s ease infinite;
+}
+
+/* Typewriter animation for NARA ACADEMY - Continuous Loop */
+@keyframes typewriter-loop {
+  0% {
+    width: 0;
+    opacity: 1;
+  }
+  40% {
+    width: 100%;
+    opacity: 1;
+  }
+  50% {
+    width: 100%;
+    opacity: 1;
+    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+  }
+  55% {
+    width: 100%;
+    opacity: 0;
+    text-shadow: 0 0 30px currentColor, 0 0 60px currentColor;
+  }
+  60% {
+    width: 0;
+    opacity: 0;
+  }
+  65% {
+    width: 0;
+    opacity: 1;
+  }
+  100% {
+    width: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes blink-cursor {
+  0%, 100% {
+    border-color: transparent;
+  }
+  50% {
+    border-color: currentColor;
+  }
+}
+
+.animate-typewriter {
+  animation: typewriter-loop 6s steps(13) infinite, blink-cursor 0.75s step-end infinite;
+  width: 0;
+}

@@ -1,15 +1,7 @@
 [
   {
     "origin": ["*"],
-    "method": ["GET", "HEAD", "OPTIONS"],
-    "maxAgeSeconds": 3600,
-    "responseHeader": [
-      "Content-Type",
-      "Content-Length",
-      "Content-Disposition",
-      "Access-Control-Allow-Origin",
-      "Access-Control-Allow-Methods",
-      "Access-Control-Allow-Headers"
-    ]
+    "method": ["GET"],
+    "maxAgeSeconds": 3600
   }
 ]
