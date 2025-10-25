@@ -16,7 +16,8 @@ import {
 import {
   saveLocalDivisionImages,
   getLocalDivisionImages,
-  removeLocalDivisionImage
+  removeLocalDivisionImage,
+  clearLocalDivisionImages
 } from '../../utils/localImageStorage';
 import {
   enhanceAllPrompts,
@@ -49,14 +50,37 @@ const DivisionImagesAdmin = () => {
 
   const loadDivisionImages = async () => {
     setLoading(true);
-    
+
     try {
-      // PRIORITY 1: Try Firebase first (permanent storage)
+      // PRIORITY 1: Try localStorage first (contains base64 data URLs that always work!)
+      console.log('🔍 Checking localStorage first (base64 data URLs)...');
+      const localImages = getLocalDivisionImages(selectedDivision.id);
+
+      if (localImages && localImages.length > 0) {
+        console.log('✅ Loaded', localImages.length, 'images from localStorage (base64 data URLs)');
+        setDivisionImages(localImages.map((url, idx) => ({
+          id: `local_${idx}`,
+          url,
+          aiGenerated: url.startsWith('data:'),
+          uploadedAt: new Date().toISOString(),
+          filename: `${url.startsWith('data:') ? 'AI Generated' : 'Uploaded'} Image ${idx + 1}`
+        })));
+        setLoading(false);
+        return;
+      }
+    } catch (error) {
+      console.log('localStorage check failed:', error.message);
+    }
+
+    try {
+      // PRIORITY 2: Try Firebase as fallback (but DO NOT sync Firebase URLs to localStorage!)
       console.log('🔍 Checking Firebase for images...');
       const result = await getDivisionImages(selectedDivision.id);
-      
+
       if (result.success && result.images.length > 0) {
         console.log('✅ Loaded', result.images.length, 'images from Firebase');
+        console.log('⚠️  WARNING: Firebase URLs may have auth issues. Use admin panel to regenerate as base64.');
+
         const imageData = result.images.map(img => ({
           id: img.id || `fb_${Date.now()}_${Math.random()}`,
           url: img.url,
@@ -65,35 +89,20 @@ const DivisionImagesAdmin = () => {
           filename: img.filename || 'Division Image'
         }));
         setDivisionImages(imageData);
-        
-        // Sync to localStorage for hero section
-        const urls = imageData.map(img => img.url);
-        saveLocalDivisionImages(selectedDivision.id, urls);
-        console.log('💾 Synced to localStorage for hero section');
-        
+
+        // DO NOT sync Firebase URLs to localStorage - they may fail with 403!
+        // Only base64 data URLs should be in localStorage
+        console.log('⚠️  NOT syncing Firebase URLs to localStorage (auth issues)');
+
         setLoading(false);
         return;
       }
     } catch (error) {
       console.log('Firebase check failed:', error.message);
     }
-    
-    // PRIORITY 2: Fallback to localStorage
-    const localImages = getLocalDivisionImages(selectedDivision.id);
-    if (localImages && localImages.length > 0) {
-      console.log('📦 Loaded from localStorage:', localImages.length);
-      setDivisionImages(localImages.map((url, idx) => ({
-        id: `local_${idx}`,
-        url,
-        aiGenerated: true,
-        uploadedAt: new Date().toISOString(),
-        filename: `AI Generated Image ${idx + 1}`
-      })));
-    } else {
-      console.log('No images found in Firebase or localStorage');
-      setDivisionImages([]);
-    }
-    
+
+    console.log('No images found in localStorage or Firebase');
+    setDivisionImages([]);
     setLoading(false);
   };
 
@@ -218,6 +227,14 @@ const DivisionImagesAdmin = () => {
     }
     
     setEnhancing(false);
+  };
+
+  const handleClearBadImages = () => {
+    if (!confirm('Clear all images for this division from localStorage? You will need to regenerate them.')) return;
+
+    clearLocalDivisionImages(selectedDivision.id);
+    setMessage({ type: 'success', text: 'localStorage cleared! Generate new images with Gemini.' });
+    loadDivisionImages();
   };
 
   const handleGenerateWithGeminiNative = async () => {
@@ -614,6 +631,15 @@ const DivisionImagesAdmin = () => {
                       Enhance Prompts
                     </>
                   )}
+                </button>
+
+                {/* Clear Bad Images from localStorage */}
+                <button
+                  onClick={handleClearBadImages}
+                  className="bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2 border-2 border-red-400"
+                >
+                  <LucideIcons.Trash2 size={20} />
+                  Clear localStorage (Fix 403 Errors)
                 </button>
 
                 {/* Generate with Pollinations (Fast & Free) */}
