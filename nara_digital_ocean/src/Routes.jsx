@@ -33,6 +33,7 @@ const FirebaseAdminAuthenticationPortal = lazy(() => import('./pages/firebase-ad
 const FirebaseAdminDashboardControlCenter = lazy(() => import('./pages/firebase-admin-dashboard-control-center'));
 const MediaGallery = lazy(() => import('./pages/media-gallery'));
 const AudiencePage = lazy(() => import('./pages/audiences'));
+const GeneralPublicPage = lazy(() => import('./pages/audiences/GeneralPublicPage'));
 
 // Legal & Compliance Pages
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy'));
@@ -230,7 +231,7 @@ function Layout({ children }) {
         tabIndex={-1}
         role="main"
         aria-label="Main content"
-        style={shouldShowLayout ? { paddingTop: '88px' } : {}}
+        style={shouldShowLayout ? { paddingTop: '50px' } : {}}
       >
         {children}
       </main>
@@ -286,6 +287,7 @@ function Routes() {
               <Route path="/procurement-recruitment-portal" element={<ProcurementRecruitmentPortal />} />
               <Route path="/contact-us" element={<ContactUs />} />
               <Route path="/audiences" element={<Navigate to="/audiences/general-public" replace />} />
+              <Route path="/audiences/general-public" element={<GeneralPublicPage />} />
               <Route path="/audiences/:slug" element={<AudiencePage />} />
               
               {/* Aqua School Directory */}
