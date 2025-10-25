@@ -237,6 +237,48 @@ const DivisionImagesAdmin = () => {
     loadDivisionImages();
   };
 
+  const handleClearAllPollinations = () => {
+    if (!confirm('Remove ALL Pollinations.ai URLs from localStorage across ALL divisions? This will fix CSP errors but you may need to regenerate some images.')) return;
+
+    try {
+      const data = JSON.parse(localStorage.getItem('nara_division_images') || '{}');
+      let cleanedCount = 0;
+      let divisionsCleaned = 0;
+
+      for (const [divisionId, divisionData] of Object.entries(data)) {
+        if (divisionData.images && Array.isArray(divisionData.images)) {
+          const originalCount = divisionData.images.length;
+          // Remove Pollinations.ai and Firebase Storage URLs, keep only base64 data URLs
+          divisionData.images = divisionData.images.filter(url => url.startsWith('data:'));
+          const removedCount = originalCount - divisionData.images.length;
+
+          if (removedCount > 0) {
+            cleanedCount += removedCount;
+            divisionsCleaned++;
+          }
+        }
+      }
+
+      localStorage.setItem('nara_division_images', JSON.stringify(data));
+
+      setMessage({
+        type: 'success',
+        text: `✅ Cleaned ${cleanedCount} external URLs from ${divisionsCleaned} divisions. Only base64 data URLs remain.`
+      });
+
+      console.log('%c🧹 CLEANUP COMPLETE', 'background: #10b981; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
+      console.log(`   Removed: ${cleanedCount} external URLs`);
+      console.log(`   Divisions affected: ${divisionsCleaned}`);
+      console.log('   Only base64 data URLs remain (no CSP issues!)');
+
+      if (selectedDivision) {
+        loadDivisionImages();
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: `Cleanup failed: ${error.message}` });
+    }
+  };
+
   const handleGenerateWithGeminiNative = async () => {
     setGeneratingGemini(true);
     setMessage({ type: 'info', text: 'Generating images with Gemini 2.5 Flash Image... This may take 30-60 seconds.' });
@@ -523,6 +565,17 @@ const DivisionImagesAdmin = () => {
             Division Images Management
           </h1>
           <p className="text-blue-200">Upload, manage, and generate AI images for division pages</p>
+        </div>
+
+        {/* Global Cleanup Button */}
+        <div className="mb-6 flex justify-end">
+          <button
+            onClick={handleClearAllPollinations}
+            className="bg-gradient-to-r from-yellow-600 to-orange-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2 border-2 border-yellow-400"
+          >
+            <LucideIcons.Eraser size={20} />
+            Clean All External URLs (Fix CSP Errors)
+          </button>
         </div>
 
         {/* Messages */}
