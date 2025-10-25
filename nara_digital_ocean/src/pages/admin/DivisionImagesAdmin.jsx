@@ -23,9 +23,13 @@ import {
   enhanceAllPrompts,
   suggestImagePrompts
 } from '../../services/vertexAIService';
+import { enhancePromptsWithChatGPT } from '../../services/chatgptPromptService';
 import {
   generateDivisionImagesWithGemini
 } from '../../services/geminiNativeImageService';
+import {
+  generateDivisionImagesWithChatGPT
+} from '../../services/chatgptImageService';
 import { storage, auth } from '../../firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 
@@ -41,6 +45,60 @@ const DivisionImagesAdmin = () => {
   const [enhancing, setEnhancing] = useState(false);
   const [generatingGemini, setGeneratingGemini] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [enhancingChatGPT, setEnhancingChatGPT] = useState(false);
+  const [generatingChatGPTImages, setGeneratingChatGPTImages] = useState(false);
+  const isDataUrl = (url) => typeof url === 'string' && url.startsWith('data:');
+
+  const optimizeDataUrlForStorage = (dataUrl, quality = 0.65, maxWidth = 1200) => {
+    return new Promise((resolve) => {
+      if (!dataUrl || !dataUrl.startsWith('data:')) {
+        resolve(dataUrl);
+        return;
+      }
+
+      // Always optimize to save localStorage quota
+      // Smaller images for small originals
+      if (dataUrl.length <= 200000) {
+        quality = 0.75;
+      }
+
+      const image = new Image();
+      image.onload = () => {
+        const scale = Math.min(1, maxWidth / image.width);
+        const width = Math.round(image.width * scale);
+        const height = Math.round(image.height * scale);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(image, 0, 0, width, height);
+
+        try {
+          const optimized = canvas.toDataURL('image/jpeg', quality);
+          resolve(optimized);
+        } catch (canvasError) {
+          console.log('Image optimization failed, using original data URL:', canvasError);
+          resolve(dataUrl);
+        }
+      };
+      image.onerror = () => resolve(dataUrl);
+      image.src = dataUrl;
+    });
+  };
+
+  const optimizeImagesForStorage = async (urls) => {
+    const optimized = [];
+    for (const url of urls) {
+      if (isDataUrl(url)) {
+        const optimizedUrl = await optimizeDataUrlForStorage(url);
+        optimized.push(optimizedUrl);
+      } else {
+        optimized.push(url);
+      }
+    }
+    return optimized;
+  };
 
   useEffect(() => {
     if (selectedDivision) {
@@ -196,14 +254,19 @@ const DivisionImagesAdmin = () => {
     }
   };
 
+  const getPromptsForEnhancement = () => {
+    if (!selectedDivision) return [];
+    return useCustomPrompts
+      ? customPrompts.filter(p => p.trim() !== '')
+      : DIVISION_IMAGE_PROMPTS[selectedDivision.id] || [];
+  };
+
   const handleEnhanceWithGemini = async () => {
     setEnhancing(true);
     setMessage({ type: 'info', text: 'Enhancing prompts with Gemini 2.5 Flash...' });
 
     try {
-      const basePrompts = useCustomPrompts 
-        ? customPrompts.filter(p => p.trim() !== '')
-        : DIVISION_IMAGE_PROMPTS[selectedDivision.id] || [];
+      const basePrompts = getPromptsForEnhancement();
 
       if (basePrompts.length === 0) {
         setMessage({ type: 'error', text: 'No prompts to enhance!' });
@@ -227,6 +290,36 @@ const DivisionImagesAdmin = () => {
     }
     
     setEnhancing(false);
+  };
+
+  const handleEnhanceWithChatGPT = async () => {
+    setEnhancingChatGPT(true);
+    setMessage({ type: 'info', text: 'Enhancing prompts with ChatGPT 5...' });
+
+    try {
+      const basePrompts = getPromptsForEnhancement();
+
+      if (basePrompts.length === 0) {
+        setMessage({ type: 'error', text: 'No prompts to enhance!' });
+        setEnhancingChatGPT(false);
+        return;
+      }
+
+      const enhanced = await enhancePromptsWithChatGPT(basePrompts, selectedDivision?.name?.en || '');
+
+      const newPrompts = ['', '', '', ''];
+      enhanced.forEach((prompt, idx) => {
+        if (idx < 4) newPrompts[idx] = prompt;
+      });
+      
+      setCustomPrompts(newPrompts);
+      setUseCustomPrompts(true);
+      setMessage({ type: 'success', text: `✅ ChatGPT enhanced ${enhanced.length} prompts! Review and generate.` });
+    } catch (error) {
+      setMessage({ type: 'error', text: `ChatGPT error: ${error.message}` });
+    }
+
+    setEnhancingChatGPT(false);
   };
 
   const handleClearBadImages = () => {
@@ -279,6 +372,80 @@ const DivisionImagesAdmin = () => {
     }
   };
 
+  const handleClearAllDivisionImages = () => {
+    if (!confirm('⚠️ CLEAR ALL DIVISION IMAGES from localStorage? This will free up storage quota. You can regenerate images after.')) return;
+
+    try {
+      localStorage.removeItem('nara_division_images');
+      console.log('🗑️ Cleared ALL division images from localStorage');
+
+      setMessage({
+        type: 'success',
+        text: '✅ All division images cleared! Storage quota freed. Generate new images for each division.'
+      });
+
+      if (selectedDivision) {
+        loadDivisionImages();
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: `Clear all failed: ${error.message}` });
+    }
+  };
+
+  const handleSyncToHero = async () => {
+    if (!selectedDivision) {
+      setMessage({ type: 'error', text: 'Select a division first!' });
+      return;
+    }
+
+    const originalUrls = divisionImages
+      .map((img) => img.url)
+      .filter((url) => typeof url === 'string' && url.trim().length > 0);
+
+    if (originalUrls.length === 0) {
+      setMessage({ type: 'error', text: 'No images available to sync.' });
+      return;
+    }
+
+    console.log('🔄 Syncing hero images for division:', selectedDivision.id);
+    clearLocalDivisionImages(selectedDivision.id);
+
+    let urlsToStore = originalUrls;
+    let result = saveLocalDivisionImages(selectedDivision.id, urlsToStore);
+
+    if (!result.success) {
+      if (result.error === 'quota-exceeded') {
+        setMessage({ type: 'info', text: 'Images are large. Optimizing quality for hero carousel...' });
+        urlsToStore = await optimizeImagesForStorage(originalUrls);
+        clearLocalDivisionImages(selectedDivision.id);
+        result = saveLocalDivisionImages(selectedDivision.id, urlsToStore);
+      }
+
+      if (!result.success) {
+        setMessage({ type: 'error', text: `Failed to sync images: ${result.error}` });
+        return;
+      }
+    }
+
+    const verified = getLocalDivisionImages(selectedDivision.id);
+    console.log('✅ Hero sync complete. Stored images:', verified.length, verified);
+    console.log('📦 Storage key:', 'nara_division_images');
+
+    if (urlsToStore !== originalUrls) {
+      setDivisionImages((prev) =>
+        prev.map((img, idx) => {
+          if (idx >= urlsToStore.length) return img;
+          return { ...img, url: urlsToStore[idx] };
+        })
+      );
+    }
+
+    setMessage({
+      type: 'success',
+      text: `✅ Synced ${verified.length} images! Refresh the division page to see the new hero carousel.`
+    });
+  };
+
   const handleGenerateWithGeminiNative = async () => {
     setGeneratingGemini(true);
     setMessage({ type: 'info', text: 'Generating images with Gemini 2.5 Flash Image... This may take 30-60 seconds.' });
@@ -329,8 +496,12 @@ const DivisionImagesAdmin = () => {
         // PRIORITY: Use data URL for immediate display (works in CSS backgroundImage)
         if (result.base64Data) {
           const dataUrl = `data:${result.mimeType || 'image/png'};base64,${result.base64Data}`;
-          imageUrls.push(dataUrl);
+          const optimizedDataUrl = await optimizeDataUrlForStorage(dataUrl);
+          imageUrls.push(optimizedDataUrl);
           console.log(`✅ Created data URL for image ${i + 1}/${successfulImages.length}`);
+          if (optimizedDataUrl !== dataUrl) {
+            console.log(`   ↳ Optimized for storage (original length ${dataUrl.length} → ${optimizedDataUrl.length})`);
+          }
         }
 
         // OPTIONAL: Upload to Firebase Storage (only if authenticated)
@@ -376,23 +547,38 @@ const DivisionImagesAdmin = () => {
       }
       
       // Save to localStorage (works immediately!)
-      console.log('%c� SAVING GEMINI IMAGES TO LOCALSTORAGE', 'background: #8b5cf6; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
+      console.log('%c💾 SAVING GEMINI IMAGES TO LOCALSTORAGE', 'background: #8b5cf6; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
       console.log('   Division ID:', selectedDivision.id);
-      console.log('   Number of images:', imageUrls.length);
+      console.log('   Generated images:', imageUrls.length);
       console.log('   Image format: base64 data URLs');
-      
-      const saveResult = saveLocalDivisionImages(selectedDivision.id, imageUrls);
+
+      let storageReadyImages = await optimizeImagesForStorage(imageUrls);
+      let saveResult = saveLocalDivisionImages(selectedDivision.id, storageReadyImages);
       console.log('   Save result:', saveResult);
+
+      if (!saveResult.success && saveResult.error === 'quota-exceeded') {
+        console.log('   ⚠️ LocalStorage quota exceeded. Reducing quality further before retrying...');
+        storageReadyImages = await optimizeImagesForStorage(storageReadyImages.map((url) => url));
+        clearLocalDivisionImages(selectedDivision.id);
+        saveResult = saveLocalDivisionImages(selectedDivision.id, storageReadyImages);
+        console.log('   Retry save result:', saveResult);
+      }
+
+      if (!saveResult.success) {
+        setMessage({ type: 'error', text: `Failed to save Gemini images: ${saveResult.error}` });
+        setGeneratingGemini(false);
+        return;
+      }
       
       // VERIFY it was saved using correct function
       const verifyImages = getLocalDivisionImages(selectedDivision.id);
       console.log('   ✅ VERIFICATION: Retrieved', verifyImages.length, 'images from localStorage');
       console.log('   Storage key: nara_division_images');
-      console.log('   📸 First image preview:', imageUrls[0]?.substring(0, 100) + '...');
+      console.log('   📸 First image preview:', storageReadyImages[0]?.substring(0, 100) + '...');
       console.log('%c🎉 GEMINI IMAGES SAVED TO LOCALSTORAGE!', 'background: #10b981; color: white; padding: 8px; font-size: 16px; font-weight: bold;');
 
       // Update display
-      setDivisionImages(imageUrls.map((url, idx) => ({
+      setDivisionImages(storageReadyImages.map((url, idx) => ({
         id: `gemini_${Date.now()}_${idx}`,
         url,
         aiGenerated: true,
@@ -401,13 +587,13 @@ const DivisionImagesAdmin = () => {
       })));
 
       // Build success message with Firebase backup status
-      let successMsg = `✅ ${successfulImages.length} GEMINI images saved to localStorage!`;
+      let successMsg = `✅ ${storageReadyImages.length} GEMINI images saved to localStorage!`;
       if (firebaseBackupsFailed > 0) {
-        successMsg += ` Firebase backup skipped (${firebaseBackupsFailed} images - not authenticated, but images work perfectly!)`;
+        successMsg += ` Firebase backup skipped (${firebaseBackupsFailed} images - not authenticated, but image works perfectly!)`;
       } else if (firebaseBackupsSucceeded > 0) {
         successMsg += ` Firebase backup: ${firebaseBackupsSucceeded} images.`;
       }
-      successMsg += ` Refresh /divisions/${selectedDivision.slug} to see them!`;
+      successMsg += ` Refresh homepage to see it in the ticker!`;
 
       setMessage({
         type: 'success',
@@ -433,6 +619,88 @@ const DivisionImagesAdmin = () => {
     }
     
     setGeneratingGemini(false);
+  };
+
+  const handleGenerateWithChatGPTImages = async () => {
+    if (!selectedDivision) {
+      setMessage({ type: 'error', text: 'Select a division first!' });
+      return;
+    }
+
+    setGeneratingChatGPTImages(true);
+    setMessage({ type: 'info', text: 'Generating images with ChatGPT gpt-image-1... This may take 20-40 seconds.' });
+
+    try {
+      const prompts = useCustomPrompts
+        ? customPrompts.filter((p) => p.trim() !== '')
+        : DIVISION_IMAGE_PROMPTS[selectedDivision.id] || [];
+
+      if (prompts.length === 0) {
+        setMessage({ type: 'error', text: 'No prompts available!' });
+        setGeneratingChatGPTImages(false);
+        return;
+      }
+
+      const results = await generateDivisionImagesWithChatGPT(prompts, selectedDivision.name.en);
+      const successfulImages = results.filter((r) => r.success && r.base64Data);
+
+      if (successfulImages.length === 0) {
+        const firstError = results.find((r) => !r.success)?.error || 'ChatGPT returned no images.';
+        setMessage({ type: 'error', text: `ChatGPT image error: ${firstError}` });
+        setGeneratingChatGPTImages(false);
+        return;
+      }
+
+      const dataUrls = successfulImages.map((result, idx) => {
+        console.log(`✅ ChatGPT image ready ${idx + 1}/${successfulImages.length}`);
+        return `data:${result.mimeType || 'image/png'};base64,${result.base64Data}`;
+      });
+
+      console.log('%c💾 SAVING CHATGPT IMAGES TO LOCALSTORAGE', 'background: #2563eb; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
+      console.log('   Division ID:', selectedDivision.id);
+      console.log('   Number of images:', dataUrls.length);
+
+      let storageReadyImages = await optimizeImagesForStorage(dataUrls);
+      let saveResult = saveLocalDivisionImages(selectedDivision.id, storageReadyImages);
+
+      if (!saveResult.success && saveResult.error === 'quota-exceeded') {
+        console.log('   ⚠️ LocalStorage quota exceeded after optimization. Reducing quality further...');
+        storageReadyImages = await optimizeImagesForStorage(storageReadyImages.map((url) => url));
+        clearLocalDivisionImages(selectedDivision.id);
+        saveResult = saveLocalDivisionImages(selectedDivision.id, storageReadyImages);
+      }
+
+      if (!saveResult.success) {
+        setMessage({ type: 'error', text: `Failed to save ChatGPT images: ${saveResult.error}` });
+        setGeneratingChatGPTImages(false);
+        return;
+      }
+
+      const verifyImages = getLocalDivisionImages(selectedDivision.id);
+      console.log('   ✅ Stored images:', verifyImages.length);
+      console.log('   Storage key: nara_division_images');
+
+      setDivisionImages(storageReadyImages.map((url, idx) => ({
+        id: `chatgpt_${Date.now()}_${idx}`,
+        url,
+        aiGenerated: true,
+        uploadedAt: new Date().toISOString(),
+        filename: `ChatGPT Image ${idx + 1}`
+      })));
+
+      setMessage({
+        type: 'success',
+        text: `✅ ${storageReadyImages.length} ChatGPT images saved! Refresh /divisions/${selectedDivision.slug} to preview them.`
+      });
+
+      console.log('%c🎉 CHATGPT IMAGE GENERATION COMPLETE!', 'background: #2563eb; color: white; padding: 8px; font-size: 16px; font-weight: bold;');
+      console.log('   Model:', import.meta.env.VITE_OPENAI_IMAGE_MODEL || 'gpt-image-1');
+    } catch (error) {
+      setMessage({ type: 'error', text: `ChatGPT image error: ${error.message}` });
+      console.error('ChatGPT image generation error:', error);
+    }
+
+    setGeneratingChatGPTImages(false);
   };
 
   const handleDownloadAllImages = async () => {
@@ -593,8 +861,15 @@ const DivisionImagesAdmin = () => {
           <p className="text-blue-200">Upload, manage, and generate AI images for division pages</p>
         </div>
 
-        {/* Global Cleanup Button */}
-        <div className="mb-6 flex justify-end">
+        {/* Global Cleanup Buttons */}
+        <div className="mb-6 flex justify-end gap-4">
+          <button
+            onClick={handleClearAllDivisionImages}
+            className="bg-gradient-to-r from-red-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2 border-2 border-red-400"
+          >
+            <LucideIcons.Trash2 size={20} />
+            Clear ALL Division Images (Free Quota)
+          </button>
           <button
             onClick={handleClearAllPollinations}
             className="bg-gradient-to-r from-yellow-600 to-orange-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2 border-2 border-yellow-400"
@@ -693,6 +968,44 @@ const DivisionImagesAdmin = () => {
                   )}
                 </button>
 
+                {/* ChatGPT Image Generation */}
+                <button
+                  onClick={handleGenerateWithChatGPTImages}
+                  disabled={generatingChatGPTImages}
+                  className="bg-gradient-to-r from-sky-600 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2 disabled:opacity-50 border-2 border-white/10"
+                >
+                  {generatingChatGPTImages ? (
+                    <>
+                      <LucideIcons.Loader2 size={20} className="animate-spin" />
+                      ChatGPT Rendering...
+                    </>
+                  ) : (
+                    <>
+                      <LucideIcons.ImagePlus size={20} />
+                      Generate with ChatGPT Images
+                    </>
+                  )}
+                </button>
+
+                {/* Enhance Prompts with ChatGPT 5 */}
+                <button
+                  onClick={handleEnhanceWithChatGPT}
+                  disabled={enhancingChatGPT}
+                  className="bg-gradient-to-r from-emerald-600 to-teal-500 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2 disabled:opacity-50"
+                >
+                  {enhancingChatGPT ? (
+                    <>
+                      <LucideIcons.Loader2 size={20} className="animate-spin" />
+                      ChatGPT Enhancing...
+                    </>
+                  ) : (
+                    <>
+                      <LucideIcons.Bot size={20} />
+                      Enhance w/ ChatGPT 5
+                    </>
+                  )}
+                </button>
+
                 {/* Enhance Prompts with Gemini */}
                 <button
                   onClick={handleEnhanceWithGemini}
@@ -756,27 +1069,7 @@ const DivisionImagesAdmin = () => {
                 {/* Sync to Hero Section Button */}
                 {divisionImages.length > 0 && (
                   <button
-                    onClick={() => {
-                      const urls = divisionImages.map(img => img.url);
-                      
-                      // FORCE CLEAR old images first
-                      console.log('🔄 Force clearing old images from localStorage...');
-                      localStorage.removeItem(`division-images-${selectedDivision.id}`);
-                      
-                      // Save new images
-                      console.log('💾 Syncing', urls.length, 'images to localStorage...');
-                      saveLocalDivisionImages(selectedDivision.id, urls);
-                      
-                      // Verify
-                      const verifyImages = JSON.parse(localStorage.getItem(`division-images-${selectedDivision.id}`) || '[]');
-                      console.log('✅ Verified sync:', verifyImages.length, 'images');
-                      console.log('📸 Image URLs:', urls);
-                      
-                      setMessage({ 
-                        type: 'success', 
-                        text: `✅ Synced ${urls.length} images! Clear browser cache and refresh the division page to see them.` 
-                      });
-                    }}
+                    onClick={handleSyncToHero}
                     className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-all flex items-center gap-2"
                   >
                     <LucideIcons.RefreshCw size={20} />
@@ -973,4 +1266,3 @@ const DivisionImagesAdmin = () => {
 };
 
 export default DivisionImagesAdmin;
-

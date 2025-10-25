@@ -21,6 +21,16 @@ export const saveLocalDivisionImages = (divisionId, imageUrls) => {
     return { success: true };
   } catch (error) {
     console.error('Error saving to localStorage:', error);
+    const isQuotaError =
+      error?.name === 'QuotaExceededError' ||
+      error?.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+      error?.code === 22 ||
+      error?.code === 1014;
+
+    if (isQuotaError) {
+      return { success: false, error: 'quota-exceeded' };
+    }
+
     return { success: false, error: error.message };
   }
 };
@@ -108,4 +118,3 @@ export default {
   removeLocalDivisionImage,
   clearLocalDivisionImages
 };
-
