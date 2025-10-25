@@ -3,6 +3,7 @@ import QRCode from 'qrcode';
 import * as Icons from 'lucide-react';
 import { catalogueService } from '../../services/libraryService';
 import { useFirebaseAuth } from '../../contexts/FirebaseAuthContext';
+import { generateBookCoverImage, generateBulkBookCovers, getBooksWithoutCovers } from '../../services/bookCoverAIService';
 
 // All 26 NARA Material Types
 const MATERIAL_TYPES = [
@@ -40,6 +41,12 @@ const EnhancedCataloguingManager = () => {
   const [qrCodeUrl, setQrCodeUrl] = useState('');
   const [isGeneratingQR, setIsGeneratingQR] = useState(false);
   const qrCanvasRef = useRef(null);
+
+  // AI Cover Generation State
+  const [isGeneratingCover, setIsGeneratingCover] = useState(false);
+  const [showBulkGenerateModal, setShowBulkGenerateModal] = useState(false);
+  const [bulkGenerateProgress, setBulkGenerateProgress] = useState({ current: 0, total: 0, percentage: 0 });
+  const [bulkGenerateResults, setBulkGenerateResults] = useState([]);
 
   // Form state with all fields
   const [formData, setFormData] = useState({
@@ -258,6 +265,93 @@ const EnhancedCataloguingManager = () => {
     }
   };
 
+  // Generate AI cover for single book
+  const handleGenerateAICover = async () => {
+    if (!formData.title) {
+      alert('Please enter a book title first');
+      return;
+    }
+
+    setIsGeneratingCover(true);
+
+    try {
+      const materialType = MATERIAL_TYPES.find(m => m.id === parseInt(formData.material_type_id));
+
+      const result = await generateBookCoverImage(
+        formData.title,
+        formData.author,
+        materialType?.code || 'BOOK',
+        {
+          subject: formData.subject_headings,
+          year: formData.publication_year,
+          language: formData.language
+        }
+      );
+
+      if (result.success) {
+        setFormData(prev => ({ ...prev, cover_image_url: result.imageUrl }));
+        alert('✅ AI Book Cover Generated Successfully!\n\nThe cover image URL has been added to the form.');
+      } else {
+        alert('❌ Failed to generate book cover. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error generating AI cover:', error);
+      alert('Error generating book cover: ' + error.message);
+    } finally {
+      setIsGeneratingCover(false);
+    }
+  };
+
+  // Start bulk cover generation
+  const handleBulkGenerateCovers = async () => {
+    try {
+      // Fetch all books from catalogue
+      const response = await catalogueService.getAllItems({ limit: 1000 });
+
+      if (!response.success || !response.data) {
+        alert('Failed to load books from catalogue');
+        return;
+      }
+
+      const allBooks = response.data;
+      const booksWithoutCovers = getBooksWithoutCovers(allBooks);
+
+      if (booksWithoutCovers.length === 0) {
+        alert('✅ All books already have cover images!');
+        return;
+      }
+
+      const confirmed = confirm(
+        `Found ${booksWithoutCovers.length} books without cover images.\n\n` +
+        `Do you want to generate AI covers for all of them?\n\n` +
+        `This is FREE and will take approximately ${Math.ceil(booksWithoutCovers.length * 2 / 60)} minutes.`
+      );
+
+      if (!confirmed) return;
+
+      setShowBulkGenerateModal(true);
+      setBulkGenerateProgress({ current: 0, total: booksWithoutCovers.length, percentage: 0 });
+      setBulkGenerateResults([]);
+
+      const results = await generateBulkBookCovers(booksWithoutCovers, (progress) => {
+        setBulkGenerateProgress(progress);
+      });
+
+      setBulkGenerateResults(results);
+
+      // Update catalogue with new cover URLs
+      const successful = results.filter(r => r.success);
+      alert(
+        `✅ Bulk Generation Complete!\n\n` +
+        `Successfully generated: ${successful.length}/${results.length} covers\n\n` +
+        `Note: Cover URLs have been generated. You can now update the database with these URLs.`
+      );
+    } catch (error) {
+      console.error('Error in bulk generation:', error);
+      alert('Error during bulk generation: ' + error.message);
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -268,7 +362,7 @@ const EnhancedCataloguingManager = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <button
             onClick={() => setShowForm(true)}
             className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg p-6 hover:from-cyan-700 hover:to-blue-700 transition flex items-center justify-center gap-3 shadow-lg"
@@ -276,19 +370,31 @@ const EnhancedCataloguingManager = () => {
             <Icons.Plus className="w-6 h-6" />
             <span className="font-semibold">Add New Book</span>
           </button>
-          
+
           <button
             className="bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg p-6 hover:from-purple-700 hover:to-purple-800 transition flex items-center justify-center gap-3 shadow-lg"
           >
             <Icons.Upload className="w-6 h-6" />
             <span className="font-semibold">Bulk Import (CSV)</span>
           </button>
-          
+
           <button
             className="bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg p-6 hover:from-green-700 hover:to-green-800 transition flex items-center justify-center gap-3 shadow-lg"
           >
             <Icons.Scan className="w-6 h-6" />
             <span className="font-semibold">Scan ISBN Barcode</span>
+          </button>
+
+          <button
+            onClick={handleBulkGenerateCovers}
+            className="bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg p-6 hover:from-orange-600 hover:to-red-700 transition flex items-center justify-center gap-3 shadow-lg relative overflow-hidden group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 opacity-0 group-hover:opacity-20 transition-opacity"></div>
+            <Icons.Sparkles className="w-6 h-6 relative z-10" />
+            <div className="relative z-10">
+              <div className="font-semibold">AI Cover Generator</div>
+              <div className="text-xs opacity-90">FREE - Bulk Create Covers</div>
+            </div>
           </button>
         </div>
 
@@ -678,8 +784,50 @@ const EnhancedCataloguingManager = () => {
                         </div>
                       )}
 
+                      {/* AI Cover Generation */}
+                      <div className="mt-6 pt-6 border-t border-gray-200">
+                        <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                          <Icons.Sparkles className="w-4 h-4 text-orange-500" />
+                          AI Book Cover (FREE)
+                        </h4>
+
+                        {formData.cover_image_url && (
+                          <div className="mb-3">
+                            <img
+                              src={formData.cover_image_url}
+                              alt="Book Cover Preview"
+                              className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                              onError={(e) => { e.target.style.display = 'none'; }}
+                            />
+                          </div>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={handleGenerateAICover}
+                          disabled={isGeneratingCover || !formData.title}
+                          className="w-full px-4 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+                        >
+                          {isGeneratingCover ? (
+                            <>
+                              <Icons.Loader2 className="w-4 h-4 animate-spin" />
+                              Generating...
+                            </>
+                          ) : (
+                            <>
+                              <Icons.Wand2 className="w-4 h-4" />
+                              Generate AI Cover
+                            </>
+                          )}
+                        </button>
+
+                        <p className="text-xs text-gray-500 mt-2 text-center">
+                          Powered by Pollinations.ai - 100% Free
+                        </p>
+                      </div>
+
                       {/* QR Code Actions */}
-                      <div className="space-y-2">
+                      <div className="space-y-2 mt-6">
                         <button
                           type="button"
                           onClick={downloadQRCode}
