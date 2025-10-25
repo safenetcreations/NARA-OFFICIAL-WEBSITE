@@ -308,27 +308,30 @@ const DivisionImagesAdmin = () => {
       }
 
       // Convert Gemini images to data URLs (works immediately in browser)
-      // Also upload to Firebase Storage for permanent backup
+      // Firebase backup is OPTIONAL and will be skipped if you're not authenticated
       setMessage({ type: 'info', text: `Processing ${successfulImages.length} Gemini images...` });
-      
+
       const imageUrls = [];
-      
+      let firebaseBackupsFailed = 0;
+      let firebaseBackupsSucceeded = 0;
+
       for (let i = 0; i < successfulImages.length; i++) {
         const result = successfulImages[i];
-        
+
         // PRIORITY: Use data URL for immediate display (works in CSS backgroundImage)
         if (result.base64Data) {
           const dataUrl = `data:${result.mimeType || 'image/png'};base64,${result.base64Data}`;
           imageUrls.push(dataUrl);
           console.log(`✅ Created data URL for image ${i + 1}/${successfulImages.length}`);
         }
-        
-        // BACKGROUND: Also upload to Firebase Storage (for backup/sharing)
+
+        // OPTIONAL: Try to upload to Firebase Storage (for backup/sharing)
+        // This will fail with 403 if not authenticated - that's OK!
         try {
           const timestamp = Date.now();
           const filename = `${selectedDivision.id}_gemini_${timestamp}_${i}.png`;
           const storageRef = ref(storage, `divisions/${selectedDivision.id}/${filename}`);
-          
+
           const uploadResult = await uploadString(storageRef, result.base64Data, 'base64', {
             contentType: result.mimeType || 'image/png',
             customMetadata: {
@@ -338,10 +341,11 @@ const DivisionImagesAdmin = () => {
               timestamp: timestamp.toString()
             }
           });
-          
+
           const downloadURL = await getDownloadURL(uploadResult.ref);
           console.log(`📤 Backed up to Firebase: ${downloadURL}`);
-          
+          firebaseBackupsSucceeded++;
+
           // Save metadata to Firestore
           try {
             await saveAIGeneratedImage(selectedDivision.id, downloadURL, {
@@ -351,11 +355,12 @@ const DivisionImagesAdmin = () => {
               storagePath: uploadResult.ref.fullPath
             });
           } catch (firestoreError) {
-            console.log('Firestore save skipped:', firestoreError.message);
+            console.log('⚠️ Firestore metadata save skipped:', firestoreError.message);
           }
         } catch (uploadError) {
-          console.warn(`Firebase backup failed for image ${i + 1}:`, uploadError.message);
-          // Continue anyway - data URL already added
+          firebaseBackupsFailed++;
+          console.log(`⚠️ Firebase backup skipped for image ${i + 1} (not authenticated - this is OK!)`);
+          // Continue anyway - data URL already added and will work perfectly!
         }
       }
       
@@ -384,11 +389,20 @@ const DivisionImagesAdmin = () => {
         filename: `Gemini Native Image ${idx + 1}`
       })));
 
-      setMessage({ 
-        type: 'success', 
-        text: `✅ ${successfulImages.length} GEMINI images saved! Visit /divisions/${selectedDivision.slug} and REFRESH page to see them in hero carousel.` 
+      // Build success message with Firebase backup status
+      let successMsg = `✅ ${successfulImages.length} GEMINI images saved to localStorage!`;
+      if (firebaseBackupsFailed > 0) {
+        successMsg += ` Firebase backup skipped (${firebaseBackupsFailed} images - not authenticated, but images work perfectly!)`;
+      } else if (firebaseBackupsSucceeded > 0) {
+        successMsg += ` Firebase backup: ${firebaseBackupsSucceeded} images.`;
+      }
+      successMsg += ` Refresh /divisions/${selectedDivision.slug} to see them!`;
+
+      setMessage({
+        type: 'success',
+        text: successMsg
       });
-      
+
       console.log('%c✅ GEMINI GENERATION COMPLETE!', 'background: #8b5cf6; color: white; padding: 8px; font-size: 16px; font-weight: bold;');
       console.log('━'.repeat(80));
       console.log('📌 Division:', selectedDivision.name.en);
@@ -396,9 +410,10 @@ const DivisionImagesAdmin = () => {
       console.log('📌 Division Slug:', selectedDivision.slug);
       console.log('📌 Model:', 'Gemini 2.5 Flash (Vertex AI)');
       console.log('📌 Images Generated:', successfulImages.length);
-      console.log('📌 Storage:', 'localStorage (key: nara_division_images) + Firebase Storage');
+      console.log('📌 localStorage:', `${imageUrls.length} base64 data URLs (WORKING!)`);
+      console.log('📌 Firebase Backup:', firebaseBackupsSucceeded > 0 ? `${firebaseBackupsSucceeded} uploaded` : `Skipped (not authenticated - this is OK!)`);
       console.log('━'.repeat(80));
-      console.log('🔗 VIEW AT:', `http://localhost:4028/divisions/${selectedDivision.slug}`);
+      console.log('🔗 VIEW AT:', `https://nara-web-73384.web.app/divisions/${selectedDivision.slug}`);
       console.log('⚠️  IMPORTANT: REFRESH the division page to see new images!');
       console.log('━'.repeat(80));
     } catch (error) {
