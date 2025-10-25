@@ -129,10 +129,14 @@ const LibraryCatalogue = () => {
   };
 
   const performSearch = async (page = 1) => {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim()) {
+      setItems([]);
+      return;
+    }
 
     setLoading(true);
     setError(null);
+    setShowCategories(false);
 
     try {
       const params = {
@@ -142,14 +146,18 @@ const LibraryCatalogue = () => {
       };
 
       const response = await searchService.search(searchQuery, params);
-      
+
       if (response.success) {
-        setItems(response.data);
-        setPagination(response.pagination);
+        setItems(response.data || []);
+        setPagination(response.pagination || {});
+      } else {
+        setError(response.error || 'Failed to search catalogue. Please try again.');
+        setItems([]);
       }
     } catch (err) {
       setError('Failed to search catalogue. Please try again.');
       console.error('Search error:', err);
+      setItems([]);
     } finally {
       setLoading(false);
     }
@@ -209,14 +217,18 @@ const LibraryCatalogue = () => {
       };
 
       const response = await catalogueService.getAllItems(params);
-      
+
       if (response.success) {
-        setItems(response.data);
-        setPagination(response.pagination);
+        setItems(response.data || []);
+        setPagination(response.pagination || {});
+      } else {
+        setError(response.error || 'Failed to load items. Please try again.');
+        setItems([]);
       }
     } catch (err) {
       setError('Failed to load items. Please try again.');
       console.error('Category search error:', err);
+      setItems([]);
     } finally {
       setLoading(false);
     }
