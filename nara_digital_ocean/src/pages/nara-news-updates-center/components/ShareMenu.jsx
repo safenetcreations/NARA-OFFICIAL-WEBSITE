@@ -99,10 +99,10 @@ const ShareMenu = ({
 
   const buttonClasses = useMemo(() => {
     const base =
-      'inline-flex items-center justify-center rounded-lg bg-transparent text-slate-500 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 hover:scale-110';
+      'group relative inline-flex items-center justify-center overflow-hidden rounded-2xl border text-slate-500 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 hover:-translate-y-0.5';
     const sizes = {
-      sm: 'h-8 w-8 text-base',
-      md: 'h-10 w-10 text-lg',
+      sm: 'h-9 w-9 text-base',
+      md: 'h-11 w-11 text-lg',
       lg: 'h-12 w-12 text-xl'
     };
     return `${base} ${sizes[size] || sizes.md}`;
@@ -129,24 +129,51 @@ const ShareMenu = ({
         </span>
       )}
       <div className="flex items-center gap-2 flex-wrap">
-        {SHARE_OPTIONS.map(({ key, icon: Icon, color }) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => handleShare(key)}
-            className={buttonClasses}
-            aria-label={t(`share.${key}`)}
-          >
-            <Icon size={iconSize} style={{ color }} />
-          </button>
-        ))}
+        {SHARE_OPTIONS.map(({ key, icon: Icon, color }) => {
+          const softBorder = `${color}33`;
+          const softGlow = `${color}22`;
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => handleShare(key)}
+              className={buttonClasses}
+              style={{
+                borderColor: softBorder,
+                background: `linear-gradient(135deg, ${color}14, ${color}08)`,
+                boxShadow: `0 10px 18px ${softGlow}`
+              }}
+              aria-label={t(`share.${key}`)}
+            >
+              <span
+                className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{ background: `linear-gradient(135deg, ${color}, ${color}CC)` }}
+                aria-hidden="true"
+              />
+              <Icon
+                size={iconSize}
+                className="relative z-10 transition-colors duration-300 group-hover:text-white"
+                style={{ color }}
+              />
+            </button>
+          );
+        })}
         <button
           type="button"
           onClick={handlePdfDownload}
           className={buttonClasses}
+          style={{
+            borderColor: '#1D4ED855',
+            background: 'linear-gradient(135deg, #1D4ED814, #1D4ED808)',
+            boxShadow: '0 10px 18px #1D4ED822'
+          }}
           aria-label={t('share.pdf')}
         >
-          <Download size={iconSize} className="text-blue-600" />
+          <span className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400" />
+          <Download
+            size={iconSize}
+            className="relative z-10 text-blue-600 transition-colors duration-300 group-hover:text-white"
+          />
         </button>
       </div>
       {showLink && (

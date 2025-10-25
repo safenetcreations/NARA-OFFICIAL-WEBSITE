@@ -34,6 +34,7 @@ const FirebaseAdminDashboardControlCenter = lazy(() => import('./pages/firebase-
 const MediaGallery = lazy(() => import('./pages/media-gallery'));
 const AudiencePage = lazy(() => import('./pages/audiences'));
 const GeneralPublicPage = lazy(() => import('./pages/audiences/GeneralPublicPage'));
+const ResearchersStudentsHub = lazy(() => import('./pages/audiences/ResearchersStudentsHub'));
 
 // Legal & Compliance Pages
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy'));
@@ -136,6 +137,11 @@ const WaterQualityMonitoringAdmin = lazy(() => import('./pages/admin/WaterQualit
 const PublicConsultationPortal = lazy(() => import('./pages/public-consultation-portal'));
 const PublicConsultationAdmin = lazy(() => import('./pages/admin/PublicConsultationAdmin'));
 const Phase4DataSeeder = lazy(() => import('./pages/admin/Phase4DataSeeder'));
+
+// Marketplace Admin
+const MarketplaceProductsAdmin = lazy(() => import('./pages/admin/MarketplaceProductsAdmin'));
+const MarketplaceOrdersAdmin = lazy(() => import('./pages/admin/MarketplaceOrdersAdmin'));
+const MarketplacePaymentsAdmin = lazy(() => import('./pages/admin/MarketplacePaymentsAdmin'));
 
 // Analytics Hub - Phase 5
 const AnalyticsHub = lazy(() => import('./pages/analytics-hub'));
@@ -288,6 +294,7 @@ function Routes() {
               <Route path="/contact-us" element={<ContactUs />} />
               <Route path="/audiences" element={<Navigate to="/audiences/general-public" replace />} />
               <Route path="/audiences/general-public" element={<GeneralPublicPage />} />
+              <Route path="/audiences/researchers-students" element={<ResearchersStudentsHub />} />
               <Route path="/audiences/:slug" element={<AudiencePage />} />
               
               {/* Aqua School Directory */}
@@ -468,6 +475,11 @@ function Routes() {
 
               {/* Phase 4 Data Seeder */}
               <Route path="/admin/phase4-seeder" element={<Phase4DataSeeder />} />
+
+              {/* Marketplace Admin Routes */}
+              <Route path="/admin/marketplace/products" element={<MarketplaceProductsAdmin />} />
+              <Route path="/admin/marketplace/orders" element={<MarketplaceOrdersAdmin />} />
+              <Route path="/admin/marketplace/payments" element={<MarketplacePaymentsAdmin />} />
 
               {/* Analytics Hub - Phase 5 */}
               <Route path="/analytics" element={<AnalyticsHub />} />

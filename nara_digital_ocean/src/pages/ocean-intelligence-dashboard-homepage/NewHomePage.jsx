@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, lazy, Suspense, useMemo } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import * as Icons from 'lucide-react';
 import { 
   Fish, Thermometer, Shield, Satellite, Award, Users, Globe2,
   Leaf, Anchor, Droplets, Waves, Compass, Map, TrendingUp, BarChart3, Building2,
   FlaskConical, Info, Database, GraduationCap, Microscope, Ship, ShoppingBag,
-  Flag, TreePine, Search, Handshake, Calendar, BookOpen, AlertTriangle,
+  BookOpen, AlertTriangle, TreePine, Handshake, Calendar, Flag, Search,
   ArrowRight, LayoutGrid, BookMarked, RadioTower, Navigation, FileText,
   Layers, Send, MessageCircle, UserCheck, Sparkles
 } from 'lucide-react';

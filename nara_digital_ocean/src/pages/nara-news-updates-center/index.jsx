@@ -9,10 +9,11 @@ import {
   Filter,
   ChevronRight,
   ChevronLeft,
-  ExternalLink,
   Clock,
   User,
   Eye,
+  Share2,
+  Star,
   BookOpen,
   ShieldCheck,
   ArrowRight,
@@ -915,97 +916,138 @@ const NewsPage = () => {
                   )}
 
                   {featureGridArticles.length > 0 && (
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-semibold text-slate-900">
-                        {t('layout.moreStoriesTitle')}
-                      </h3>
-                      <div className="grid gap-6 md:grid-cols-2">
+                    <div className="space-y-6">
+                      <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+                        <h3 className="text-2xl font-bold text-slate-900">
+                          {t('layout.moreStoriesTitle')}
+                        </h3>
+                        <p className="text-sm text-slate-500 md:max-w-xl">
+                          {t('layout.moreStoriesSubtitle', {
+                            defaultValue:
+                              'Curated newsroom briefings you may have missed. Explore narratives, policy updates, and field activity across the maritime sector.'
+                          })}
+                        </p>
+                      </div>
+                      <div className="grid gap-8 md:grid-cols-2">
                         {featureGridArticles.map((article, index) => {
                           const readMinutes =
                             article?.read_time ||
                             article?.estimatedRead ||
                             metadata?.average_read_time ||
                             5;
+                          const articleTags = (article?.displayTags || article?.tags || []).slice(0, 3);
+                          const coverImage =
+                            article?.coverImage || article?.displayImage || article?.heroImage || article?.thumbnail;
 
                           return (
                             <motion.article
                               key={article?.id || `${article?.slug}-${index}`}
-                              initial={{ opacity: 0, y: 20 }}
+                              initial={{ opacity: 0, y: 24 }}
                               animate={{ opacity: 1, y: 0 }}
-                              transition={{ duration: 0.4, delay: index * 0.05 }}
-                              className="flex h-full flex-col justify-between rounded-3xl border border-slate-200/80 bg-white/95 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                              transition={{ duration: 0.45, delay: index * 0.05 }}
+                              className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-white/95 shadow-xl transition-all duration-500 hover:-translate-y-2 hover:border-blue-200 hover:shadow-2xl"
                             >
-                              <div className="space-y-4">
-                                <div className="flex items-start justify-between gap-3">
-                                  <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
-                                    {article?.displayCategory || article?.category}
-                                  </span>
-                                  {article?.is_featured && (
-                                    <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-amber-700">
-                                      {t('articles.featured')}
+                              <div className="relative h-48 w-full overflow-hidden">
+                                {coverImage ? (
+                                  <img
+                                    src={coverImage}
+                                    alt={article?.displayTitle || article?.title}
+                                    loading="lazy"
+                                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                  />
+                                ) : (
+                                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-100 via-blue-50 to-slate-200">
+                                    <BookOpen className="h-12 w-12 text-blue-500/60" />
+                                  </div>
+                                )}
+                                <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/80 via-slate-900/10 to-transparent p-4">
+                                  <div className="flex items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wide text-white">
+                                    <span className="inline-flex items-center gap-2 rounded-full bg-white/25 px-3 py-1 backdrop-blur-sm">
+                                      <Tag className="h-3.5 w-3.5" />
+                                      {article?.displayCategory || article?.category}
                                     </span>
-                                  )}
-                                </div>
-                                <h4 className="text-xl font-semibold leading-tight text-slate-900">
-                                  {article?.displayTitle || article?.title}
-                                </h4>
-                                {article?.displaySummary && (
-                                  <p className="text-sm leading-relaxed text-slate-600 line-clamp-3">
-                                    {article.displaySummary}
-                                  </p>
-                                )}
-                                {article?.displayAuthor && (
-                                  <p className="text-xs font-medium text-slate-500">
-                                    {article.displayAuthor}
-                                    {article?.displayAuthorPosition && (
-                                      <span className="text-slate-400"> · {article.displayAuthorPosition}</span>
+                                    {article?.is_featured && (
+                                      <span className="inline-flex items-center gap-2 rounded-full bg-amber-400 px-3 py-1 text-amber-900 shadow-sm">
+                                        <Star className="h-3 w-3" />
+                                        {t('articles.featured')}
+                                      </span>
                                     )}
-                                  </p>
-                                )}
+                                  </div>
+                                </div>
                               </div>
 
-                              <div className="mt-6 space-y-4">
-                                <div className="flex flex-wrap gap-4 text-xs text-slate-500">
-                                  <span className="inline-flex items-center gap-1">
-                                    <Calendar className="h-3.5 w-3.5" />
-                                    {formatDate(article?.date)}
-                                  </span>
-                                  {article?.displayLocation && (
-                                    <span className="inline-flex items-center gap-1">
-                                      <MapPin className="h-3.5 w-3.5" />
-                                      {article.displayLocation}
-                                    </span>
+                              <div className="flex flex-1 flex-col gap-5 bg-white/95 p-6">
+                                <div className="space-y-3">
+                                  <button
+                                    type="button"
+                                    onClick={() => setExpandedArticle(article)}
+                                    className="text-left text-xl font-semibold leading-tight text-slate-900 transition-colors duration-300 hover:text-blue-700"
+                                  >
+                                    {article?.displayTitle || article?.title}
+                                  </button>
+                                  {article?.displaySummary && (
+                                    <p className="text-sm leading-relaxed text-slate-600 line-clamp-3">
+                                      {article.displaySummary}
+                                    </p>
                                   )}
-                                  <span className="inline-flex items-center gap-1">
-                                    <Clock className="h-3.5 w-3.5" />
-                                    {t('articles.readTimeShort', { minutes: readMinutes })}
-                                  </span>
+
+                                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                                    <span className="inline-flex items-center gap-1.5">
+                                      <Calendar className="h-3.5 w-3.5" />
+                                      {formatDate(article?.date)}
+                                    </span>
+                                    <span className="hidden h-3 w-px bg-slate-200 sm:block" />
+                                    <span className="inline-flex items-center gap-1.5">
+                                      <Clock className="h-3.5 w-3.5" />
+                                      {t('articles.readTimeShort', { minutes: readMinutes })}
+                                    </span>
+                                    {article?.displayLocation && (
+                                      <>
+                                        <span className="hidden h-3 w-px bg-slate-200 sm:block" />
+                                        <span className="inline-flex items-center gap-1.5">
+                                          <MapPin className="h-3.5 w-3.5" />
+                                          {article.displayLocation}
+                                        </span>
+                                      </>
+                                    )}
+                                  </div>
                                 </div>
 
-                                <div className="flex items-center justify-between gap-3 text-xs text-slate-500">
-                                  <div className="flex items-center gap-3">
-                                    <span className="inline-flex items-center gap-1">
-                                      <Eye className="h-3.5 w-3.5" />
-                                      {formatStatNumber(article?.views ?? 0)}
-                                    </span>
-                                    <span className="inline-flex items-center gap-1">
-                                      <ExternalLink className="h-3.5 w-3.5" />
-                                      {formatStatNumber(article?.social_shares ?? 0)}
-                                    </span>
+                                {articleTags.length > 0 && (
+                                  <div className="flex flex-wrap gap-2">
+                                    {articleTags.map((tag) => (
+                                      <span
+                                        key={tag}
+                                        className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500"
+                                      >
+                                        #{tag}
+                                      </span>
+                                    ))}
                                   </div>
-                                  <div className="flex items-center gap-2">
-                                    <button
-                                      onClick={() => setExpandedArticle(article)}
-                                      className="inline-flex items-center gap-2 font-semibold text-blue-600 transition-colors duration-300 hover:text-blue-800"
-                                    >
-                                      {t('articles.readFull')}
-                                      <ArrowRight className="h-3.5 w-3.5" />
-                                    </button>
-                                    <ShareMenu
-                                      article={article}
-                                      size="sm"
-                                    />
+                                )}
+
+                                <div className="mt-auto flex items-center justify-between gap-4">
+                                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                                    <span className="inline-flex items-center gap-1.5">
+                                      <User className="h-3.5 w-3.5 text-blue-500" />
+                                      {article?.displayAuthor ||
+                                        article?.author ||
+                                        t('articles.teamByline')}
+                                    </span>
+                                    {article?.views ? (
+                                      <span className="inline-flex items-center gap-1.5">
+                                        <Eye className="h-3.5 w-3.5 text-blue-500" />
+                                        {formatStatNumber(article?.views)}
+                                      </span>
+                                    ) : null}
+                                    {article?.social_shares ? (
+                                      <span className="inline-flex items-center gap-1.5">
+                                        <Share2 className="h-3.5 w-3.5 text-blue-500" />
+                                        {formatStatNumber(article?.social_shares)}
+                                      </span>
+                                    ) : null}
                                   </div>
+                                  <ShareMenu article={article} size="sm" />
                                 </div>
                               </div>
                             </motion.article>
