@@ -463,7 +463,7 @@ const EnhancedCataloguingManager = () => {
                             value={formData.title}
                             onChange={handleInputChange}
                             required
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                             placeholder="Enter book title"
                           />
                         </div>
@@ -478,7 +478,7 @@ const EnhancedCataloguingManager = () => {
                             name="subtitle"
                             value={formData.subtitle}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                             placeholder="Enter subtitle (optional)"
                           />
                         </div>
@@ -493,7 +493,7 @@ const EnhancedCataloguingManager = () => {
                             name="author"
                             value={formData.author}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                             placeholder="Enter author name"
                           />
                         </div>
@@ -508,7 +508,7 @@ const EnhancedCataloguingManager = () => {
                             name="additional_authors"
                             value={formData.additional_authors}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                             placeholder="Separate multiple authors with commas"
                           />
                         </div>
@@ -548,7 +548,7 @@ const EnhancedCataloguingManager = () => {
                             value={formData.material_type_id}
                             onChange={handleInputChange}
                             required
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                           >
                             {MATERIAL_TYPES.map(type => (
                               <option key={type.id} value={type.id}>
@@ -577,7 +577,7 @@ const EnhancedCataloguingManager = () => {
                             name="publisher"
                             value={formData.publisher}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                             placeholder="Publisher name"
                           />
                         </div>
@@ -591,7 +591,7 @@ const EnhancedCataloguingManager = () => {
                             name="publication_year"
                             value={formData.publication_year}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                             placeholder="2024"
                           />
                         </div>
@@ -605,7 +605,7 @@ const EnhancedCataloguingManager = () => {
                             name="edition"
                             value={formData.edition}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                             placeholder="1st, 2nd, etc."
                           />
                         </div>
@@ -619,7 +619,7 @@ const EnhancedCataloguingManager = () => {
                             name="pages"
                             value={formData.pages}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                             placeholder="Number of pages"
                           />
                         </div>
@@ -632,7 +632,7 @@ const EnhancedCataloguingManager = () => {
                             name="language"
                             value={formData.language}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                           >
                             <option value="English">English</option>
                             <option value="Sinhala">Sinhala</option>
@@ -651,7 +651,7 @@ const EnhancedCataloguingManager = () => {
                             value={formData.total_copies}
                             onChange={handleInputChange}
                             min="1"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                           />
                         </div>
                       </div>
@@ -674,7 +674,7 @@ const EnhancedCataloguingManager = () => {
                             name="location"
                             value={formData.location}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                             placeholder="Main Library"
                           />
                         </div>
@@ -688,7 +688,7 @@ const EnhancedCataloguingManager = () => {
                             name="shelf_location"
                             value={formData.shelf_location}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                             placeholder="A-12, B-5, etc."
                           />
                         </div>
@@ -702,7 +702,7 @@ const EnhancedCataloguingManager = () => {
                             name="call_number"
                             value={formData.call_number}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                             placeholder="QH91.5 .S55 2024"
                           />
                         </div>
@@ -726,7 +726,7 @@ const EnhancedCataloguingManager = () => {
                             value={formData.abstract}
                             onChange={handleInputChange}
                             rows="4"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                             placeholder="Brief description of the book content..."
                           />
                         </div>
@@ -740,7 +740,7 @@ const EnhancedCataloguingManager = () => {
                             name="keywords"
                             value={formData.keywords}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                             placeholder="marine, biology, conservation (comma-separated)"
                           />
                         </div>
@@ -754,7 +754,7 @@ const EnhancedCataloguingManager = () => {
                             name="subject_headings"
                             value={formData.subject_headings}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-400"
                             placeholder="Marine Biology, Oceanography (comma-separated)"
                           />
                         </div>
@@ -813,13 +813,28 @@ const EnhancedCataloguingManager = () => {
                         </h4>
 
                         {formData.cover_image_url && (
-                          <div className="mb-3">
+                          <div className="mb-3 bg-gray-100 rounded-lg p-2">
                             <img
                               src={formData.cover_image_url}
                               alt="Book Cover Preview"
-                              className="w-full h-48 object-cover rounded-lg border border-gray-200"
-                              onError={(e) => { e.target.style.display = 'none'; }}
+                              className="w-full h-64 object-contain rounded-lg bg-white"
+                              onError={(e) => {
+                                e.target.parentElement.innerHTML = `
+                                  <div class="h-64 flex items-center justify-center bg-red-50 rounded-lg border border-red-200">
+                                    <div class="text-center p-4">
+                                      <svg class="w-12 h-12 text-red-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                      </svg>
+                                      <p class="text-sm text-red-600 font-medium">Failed to load cover image</p>
+                                      <p class="text-xs text-red-500 mt-1">Try generating again</p>
+                                    </div>
+                                  </div>
+                                `;
+                              }}
                             />
+                            <p className="text-xs text-gray-500 mt-2 text-center truncate">
+                              {formData.cover_image_url}
+                            </p>
                           </div>
                         )}
 
