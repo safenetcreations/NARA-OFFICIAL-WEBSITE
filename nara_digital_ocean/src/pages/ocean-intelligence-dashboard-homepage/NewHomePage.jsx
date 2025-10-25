@@ -259,7 +259,7 @@ const NewHomePage = () => {
           <div className="relative z-10 w-full">
             <motion.div
               style={{ opacity }}
-              className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 lg:py-14"
+              className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 md:pt-24 lg:pt-28 pb-8 md:pb-12 lg:pb-14"
             >
               <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)] items-center">
                 <motion.div
