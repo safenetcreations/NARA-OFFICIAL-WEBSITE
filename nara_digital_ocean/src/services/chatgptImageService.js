@@ -14,6 +14,8 @@ const getApiKey = () => {
   return apiKey;
 };
 
+const FALLBACK_IMAGE_MODEL = 'gpt-image-1-mini';
+
 const getModel = () => import.meta.env.VITE_OPENAI_IMAGE_MODEL || DEFAULT_IMAGE_MODEL;
 
 const buildPrompt = (basePrompt, divisionName = '') => {
@@ -32,44 +34,79 @@ Mandatory requirements:
 - No text overlays, no watermarks, no AI distortion artifacts`;
 };
 
+const requestImage = async (model, prompt, divisionName) => {
+  const apiKey = getApiKey();
+  const response = await fetch(OPENAI_IMAGE_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model,
+      prompt: buildPrompt(prompt, divisionName),
+      size: '1024x1024',
+      quality: 'high',
+      n: 1
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    const message = error?.error?.message || `status ${response.status}`;
+
+    if (typeof message === 'string' && message.toLowerCase().includes('must be verified')) {
+      const verificationMessage =
+        'Organization verification required for gpt-image-1. Visit https://platform.openai.com/settings/organization/general, complete verification, wait ~15 minutes, then try again.';
+      throw new Error(`${verificationMessage}::verification-required`);
+    }
+
+    throw new Error(message);
+  }
+
+  const data = await response.json();
+  const base64 = data?.data?.[0]?.b64_json;
+
+  if (!base64) {
+    return { success: false, error: 'ChatGPT returned no image data.' };
+  }
+
+  return {
+    success: true,
+    base64Data: base64,
+    mimeType: 'image/png',
+    modelUsed: model
+  };
+};
+
 export const generateImageWithChatGPT = async (prompt, divisionName) => {
+  const preferredModel = getModel();
+
   try {
-    const apiKey = getApiKey();
-    const response = await fetch(OPENAI_IMAGE_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: getModel(),
-        prompt: buildPrompt(prompt, divisionName),
-        size: '1024x1024',
-        response_format: 'b64_json',
-        quality: 'high',
-        n: 1
-      })
-    });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      const message = error?.error?.message || `status ${response.status}`;
-      throw new Error(message);
-    }
-
-    const data = await response.json();
-    const base64 = data?.data?.[0]?.b64_json;
-
-    if (!base64) {
-      return { success: false, error: 'ChatGPT returned no image data.' };
-    }
-
-    return {
-      success: true,
-      base64Data: base64,
-      mimeType: 'image/png'
-    };
+    return await requestImage(preferredModel, prompt, divisionName);
   } catch (error) {
+    const needsVerification =
+      typeof error.message === 'string' && error.message.includes('::verification-required');
+
+    if (needsVerification) {
+      if (preferredModel === DEFAULT_IMAGE_MODEL) {
+        console.log('⚠️ gpt-image-1 requires org verification. Falling back to gpt-image-1-mini.');
+        try {
+          const fallbackResult = await requestImage(FALLBACK_IMAGE_MODEL, prompt, divisionName);
+          if (fallbackResult.success) {
+            fallbackResult.fallbackNotice =
+              'Used gpt-image-1-mini automatically because gpt-image-1 requires verification.';
+          }
+          return fallbackResult;
+        } catch (fallbackError) {
+          console.error('Fallback image generation failed:', fallbackError);
+          return { success: false, error: fallbackError.message.replace('::verification-required', '') };
+        }
+      }
+
+      return { success: false, error: error.message.replace('::verification-required', '') };
+    }
+
     console.error('ChatGPT image generation error:', error);
     return { success: false, error: error.message };
   }

@@ -474,126 +474,116 @@ const DivisionImagesAdmin = () => {
         return;
       }
 
-      // Convert Gemini images to data URLs (works immediately in browser)
-      // Firebase backup is OPTIONAL and will be skipped if you're not authenticated
-      setMessage({ type: 'info', text: `Processing ${successfulImages.length} Gemini images...` });
+      // Upload to Firebase Storage and store URLs (avoids localStorage quota issues)
+      // We store Firebase URLs (tiny strings) instead of base64 data (huge)
+      setMessage({ type: 'info', text: `Uploading ${successfulImages.length} images to Firebase Storage...` });
 
       const imageUrls = [];
-      let firebaseBackupsFailed = 0;
-      let firebaseBackupsSucceeded = 0;
+      let uploadsFailed = 0;
+      let uploadsSucceeded = 0;
 
-      // Check if user is authenticated before attempting Firebase backup
+      // Check if user is authenticated
       const { currentUser } = auth;
       const isAuthenticated = currentUser !== null;
 
       if (!isAuthenticated) {
-        console.log('ℹ️ Firebase backup will be skipped (not authenticated)');
+        setMessage({
+          type: 'error',
+          text: '❌ You must be logged in to generate images. Firebase Storage required to avoid localStorage quota errors.'
+        });
+        setGeneratingGemini(false);
+        return;
       }
 
       for (let i = 0; i < successfulImages.length; i++) {
         const result = successfulImages[i];
 
-        // PRIORITY: Use data URL for immediate display (works in CSS backgroundImage)
-        if (result.base64Data) {
-          const dataUrl = `data:${result.mimeType || 'image/png'};base64,${result.base64Data}`;
-          const optimizedDataUrl = await optimizeDataUrlForStorage(dataUrl);
-          imageUrls.push(optimizedDataUrl);
-          console.log(`✅ Created data URL for image ${i + 1}/${successfulImages.length}`);
-          if (optimizedDataUrl !== dataUrl) {
-            console.log(`   ↳ Optimized for storage (original length ${dataUrl.length} → ${optimizedDataUrl.length})`);
-          }
-        }
+        try {
+          const timestamp = Date.now();
+          const filename = `${selectedDivision.id}_gemini_${timestamp}_${i}.png`;
+          const storageRef = ref(storage, `divisions/${selectedDivision.id}/${filename}`);
 
-        // OPTIONAL: Upload to Firebase Storage (only if authenticated)
-        if (isAuthenticated) {
-          try {
-            const timestamp = Date.now();
-            const filename = `${selectedDivision.id}_gemini_${timestamp}_${i}.png`;
-            const storageRef = ref(storage, `divisions/${selectedDivision.id}/${filename}`);
+          console.log(`📤 Uploading image ${i + 1}/${successfulImages.length} to Firebase Storage...`);
 
-            const uploadResult = await uploadString(storageRef, result.base64Data, 'base64', {
-              contentType: result.mimeType || 'image/png',
-              customMetadata: {
-                generatedBy: 'gemini-2.5-flash',
-                divisionId: selectedDivision.id,
-                prompt: 'AI generated',
-                timestamp: timestamp.toString()
-              }
-            });
-
-            const downloadURL = await getDownloadURL(uploadResult.ref);
-            console.log(`📤 Backed up to Firebase: ${downloadURL}`);
-            firebaseBackupsSucceeded++;
-
-            // Save metadata to Firestore
-            try {
-              await saveAIGeneratedImage(selectedDivision.id, downloadURL, {
-                prompt: 'Gemini 2.5 Flash Generated',
-                model: 'gemini-2.5-flash',
-                generatedAt: new Date().toISOString(),
-                storagePath: uploadResult.ref.fullPath
-              });
-            } catch (firestoreError) {
-              console.log('⚠️ Firestore metadata save skipped:', firestoreError.message);
+          const uploadResult = await uploadString(storageRef, result.base64Data, 'base64', {
+            contentType: result.mimeType || 'image/png',
+            customMetadata: {
+              generatedBy: 'gemini-2.5-flash',
+              divisionId: selectedDivision.id,
+              prompt: 'AI generated',
+              timestamp: timestamp.toString()
             }
-          } catch (uploadError) {
-            firebaseBackupsFailed++;
-            console.log(`⚠️ Firebase backup failed for image ${i + 1}:`, uploadError.message);
+          });
+
+          const downloadURL = await getDownloadURL(uploadResult.ref);
+          imageUrls.push(downloadURL); // Store Firebase URL (tiny string, no quota issues!)
+          console.log(`✅ Image ${i + 1} uploaded: ${downloadURL.substring(0, 80)}...`);
+          uploadsSucceeded++;
+
+          // Save metadata to Firestore
+          try {
+            await saveAIGeneratedImage(selectedDivision.id, downloadURL, {
+              prompt: 'Gemini 2.5 Flash Generated',
+              model: 'gemini-2.5-flash',
+              generatedAt: new Date().toISOString(),
+              storagePath: uploadResult.ref.fullPath
+            });
+          } catch (firestoreError) {
+            console.log('⚠️ Firestore metadata save skipped:', firestoreError.message);
           }
-        } else {
-          // Not authenticated - skip Firebase backup (no 403 errors!)
-          firebaseBackupsFailed++;
+        } catch (uploadError) {
+          uploadsFailed++;
+          console.log(`❌ Upload failed for image ${i + 1}:`, uploadError.message);
         }
+      }
+
+      if (imageUrls.length === 0) {
+        setMessage({
+          type: 'error',
+          text: `Failed to upload images to Firebase Storage. Check console for errors.`
+        });
+        setGeneratingGemini(false);
+        return;
       }
       
-      // Save to localStorage (works immediately!)
-      console.log('%c💾 SAVING GEMINI IMAGES TO LOCALSTORAGE', 'background: #8b5cf6; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
+      // Save Firebase URLs to localStorage (tiny strings, NO quota issues!)
+      console.log('%c💾 SAVING FIREBASE URLs TO LOCALSTORAGE', 'background: #8b5cf6; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
       console.log('   Division ID:', selectedDivision.id);
-      console.log('   Generated images:', imageUrls.length);
-      console.log('   Image format: base64 data URLs');
+      console.log('   Firebase URLs:', imageUrls.length);
+      console.log('   Format: Firebase Storage URLs (tiny strings - no quota issues!)');
 
-      let storageReadyImages = await optimizeImagesForStorage(imageUrls);
-      let saveResult = saveLocalDivisionImages(selectedDivision.id, storageReadyImages);
+      // imageUrls are already Firebase URLs (small strings), no optimization needed
+      const saveResult = saveLocalDivisionImages(selectedDivision.id, imageUrls);
       console.log('   Save result:', saveResult);
 
-      if (!saveResult.success && saveResult.error === 'quota-exceeded') {
-        console.log('   ⚠️ LocalStorage quota exceeded. Reducing quality further before retrying...');
-        storageReadyImages = await optimizeImagesForStorage(storageReadyImages.map((url) => url));
-        clearLocalDivisionImages(selectedDivision.id);
-        saveResult = saveLocalDivisionImages(selectedDivision.id, storageReadyImages);
-        console.log('   Retry save result:', saveResult);
-      }
-
       if (!saveResult.success) {
-        setMessage({ type: 'error', text: `Failed to save Gemini images: ${saveResult.error}` });
+        setMessage({ type: 'error', text: `Failed to save Firebase URLs: ${saveResult.error}` });
         setGeneratingGemini(false);
         return;
       }
       
       // VERIFY it was saved using correct function
       const verifyImages = getLocalDivisionImages(selectedDivision.id);
-      console.log('   ✅ VERIFICATION: Retrieved', verifyImages.length, 'images from localStorage');
+      console.log('   ✅ VERIFICATION: Retrieved', verifyImages.length, 'Firebase URLs from localStorage');
       console.log('   Storage key: nara_division_images');
-      console.log('   📸 First image preview:', storageReadyImages[0]?.substring(0, 100) + '...');
-      console.log('%c🎉 GEMINI IMAGES SAVED TO LOCALSTORAGE!', 'background: #10b981; color: white; padding: 8px; font-size: 16px; font-weight: bold;');
+      console.log('   📸 First Firebase URL:', imageUrls[0]?.substring(0, 100) + '...');
+      console.log('%c🎉 FIREBASE URLs SAVED TO LOCALSTORAGE!', 'background: #10b981; color: white; padding: 8px; font-size: 16px; font-weight: bold;');
 
       // Update display
-      setDivisionImages(storageReadyImages.map((url, idx) => ({
+      setDivisionImages(imageUrls.map((url, idx) => ({
         id: `gemini_${Date.now()}_${idx}`,
         url,
         aiGenerated: true,
         uploadedAt: new Date().toISOString(),
-        filename: `Gemini Native Image ${idx + 1}`
+        filename: `Gemini Firebase Image ${idx + 1}`
       })));
 
-      // Build success message with Firebase backup status
-      let successMsg = `✅ ${storageReadyImages.length} GEMINI images saved to localStorage!`;
-      if (firebaseBackupsFailed > 0) {
-        successMsg += ` Firebase backup skipped (${firebaseBackupsFailed} images - not authenticated, but image works perfectly!)`;
-      } else if (firebaseBackupsSucceeded > 0) {
-        successMsg += ` Firebase backup: ${firebaseBackupsSucceeded} images.`;
+      // Build success message
+      let successMsg = `✅ ${imageUrls.length} images uploaded to Firebase Storage & saved to localStorage!`;
+      if (uploadsFailed > 0) {
+        successMsg += ` (${uploadsFailed} uploads failed - check console)`;
       }
-      successMsg += ` Refresh homepage to see it in the ticker!`;
+      successMsg += ` No localStorage quota issues - using Firebase URLs! Refresh homepage to see them!`;
 
       setMessage({
         type: 'success',
@@ -607,8 +597,8 @@ const DivisionImagesAdmin = () => {
       console.log('📌 Division Slug:', selectedDivision.slug);
       console.log('📌 Model:', 'Gemini 2.5 Flash (Vertex AI)');
       console.log('📌 Images Generated:', successfulImages.length);
-      console.log('📌 localStorage:', `${imageUrls.length} base64 data URLs (WORKING!)`);
-      console.log('📌 Firebase Backup:', firebaseBackupsSucceeded > 0 ? `${firebaseBackupsSucceeded} uploaded` : `Skipped (not authenticated - this is OK!)`);
+      console.log('📌 Firebase Storage:', `${uploadsSucceeded} uploaded`);
+      console.log('📌 localStorage:', `${imageUrls.length} Firebase URLs stored (NO quota issues!)`);
       console.log('━'.repeat(80));
       console.log('🔗 VIEW AT:', `https://nara-web-73384.web.app/divisions/${selectedDivision.slug}`);
       console.log('⚠️  IMPORTANT: REFRESH the division page to see new images!');
@@ -651,8 +641,13 @@ const DivisionImagesAdmin = () => {
         return;
       }
 
+      const usedFallback = successfulImages.some((result) => result.fallbackNotice);
+
       const dataUrls = successfulImages.map((result, idx) => {
         console.log(`✅ ChatGPT image ready ${idx + 1}/${successfulImages.length}`);
+        if (result.fallbackNotice) {
+          console.log(`   ↳ ${result.fallbackNotice}`);
+        }
         return `data:${result.mimeType || 'image/png'};base64,${result.base64Data}`;
       });
 
@@ -690,7 +685,7 @@ const DivisionImagesAdmin = () => {
 
       setMessage({
         type: 'success',
-        text: `✅ ${storageReadyImages.length} ChatGPT images saved! Refresh /divisions/${selectedDivision.slug} to preview them.`
+        text: `✅ ${storageReadyImages.length} ChatGPT images saved! Refresh /divisions/${selectedDivision.slug} to preview them.${usedFallback ? ' (Used gpt-image-1-mini fallback automatically.)' : ''}`
       });
 
       console.log('%c🎉 CHATGPT IMAGE GENERATION COMPLETE!', 'background: #2563eb; color: white; padding: 8px; font-size: 16px; font-weight: bold;');
