@@ -113,7 +113,6 @@ const MarineIncidentAdmin = lazy(() => import('./pages/admin/MarineIncidentAdmin
 
 // Aqua School Directory
 const AquaSchoolDirectory = lazy(() => import('./pages/aqua-school-directory'));
-const EnhancedSchoolDirectory = lazy(() => import('./pages/enhanced-school-directory'));
 
 // Project Pipeline Tracker
 const ProjectPipelineTracker = lazy(() => import('./pages/project-pipeline-tracker'));
@@ -302,7 +301,6 @@ function Routes() {
               
               {/* Aqua School Directory */}
               <Route path="/aqua-school-directory" element={<AquaSchoolDirectory />} />
-              <Route path="/enhanced-school-directory" element={<EnhancedSchoolDirectory />} />
 
               {/* Divisions Routes */}
               <Route path="/divisions" element={<DivisionsHub />} />

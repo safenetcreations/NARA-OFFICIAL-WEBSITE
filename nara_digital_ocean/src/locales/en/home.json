@@ -410,6 +410,42 @@
       }
     ]
   },
+  "essentialServices": {
+    "heading": "Essential Services",
+    "subheading": "Access critical marine research, testing, and advisory services for Sri Lanka's blue economy",
+    "cards": {
+      "fishAdvisory": {
+        "title": "Fish Advisory System",
+        "description": "Real-time safety alerts, water quality warnings, and consumption advisories for all Sri Lankan waters",
+        "cta": "View Advisories"
+      },
+      "labTesting": {
+        "title": "Laboratory Testing",
+        "description": "ISO-certified water quality, fish sample analysis, and environmental testing with rapid turnaround",
+        "cta": "Request Testing"
+      },
+      "marineIncident": {
+        "title": "Marine Incident Reporting",
+        "description": "24/7 emergency response for oil spills, pollution incidents, and environmental hazards",
+        "cta": "Report Incident"
+      },
+      "openData": {
+        "title": "Open Data Portal",
+        "description": "Access research datasets, ocean monitoring data, and biodiversity records via API or download",
+        "cta": "Browse Data"
+      },
+      "exportIntelligence": {
+        "title": "Export Intelligence",
+        "description": "Market trends, trade statistics, and export opportunities for Sri Lankan marine products",
+        "cta": "View Insights"
+      },
+      "publicConsultation": {
+        "title": "Public Consultation",
+        "description": "Participate in policy development, EIA reviews, and community engagement initiatives",
+        "cta": "Join Discussion"
+      }
+    }
+  },
   "services": {
     "heading": "Services for Stakeholders",
     "subheading": "Supporting researchers, fishermen, industry, and the public with specialized services",

@@ -35,6 +35,7 @@ import enRegistration from './locales/en/registration.json';
 import enResearchPortal from './locales/en/researchPortal.json';
 import enDivisions from './locales/en/divisions.json';
 import enAnalytics from './locales/en/analytics.json';
+import enIndustryExporters from './locales/en/industryExporters.json';
 import taCommon from './locales/ta/common.json';
 import taLda from './locales/ta/lda.json';
 import taMarketplace from './locales/ta/marketplace.json';
@@ -69,6 +70,7 @@ import taRegistration from './locales/ta/registration.json';
 import taResearchPortal from './locales/ta/researchPortal.json';
 import taDivisions from './locales/ta/divisions.json';
 import taAnalytics from './locales/ta/analytics.json';
+import taIndustryExporters from './locales/ta/industryExporters.json';
 import siCommon from './locales/si/common.json';
 import siLda from './locales/si/lda.json';
 import siMarketplace from './locales/si/marketplace.json';
@@ -103,6 +105,7 @@ import siRegistration from './locales/si/registration.json';
 import siResearchPortal from './locales/si/researchPortal.json';
 import siDivisions from './locales/si/divisions.json';
 import siAnalytics from './locales/si/analytics.json';
+import siIndustryExporters from './locales/si/industryExporters.json';
 
 const resources = {
   en: {
@@ -139,7 +142,8 @@ const resources = {
     registration: enRegistration,
     researchPortal: enResearchPortal,
     divisions: enDivisions,
-    analytics: enAnalytics
+    analytics: enAnalytics,
+    industryExporters: enIndustryExporters
   },
   ta: {
     common: taCommon,
@@ -175,7 +179,8 @@ const resources = {
     registration: taRegistration,
     researchPortal: taResearchPortal,
     divisions: taDivisions,
-    analytics: taAnalytics
+    analytics: taAnalytics,
+    industryExporters: taIndustryExporters
   },
   si: {
     common: siCommon,
@@ -211,7 +216,8 @@ const resources = {
     registration: siRegistration,
     researchPortal: siResearchPortal,
     divisions: siDivisions,
-    analytics: siAnalytics
+    analytics: siAnalytics,
+    industryExporters: siIndustryExporters
   }
 };
 
@@ -239,7 +245,7 @@ i18n
     resources,
     lng: getStoredLanguage(),
     fallbackLng: 'en',
-    ns: ['common', 'home', 'about', 'research', 'collaboration', 'procurement', 'news', 'researchEnhanced', 'digitalLibrary', 'knowledge', 'labResults', 'lda', 'marketplace', 'maritime', 'integration', 'fishAdvisory', 'audiences', 'contact', 'publicConsultation', 'openData', 'marineIncident', 'exportMarket', 'mediaGallery', 'vesselBooking', 'media', 'library', 'libraryAuth', 'libraryDashboard', 'project-pipeline', 'scientific-evidence', 'registration', 'researchPortal', 'divisions', 'analytics'],
+    ns: ['common', 'home', 'about', 'research', 'collaboration', 'procurement', 'news', 'researchEnhanced', 'digitalLibrary', 'knowledge', 'labResults', 'lda', 'marketplace', 'maritime', 'integration', 'fishAdvisory', 'audiences', 'contact', 'publicConsultation', 'openData', 'marineIncident', 'exportMarket', 'mediaGallery', 'vesselBooking', 'media', 'library', 'libraryAuth', 'libraryDashboard', 'project-pipeline', 'scientific-evidence', 'registration', 'researchPortal', 'divisions', 'analytics', 'industryExporters'],
     defaultNS: 'common',
     interpolation: {
       escapeValue: false

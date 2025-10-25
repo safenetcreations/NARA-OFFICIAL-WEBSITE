@@ -28,7 +28,7 @@ const NewHomePage = () => {
   const [divisionHeroImages, setDivisionHeroImages] = useState({});
   const { scrollY } = useScroll();
   const heroRef = useRef(null);
-  const { t } = useTranslation(['home', 'common']);
+  const { t, i18n } = useTranslation(['home', 'common']);
 
   const { oceanData, refreshData } = useOceanData();
   const opacity = useTransform(scrollY, [0, 300], [1, 0.85]);
@@ -46,6 +46,7 @@ const NewHomePage = () => {
   const newsContent = t('news', { ns: 'home', returnObjects: true });
   const integrationContent = t('integration', { ns: 'home', returnObjects: true });
   const missionControlContent = t('missionControl', { ns: 'home', returnObjects: true });
+  const essentialServicesContent = t('essentialServices', { ns: 'home', returnObjects: true });
 
   // Load division hero images from localStorage
   useEffect(() => {
@@ -174,6 +175,63 @@ const NewHomePage = () => {
       gradient: 'from-green-600 to-teal-600',
       link: '/nara-digital-marketplace',
       copy: portalContent?.cards?.marketplace || {}
+    }
+  ];
+
+  const essentialServicesCards = [
+    {
+      key: 'fishAdvisory',
+      link: '/fish-advisory-system',
+      cornerClass: 'bg-cyan-500/10',
+      borderHover: 'hover:border-cyan-500/50',
+      shadowHover: 'hover:shadow-cyan-500/10',
+      headingHover: 'group-hover:text-cyan-400',
+      ctaClass: 'text-cyan-400'
+    },
+    {
+      key: 'labTesting',
+      link: '/lab-results',
+      cornerClass: 'bg-purple-500/10',
+      borderHover: 'hover:border-purple-500/50',
+      shadowHover: 'hover:shadow-purple-500/10',
+      headingHover: 'group-hover:text-purple-400',
+      ctaClass: 'text-purple-400'
+    },
+    {
+      key: 'marineIncident',
+      link: '/marine-incident-portal',
+      cornerClass: 'bg-red-500/10',
+      borderHover: 'hover:border-red-500/50',
+      shadowHover: 'hover:shadow-red-500/10',
+      headingHover: 'group-hover:text-red-400',
+      ctaClass: 'text-red-400'
+    },
+    {
+      key: 'openData',
+      link: '/open-data-portal',
+      cornerClass: 'bg-green-500/10',
+      borderHover: 'hover:border-green-500/50',
+      shadowHover: 'hover:shadow-green-500/10',
+      headingHover: 'group-hover:text-green-400',
+      ctaClass: 'text-green-400'
+    },
+    {
+      key: 'exportIntelligence',
+      link: '/export-market-intelligence',
+      cornerClass: 'bg-orange-500/10',
+      borderHover: 'hover:border-orange-500/50',
+      shadowHover: 'hover:shadow-orange-500/10',
+      headingHover: 'group-hover:text-orange-400',
+      ctaClass: 'text-orange-400'
+    },
+    {
+      key: 'publicConsultation',
+      link: '/public-consultation',
+      cornerClass: 'bg-blue-500/10',
+      borderHover: 'hover:border-blue-500/50',
+      shadowHover: 'hover:shadow-blue-500/10',
+      headingHover: 'group-hover:text-blue-400',
+      ctaClass: 'text-blue-400'
     }
   ];
 
@@ -580,7 +638,7 @@ const NewHomePage = () => {
                     
                     const IconComponent = config.icon;
                     const heroImage = divisionHeroImages[realDivision?.id] || realDivision?.heroImage || 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&q=85';
-                    const divisionName = realDivision.name.en;
+                    const divisionName = realDivision.name[i18n.language] || realDivision.name.en;
                     
                     return (
                       <Link
@@ -609,7 +667,7 @@ const NewHomePage = () => {
                                 {divisionName}
                               </h4>
                               <div className="flex items-center gap-2 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
-                                <span>Explore</span>
+                                <span>{t('common:explore', { defaultValue: 'Explore' })}</span>
                                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                               </div>
                             </div>
@@ -641,11 +699,10 @@ const NewHomePage = () => {
           </div>
         </section>
 
-        {/* Key Services Section - Clean & Modern */}
+        {/* Key Services Section - Clean & Translated */}
         <section className="relative bg-slate-950 py-16 md:py-24 px-4 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-blue-500/5" />
           <div className="max-w-7xl mx-auto relative">
-            {/* Header */}
             <div className="text-center mb-16">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -654,129 +711,39 @@ const NewHomePage = () => {
                 transition={{ duration: 0.6 }}
               >
                 <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                  Essential Services
+                  {essentialServicesContent?.heading}
                 </h2>
                 <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-                  Access critical marine research, testing, and advisory services for Sri Lanka's blue economy
+                  {essentialServicesContent?.subheading}
                 </p>
               </motion.div>
             </div>
 
-            {/* Services Grid - Clean Cards */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Fish Advisory System */}
-              <Link to="/fish-advisory-system" className="group">
-                <div className="relative h-full p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-1">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-bl-full" />
-                  <div className="relative">
-                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">
-                      Fish Advisory System
-                    </h3>
-                    <p className="text-slate-400 leading-relaxed mb-4">
-                      Real-time safety alerts, water quality warnings, and consumption advisories for all Sri Lankan waters
-                    </p>
-                    <div className="inline-flex items-center gap-2 text-cyan-400 text-sm font-semibold">
-                      <span>View Advisories</span>
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              {essentialServicesCards.map(card => {
+                const content = essentialServicesContent?.cards?.[card.key] || {};
+                return (
+                  <Link key={card.key} to={card.link} className="group">
+                    <div
+                      className={`relative h-full p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${card.borderHover} ${card.shadowHover}`}
+                    >
+                      <div className={`absolute top-0 right-0 w-32 h-32 ${card.cornerClass} rounded-bl-full`} />
+                      <div className="relative">
+                        <h3 className={`text-2xl font-bold text-white mb-3 transition-colors ${card.headingHover}`}>
+                          {content.title}
+                        </h3>
+                        <p className="text-slate-400 leading-relaxed mb-4">
+                          {content.description}
+                        </p>
+                        <div className={`inline-flex items-center gap-2 text-sm font-semibold ${card.ctaClass}`}>
+                          <span>{content.cta}</span>
+                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Lab Testing Services */}
-              <Link to="/lab-results" className="group">
-                <div className="relative h-full p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 hover:border-purple-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-bl-full" />
-                  <div className="relative">
-                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors">
-                      Laboratory Testing
-                    </h3>
-                    <p className="text-slate-400 leading-relaxed mb-4">
-                      ISO-certified water quality, fish sample analysis, and environmental testing with rapid turnaround
-                    </p>
-                    <div className="inline-flex items-center gap-2 text-purple-400 text-sm font-semibold">
-                      <span>Request Testing</span>
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Marine Incident Reporting */}
-              <Link to="/marine-incident-portal" className="group">
-                <div className="relative h-full p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 hover:border-red-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-red-500/10 hover:-translate-y-1">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-bl-full" />
-                  <div className="relative">
-                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-red-400 transition-colors">
-                      Marine Incident Reporting
-                    </h3>
-                    <p className="text-slate-400 leading-relaxed mb-4">
-                      24/7 emergency response for oil spills, pollution incidents, and environmental hazards
-                    </p>
-                    <div className="inline-flex items-center gap-2 text-red-400 text-sm font-semibold">
-                      <span>Report Incident</span>
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Open Data Portal */}
-              <Link to="/open-data-portal" className="group">
-                <div className="relative h-full p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 hover:border-green-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-green-500/10 hover:-translate-y-1">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-bl-full" />
-                  <div className="relative">
-                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-green-400 transition-colors">
-                      Open Data Portal
-                    </h3>
-                    <p className="text-slate-400 leading-relaxed mb-4">
-                      Access research datasets, ocean monitoring data, and biodiversity records via API or download
-                    </p>
-                    <div className="inline-flex items-center gap-2 text-green-400 text-sm font-semibold">
-                      <span>Browse Data</span>
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Export Market Intelligence */}
-              <Link to="/export-market-intelligence" className="group">
-                <div className="relative h-full p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 hover:border-orange-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/10 hover:-translate-y-1">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-bl-full" />
-                  <div className="relative">
-                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-orange-400 transition-colors">
-                      Export Intelligence
-                    </h3>
-                    <p className="text-slate-400 leading-relaxed mb-4">
-                      Market trends, trade statistics, and export opportunities for Sri Lankan marine products
-                    </p>
-                    <div className="inline-flex items-center gap-2 text-orange-400 text-sm font-semibold">
-                      <span>View Insights</span>
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Public Consultation */}
-              <Link to="/public-consultation" className="group">
-                <div className="relative h-full p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-bl-full" />
-                  <div className="relative">
-                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
-                      Public Consultation
-                    </h3>
-                    <p className="text-slate-400 leading-relaxed mb-4">
-                      Participate in policy development, EIA reviews, and community engagement initiatives
-                    </p>
-                    <div className="inline-flex items-center gap-2 text-blue-400 text-sm font-semibold">
-                      <span>Join Discussion</span>
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </div>
-              </Link>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </section>

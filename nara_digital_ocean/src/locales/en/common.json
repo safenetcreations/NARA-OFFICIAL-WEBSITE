@@ -121,6 +121,7 @@
     }
   },
   "loading": "Loading...",
+  "explore": "Explore",
   "pleaseLogin": "Please login to continue",
   "enrollmentSuccess": "Successfully enrolled in course!",
   "enrollmentError": "Error enrolling in course. Please try again.",

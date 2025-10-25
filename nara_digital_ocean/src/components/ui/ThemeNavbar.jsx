@@ -127,11 +127,11 @@ const ThemeNavbar = () => {
           icon: Icons.Users,
           isExternal: true 
         },
-        { 
-          labelKey: 'navbar.menu.academy.links.schoolDirectory', 
-          path: '/enhanced-school-directory', 
+        {
+          labelKey: 'navbar.menu.academy.links.schoolDirectory',
+          path: '/aqua-school-directory',
           icon: Icons.Database,
-          isExternal: false 
+          isExternal: false
         },
         { labelKey: 'navbar.menu.resources.links.libraryCatalogue', path: '/library', icon: Icons.Library },
         { labelKey: 'navbar.menu.resources.links.digitalProductLibrary', path: '/digital-product-library', icon: Icons.Archive },

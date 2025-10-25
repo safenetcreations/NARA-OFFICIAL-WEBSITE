@@ -9,7 +9,7 @@ import { trackPDFDownload } from '../utils/pdfDownloadTracker';
  * Beautiful card for displaying and downloading division PDF resources
  */
 const PDFDownloadCard = ({ division }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation('divisions');
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadComplete, setDownloadComplete] = useState(false);
   const currentLang = i18n.language;
@@ -69,12 +69,12 @@ const PDFDownloadCard = ({ division }) => {
               <LucideIcons.FileText size={28} />
             </div>
             <div>
-              <h3 className="text-lg font-bold">Division Guide</h3>
-              <p className="text-sm opacity-90">Official Documentation</p>
+              <h3 className="text-lg font-bold">{t('pdfCard.headerTitle')}</h3>
+              <p className="text-sm opacity-90">{t('pdfCard.headerSubtitle')}</p>
             </div>
           </div>
           <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold">
-            PDF
+            {t('pdfCard.badge')}
           </div>
         </div>
       </div>
@@ -90,18 +90,20 @@ const PDFDownloadCard = ({ division }) => {
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="text-center p-3 bg-blue-50 rounded-xl">
             <LucideIcons.FileType size={20} className="mx-auto text-blue-600 mb-1" />
-            <div className="text-xs text-gray-500">Format</div>
-            <div className="text-sm font-bold text-gray-900">PDF</div>
+            <div className="text-xs text-gray-500">{t('pdfCard.fileInfo.formatLabel')}</div>
+            <div className="text-sm font-bold text-gray-900">{t('pdfCard.fileInfo.formatValue')}</div>
           </div>
           <div className="text-center p-3 bg-green-50 rounded-xl">
             <LucideIcons.FileStack size={20} className="mx-auto text-green-600 mb-1" />
-            <div className="text-xs text-gray-500">Pages</div>
+            <div className="text-xs text-gray-500">{t('pdfCard.fileInfo.pagesLabel')}</div>
             <div className="text-sm font-bold text-gray-900">{pages}</div>
           </div>
           <div className="text-center p-3 bg-purple-50 rounded-xl">
             <LucideIcons.HardDrive size={20} className="mx-auto text-purple-600 mb-1" />
-            <div className="text-xs text-gray-500">Size</div>
-            <div className="text-sm font-bold text-gray-900">{sizeKB} KB</div>
+            <div className="text-xs text-gray-500">{t('pdfCard.fileInfo.sizeLabel')}</div>
+            <div className="text-sm font-bold text-gray-900">
+              {t('card.pdfInfo.size', { size: sizeKB })}
+            </div>
           </div>
         </div>
 
@@ -121,17 +123,17 @@ const PDFDownloadCard = ({ division }) => {
             {isDownloading ? (
               <>
                 <LucideIcons.Loader2 size={20} className="animate-spin" />
-                <span>Downloading...</span>
+                <span>{t('pdfCard.buttons.downloading')}</span>
               </>
             ) : downloadComplete ? (
               <>
                 <LucideIcons.CheckCircle size={20} />
-                <span>Downloaded!</span>
+                <span>{t('pdfCard.buttons.downloaded')}</span>
               </>
             ) : (
               <>
                 <LucideIcons.Download size={20} />
-                <span>Download PDF</span>
+                <span>{t('pdfCard.buttons.download')}</span>
               </>
             )}
           </motion.button>
@@ -143,7 +145,7 @@ const PDFDownloadCard = ({ division }) => {
             className="bg-white border-2 border-gray-300 text-gray-700 py-3 px-4 rounded-xl font-semibold hover:border-gray-400 transition-all duration-300 flex items-center justify-center gap-2"
           >
             <LucideIcons.Eye size={20} />
-            <span className="hidden sm:inline">Preview</span>
+            <span className="hidden sm:inline">{t('pdfCard.buttons.preview')}</span>
           </motion.button>
         </div>
 
@@ -151,6 +153,7 @@ const PDFDownloadCard = ({ division }) => {
         <div className="mt-4 p-3 bg-gray-100 rounded-lg">
           <div className="flex items-center gap-2 text-xs text-gray-600">
             <LucideIcons.File size={14} />
+            <span>{t('pdfCard.fileNameLabel')}:</span>
             <span className="font-mono truncate">{filename}</span>
           </div>
         </div>
@@ -160,4 +163,3 @@ const PDFDownloadCard = ({ division }) => {
 };
 
 export default PDFDownloadCard;
-

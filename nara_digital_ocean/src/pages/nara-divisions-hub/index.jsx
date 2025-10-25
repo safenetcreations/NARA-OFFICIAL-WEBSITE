@@ -15,6 +15,11 @@ const DivisionsHub = () => {
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [filterCategory, setFilterCategory] = useState('all'); // 'all', 'research', 'services', 'monitoring'
   const currentLang = i18n.language;
+  const categoryLabels = t('filters.categories', { returnObjects: true });
+  const viewLabels = t('filters.view', { returnObjects: true });
+  const heroStats = t('hero.stats', { returnObjects: true }) || [];
+  const cardMetrics = t('card.metrics', { returnObjects: true }) || {};
+  const cardActions = t('card.actions', { returnObjects: true }) || {};
 
   useEffect(() => {
     let filtered = DIVISIONS_CONFIG;
@@ -81,10 +86,10 @@ const DivisionsHub = () => {
   };
 
   const categories = [
-    { id: 'all', label: 'All Divisions', icon: 'LayoutGrid' },
-    { id: 'research', label: 'Research', icon: 'FlaskConical' },
-    { id: 'services', label: 'Services', icon: 'Briefcase' },
-    { id: 'monitoring', label: 'Monitoring', icon: 'BarChart3' }
+    { id: 'all', icon: 'LayoutGrid' },
+    { id: 'research', icon: 'FlaskConical' },
+    { id: 'services', icon: 'Briefcase' },
+    { id: 'monitoring', icon: 'BarChart3' }
   ];
 
   return (
@@ -109,19 +114,17 @@ const DivisionsHub = () => {
               <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md px-6 py-3 rounded-full">
                 <LucideIcons.Building2 size={24} />
                 <span className="text-sm font-semibold tracking-wide uppercase">
-                  NARA Research Divisions
+                  {t('hero.badge')}
                 </span>
               </div>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-cyan-100 bg-clip-text text-transparent">
-              Explore Our Divisions
+              {t('hero.title')}
             </h1>
             
             <p className="text-xl md:text-2xl mb-8 max-w-4xl mx-auto text-blue-100 leading-relaxed">
-              Discover world-class marine research across 10 specialized divisions
-              <br className="hidden md:block" />
-              Download comprehensive guides and explore our expertise
+              {t('hero.subtitle')}
             </p>
 
             {/* Enhanced Search Bar */}
@@ -132,7 +135,8 @@ const DivisionsHub = () => {
                   <LucideIcons.Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-blue-600" size={24} />
                   <input
                     type="text"
-                    placeholder="Search divisions by name, expertise, or services..."
+                    placeholder={t('hero.searchPlaceholder')}
+                    aria-label={t('hero.searchAria')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-16 pr-6 py-5 rounded-2xl text-gray-900 text-lg placeholder-gray-500 focus:outline-none bg-transparent"
@@ -151,24 +155,22 @@ const DivisionsHub = () => {
 
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-12">
-              {[
-                { icon: 'Building2', value: '10', label: 'Divisions' },
-                { icon: 'Users', value: '200+', label: 'Researchers' },
-                { icon: 'FileText', value: '10', label: 'PDF Guides' },
-                { icon: 'Award', value: '50+', label: 'Services' }
-              ].map((stat, idx) => (
+              {heroStats.map((stat, idx) => {
+                const StatIcon = LucideIcons[stat.icon] || LucideIcons.Award;
+                return (
                 <motion.div
-                  key={idx}
+                  key={`${stat.label}-${idx}`}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 + idx * 0.1 }}
                   className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20"
                 >
-                  {React.createElement(LucideIcons[stat.icon], { size: 28, className: "mx-auto mb-2" })}
+                  {StatIcon && <StatIcon size={28} className="mx-auto mb-2" />}
                   <div className="text-3xl font-bold">{stat.value}</div>
                   <div className="text-sm text-blue-100">{stat.label}</div>
                 </motion.div>
-              ))}
+              );
+              })}
             </div>
           </motion.div>
         </div>
@@ -194,7 +196,7 @@ const DivisionsHub = () => {
                   }`}
                 >
                   <IconComponent size={18} />
-                  <span>{category.label}</span>
+                  <span>{categoryLabels?.[category.id] || ''}</span>
                 </motion.button>
               );
             })}
@@ -211,7 +213,7 @@ const DivisionsHub = () => {
               }`}
             >
               <LucideIcons.LayoutGrid size={18} />
-              <span className="hidden sm:inline">Grid</span>
+              <span className="hidden sm:inline">{viewLabels?.grid || 'Grid'}</span>
             </button>
             <button
               onClick={() => setViewMode('list')}
@@ -222,7 +224,7 @@ const DivisionsHub = () => {
               }`}
             >
               <LucideIcons.List size={18} />
-              <span className="hidden sm:inline">List</span>
+              <span className="hidden sm:inline">{viewLabels?.list || 'List'}</span>
             </button>
           </div>
         </div>
@@ -230,8 +232,13 @@ const DivisionsHub = () => {
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-gray-600 text-sm">
-            Showing <span className="font-bold text-blue-600">{filteredDivisions.length}</span> of {DIVISIONS_CONFIG.length} divisions
-            {searchQuery && <span> matching "{searchQuery}"</span>}
+            {t('results.summary', {
+              count: filteredDivisions.length,
+              total: DIVISIONS_CONFIG.length
+            })}
+            {searchQuery && (
+              <span> {t('results.matching', { query: searchQuery })}</span>
+            )}
           </p>
         </div>
       </section>
@@ -246,9 +253,9 @@ const DivisionsHub = () => {
           >
             <div className="bg-white rounded-3xl shadow-xl p-12 max-w-2xl mx-auto">
               <LucideIcons.SearchX size={80} className="mx-auto text-gray-300 mb-6" />
-              <h3 className="text-2xl font-bold text-gray-800 mb-3">No Divisions Found</h3>
+              <h3 className="text-2xl font-bold text-gray-800 mb-3">{t('empty.title')}</h3>
               <p className="text-gray-600 mb-6">
-                Try adjusting your search or filter criteria
+                {t('empty.description')}
               </p>
               <button
                 onClick={() => {
@@ -257,7 +264,7 @@ const DivisionsHub = () => {
                 }}
                 className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
               >
-                Clear Filters
+                {t('empty.clear')}
               </button>
             </div>
           </motion.div>
@@ -304,7 +311,7 @@ const DivisionsHub = () => {
                           {division.pdfResource && (
                             <div className="bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5">
                               <LucideIcons.FileText size={14} />
-                              <span className="text-xs font-semibold">PDF Available</span>
+                              <span className="text-xs font-semibold">{t('card.pdfAvailable')}</span>
                             </div>
                           )}
                         </div>
@@ -332,19 +339,19 @@ const DivisionsHub = () => {
                           <div className="text-2xl font-bold text-blue-600">
                             {division.focusAreas.length}
                           </div>
-                          <div className="text-xs text-gray-600 font-medium">Focus Areas</div>
+                          <div className="text-xs text-gray-600 font-medium">{cardMetrics.focusAreas || 'Focus Areas'}</div>
                         </div>
                         <div className="text-center p-3 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
                           <div className="text-2xl font-bold text-green-600">
                             {division.services.length}
                           </div>
-                          <div className="text-xs text-gray-600 font-medium">Services</div>
+                          <div className="text-xs text-gray-600 font-medium">{cardMetrics.services || 'Services'}</div>
                         </div>
                         <div className="text-center p-3 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
                           <div className="text-2xl font-bold text-purple-600">
                             <LucideIcons.Users size={24} className="mx-auto" />
                           </div>
-                          <div className="text-xs text-gray-600 font-medium">Team</div>
+                          <div className="text-xs text-gray-600 font-medium">{cardMetrics.team || 'Team'}</div>
                         </div>
                       </div>
 
@@ -354,17 +361,17 @@ const DivisionsHub = () => {
                           <div className="flex items-center gap-3 mb-2">
                             <LucideIcons.Download size={18} className="text-amber-600" />
                             <span className="text-sm font-bold text-amber-900">
-                              Download Division Guide
+                              {t('card.pdfInfo.title')}
                             </span>
                           </div>
                           <div className="flex items-center gap-4 text-xs text-amber-700">
                             <span className="flex items-center gap-1">
                               <LucideIcons.FileStack size={12} />
-                              {division.pdfResource.pages} pages
+                              {t('card.pdfInfo.pages', { count: division.pdfResource.pages })}
                             </span>
                             <span className="flex items-center gap-1">
                               <LucideIcons.HardDrive size={12} />
-                              {division.pdfResource.sizeKB} KB
+                              {t('card.pdfInfo.size', { size: division.pdfResource.sizeKB })}
                             </span>
                           </div>
                         </div>
@@ -378,7 +385,7 @@ const DivisionsHub = () => {
                           onClick={() => handleDivisionClick(division.slug)}
                           className={`flex-1 bg-gradient-to-r ${division.gradient} text-white py-3.5 rounded-xl font-semibold hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2`}
                         >
-                          <span>Explore Division</span>
+                          <span>{cardActions.explore || t('card.actions.explore')}</span>
                           <LucideIcons.ArrowRight size={20} />
                         </motion.button>
                         
@@ -388,7 +395,7 @@ const DivisionsHub = () => {
                             whileTap={{ scale: 0.95 }}
                             onClick={() => setSelectedDivision(division)}
                             className="bg-white border-2 border-gray-300 text-gray-700 p-3.5 rounded-xl font-semibold hover:border-gray-400 hover:shadow-lg transition-all duration-300"
-                            title="Download PDF"
+                            title={cardActions.download || t('card.actions.download')}
                           >
                             <LucideIcons.Download size={20} />
                           </motion.button>
@@ -444,11 +451,10 @@ const DivisionsHub = () => {
               viewport={{ once: true }}
             >
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                Ready to Collaborate?
+                {t('cta.heading')}
               </h2>
               <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-                Partner with our world-class research divisions to advance marine science
-                and sustainable ocean management
+                {t('cta.description')}
               </p>
             </motion.div>
           </div>
@@ -461,7 +467,7 @@ const DivisionsHub = () => {
               className="bg-white text-blue-900 px-8 py-4 rounded-xl font-bold hover:shadow-2xl transition-all duration-300 flex items-center gap-3"
             >
               <LucideIcons.Mail size={24} />
-              <span>Contact Us</span>
+              <span>{t('cta.primary')}</span>
             </motion.button>
             
             <motion.button
@@ -471,7 +477,7 @@ const DivisionsHub = () => {
               className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-bold hover:bg-white hover:text-blue-900 transition-all duration-300 flex items-center gap-3"
             >
               <LucideIcons.BookOpen size={24} />
-              <span>View Research</span>
+              <span>{t('cta.secondary')}</span>
             </motion.button>
 
             <motion.button
@@ -481,7 +487,7 @@ const DivisionsHub = () => {
               className="bg-cyan-500 text-white px-8 py-4 rounded-xl font-bold hover:shadow-2xl transition-all duration-300 flex items-center gap-3"
             >
               <LucideIcons.Download size={24} />
-              <span>Download All PDFs</span>
+              <span>{t('cta.downloadAll')}</span>
             </motion.button>
           </div>
         </div>
@@ -491,4 +497,3 @@ const DivisionsHub = () => {
 };
 
 export default DivisionsHub;
-
