@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import * as Icons from 'lucide-react';
@@ -12,8 +12,10 @@ import ChartCatalogSection from './sections/ChartCatalogSection';
 import QuickActionsSection from './sections/QuickActionsSection';
 import StatsOverviewSection from './sections/StatsOverviewSection';
 
+const navIds = ['overview', 'ocean-data', 'services', 'charts'];
+
 const NewMaritimeHub = () => {
-  const { t, i18n } = useTranslation(['maritime', 'common']);
+  const { t } = useTranslation(['maritime', 'common']);
   const [activeSection, setActiveSection] = useState('overview');
   const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -26,14 +28,16 @@ const NewMaritimeHub = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const meta = t('meta', { ns: 'maritime', returnObjects: true });
+  const navContent = t('nav', { ns: 'maritime', returnObjects: true }) || {};
+  const navItems = navContent.items || [];
+  const ctaContent = t('cta', { ns: 'maritime', returnObjects: true }) || {};
+
   return (
     <>
       <Helmet>
-        <title>Maritime Services Hub | NARA Sri Lanka</title>
-        <meta
-          name="description"
-          content="Comprehensive maritime services, ocean data monitoring, nautical charts, hydrographic surveys, and real-time sea level data for Sri Lanka's waters"
-        />
+        <title>{meta?.title || 'Maritime Services Hub | NARA Sri Lanka'}</title>
+        <meta name="description" content={meta?.description || ''} />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-b from-slate-50 via-blue-50 to-slate-50">
@@ -54,36 +58,42 @@ const NewMaritimeHub = () => {
                   <Icons.Waves className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold text-gray-900">Maritime Services</h1>
-                  <p className="text-xs text-gray-500">Ocean Intelligence & Navigation</p>
+                  <h1 className="text-lg font-bold text-gray-900">{navContent?.title}</h1>
+                  <p className="text-xs text-gray-500">{navContent?.subtitle}</p>
                 </div>
               </div>
 
               <div className="hidden md:flex items-center space-x-1">
-                {[
-                  { id: 'overview', label: 'Overview', icon: Icons.Home },
-                  { id: 'ocean-data', label: 'Ocean Data', icon: Icons.Waves },
-                  { id: 'services', label: 'Services', icon: Icons.Ship },
-                  { id: 'charts', label: 'Charts', icon: Icons.Map },
-                ].map((item) => (
+                {navIds.map((itemId) => {
+                  const item = navItems.find((entry) => entry.id === itemId);
+                  const IconComponent =
+                    itemId === 'overview'
+                      ? Icons.Home
+                      : itemId === 'ocean-data'
+                      ? Icons.Waves
+                      : itemId === 'services'
+                      ? Icons.Ship
+                      : Icons.Map;
+                  return (
                   <button
-                    key={item.id}
+                    key={itemId}
                     onClick={() => {
-                      setActiveSection(item.id);
-                      document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
+                      setActiveSection(itemId);
+                      document.getElementById(itemId)?.scrollIntoView({ behavior: 'smooth' });
                     }}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                      activeSection === item.id
+                      activeSection === itemId
                         ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
                         : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600'
                     }`}
                   >
                     <div className="flex items-center space-x-2">
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.label}</span>
+                      <IconComponent className="w-4 h-4" />
+                      <span>{item?.label}</span>
                     </div>
                   </button>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -126,22 +136,22 @@ const NewMaritimeHub = () => {
               >
                 <Icons.Anchor className="w-16 h-16 mx-auto mb-6 text-cyan-400" />
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                  Ready to Navigate Sri Lanka's Waters?
+                  {ctaContent?.heading}
                 </h2>
                 <p className="text-xl text-blue-100 mb-8">
-                  Access real-time ocean data, professional maritime services, and official nautical charts
+                  {ctaContent?.description}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button className="px-8 py-4 bg-white text-blue-900 rounded-lg font-semibold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl">
                     <div className="flex items-center justify-center space-x-2">
                       <Icons.Phone className="w-5 h-5" />
-                      <span>Contact Maritime Division</span>
+                      <span>{ctaContent?.primary}</span>
                     </div>
                   </button>
                   <button className="px-8 py-4 bg-blue-700 text-white rounded-lg font-semibold hover:bg-blue-600 transition-all border-2 border-blue-500">
                     <div className="flex items-center justify-center space-x-2">
                       <Icons.Download className="w-5 h-5" />
-                      <span>Download Resources</span>
+                      <span>{ctaContent?.secondary}</span>
                     </div>
                   </button>
                 </div>

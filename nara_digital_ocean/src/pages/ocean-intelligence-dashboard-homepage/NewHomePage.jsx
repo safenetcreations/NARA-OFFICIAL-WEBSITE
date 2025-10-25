@@ -50,15 +50,43 @@ const NewHomePage = () => {
 
   // Load division hero images from localStorage
   useEffect(() => {
+    console.log('%c🎨 LOADING DIVISION HERO IMAGES', 'background: #3b82f6; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
+    console.log('━'.repeat(80));
+
     const loadedImages = {};
+    let totalImagesLoaded = 0;
+
     DIVISIONS_CONFIG.forEach(division => {
       const images = getLocalDivisionImages(division.id);
+
+      console.log(`\n🔍 Division: ${division.name.en}`);
+      console.log(`   ID: ${division.id}`);
+      console.log(`   Found in localStorage: ${images?.length || 0} images`);
+
       if (images && images.length > 0) {
         loadedImages[division.id] = images[0]; // Use first image as hero
-        console.log(`✅ Loaded custom hero for ${division.id}:`, images[0]?.substring(0, 80));
+        totalImagesLoaded++;
+
+        // Log image type
+        const imageUrl = images[0];
+        const imageType = imageUrl.startsWith('data:') ? 'Base64 Data URL (AI Generated)' :
+                         imageUrl.startsWith('http') ? 'Firebase Storage URL' : 'Unknown';
+        console.log(`   ✅ Loaded ${imageType}`);
+        console.log(`   📸 Preview: ${imageUrl.substring(0, 100)}...`);
+      } else {
+        console.log(`   ⚠️  No custom images - will use default: ${division.heroImage?.substring(0, 100) || 'Unsplash fallback'}...`);
       }
     });
+
+    console.log('\n━'.repeat(80));
+    console.log(`%c📊 SUMMARY: Loaded ${totalImagesLoaded} custom hero images for ${DIVISIONS_CONFIG.length} divisions`, 'background: #10b981; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
+    console.log('━'.repeat(80));
+
     setDivisionHeroImages(loadedImages);
+
+    // Log final state
+    console.log('\n🎯 Final divisionHeroImages state:', Object.keys(loadedImages).length, 'divisions with custom images');
+    console.log('Division IDs with custom images:', Object.keys(loadedImages));
   }, []);
 
   useEffect(() => {
@@ -635,9 +663,29 @@ const NewHomePage = () => {
                     const index = idx % divisionsConfig.length;
                     const realDivision = DIVISIONS_CONFIG[index];
                     if (!realDivision) return null;
-                    
+
                     const IconComponent = config.icon;
-                    const heroImage = divisionHeroImages[realDivision?.id] || realDivision?.heroImage || 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&q=85';
+
+                    // Priority-based image selection with detailed logging
+                    let heroImage;
+                    let imageSource;
+
+                    if (divisionHeroImages[realDivision?.id]) {
+                      heroImage = divisionHeroImages[realDivision.id];
+                      imageSource = heroImage.startsWith('data:') ? '🤖 AI Generated' : '☁️ Firebase Storage';
+                    } else if (realDivision?.heroImage) {
+                      heroImage = realDivision.heroImage;
+                      imageSource = '🌐 Config Default';
+                    } else {
+                      heroImage = 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&q=85';
+                      imageSource = '📸 Unsplash Fallback';
+                    }
+
+                    // Log only for first iteration (avoid spam)
+                    if (idx < divisionsConfig.length) {
+                      console.log(`[Ticker] ${realDivision.name.en}: ${imageSource}`);
+                    }
+
                     const divisionName = realDivision.name[i18n.language] || realDivision.name.en;
                     
                     return (

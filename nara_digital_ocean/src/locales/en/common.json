@@ -155,5 +155,7 @@
       "success": "Applicants CSV downloaded",
       "error": "Unable to export applicants. Please retry."
     }
-  }
+  },
+  "accessData": "Access Data",
+  "selectDataset": "Select dataset..."
 }

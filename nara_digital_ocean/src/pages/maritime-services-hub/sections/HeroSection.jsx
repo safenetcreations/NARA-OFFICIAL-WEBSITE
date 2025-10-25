@@ -1,8 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const HeroSection = () => {
+  const { t } = useTranslation('maritime');
+  const hero = t('hero', { returnObjects: true }) || {};
+
   return (
     <div className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-900">
       {/* Animated Background Pattern */}
@@ -22,44 +26,37 @@ const HeroSection = () => {
           >
             <div className="inline-flex items-center px-4 py-2 bg-cyan-500/20 backdrop-blur-sm rounded-full mb-6 border border-cyan-400/30">
               <Icons.Radio className="w-4 h-4 text-cyan-300 mr-2" />
-              <span className="text-cyan-100 text-sm font-medium">Real-time Ocean Intelligence</span>
+              <span className="text-cyan-100 text-sm font-medium">{hero?.badge}</span>
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Maritime Services
-              <span className="block text-cyan-400 mt-2">Intelligence Hub</span>
+              {hero?.title}
+              <span className="block text-cyan-400 mt-2">{hero?.highlight}</span>
             </h1>
 
             <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-              Access real-time sea level data, professional nautical charts, hydrographic surveys,
-              and comprehensive maritime services for Sri Lanka's territorial waters and EEZ.
+              {hero?.description}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <button className="px-8 py-4 bg-cyan-500 text-white rounded-lg font-semibold hover:bg-cyan-400 transition-all shadow-xl hover:shadow-2xl hover:shadow-cyan-500/50 flex items-center justify-center space-x-2">
                 <Icons.Activity className="w-5 h-5" />
-                <span>View Live Ocean Data</span>
+                <span>{hero?.primaryCta}</span>
               </button>
               <button className="px-8 py-4 bg-white/10 text-white rounded-lg font-semibold hover:bg-white/20 transition-all backdrop-blur-sm border border-white/20 flex items-center justify-center space-x-2">
                 <Icons.MapPin className="w-5 h-5" />
-                <span>Browse Charts</span>
+                <span>{hero?.secondaryCta}</span>
               </button>
             </div>
 
             {/* Quick Stats */}
             <div className="grid grid-cols-3 gap-6 mt-12">
-              <div>
-                <div className="text-3xl font-bold text-cyan-400">2</div>
-                <div className="text-sm text-blue-200">Active Stations</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-cyan-400">6min</div>
-                <div className="text-sm text-blue-200">Update Interval</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-cyan-400">24/7</div>
-                <div className="text-sm text-blue-200">Monitoring</div>
-              </div>
+              {(hero?.stats || []).map((item, index) => (
+                <div key={item?.id || index}>
+                  <div className="text-3xl font-bold text-cyan-400">{item?.value}</div>
+                  <div className="text-sm text-blue-200">{item?.label}</div>
+                </div>
+              ))}
             </div>
           </motion.div>
 
