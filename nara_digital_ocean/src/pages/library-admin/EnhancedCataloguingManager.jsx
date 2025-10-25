@@ -400,8 +400,8 @@ const EnhancedCataloguingManager = () => {
 
         {/* Add Book Form */}
         {showForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl my-8">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 pt-20 z-50 overflow-y-auto">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl my-8 mt-4">
               {/* Form Header */}
               <div className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white p-6 rounded-t-2xl flex items-center justify-between">
                 <div className="flex items-center gap-3">
