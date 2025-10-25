@@ -35,6 +35,7 @@ const MediaGallery = lazy(() => import('./pages/media-gallery'));
 const AudiencePage = lazy(() => import('./pages/audiences'));
 const GeneralPublicPage = lazy(() => import('./pages/audiences/GeneralPublicPage'));
 const ResearchersStudentsHub = lazy(() => import('./pages/audiences/ResearchersStudentsHub'));
+const IndustryExportersPage = lazy(() => import('./pages/audiences/IndustryExportersPage'));
 
 // Legal & Compliance Pages
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy'));
@@ -295,6 +296,7 @@ function Routes() {
               <Route path="/audiences" element={<Navigate to="/audiences/general-public" replace />} />
               <Route path="/audiences/general-public" element={<GeneralPublicPage />} />
               <Route path="/audiences/researchers-students" element={<ResearchersStudentsHub />} />
+              <Route path="/audiences/industry-exporters" element={<IndustryExportersPage />} />
               <Route path="/audiences/:slug" element={<AudiencePage />} />
               
               {/* Aqua School Directory */}
