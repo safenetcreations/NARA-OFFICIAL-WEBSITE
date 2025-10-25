@@ -98,11 +98,12 @@ const ShareMenu = ({
   }, [article, i18n.language, t]);
 
   const buttonClasses = useMemo(() => {
-    const base = 'inline-flex items-center justify-center rounded-full font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
+    const base =
+      'inline-flex items-center justify-center rounded-lg bg-transparent text-slate-500 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 hover:scale-110';
     const sizes = {
-      sm: 'h-8 w-8 text-[11px]',
-      md: 'h-10 w-10 text-xs',
-      lg: 'h-12 w-12 text-sm'
+      sm: 'h-8 w-8 text-base',
+      md: 'h-10 w-10 text-lg',
+      lg: 'h-12 w-12 text-xl'
     };
     return `${base} ${sizes[size] || sizes.md}`;
   }, [size]);
@@ -133,21 +134,19 @@ const ShareMenu = ({
             key={key}
             type="button"
             onClick={() => handleShare(key)}
-            className={`${buttonClasses} shadow-sm hover:-translate-y-0.5`}
-            style={{ backgroundColor: color }}
+            className={buttonClasses}
             aria-label={t(`share.${key}`)}
           >
-            <Icon size={iconSize} className="text-white" />
+            <Icon size={iconSize} style={{ color }} />
           </button>
         ))}
         <button
           type="button"
           onClick={handlePdfDownload}
-          className={`${buttonClasses} shadow-sm hover:-translate-y-0.5`}
-          style={{ backgroundColor: '#1D4ED8' }}
+          className={buttonClasses}
           aria-label={t('share.pdf')}
         >
-          <Download size={iconSize} className="text-white" />
+          <Download size={iconSize} className="text-blue-600" />
         </button>
       </div>
       {showLink && (

@@ -107,6 +107,18 @@ const MasterAdminPanel = () => {
       ]
     },
     {
+      id: 'marketplace',
+      label: 'Digital Marketplace',
+      icon: Package,
+      color: 'emerald',
+      subsections: [
+        { id: 'products', label: 'Products', icon: Package, path: '/admin/marketplace/products' },
+        { id: 'orders', label: 'Orders', icon: CheckCircle, path: '/admin/marketplace/orders' },
+        { id: 'payments', label: 'Payments', icon: DollarSign, path: '/admin/marketplace/payments' },
+        { id: 'categories', label: 'Categories', icon: Tag, path: '/admin/marketplace/categories' }
+      ]
+    },
+    {
       id: 'hr',
       label: 'HR & Recruitment',
       icon: Briefcase,

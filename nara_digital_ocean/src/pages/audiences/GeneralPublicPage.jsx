@@ -14,16 +14,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Fish, AlertTriangle, Waves, Ship, FlaskConical, Calendar,
+  Fish, AlertTriangle, Waves, FlaskConical, Calendar,
   Phone, MapPin, BookOpen, GraduationCap, Briefcase, Users,
-  TrendingUp, Bell, Shield, Anchor, Sun, Cloud, CloudRain,
-  ChevronRight, ExternalLink, CheckCircle, Clock, Map
+  TrendingUp, Bell, Shield, ChevronRight, ExternalLink, CheckCircle, Clock, Map, Ship
 } from 'lucide-react';
 
 const GeneralPublicPage = () => {
   const navigate = useNavigate();
-  const [currentWeather, setCurrentWeather] = useState('Clear');
-  const [seaCondition, setSeaCondition] = useState('Calm');
 
   // Simulated real-time data
   const [liveData, setLiveData] = useState({
@@ -178,8 +175,8 @@ const GeneralPublicPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-blue-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-16">
+      <section className="bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 text-white pt-24 md:pt-28">
+        <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 mb-4">
               <Users className="w-6 h-6" />

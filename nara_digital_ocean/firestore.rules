@@ -611,5 +611,25 @@ service cloud.firestore {
       allow create: if true;
       allow update, delete: if isAdmin();
     }
+
+    // ============================================
+    // FISH MARKET INTELLIGENCE COLLECTIONS
+    // ============================================
+
+    // Fish Market Prices Collection (scraped data)
+    match /fish_market_prices/{priceId} {
+      // Anyone can read fish market prices (public data)
+      allow read: if true;
+      // Only admins and scrapers can write (scrapers use service account)
+      allow write: if isAdmin();
+    }
+
+    // Scraper Metadata Collection
+    match /scraper_metadata/{metadataId} {
+      // Anyone can read scraper metadata (last run time, etc.)
+      allow read: if true;
+      // Only admins and scrapers can write
+      allow write: if isAdmin();
+    }
   }
 }

@@ -1,16 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense, useMemo } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import * as Icons from 'lucide-react';
+import { 
+  Fish, Thermometer, Shield, Satellite, Award, Users, Globe2,
+  Leaf, Anchor, Droplets, Waves, Compass, Map, TrendingUp, BarChart3, Building2,
+  FlaskConical, Info, Database, GraduationCap, Microscope, Ship, ShoppingBag,
+  Flag, TreePine, Search, Handshake, Calendar, BookOpen, AlertTriangle,
+  ArrowRight, LayoutGrid, BookMarked, RadioTower, Navigation, FileText,
+  Layers, Send, MessageCircle, UserCheck, Sparkles
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import AppImage from '../../components/AppImage';
 import { useOceanData } from '../../hooks/useOceanData';
-import SriLankaEEZMap from '../../components/SriLankaEEZMap';
-import APIIntegrationShowcase from '../../components/sections/APIIntegrationShowcase';
-import AcademyShowcase from '../../components/sections/AcademyShowcase';
-import LibraryBooksCarousel from '../../components/library/LibraryBooksCarousel';
-import GovFooter from '../../components/compliance/GovFooter';
 import DIVISIONS_CONFIG from '../../data/divisionsConfig';
+
+// Lazy load heavy components
+const SriLankaEEZMap = lazy(() => import('../../components/SriLankaEEZMap'));
+const APIIntegrationShowcase = lazy(() => import('../../components/sections/APIIntegrationShowcase'));
+const AcademyShowcase = lazy(() => import('../../components/sections/AcademyShowcase'));
+const LibraryBooksCarousel = lazy(() => import('../../components/library/LibraryBooksCarousel'));
+const GovFooter = lazy(() => import('../../components/compliance/GovFooter'));
 
 const NewHomePage = () => {
   const [lastUpdate, setLastUpdate] = useState(new Date());
@@ -43,38 +52,38 @@ const NewHomePage = () => {
     return () => clearInterval(interval);
   }, [refreshData]);
 
-  const researchAreasConfig = [
+  const researchAreasConfig = useMemo(() => [
     {
       key: 'marineBiodiversity',
-      icon: Icons.Fish,
+      icon: Fish,
       color: 'from-blue-500 to-cyan-500',
       statValue: oceanData?.speciesCount,
       trend: oceanData?.speciesTrend || 'stable'
     },
     {
       key: 'climateResearch',
-      icon: Icons.Thermometer,
+      icon: Thermometer,
       color: 'from-purple-500 to-pink-500',
       statValue: oceanData?.temperature,
       trend: oceanData?.tempTrend || 'warming'
     },
     {
       key: 'conservation',
-      icon: Icons.Shield,
+      icon: Shield,
       color: 'from-green-500 to-teal-500',
       statValue: oceanData?.conservationRate,
       trend: oceanData?.conservationTrend || 'improving'
     },
     {
       key: 'satelliteMonitoring',
-      icon: Icons.Satellite,
+      icon: Satellite,
       color: 'from-orange-500 to-red-500',
       statValue: oceanData?.satelliteObservations,
       trend: oceanData?.satelliteTrend || 'active'
     }
-  ];
+  ], [oceanData]);
 
-  const researchAreas = researchAreasConfig.map((config) => {
+  const researchAreas = useMemo(() => researchAreasConfig.map((config) => {
     const copy = researchContent?.areas?.[config.key] || {};
     return {
       key: config.key,
@@ -87,9 +96,9 @@ const NewHomePage = () => {
       stat: config.statValue || copy.statFallback || '',
       unit: copy.unit || ''
     };
-  });
+  }), [researchAreasConfig, researchContent]);
 
-  const missionStatsIcons = [Icons.Award, Icons.Users, Icons.Globe2];
+  const missionStatsIcons = useMemo(() => [Award, Users, Globe2], []);
 
   const divisionsConfig = [
     { icon: Icons.Leaf, gradient: 'from-green-500 to-emerald-500', slug: 'environmental-studies-division' },
@@ -219,10 +228,10 @@ const NewHomePage = () => {
 
   return (
     <div className="bg-black text-white overflow-hidden">
-      <div className="fixed top-20 right-4 z-50 glass" style={{ padding: '8px 12px', borderRadius: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div className="fixed top-16 md:top-20 right-2 md:right-4 z-50 glass" style={{ padding: '6px 10px', borderRadius: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>
+          <span style={{ fontSize: '0.7rem', opacity: 0.8 }}>
             {t('hero.liveDataLabel', { ns: 'home' })}: {lastUpdate.toLocaleTimeString()}
           </span>
         </div>
@@ -249,80 +258,80 @@ const NewHomePage = () => {
           <div className="relative z-10 w-full">
             <motion.div
               style={{ opacity }}
-              className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-14"
+              className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 lg:py-14"
             >
               <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)] items-center">
                 <motion.div
                   initial={{ y: 60, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.8 }}
-                  className="space-y-3"
+                  className="space-y-4 md:space-y-3"
                 >
                   <div className="space-y-2">
-                    <div className="relative h-16 md:h-20 flex items-center justify-center">
-                      <div className="text-center text-2xl md:text-4xl font-bold welcome-text-si absolute inset-0 flex items-center justify-center">
+                    <div className="relative h-12 sm:h-16 md:h-20 flex items-center justify-center">
+                      <div className="text-center text-xl sm:text-2xl md:text-4xl font-bold welcome-text-si absolute inset-0 flex items-center justify-center">
                         <span className="typewriter-wrapper bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-300 bg-clip-text text-transparent">
                           {t('hero.welcome.sinhala', { ns: 'home', defaultValue: 'NARA වෙත සාදරයෙන් පිළිගනිමු' })}
                         </span>
                       </div>
-                      <div className="text-center text-2xl md:text-4xl font-bold welcome-text-ta opacity-0 absolute inset-0 flex items-center justify-center">
+                      <div className="text-center text-xl sm:text-2xl md:text-4xl font-bold welcome-text-ta opacity-0 absolute inset-0 flex items-center justify-center">
                         <span className="typewriter-wrapper bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-300 bg-clip-text text-transparent">
                           {t('hero.welcome.tamil', { ns: 'home', defaultValue: 'NARA க்கு வரவேற்கிறோம்' })}
                         </span>
                       </div>
-                      <div className="text-center text-2xl md:text-4xl font-bold welcome-text-en opacity-0 absolute inset-0 flex items-center justify-center">
+                      <div className="text-center text-xl sm:text-2xl md:text-4xl font-bold welcome-text-en opacity-0 absolute inset-0 flex items-center justify-center">
                         <span className="typewriter-wrapper bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-300 bg-clip-text text-transparent">
                           {t('hero.welcome.english', { ns: 'home', defaultValue: 'Welcome to NARA' })}
                         </span>
                       </div>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-bold font-space leading-tight">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-space leading-tight">
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
                         {heroTitle?.lineOne || 'Pioneering Aquatic'}
                       </span>
                       <br />
                       <span className="text-white">{heroTitle?.lineTwo || 'Stewardship in Sri Lanka'}</span>
                     </h1>
-                    <p className="text-base md:text-lg text-cyan-300/90 font-semibold">
+                    <p className="text-sm sm:text-base md:text-lg text-cyan-300/90 font-semibold">
                       {heroOverview?.tagline || "Sri Lanka's Premier Marine & Freshwater Research Agency"}
                     </p>
                   </div>
 
-                  <p className="text-sm md:text-base text-slate-300/90 max-w-2xl leading-relaxed">
+                  <p className="text-sm sm:text-base text-slate-300/90 max-w-2xl leading-relaxed">
                     {heroOverview?.description ||
                       "Advancing scientific research and innovation in marine and aquatic resources to protect ecosystems, support sustainable fisheries, and drive the nation's blue economy."}
                   </p>
 
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400">
+                  <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-slate-400">
                     <div className="flex items-center gap-2">
-                      <Icons.Calendar className="h-4 w-4 text-cyan-400" />
+                      <Calendar className="h-4 w-4 text-cyan-400" />
                       <span>{heroOverview?.since || 'Since 1981'}</span>
                     </div>
                     <span>•</span>
                     <div className="flex items-center gap-2">
-                      <Icons.Layers className="h-4 w-4 text-cyan-400" />
+                      <Layers className="h-4 w-4 text-cyan-400" />
                       <span>{heroOverview?.divisions || '9 Research Divisions'}</span>
                     </div>
                     <span>•</span>
                     <div className="flex items-center gap-2">
-                      <Icons.Users className="h-4 w-4 text-cyan-400" />
+                      <Users className="h-4 w-4 text-cyan-400" />
                       <span>{heroOverview?.scientists || '100+ Scientists'}</span>
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                     <Link
                       to="/research-excellence-portal"
-                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/25 transition hover:shadow-cyan-400/40"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-500 px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-slate-950 shadow-lg shadow-cyan-500/25 transition hover:shadow-cyan-400/40 active:scale-95"
                     >
-                      <Icons.Microscope className="h-4 w-4" />
+                      <Microscope className="h-4 w-4" />
                       {heroOverview?.primaryCta || 'Explore Research'}
                     </Link>
                     <Link
                       to="/contact-us"
-                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-500/40 px-6 py-3 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-500/40 px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10 active:scale-95"
                     >
-                    <Icons.Send className="h-4 w-4" />
+                    <Send className="h-4 w-4" />
                     {heroOverview?.secondaryCta ||
                       t('hero.secondaryCta', {
                         ns: 'home',
@@ -339,15 +348,21 @@ const NewHomePage = () => {
                   className="relative"
                 >
                   <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/20 via-transparent to-blue-500/10 blur-3xl" />
-                  <div className="relative rounded-3xl border border-cyan-500/20 bg-slate-950/70 p-4 backdrop-blur-2xl shadow-[0_25px_80px_-40px_rgba(8,145,178,0.6)]">
+                  <div className="relative rounded-3xl border border-cyan-500/20 bg-slate-950/70 p-3 sm:p-4 backdrop-blur-2xl shadow-[0_25px_80px_-40px_rgba(8,145,178,0.6)]">
                     <motion.div
-                      className="relative mx-auto h-[540px] w-full max-w-[380px]"
+                      className="relative mx-auto h-[420px] sm:h-[480px] md:h-[540px] w-full max-w-[380px]"
                       initial={{ scale: 0.92, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ duration: 0.9, delay: 0.2 }}
                     >
                       <div className="relative h-full w-full overflow-hidden rounded-3xl">
-                        <SriLankaEEZMap className="h-full w-full" showMarkers />
+                        <Suspense fallback={
+                          <div className="h-full w-full flex items-center justify-center bg-slate-900">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
+                          </div>
+                        }>
+                          <SriLankaEEZMap className="h-full w-full" showMarkers />
+                        </Suspense>
                         <div className="absolute top-4 right-4 z-10">
                           <img
                             src="/assets/images/sri-lanka-flag.png"
@@ -383,9 +398,9 @@ const NewHomePage = () => {
                       </motion.div>
                     </motion.div>
 
-                    <div className="mt-4 rounded-2xl border border-cyan-500/10 bg-slate-950/80 p-2">
+                    <div className="mt-3 sm:mt-4 rounded-2xl border border-cyan-500/10 bg-slate-950/80 p-2">
                       <div className="mb-1.5">
-                        <p className="text-center text-sm md:text-base font-semibold text-sparkle leading-tight">
+                        <p className="text-center text-xs sm:text-sm md:text-base font-semibold text-sparkle leading-tight">
                           National Aquatic Resources Research & Development Agency
                         </p>
                       </div>
@@ -407,7 +422,7 @@ const NewHomePage = () => {
         </section>
 
 
-        <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-20 px-4 md:px-8 lg:px-12">
+        <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-12 sm:py-16 md:py-20 px-4 md:px-8 lg:px-12">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-cyan-500/15 blur-3xl" />
             <div className="absolute bottom-0 left-24 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" />
@@ -416,7 +431,7 @@ const NewHomePage = () => {
           <div className="relative max-w-[1600px] mx-auto space-y-16">
             <div className="grid gap-8 lg:grid-cols-2">
               {/* Left Tile - Mission Info */}
-              <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-8 md:p-10 backdrop-blur h-full flex flex-col">
+              <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-6 sm:p-8 md:p-10 backdrop-blur h-full flex flex-col">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 border border-cyan-500/20">
                     <AppImage
@@ -440,7 +455,7 @@ const NewHomePage = () => {
                     </p>
                   </div>
                 </div>
-                <h2 className="text-3xl md:text-4xl font-bold text-white font-space mb-4">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white font-space mb-4">
                   {missionContent?.heading}
                 </h2>
                 <p className="text-base text-slate-300/90 leading-relaxed mb-6">
@@ -449,7 +464,7 @@ const NewHomePage = () => {
 
                 <div className="grid gap-4 sm:grid-cols-2 mb-6">
                   <div className="flex items-start gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
-                    <Icons.Compass className="h-5 w-5 text-cyan-300 mt-0.5 flex-shrink-0" />
+                    <Compass className="h-5 w-5 text-cyan-300 mt-0.5 flex-shrink-0" />
                     <p className="text-sm text-slate-300 leading-relaxed">
                       {t('mission.focusResearch', {
                         ns: 'home',
@@ -459,7 +474,7 @@ const NewHomePage = () => {
                     </p>
                   </div>
                   <div className="flex items-start gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
-                    <Icons.UserCheck className="h-5 w-5 text-cyan-300 mt-0.5 flex-shrink-0" />
+                    <UserCheck className="h-5 w-5 text-cyan-300 mt-0.5 flex-shrink-0" />
                     <p className="text-sm text-slate-300 leading-relaxed">
                       {t('mission.focusCommunity', {
                         ns: 'home',
@@ -475,21 +490,21 @@ const NewHomePage = () => {
                     to="/about-nara-our-story"
                     className="inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
                   >
-                    <Icons.BookOpen className="h-4 w-4" />
+                    <BookOpen className="h-4 w-4" />
                     {t('mission.ctaLearn', { ns: 'home', defaultValue: 'About NARA' })}
                   </Link>
                   <Link
                     to="/contact-us"
                     className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-500/40 px-5 py-3 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10"
                   >
-                    <Icons.MessageCircle className="h-4 w-4" />
+                    <MessageCircle className="h-4 w-4" />
                     {t('mission.ctaConsult', { ns: 'home', defaultValue: 'Request a briefing' })}
                   </Link>
                 </div>
               </div>
 
               {/* Right Tile - Stats */}
-              <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-8 md:p-10 backdrop-blur h-full flex flex-col justify-center">
+              <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-6 sm:p-8 md:p-10 backdrop-blur h-full flex flex-col justify-center">
                 <div className="space-y-8">
                   {(missionContent?.stats || []).map((stat, index) => {
                     const StatIcon = missionStatsIcons[index] || Icons.Award;
@@ -523,10 +538,10 @@ const NewHomePage = () => {
                   transition={{ duration: 0.6 }}
                 >
                   <span className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-5 py-2.5 text-sm uppercase tracking-[0.3em] text-cyan-200/80 mb-6">
-                    <Icons.LayoutGrid className="h-5 w-5" />
+                    <LayoutGrid className="h-5 w-5" />
                     {t('divisions.badge', { ns: 'home', defaultValue: 'Research Excellence' })}
                   </span>
-                  <h3 className="text-4xl md:text-5xl font-bold text-white font-space mb-4 leading-tight">
+                  <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-space mb-4 leading-tight">
                     {t('divisions.heading', { ns: 'home', defaultValue: 'Our Research Divisions' })}
                   </h3>
                   <p className="text-lg text-slate-400 max-w-3xl mx-auto leading-relaxed">
@@ -555,9 +570,9 @@ const NewHomePage = () => {
                         <Link
                           key={`row1-${idx}`}
                           to={`/divisions/${config.slug}`}
-                          className="group flex-shrink-0 w-[340px] md:w-[480px] block touch-manipulation"
+                          className="group flex-shrink-0 w-[280px] sm:w-[340px] md:w-[480px] block touch-manipulation"
                         >
-                          <div className="relative h-[280px] md:h-[360px] overflow-hidden rounded-2xl md:rounded-3xl border border-slate-800/50 bg-slate-900 shadow-xl transition-all duration-300 hover:border-cyan-500/60 hover:shadow-2xl hover:shadow-cyan-500/20 active:scale-[0.98]">
+                          <div className="relative h-[240px] sm:h-[280px] md:h-[360px] overflow-hidden rounded-2xl md:rounded-3xl border border-slate-800/50 bg-slate-900 shadow-xl transition-all duration-300 hover:border-cyan-500/60 hover:shadow-2xl hover:shadow-cyan-500/20 active:scale-[0.98]">
                             {/* Hero Image Background */}
                             <div className="absolute inset-0">
                               <img
@@ -571,14 +586,14 @@ const NewHomePage = () => {
                             </div>
                             
                             {/* Content */}
-                            <div className="relative h-full flex flex-col justify-end p-6 md:p-8">
+                            <div className="relative h-full flex flex-col justify-end p-4 sm:p-6 md:p-8">
                               <div>
-                                <h4 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3 group-hover:text-cyan-300 transition-colors leading-tight tracking-tight">
+                                <h4 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3 group-hover:text-cyan-300 transition-colors leading-tight tracking-tight">
                                   {division?.name}
                                 </h4>
                                 <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-cyan-400 uppercase tracking-wider">
                                   <span>Explore</span>
-                                  <Icons.ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:translate-x-2" />
+                                  <ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:translate-x-2" />
                                 </div>
                               </div>
                             </div>
@@ -605,9 +620,9 @@ const NewHomePage = () => {
                         <Link
                           key={`row2-${idx}`}
                           to={`/divisions/${config.slug}`}
-                          className="group flex-shrink-0 w-[340px] md:w-[480px] block touch-manipulation"
+                          className="group flex-shrink-0 w-[280px] sm:w-[340px] md:w-[480px] block touch-manipulation"
                         >
-                          <div className="relative h-[280px] md:h-[360px] overflow-hidden rounded-2xl md:rounded-3xl border border-slate-800/50 bg-slate-900 shadow-xl transition-all duration-300 hover:border-cyan-500/60 hover:shadow-2xl hover:shadow-cyan-500/20 active:scale-[0.98]">
+                          <div className="relative h-[240px] sm:h-[280px] md:h-[360px] overflow-hidden rounded-2xl md:rounded-3xl border border-slate-800/50 bg-slate-900 shadow-xl transition-all duration-300 hover:border-cyan-500/60 hover:shadow-2xl hover:shadow-cyan-500/20 active:scale-[0.98]">
                             {/* Hero Image Background */}
                             <div className="absolute inset-0">
                               <img
@@ -621,14 +636,14 @@ const NewHomePage = () => {
                             </div>
                             
                             {/* Content */}
-                            <div className="relative h-full flex flex-col justify-end p-6 md:p-8">
+                            <div className="relative h-full flex flex-col justify-end p-4 sm:p-6 md:p-8">
                               <div>
-                                <h4 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3 group-hover:text-cyan-300 transition-colors leading-tight tracking-tight">
+                                <h4 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3 group-hover:text-cyan-300 transition-colors leading-tight tracking-tight">
                                   {division?.name}
                                 </h4>
                                 <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-cyan-400 uppercase tracking-wider">
                                   <span>Explore</span>
-                                  <Icons.ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:translate-x-2" />
+                                  <ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:translate-x-2" />
                                 </div>
                               </div>
                             </div>
@@ -651,9 +666,9 @@ const NewHomePage = () => {
                   to="/divisions"
                   className="inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-cyan-500/25 transition-all hover:shadow-cyan-500/40 hover:scale-105"
                 >
-                  <Icons.Microscope className="h-5 w-5" />
+                  <Microscope className="h-5 w-5" />
                   {t('mission.viewAllDivisions', { ns: 'home', defaultValue: 'Explore All Divisions' })}
-                  <Icons.ArrowRight className="h-5 w-5" />
+                  <ArrowRight className="h-5 w-5" />
                 </Link>
               </motion.div>
             </div>
@@ -661,10 +676,10 @@ const NewHomePage = () => {
         </section>
 
 
-        <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-blue-950/40 py-20 px-4">
+        <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-blue-950/40 py-12 sm:py-16 md:py-20 px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 font-space">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 font-space">
                 {portalContent?.heading || 'Navigate Our Flagship Platforms'}
               </h2>
               <p className="text-base md:text-lg text-slate-300 max-w-3xl mx-auto">
@@ -672,17 +687,17 @@ const NewHomePage = () => {
                   'Dive into specialised environments built for scientists, maritime teams, and policy makers.'}
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {portalCards.map(({ key, icon: IconComponent, gradient, link, copy }) => (
                 <Link key={key} to={link} className="group">
-                  <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-6 transition hover:border-cyan-500/40">
-                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors font-mono tracking-tight">
+                  <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6 transition hover:border-cyan-500/40 active:scale-[0.98]">
+                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors font-mono tracking-tight">
                       {copy?.title}
                     </h3>
                     <p className="text-base text-slate-400 leading-relaxed">{copy?.description}</p>
                     <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-cyan-300">
                       {portalContent?.cta || 'Enter portal'}
-                      <Icons.ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </div>
                   </div>
                 </Link>
@@ -691,7 +706,7 @@ const NewHomePage = () => {
           </div>
         </section>
 
-        <section className="relative bg-slate-950 py-20 px-4">
+        <section className="relative bg-slate-950 py-12 sm:py-16 md:py-20 px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-white font-space">
@@ -701,13 +716,13 @@ const NewHomePage = () => {
                 {servicesContent?.subheading}
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {servicesConfig.map((config, index) => {
                 const service = servicesContent?.list?.[index] || {};
                 const IconComponent = config.icon;
                 return (
                   <Link key={config.link} to={config.link} className="group">
-                    <div className="relative h-full overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-center transition hover:border-cyan-500/40">
+                    <div className="relative h-full overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-5 sm:p-6 text-center transition hover:border-cyan-500/40 active:scale-[0.98]">
                       <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">
                         {service?.name}
                       </h3>
@@ -720,10 +735,22 @@ const NewHomePage = () => {
           </div>
         </section>
 
-        <APIIntegrationShowcase content={integrationContent} />
-        <AcademyShowcase />
+        <Suspense fallback={
+          <div className="py-20 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
+          </div>
+        }>
+          <APIIntegrationShowcase content={integrationContent} />
+        </Suspense>
+        <Suspense fallback={
+          <div className="py-20 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
+          </div>
+        }>
+          <AcademyShowcase />
+        </Suspense>
 
-        <section className="relative bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-20 px-4">
+        <section className="relative bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-12 sm:py-16 md:py-20 px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-14">
               <h2 className="text-3xl md:text-4xl font-bold text-white font-space">
@@ -733,7 +760,7 @@ const NewHomePage = () => {
                 {milestonesContent?.subheading}
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
               {milestonesContent?.timeline?.map((milestone, index) => {
                 const IconComponent = milestonesIcons[index] || Icons.Flag;
                 const gradient = milestonesGradients[index] || 'from-cyan-500 to-blue-500';
@@ -741,7 +768,7 @@ const NewHomePage = () => {
                 return (
                   <div
                     key={`${milestone?.title}-${index}`}
-                    className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 transition hover:border-cyan-500/40"
+                    className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6 transition hover:border-cyan-500/40"
                   >
                     <span className={`text-4xl font-bold ${colorClass} font-mono mb-4 block`}>{milestone?.year}</span>
                     <h3 className="text-2xl font-bold text-white mb-3 font-mono tracking-tight">{milestone?.title}</h3>
@@ -750,7 +777,7 @@ const NewHomePage = () => {
                 );
               })}
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               {milestonesContent?.achievements?.map((achievement, index) => {
                 const IconComponent = achievementsIcons[index] || Icons.Award;
                 const gradient = achievementsGradients[index] || 'from-cyan-500 to-blue-500';
@@ -766,7 +793,7 @@ const NewHomePage = () => {
             <div className="mt-12 text-center">
               <Link
                 to="/about-nara-our-story"
-                className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+                className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-slate-950 transition hover:bg-cyan-400 active:scale-95"
               >
                 <Icons.BookOpen className="h-5 w-5" />
                 {milestonesContent?.cta}
@@ -777,14 +804,14 @@ const NewHomePage = () => {
         </section>
 
 
-        <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-20 px-4">
+        <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-12 sm:py-16 md:py-20 px-4">
           <div className="max-w-7xl mx-auto">
             <div className="mb-12 text-center">
               <span className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-5 py-2.5 text-sm uppercase tracking-[0.3em] text-cyan-200/80">
                 <Icons.BookMarked className="h-5 w-5" />
                 {t('home:knowledge.badge', { defaultValue: 'Knowledge Hub' })}
               </span>
-              <h2 className="mt-6 text-3xl md:text-4xl lg:text-5xl font-bold text-white font-space leading-tight">
+              <h2 className="mt-6 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white font-space leading-tight">
                 {t('home:knowledge.heading', { defaultValue: 'Discover the latest publications' })}
               </h2>
               <p className="mt-4 text-lg text-slate-400 leading-relaxed max-w-3xl mx-auto">
@@ -795,15 +822,15 @@ const NewHomePage = () => {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 backdrop-blur">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 sm:p-6 backdrop-blur">
               <LibraryBooksCarousel />
             </div>
           </div>
         </section>
 
-        <section className="relative bg-gradient-to-br from-cyan-900/20 via-slate-900 to-blue-900/20 py-20 px-4">
+        <section className="relative bg-gradient-to-br from-cyan-900/20 via-slate-900 to-blue-900/20 py-12 sm:py-16 md:py-20 px-4">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(6,182,212,0.2),_transparent_60%)] opacity-40" />
-          <div className="relative max-w-5xl mx-auto rounded-3xl border border-cyan-500/30 bg-slate-950/80 p-10 md:p-14 text-center backdrop-blur">
+          <div className="relative max-w-5xl mx-auto rounded-3xl border border-cyan-500/30 bg-slate-950/80 p-6 sm:p-10 md:p-14 text-center backdrop-blur">
             <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-5 py-2 text-xs uppercase tracking-[0.3em] text-cyan-200">
               <Icons.RadioTower className="h-4 w-4" />
               {missionControlContent?.badge || 'National Mission Control'}
@@ -815,17 +842,17 @@ const NewHomePage = () => {
               {missionControlContent?.description ||
                 'The NARA command centre synchronises research, policy, and frontline intelligence to secure resilient oceans and communities.'}
             </p>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 sm:gap-4">
               <Link
                 to="/contact-us"
-                className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+                className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-slate-950 transition hover:bg-cyan-400 active:scale-95"
               >
                 <Icons.Navigation className="h-5 w-5" />
                 {missionControlContent?.form?.cta || 'Join the mission'}
               </Link>
               <Link
                 to="/about-nara-our-story"
-                className="inline-flex items-center gap-2 rounded-xl border border-cyan-500/40 px-6 py-3 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10"
+                className="inline-flex items-center gap-2 rounded-xl border border-cyan-500/40 px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10 active:scale-95"
               >
                 <Icons.FileText className="h-5 w-5" />
                 {t('home:missionControl.learnMore', { defaultValue: 'Review mandate brief' })}

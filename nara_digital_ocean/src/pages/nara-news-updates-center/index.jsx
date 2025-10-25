@@ -302,6 +302,14 @@ const NewsPage = () => {
             ? 'Using fallback newsroom data'
             : 'Newsroom status unknown'
   });
+  const newsSourceLabel =
+    newsSource === 'firestore'
+      ? t('layout.admin.sourceLive', { defaultValue: 'Live feed' })
+      : newsSource === 'local'
+        ? t('layout.admin.sourceLocal', { defaultValue: 'Local dataset' })
+        : newsSource === 'empty'
+          ? t('layout.admin.sourceFallback', { defaultValue: 'Fallback content' })
+          : newsSource || t('layout.admin.sourceUnknown', { defaultValue: 'Unknown' });
   const lastUpdatedSource = metadata?.latest_date || spotlightArticle?.date || null;
   const lastUpdatedLabel = lastUpdatedSource
     ? formatDate(lastUpdatedSource)
@@ -339,215 +347,384 @@ const NewsPage = () => {
         onTickerSelect={handleTickerSelect}
       />
       {/* Enhanced Filter and Search Section */}
-      <section id="latest" className="py-12 px-4 bg-white shadow-lg">
-        <div className="max-w-7xl mx-auto">
+      <section id="latest" className="py-16 px-4">
+        <div className="max-w-7xl mx-auto grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.42fr)]">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8"
+            className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl"
           >
-            <div className="flex flex-col lg:flex-row gap-6 items-center justify-between mb-8">
-              <h2 className="text-3xl font-bold text-gray-800 flex items-center">
-                <BookOpen className="w-8 h-8 mr-3 text-blue-600" />
-                {t('filters.sectionTitle')}
-              </h2>
-
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                >
-                  <Filter className="w-5 h-5" />
-                  {t('filters.advanced')}
-                </button>
-
-                {filtersApplied && (
-                  <button
-                    onClick={clearAllFilters}
-                    className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-300"
-                  >
-                    <X className="w-5 h-5" />
-                    {t('filters.clearAll')}
-                  </button>
-                )}
+            <div className="bg-gradient-to-r from-slate-900 via-blue-900 to-blue-700 px-8 py-6 text-white">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="max-w-xl space-y-2">
+                  <span className="text-xs font-semibold uppercase tracking-[0.32em] text-white/60">
+                    {t('filters.sectionEyebrow', { defaultValue: 'Newsroom' })}
+                  </span>
+                  <h2 className="text-3xl font-bold leading-tight tracking-tight">
+                    {t('filters.sectionTitle')}
+                  </h2>
+                  <p className="text-sm text-white/70">
+                    {t('filters.sectionDescription', {
+                      defaultValue:
+                        'Stay on top of maritime intelligence, policy updates, and research breakthroughs.'
+                    })}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 text-sm font-medium leading-tight text-white shadow-lg backdrop-blur">
+                  {resultsSummary}
+                </div>
               </div>
             </div>
 
-            {newsError && (
-              <div className="mb-6 w-full rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
-                {t('results.dataSource.error')}
-              </div>
-            )}
-
-            {newsSource === 'local' && !newsError && (
-              <div className="mb-6 w-full rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                {t('results.dataSource.localFallback')}
-              </div>
-            )}
-
-            {/* Enhanced Search Bar */}
-            <div className="relative mb-8">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
-              <input
-                type="text"
-                placeholder={t('filters.searchPlaceholder')}
-                aria-label={t('filters.searchPlaceholder')}
-                className="w-full pl-12 pr-6 py-4 text-lg border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e?.target?.value)}
-              />
-            </div>
-
-            <div className="flex flex-wrap gap-3 mb-8">
-              {availableCategories?.map((category) => {
-                const isAll = category === 'all';
-                const count = !isAll ? metadata?.categories?.[category] : null;
-                return (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
-                      selectedCategory === category
-                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg transform -translate-y-1'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800'
-                    }`}
-                  >
-                    {isAll ? t('filters.allCategories') : getCategoryLabel(category)}
-                    {!isAll && typeof count === 'number' && (
-                      <span className="ml-2 text-xs opacity-75">({count})</span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Advanced Filters */}
-            <AnimatePresence>
-              {showAdvancedFilters && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="mt-8 pt-8 border-t-2 border-gray-100"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-3">
-                        {t('filters.sortLabel')}
-                      </label>
-                      <select
-                        value={`${sortBy}-${sortOrder}`}
-                        onChange={(e) => handleSortChange(e?.target?.value)}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300"
-                      >
-                        <option value="date-desc">{t('filters.sortOptions.dateDesc')}</option>
-                        <option value="date-asc">{t('filters.sortOptions.dateAsc')}</option>
-                        <option value="views-desc">{t('filters.sortOptions.viewsDesc')}</option>
-                        <option value="shares-desc">{t('filters.sortOptions.sharesDesc')}</option>
-                        <option value="title-asc">{t('filters.sortOptions.titleAsc')}</option>
-                        <option value="title-desc">{t('filters.sortOptions.titleDesc')}</option>
-                        <option value="category-asc">
-                          {t('filters.sortOptions.categoryAsc')}
-                        </option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-3">
-                        {t('filters.dateFrom')}
-                      </label>
-                      <input
-                        type="date"
-                        value={dateRange?.start}
-                        onChange={(e) =>
-                          setDateRange(prev => ({ ...prev, start: e?.target?.value }))
-                        }
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-3">
-                        {t('filters.dateTo')}
-                      </label>
-                      <input
-                        type="date"
-                        value={dateRange?.end}
-                        onChange={(e) =>
-                          setDateRange(prev => ({ ...prev, end: e?.target?.value }))
-                        }
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300"
-                      />
-                    </div>
-                  </div>
-                </motion.div>
+            <div className="space-y-8 px-8 py-8">
+              {newsError && (
+                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-sm">
+                  {t('results.dataSource.error')}
+                </div>
               )}
-            </AnimatePresence>
+
+              {newsSource === 'local' && !newsError && (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 shadow-sm">
+                  {t('results.dataSource.localFallback')}
+                </div>
+              )}
+
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+                <div className="relative flex-1">
+                  <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder={t('filters.searchPlaceholder')}
+                    aria-label={t('filters.searchPlaceholder')}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-5 text-base text-slate-700 shadow-inner transition-all duration-300 focus:border-blue-600 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e?.target?.value)}
+                  />
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                    className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-300 hover:border-blue-500 hover:text-blue-600 hover:shadow-md"
+                  >
+                    <Filter className="h-4 w-4" />
+                    {t('filters.advanced')}
+                  </button>
+
+                  {filtersApplied && (
+                    <button
+                      onClick={clearAllFilters}
+                      className="inline-flex items-center gap-2 rounded-2xl border border-transparent bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-slate-700"
+                    >
+                      <X className="h-4 w-4" />
+                      {t('filters.clearAll')}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                {availableCategories?.map((category) => {
+                  const isAll = category === 'all';
+                  const count = !isAll ? metadata?.categories?.[category] : null;
+                  const isActive = selectedCategory === category;
+
+                  return (
+                    <button
+                      key={category}
+                      onClick={() => setSelectedCategory(category)}
+                      className={`group inline-flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-medium transition-all duration-300 ${
+                        isActive
+                          ? 'border-blue-600 bg-blue-50 text-blue-700 shadow'
+                          : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-blue-400 hover:bg-white hover:text-blue-600'
+                      }`}
+                    >
+                      <span>{isAll ? t('filters.allCategories') : getCategoryLabel(category)}</span>
+                      {!isAll && typeof count === 'number' && (
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs ${
+                            isActive ? 'bg-white/80 text-blue-600' : 'bg-white text-slate-500'
+                          }`}
+                        >
+                          {count}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <AnimatePresence>
+                {showAdvancedFilters && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="rounded-2xl border border-slate-200 bg-slate-50/70 p-6 shadow-inner"
+                  >
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                      <div>
+                        <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          {t('filters.sortLabel')}
+                        </label>
+                        <select
+                          value={`${sortBy}-${sortOrder}`}
+                          onChange={(e) => handleSortChange(e?.target?.value)}
+                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 transition-all duration-300 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/20"
+                        >
+                          <option value="date-desc">{t('filters.sortOptions.dateDesc')}</option>
+                          <option value="date-asc">{t('filters.sortOptions.dateAsc')}</option>
+                          <option value="views-desc">{t('filters.sortOptions.viewsDesc')}</option>
+                          <option value="shares-desc">{t('filters.sortOptions.sharesDesc')}</option>
+                          <option value="title-asc">{t('filters.sortOptions.titleAsc')}</option>
+                          <option value="title-desc">{t('filters.sortOptions.titleDesc')}</option>
+                          <option value="category-asc">
+                            {t('filters.sortOptions.categoryAsc')}
+                          </option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          {t('filters.dateFrom')}
+                        </label>
+                        <input
+                          type="date"
+                          value={dateRange?.start}
+                          onChange={(e) =>
+                            setDateRange(prev => ({ ...prev, start: e?.target?.value }))
+                          }
+                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 transition-all duration-300 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/20"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          {t('filters.dateTo')}
+                        </label>
+                        <input
+                          type="date"
+                          value={dateRange?.end}
+                          onChange={(e) =>
+                            setDateRange(prev => ({ ...prev, end: e?.target?.value }))
+                          }
+                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 transition-all duration-300 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/20"
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </motion.div>
+
+          <motion.aside
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className="space-y-5"
+          >
+            <div className="rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-slate-100 p-6 shadow-xl">
+              <div className="flex items-start gap-3">
+                <ShieldCheck className="h-5 w-5 flex-shrink-0 text-blue-600" />
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    {t('layout.admin.statusTitle', { defaultValue: 'Newsroom status' })}
+                  </p>
+                  <p className="text-sm leading-relaxed text-slate-700">{adminStatusMessage}</p>
+                </div>
+              </div>
+              <div className="mt-6 flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <span>{t('layout.admin.sourceLabel', { defaultValue: 'Data source' })}</span>
+                <span className="text-slate-900">{newsSourceLabel}</span>
+              </div>
+              <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
+                <span>{t('layout.admin.lastUpdatedLabel', { defaultValue: 'Last updated' })}</span>
+                <span className="font-semibold text-slate-900">{lastUpdatedLabel}</span>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                {t('layout.admin.quickStats', { defaultValue: 'Quick metrics' })}
+              </h3>
+              <div className="mt-4 grid grid-cols-1 gap-4 text-slate-700">
+                <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+                  <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                    <BookOpen className="h-4 w-4 text-blue-500" />
+                    {t('layout.admin.articleCountLabel', { defaultValue: 'Articles available' })}
+                  </div>
+                  <span className="text-base font-semibold text-slate-900">
+                    {formatStatNumber(totalArticlesCount)}
+                  </span>
+                </div>
+                {formattedTotalViews && formattedTotalViews !== '—' && (
+                  <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+                    <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                      <Activity className="h-4 w-4 text-blue-500" />
+                      {t('layout.admin.totalViews', { defaultValue: 'Lifetime reads' })}
+                    </div>
+                    <span className="text-base font-semibold text-slate-900">
+                      {formattedTotalViews}
+                    </span>
+                  </div>
+                )}
+                {averageReadTimeValue && (
+                  <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+                    <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                      <Clock className="h-4 w-4 text-blue-500" />
+                      {t('layout.admin.readTime', { defaultValue: 'Avg. read time' })}
+                    </div>
+                    <span className="text-base font-semibold text-slate-900">
+                      {formatReadTime(averageReadTimeValue)}
+                    </span>
+                  </div>
+                )}
+                {spotlightViews ? (
+                  <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+                    <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                      <Eye className="h-4 w-4 text-blue-500" />
+                      {t('layout.spotlight.views', { defaultValue: 'Spotlight views' })}
+                    </div>
+                    <span className="text-base font-semibold text-slate-900">
+                      {formatStatNumber(spotlightViews)}
+                    </span>
+                  </div>
+                ) : null}
+                {spotlightShares ? (
+                  <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+                    <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                      <Share2 className="h-4 w-4 text-blue-500" />
+                      {t('layout.spotlight.shares', { defaultValue: 'Spotlight shares' })}
+                    </div>
+                    <span className="text-base font-semibold text-slate-900">
+                      {formatStatNumber(spotlightShares)}
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          </motion.aside>
         </div>
       </section>
       {/* Results Summary */}
-      <section className="py-8 px-4">
+      <section className="px-4 pb-12">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="text-gray-600 text-lg">
-              <span>{resultsSummary}</span>
-              {selectedCategory !== 'all' && (
-                <span className="ml-2 text-blue-600 font-medium">
-                  {t('results.categorySuffix', { category: selectedCategoryLabel })}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="rounded-3xl border border-slate-200 bg-white/90 p-8 shadow-xl backdrop-blur-sm"
+          >
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+              <div className="space-y-3">
+                <span className="text-xs font-semibold uppercase tracking-[0.28em] text-blue-600">
+                  {t('results.title', { defaultValue: 'Result overview' })}
                 </span>
-              )}
-              {searchTerm && (
-                <span className="ml-2 text-green-600 font-medium">
-                  {t('results.searchSuffix', { term: searchTerm })}
-                </span>
-              )}
-            </div>
-
-            {/* Active Filter Tags */}
-            {filtersApplied && (
-              <div className="flex flex-wrap gap-2">
-                {selectedCategory !== 'all' && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                    <Tag className="w-3 h-3" />
-                    {selectedCategoryLabel}
-                    <button
-                      onClick={() => setSelectedCategory('all')}
-                      className="ml-1 hover:text-blue-600 transition-colors"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                )}
-                {searchTerm && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                    <Search className="w-3 h-3" />
-                    {searchTerm}
-                    <button
-                      onClick={() => setSearchTerm('')}
-                      className="ml-1 hover:text-green-600 transition-colors"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                )}
-                {(dateRange?.start || dateRange?.end) && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
-                    <Calendar className="w-3 h-3" />
-                    {t('results.dateRangeLabel')}
-                    <button
-                      onClick={() => setDateRange({ start: '', end: '' })}
-                      className="ml-1 hover:text-purple-600 transition-colors"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
+                <h3 className="text-3xl font-bold text-slate-900">{resultsSummary}</h3>
+                <p className="text-sm text-slate-500">
+                  {filtersApplied
+                    ? t('results.filteredDescription', {
+                        defaultValue:
+                          'Refine further by adjusting categories, key terms, or the date window.'
+                      })
+                    : t('results.unfilteredDescription', {
+                        defaultValue:
+                          'Showing the freshest newsroom coverage. Use the controls above to personalise the feed.'
+                      })}
+                </p>
+                {filtersApplied && (
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {selectedCategory !== 'all' && (
+                      <span className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+                        <Tag className="h-4 w-4" />
+                        {selectedCategoryLabel}
+                        <button
+                          onClick={() => setSelectedCategory('all')}
+                          className="ml-1 rounded-full p-0.5 text-blue-500 transition-colors hover:text-blue-700"
+                          aria-label={t('results.clearCategory', {
+                            defaultValue: 'Clear category filter'
+                          })}
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                    {searchTerm && (
+                      <span className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-sm font-medium text-green-700">
+                        <Search className="h-4 w-4" />
+                        <span className="max-w-[170px] truncate sm:max-w-[240px]">
+                          {searchTerm}
+                        </span>
+                        <button
+                          onClick={() => setSearchTerm('')}
+                          className="ml-1 rounded-full p-0.5 text-green-500 transition-colors hover:text-green-700"
+                          aria-label={t('results.clearSearch', {
+                            defaultValue: 'Clear search filter'
+                          })}
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                    {(dateRange?.start || dateRange?.end) && (
+                      <span className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-sm font-medium text-purple-700">
+                        <Calendar className="h-4 w-4" />
+                        <span>
+                          {t('results.dateRangeLabel', { defaultValue: 'Date range applied' })}
+                        </span>
+                        <button
+                          onClick={() => setDateRange({ start: '', end: '' })}
+                          className="ml-1 rounded-full p-0.5 text-purple-500 transition-colors hover:text-purple-700"
+                          aria-label={t('results.clearDate', { defaultValue: 'Clear date range' })}
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                  </div>
                 )}
               </div>
-            )}
-          </div>
+              <div className="grid w-full gap-4 sm:grid-cols-2 md:w-auto">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-left md:text-right">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    {t('layout.admin.lastUpdatedLabel', { defaultValue: 'Last updated' })}
+                  </p>
+                  <p className="mt-1 text-lg font-semibold text-slate-900">{lastUpdatedLabel}</p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-left md:text-right">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    {t('layout.admin.articleCountLabel', { defaultValue: 'Articles available' })}
+                  </p>
+                  <p className="mt-1 text-lg font-semibold text-slate-900">
+                    {formatStatNumber(totalArticlesCount)}
+                  </p>
+                </div>
+                {formattedTotalViews && formattedTotalViews !== '—' && (
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-left md:text-right">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      {t('layout.admin.totalViews', { defaultValue: 'Lifetime reads' })}
+                    </p>
+                    <p className="mt-1 text-lg font-semibold text-slate-900">
+                      {formattedTotalViews}
+                    </p>
+                  </div>
+                )}
+                {averageReadTimeValue && (
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-left md:text-right">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      {t('layout.admin.readTime', { defaultValue: 'Avg. read time' })}
+                    </p>
+                    <p className="mt-1 text-lg font-semibold text-slate-900">
+                      {formatReadTime(averageReadTimeValue)}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
       {/* Enhanced Articles Grid */}
@@ -610,18 +787,19 @@ const NewsPage = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5 }}
-                      className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
+                      className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/95 shadow-2xl backdrop-blur"
                     >
-                      <div className="absolute -right-36 -top-32 h-72 w-72 rounded-full bg-gradient-to-br from-cyan-100 via-blue-50 to-slate-100 blur-3xl opacity-60"></div>
-                      <div className="relative z-10 grid gap-8 p-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-cyan-50 opacity-80"></div>
+                      <div className="pointer-events-none absolute -right-36 -top-32 h-72 w-72 rounded-full bg-gradient-to-br from-cyan-100 via-blue-100 to-slate-50 blur-3xl opacity-60"></div>
+                      <div className="relative z-10 grid gap-10 p-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
                         <div className="space-y-6">
-                          <div className="flex flex-wrap items-center gap-3 text-sm font-semibold text-blue-700">
-                            <span className="inline-flex items-center gap-2 rounded-full bg-blue-100/80 px-4 py-2 text-blue-700">
+                          <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-wide text-blue-700">
+                            <span className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/80 px-4 py-2 text-blue-700 shadow-sm">
                               <Activity className="h-4 w-4" />
                               {t('layout.spotlightTitle')}
                             </span>
                             {spotlightArticle?.displayCategory && (
-                              <span className="inline-flex items-center gap-2 rounded-full border border-blue-100 px-4 py-2 text-blue-800">
+                              <span className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/70 px-4 py-2 text-blue-800">
                                 <Tag className="h-3.5 w-3.5" />
                                 {spotlightArticle.displayCategory}
                               </span>
@@ -656,11 +834,11 @@ const NewsPage = () => {
                             </div>
                           </div>
 
-                          <div className="flex flex-wrap gap-3">
+                          <div className="flex flex-wrap gap-2">
                             {spotlightTags.slice(0, 6).map((tag) => (
                               <span
                                 key={tag}
-                                className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600"
+                                className="inline-flex items-center rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-600"
                               >
                                 #{tag}
                               </span>
@@ -675,7 +853,7 @@ const NewsPage = () => {
                           <div className="flex flex-wrap items-center gap-3">
                             <button
                               onClick={() => setExpandedArticle(spotlightArticle)}
-                              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:bg-blue-700 hover:shadow-xl"
+                              className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:bg-blue-700 hover:shadow-xl"
                             >
                               {t('articles.readFull')}
                               <ArrowRight className="h-4 w-4" />
@@ -688,7 +866,7 @@ const NewsPage = () => {
                         </div>
 
                         <div className="space-y-6">
-                          <div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-6 shadow-inner">
+                          <div className="rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-md">
                             <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
                               <div>
                                 <p className="text-xs uppercase tracking-wide text-slate-500">
@@ -709,7 +887,7 @@ const NewsPage = () => {
                             </div>
                           </div>
 
-                          <div className="rounded-2xl border border-blue-100 bg-white/80 p-6 shadow-sm">
+                          <div className="rounded-2xl border border-blue-100 bg-white/90 p-6 shadow-md">
                             <p className="text-xs uppercase tracking-wide text-slate-500">
                               {t('modal.highlightsTitle')}
                             </p>
@@ -755,20 +933,20 @@ const NewsPage = () => {
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.4, delay: index * 0.05 }}
-                              className="flex h-full flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                              className="flex h-full flex-col justify-between rounded-3xl border border-slate-200/80 bg-white/95 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                             >
                               <div className="space-y-4">
                                 <div className="flex items-start justify-between gap-3">
-                                  <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                                  <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
                                     {article?.displayCategory || article?.category}
                                   </span>
                                   {article?.is_featured && (
-                                    <span className="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-amber-700">
+                                    <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-amber-700">
                                       {t('articles.featured')}
                                     </span>
                                   )}
                                 </div>
-                                <h4 className="text-lg font-semibold leading-tight text-slate-900">
+                                <h4 className="text-xl font-semibold leading-tight text-slate-900">
                                   {article?.displayTitle || article?.title}
                                 </h4>
                                 {article?.displaySummary && (
@@ -905,7 +1083,7 @@ const NewsPage = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+                    className="rounded-3xl border border-slate-200/80 bg-white/95 p-6 shadow-lg backdrop-blur"
                   >
                     <div className="flex items-center gap-3">
                       <Activity className="h-5 w-5 text-blue-600" />

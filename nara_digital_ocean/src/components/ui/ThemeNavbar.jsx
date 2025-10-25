@@ -106,8 +106,7 @@ const ThemeNavbar = () => {
         { labelKey: 'navbar.menu.services.links.fishAdvisory', path: '/fish-advisory-system', icon: Icons.Fish },
         { labelKey: 'navbar.menu.services.links.maritimeServices', path: '/maritime-services-hub', icon: Icons.Ship },
         { labelKey: 'navbar.menu.services.links.marineIncident', path: '/marine-incident-portal', icon: Icons.AlertCircle },
-        { labelKey: 'navbar.menu.services.links.exportIntelligence', path: '/export-market-intelligence', icon: Icons.TrendingUp },
-        { labelKey: 'navbar.menu.services.links.digitalMarketplace', path: '/nara-digital-marketplace', icon: Icons.ShoppingBag }
+        { labelKey: 'navbar.menu.services.links.exportIntelligence', path: '/export-market-intelligence', icon: Icons.TrendingUp }
       ]
     },
     {
@@ -134,7 +133,8 @@ const ThemeNavbar = () => {
           isExternal: false 
         },
         { labelKey: 'navbar.menu.resources.links.libraryCatalogue', path: '/library', icon: Icons.Library },
-        { labelKey: 'navbar.menu.resources.links.digitalProductLibrary', path: '/digital-product-library', icon: Icons.Archive }
+        { labelKey: 'navbar.menu.resources.links.digitalProductLibrary', path: '/digital-product-library', icon: Icons.Archive },
+        { labelKey: 'navbar.menu.services.links.digitalMarketplace', path: '/nara-digital-marketplace', icon: Icons.ShoppingBag }
       ]
     },
     {
@@ -275,22 +275,22 @@ const ThemeNavbar = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: '0.5rem',
+        gap: '0.3rem',
         width: '100%',
-        padding: '0.15rem 0.6rem',
-        maxWidth: '1120px',
+        padding: '0.1rem 0.6rem',
+        maxWidth: '1100px',
         margin: '0 auto'
       }}>
         {/* Logo Section - Compact */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none', flexShrink: 0 }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none', flexShrink: 0, marginLeft: '4rem' }}>
           <AppImage
             src="/assets/nara-logo.png"
             alt="NARA logo"
             className="w-10 h-10 md:w-12 md:h-12 object-contain"
           />
           <div className="hidden sm:block" style={{ fontFamily: primaryFont }}>
-            <h1 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{t('navbar.brand.title')}</h1>
-            <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.7, color: 'var(--muted)', lineHeight: 1.2, fontFamily: secondaryFont }}>{t('navbar.brand.subtitle')}</p>
+            <h1 style={{ margin: 0, fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.05 }}>{t('navbar.brand.title')}</h1>
+            <p style={{ margin: 0, fontSize: '0.5rem', opacity: 0.7, color: 'var(--muted)', lineHeight: 1.05, fontFamily: secondaryFont }}>{t('navbar.brand.subtitle')}</p>
           </div>
         </Link>
 
@@ -301,7 +301,7 @@ const ThemeNavbar = () => {
             flex: 1,
             display: 'flex',
             justifyContent: 'center',
-            gap: '0.3rem',
+            gap: '0.2rem',
             fontFamily: primaryFont
           }}
         >
@@ -322,9 +322,9 @@ const ThemeNavbar = () => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.25rem',
-                  padding: '0.28rem 0.42rem',
-                  borderRadius: '10px',
-                  fontSize: '0.8rem',
+                  padding: '0.2rem 0.45rem',
+                  borderRadius: '8px',
+                  fontSize: '0.75rem',
                   fontWeight: 650,
                   letterSpacing: '0.01em',
                     transition: 'all 0.3s ease',
@@ -458,7 +458,7 @@ const ThemeNavbar = () => {
         </div>
 
         {/* Right side actions - Profile/Registration & Language selector */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0, marginRight: '3rem' }}>
 
           {/* Show Profile or Register button based on auth status */}
           {user ? (
@@ -468,10 +468,10 @@ const ThemeNavbar = () => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem',
-                padding: '0.5rem 0.9rem',
-                borderRadius: '10px',
-                fontSize: '0.82rem',
+                gap: '0.3rem',
+                padding: '0.2rem 0.5rem',
+                borderRadius: '6px',
+                fontSize: '0.7rem',
                 fontWeight: 600,
                 background: 'rgba(0, 102, 204, 0.1)',
                 color: '#0066CC',
@@ -488,7 +488,7 @@ const ThemeNavbar = () => {
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
-              <Icons.User className="w-4 h-4" />
+              <Icons.User className="w-3.5 h-3.5" />
               <span>{t('navbar.profile', 'Profile')}</span>
             </Link>
           ) : (
@@ -498,10 +498,10 @@ const ThemeNavbar = () => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem',
-                padding: '0.5rem 0.9rem',
-                borderRadius: '10px',
-                fontSize: '0.82rem',
+                gap: '0.35rem',
+                padding: '0.25rem 0.65rem',
+                borderRadius: '8px',
+                fontSize: '0.75rem',
                 fontWeight: 600,
                 background: 'linear-gradient(135deg, #0066CC, #0052A3)',
                 color: '#ffffff',
@@ -519,7 +519,7 @@ const ThemeNavbar = () => {
                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 102, 204, 0.3)';
               }}
             >
-              <Icons.UserPlus className="w-4 h-4" />
+              <Icons.UserPlus className="w-3.5 h-3.5" />
               <span>{t('navbar.register', 'Register')}</span>
             </Link>
           )}
@@ -536,9 +536,9 @@ const ThemeNavbar = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.35rem',
-                padding: '0.45rem 0.75rem',
+                padding: '0.25rem 0.6rem',
                 borderRadius: '999px',
-                fontSize: '0.82rem',
+                fontSize: '0.75rem',
                 fontWeight: 600,
                 background: 'linear-gradient(135deg, #f58220, #f9c602 55%, #0b7a44)',
                 color: '#00214d',
