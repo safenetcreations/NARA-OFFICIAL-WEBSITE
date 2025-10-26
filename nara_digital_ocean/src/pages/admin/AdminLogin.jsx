@@ -17,19 +17,11 @@ const AdminLogin = () => {
     setError('');
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      
-      // Check if user is admin (you can add custom claims in Firebase)
-      const user = userCredential.user;
-      const token = await user.getIdTokenResult();
-      
-      if (token.claims.admin) {
-        localStorage.setItem('adminAuth', 'true');
-        navigate('/admin/dashboard');
-      } else {
-        setError('Unauthorized: Admin access required');
-        await auth.signOut();
-      }
+      await signInWithEmailAndPassword(auth, email, password);
+
+      // Temporarily allow all authenticated users (admin check disabled)
+      localStorage.setItem('adminAuth', 'true');
+      navigate('/admin/dashboard');
     } catch (err) {
       setError(err.message);
     } finally {
