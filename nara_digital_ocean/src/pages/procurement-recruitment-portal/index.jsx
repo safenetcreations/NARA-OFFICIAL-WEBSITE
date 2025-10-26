@@ -41,6 +41,10 @@ import {
   handleApiError
 } from '../../services/procurementRecruitmentService';
 
+// Import Enhanced Components
+import EnhancedRegistration from './components/EnhancedRegistration';
+import UserProfile from './components/UserProfile';
+
 const ProcurementRecruitmentPortal = () => (
   <ProcurementAuthProvider>
     <PortalExperience />
@@ -500,6 +504,7 @@ const PortalExperience = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
+  const [showUserProfile, setShowUserProfile] = useState(false);
   const [selectedNotice, setSelectedNotice] = useState(null);
 
   const [procurementNotices, setProcurementNotices] = useState([]);
@@ -2421,153 +2426,7 @@ const PortalExperience = () => {
     </AnimatePresence>
   );
 
-  const RegistrationModal = () => (
-    <AnimatePresence>
-      {showRegistrationModal && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 px-4 backdrop-blur"
-          onClick={() => setShowRegistrationModal(false)}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -24 }}
-            transition={{ duration: 0.25 }}
-            className="w-full max-w-2xl rounded-3xl border border-slate-800 bg-slate-900/90 p-8 text-slate-100 shadow-2xl"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="flex items-center gap-3 text-cyan-300">
-              <Sparkles className="h-5 w-5" />
-              <span className="text-sm uppercase tracking-[0.3em]">{modalCopy.registration.badge}</span>
-            </div>
-            <h3 className="mt-4 text-2xl font-semibold text-white">{modalCopy.registration.title}</h3>
-            <p className="mt-2 text-sm text-slate-400">{modalCopy.registration.description}</p>
-
-            {formErrors?.registration && (
-              <div className="mt-4 flex items-center gap-2 rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-                <AlertTriangle className="h-4 w-4" />
-                {formErrors?.registration}
-              </div>
-            )}
-
-            <form onSubmit={handleRegistration} className="mt-6 space-y-6">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.firstNameLabel}</label>
-                  <input
-                    type="text"
-                    required
-                    value={registrationForm?.first_name}
-                    onChange={(event) => setRegistrationForm((prev) => ({ ...prev, first_name: event.target.value }))}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                    disabled={submitting}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.lastNameLabel}</label>
-                  <input
-                    type="text"
-                    required
-                    value={registrationForm?.last_name}
-                    onChange={(event) => setRegistrationForm((prev) => ({ ...prev, last_name: event.target.value }))}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                    disabled={submitting}
-                  />
-                </div>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.emailLabel}</label>
-                  <input
-                    type="email"
-                    required
-                    value={registrationForm?.email}
-                    onChange={(event) => setRegistrationForm((prev) => ({ ...prev, email: event.target.value }))}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                    disabled={submitting}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.phoneLabel}</label>
-                  <input
-                    type="tel"
-                    required
-                    value={registrationForm?.phone_number}
-                    onChange={(event) => setRegistrationForm((prev) => ({ ...prev, phone_number: event.target.value }))}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                    disabled={submitting}
-                  />
-                </div>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.organizationLabel}</label>
-                  <input
-                    type="text"
-                    value={registrationForm?.organization}
-                    onChange={(event) => setRegistrationForm((prev) => ({ ...prev, organization: event.target.value }))}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                    disabled={submitting}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.nicLabel}</label>
-                  <input
-                    type="text"
-                    value={registrationForm?.nic_number}
-                    onChange={(event) => setRegistrationForm((prev) => ({ ...prev, nic_number: event.target.value }))}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                    disabled={submitting}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.accountTypeLabel}</label>
-                <select
-                  value={registrationForm?.user_type}
-                  onChange={(event) => setRegistrationForm((prev) => ({ ...prev, user_type: event.target.value }))}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                  disabled={submitting}
-                >
-                  <option value="vendor">{modalCopy.registration.accountOptions.vendor}</option>
-                  <option value="consultant">{modalCopy.registration.accountOptions.consultant}</option>
-                  <option value="individual">{modalCopy.registration.accountOptions.individual}</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider text-slate-400">{modalCopy.registration.passwordLabel}</label>
-                <input
-                  type="password"
-                  required
-                  value={registrationForm?.password}
-                  onChange={(event) => setRegistrationForm((prev) => ({ ...prev, password: event.target.value }))}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none"
-                  placeholder={modalCopy.registration.passwordPlaceholder}
-                  disabled={submitting}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {submitting ? <Loader className="h-4 w-4 animate-spin" /> : null}
-                {submitting ? modalCopy.registration.submitting : modalCopy.registration.submit}
-              </button>
-            </form>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+  // OLD DARK REGISTRATION MODAL REMOVED - Using EnhancedRegistration component instead
 
   const ApplicationModal = ({ type, item }) => (
     <AnimatePresence>
@@ -3145,6 +3004,13 @@ const PortalExperience = () => {
                         {translate('hero.auth.goToWorkspace', 'Go to workspace')}
                       </button>
                       <button
+                        onClick={() => setShowUserProfile(true)}
+                        className="inline-flex items-center gap-2 rounded-full border border-blue-400 px-4 py-2 text-xs font-semibold text-blue-200 transition hover:bg-blue-500/10"
+                      >
+                        <User className="h-3 w-3" />
+                        View Profile
+                      </button>
+                      <button
                         onClick={logout}
                         className="inline-flex items-center gap-2 rounded-full border border-red-400 px-4 py-2 text-xs font-semibold text-red-200 transition hover:bg-red-500/10"
                       >
@@ -3288,7 +3154,28 @@ const PortalExperience = () => {
       </footer>
 
       <LoginModal />
-      <RegistrationModal />
+
+      {/* Enhanced Registration Modal with CV Upload */}
+      {showRegistrationModal && (
+        <EnhancedRegistration
+          onClose={() => setShowRegistrationModal(false)}
+          onSuccess={(user) => {
+            console.log('User registered successfully:', user);
+            setShowRegistrationModal(false);
+            // Optionally auto-login or show success message
+          }}
+          translations={modalCopy.registration}
+        />
+      )}
+
+      {/* User Profile Modal */}
+      {showUserProfile && user && (
+        <UserProfile
+          userId={user.userId || user.uid}
+          onClose={() => setShowUserProfile(false)}
+        />
+      )}
+
       <ApplicationModal type={activeTab} item={selectedNotice} />
     </div>
   );

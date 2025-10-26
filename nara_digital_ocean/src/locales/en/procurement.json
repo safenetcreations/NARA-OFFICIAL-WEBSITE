@@ -399,5 +399,80 @@
   },
   "alerts": {
     "applicationSuccess": "Application submitted successfully!"
+  },
+  "simplePortal": {
+    "hero": {
+      "badge": "🌊 Sri Lanka's Ocean Innovation Hub",
+      "title": "Build Your Future with",
+      "titleHighlight": "NARA",
+      "description": "Discover career opportunities and procurement tenders in marine research, ocean conservation, and sustainable development",
+      "signIn": "Sign In",
+      "registerNow": "Register Now"
+    },
+    "tabs": {
+      "jobs": {
+        "title": "Career Opportunities",
+        "count": "{{count}} positions available"
+      },
+      "tenders": {
+        "title": "Procurement Tenders",
+        "count": "{{count}} tenders open"
+      }
+    },
+    "stats": {
+      "activeJobs": "Active Jobs",
+      "openTenders": "Open Tenders",
+      "totalApplications": "Total Applications",
+      "successRate": "Success Rate"
+    },
+    "search": {
+      "jobsPlaceholder": "Search jobs by title, department, or location...",
+      "tendersPlaceholder": "Search tenders by title or category...",
+      "button": "Search"
+    },
+    "jobs": {
+      "heading": "Career Opportunities",
+      "subheading": "Join our team and make a difference in ocean conservation",
+      "filter": "Filter",
+      "noJobs": "No Jobs Available",
+      "noJobsMessage": "Check back soon for new opportunities!",
+      "status": "Open",
+      "applicants": "{{count}} applicants",
+      "department": "Department",
+      "location": "Location",
+      "salaryRange": "Salary Range",
+      "deadline": "Deadline",
+      "daysRemaining": "{{count}} days",
+      "viewDetails": "View Details",
+      "downloadJD": "Download JD",
+      "applyNow": "Apply Now",
+      "loading": "Loading portal data..."
+    },
+    "tenders": {
+      "heading": "Procurement Tenders",
+      "subheading": "Bid on government procurement opportunities",
+      "filter": "Filter",
+      "noTenders": "No Tenders Available",
+      "noTendersMessage": "Check back soon for new procurement opportunities!",
+      "status": "Open",
+      "tenderValue": "Tender Value",
+      "bidOpening": "Bid Opening",
+      "deadline": "Deadline",
+      "daysRemaining": "{{count}} days",
+      "requiredDocuments": "Required Documents:",
+      "viewDetails": "View Details",
+      "downloadDocuments": "Download Documents",
+      "submitBid": "Submit Bid"
+    },
+    "cta": {
+      "heading": "Ready to Get Started?",
+      "description": "Create your account today and unlock opportunities with NARA",
+      "createAccount": "Create Free Account"
+    },
+    "footer": {
+      "title": "NARA Portal",
+      "subtitle": "National Aquatic Resources Research & Development Agency",
+      "copyright": "© 2025 NARA. All rights reserved."
+    }
   }
 }

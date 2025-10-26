@@ -531,6 +531,12 @@ const LearningDevelopmentAcademy = () => {
   });
   const [registeringEvent, setRegisteringEvent] = useState(false);
 
+  const isTamil = currentLang === 'ta';
+  const isSinhala = currentLang === 'si';
+  const headingFontClass = isTamil ? 'font-tamil' : isSinhala ? 'font-sinhala' : 'font-headline';
+  const headingLeadingClass = isTamil || isSinhala ? 'leading-[1.35]' : 'leading-tight';
+  const headingPaddingClass = isTamil || isSinhala ? 'pt-2' : '';
+
   // Load data from Firebase with fallback to static data
   useEffect(() => {
     loadData();
@@ -950,7 +956,9 @@ const LearningDevelopmentAcademy = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+            <h1
+              className={`text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent ${headingFontClass} ${headingLeadingClass} ${headingPaddingClass}`}
+            >
               {t('knowledge:learningAcademy')}
             </h1>
             <p className="text-xl md:text-2xl mb-8 opacity-80">

@@ -15,6 +15,11 @@ const DivisionsHub = () => {
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [filterCategory, setFilterCategory] = useState('all'); // 'all', 'research', 'services', 'monitoring'
   const currentLang = i18n.language;
+  const isTamil = currentLang === 'ta';
+  const isSinhala = currentLang === 'si';
+  const headingFontClass = isTamil ? 'font-tamil' : isSinhala ? 'font-sinhala' : 'font-headline';
+  const headingLeadingClass = isTamil || isSinhala ? 'leading-[1.5]' : 'leading-tight';
+  const headingPaddingClass = isTamil || isSinhala ? 'pt-4' : '';
   const categoryLabels = t('filters.categories', { returnObjects: true });
   const viewLabels = t('filters.view', { returnObjects: true });
   const heroStats = t('hero.stats', { returnObjects: true }) || [];
@@ -119,7 +124,9 @@ const DivisionsHub = () => {
               </div>
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-cyan-100 bg-clip-text text-transparent">
+            <h1
+              className={`text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-cyan-100 bg-clip-text text-transparent ${headingFontClass} ${headingLeadingClass} ${headingPaddingClass}`}
+            >
               {t('hero.title')}
             </h1>
             

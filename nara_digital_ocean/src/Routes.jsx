@@ -27,7 +27,9 @@ const GovernmentServicesPortal = lazy(() => import("./pages/government-services-
 const IntegrationSystemsPlatform = lazy(() => import("./pages/integration-systems-platform"));
 const AboutNARAStoryPage = lazy(() => import("./pages/about-nara-our-story"));
 const NARANewsUpdatesCenter = lazy(() => import("./pages/nara-news-updates-center"));
-const ProcurementRecruitmentPortal = lazy(() => import("./pages/procurement-recruitment-portal"));
+// OLD COMPLEX PORTAL - Replaced with simple version
+// const ProcurementRecruitmentPortal = lazy(() => import("./pages/procurement-recruitment-portal"));
+const ProcurementRecruitmentPortal = lazy(() => import("./pages/procurement-recruitment-portal/SimplePortal"));
 const ContactUs = lazy(() => import("./pages/contact-us"));
 const FirebaseAdminAuthenticationPortal = lazy(() => import('./pages/firebase-admin-authentication-portal'));
 const FirebaseAdminDashboardControlCenter = lazy(() => import('./pages/firebase-admin-dashboard-control-center'));
