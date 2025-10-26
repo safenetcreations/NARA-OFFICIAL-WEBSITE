@@ -474,27 +474,16 @@ const DivisionImagesAdmin = () => {
         return;
       }
 
-      // Upload to Firebase Storage and store URLs (avoids localStorage quota issues)
-      // We store Firebase URLs (tiny strings) instead of base64 data (huge)
+      // Try uploading to Firebase Storage first (avoids localStorage quota issues)
+      // If that fails, fallback to optimized base64 in localStorage
       setMessage({ type: 'info', text: `Uploading ${successfulImages.length} images to Firebase Storage...` });
 
       const imageUrls = [];
       let uploadsFailed = 0;
       let uploadsSucceeded = 0;
+      let usingFirebase = true;
 
-      // Check if user is authenticated
-      const { currentUser } = auth;
-      const isAuthenticated = currentUser !== null;
-
-      if (!isAuthenticated) {
-        setMessage({
-          type: 'error',
-          text: '❌ You must be logged in to generate images. Firebase Storage required to avoid localStorage quota errors.'
-        });
-        setGeneratingGemini(false);
-        return;
-      }
-
+      // Try Firebase Storage first
       for (let i = 0; i < successfulImages.length; i++) {
         const result = successfulImages[i];
 
@@ -533,41 +522,46 @@ const DivisionImagesAdmin = () => {
           }
         } catch (uploadError) {
           uploadsFailed++;
-          console.log(`❌ Upload failed for image ${i + 1}:`, uploadError.message);
+          console.log(`❌ Firebase upload failed for image ${i + 1}:`, uploadError.message);
         }
       }
 
+      // If all Firebase uploads failed, fallback to optimized base64 in localStorage
       if (imageUrls.length === 0) {
-        setMessage({
-          type: 'error',
-          text: `Failed to upload images to Firebase Storage. Check console for errors.`
-        });
-        setGeneratingGemini(false);
-        return;
+        console.log('⚠️ All Firebase uploads failed. Falling back to optimized base64 in localStorage...');
+        usingFirebase = false;
+        setMessage({ type: 'info', text: 'Firebase upload failed. Using optimized localStorage (1 image to avoid quota)...' });
+
+        // Only store FIRST image to avoid quota issues
+        const firstImage = successfulImages[0];
+        const dataUrl = `data:${firstImage.mimeType || 'image/png'};base64,${firstImage.base64Data}`;
+        const optimizedUrl = await optimizeDataUrlForStorage(dataUrl);
+        imageUrls.push(optimizedUrl);
+        console.log('✅ Created optimized base64 data URL as fallback');
       }
       
-      // Save Firebase URLs to localStorage (tiny strings, NO quota issues!)
-      console.log('%c💾 SAVING FIREBASE URLs TO LOCALSTORAGE', 'background: #8b5cf6; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
+      // Save to localStorage
+      const storageType = usingFirebase ? 'Firebase URLs' : 'optimized base64';
+      console.log(`%c💾 SAVING ${storageType.toUpperCase()} TO LOCALSTORAGE`, 'background: #8b5cf6; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
       console.log('   Division ID:', selectedDivision.id);
-      console.log('   Firebase URLs:', imageUrls.length);
-      console.log('   Format: Firebase Storage URLs (tiny strings - no quota issues!)');
+      console.log('   Images:', imageUrls.length);
+      console.log('   Format:', storageType);
 
-      // imageUrls are already Firebase URLs (small strings), no optimization needed
       const saveResult = saveLocalDivisionImages(selectedDivision.id, imageUrls);
       console.log('   Save result:', saveResult);
 
       if (!saveResult.success) {
-        setMessage({ type: 'error', text: `Failed to save Firebase URLs: ${saveResult.error}` });
+        setMessage({ type: 'error', text: `Failed to save images: ${saveResult.error}` });
         setGeneratingGemini(false);
         return;
       }
-      
+
       // VERIFY it was saved using correct function
       const verifyImages = getLocalDivisionImages(selectedDivision.id);
-      console.log('   ✅ VERIFICATION: Retrieved', verifyImages.length, 'Firebase URLs from localStorage');
+      console.log('   ✅ VERIFICATION: Retrieved', verifyImages.length, 'images from localStorage');
       console.log('   Storage key: nara_division_images');
-      console.log('   📸 First Firebase URL:', imageUrls[0]?.substring(0, 100) + '...');
-      console.log('%c🎉 FIREBASE URLs SAVED TO LOCALSTORAGE!', 'background: #10b981; color: white; padding: 8px; font-size: 16px; font-weight: bold;');
+      console.log('   📸 First image:', imageUrls[0]?.substring(0, 100) + '...');
+      console.log(`%c🎉 ${storageType.toUpperCase()} SAVED TO LOCALSTORAGE!`, 'background: #10b981; color: white; padding: 8px; font-size: 16px; font-weight: bold;');
 
       // Update display
       setDivisionImages(imageUrls.map((url, idx) => ({
@@ -575,15 +569,21 @@ const DivisionImagesAdmin = () => {
         url,
         aiGenerated: true,
         uploadedAt: new Date().toISOString(),
-        filename: `Gemini Firebase Image ${idx + 1}`
+        filename: `Gemini ${usingFirebase ? 'Firebase' : 'Base64'} Image ${idx + 1}`
       })));
 
       // Build success message
-      let successMsg = `✅ ${imageUrls.length} images uploaded to Firebase Storage & saved to localStorage!`;
-      if (uploadsFailed > 0) {
-        successMsg += ` (${uploadsFailed} uploads failed - check console)`;
+      let successMsg;
+      if (usingFirebase) {
+        successMsg = `✅ ${imageUrls.length} images uploaded to Firebase Storage!`;
+        if (uploadsFailed > 0) {
+          successMsg += ` (${uploadsFailed} failed)`;
+        }
+        successMsg += ` No quota issues - using Firebase URLs!`;
+      } else {
+        successMsg = `✅ ${imageUrls.length} optimized image saved! (Firebase failed, using localStorage fallback)`;
       }
-      successMsg += ` No localStorage quota issues - using Firebase URLs! Refresh homepage to see them!`;
+      successMsg += ` Refresh homepage to see them!`;
 
       setMessage({
         type: 'success',
@@ -597,11 +597,16 @@ const DivisionImagesAdmin = () => {
       console.log('📌 Division Slug:', selectedDivision.slug);
       console.log('📌 Model:', 'Gemini 2.5 Flash (Vertex AI)');
       console.log('📌 Images Generated:', successfulImages.length);
-      console.log('📌 Firebase Storage:', `${uploadsSucceeded} uploaded`);
-      console.log('📌 localStorage:', `${imageUrls.length} Firebase URLs stored (NO quota issues!)`);
+      if (usingFirebase) {
+        console.log('📌 Firebase Storage:', `${uploadsSucceeded} uploaded${uploadsFailed > 0 ? ` (${uploadsFailed} failed)` : ''}`);
+        console.log('📌 localStorage:', `${imageUrls.length} Firebase URLs stored (NO quota issues!)`);
+      } else {
+        console.log('📌 Firebase Storage:', 'Upload failed - using localStorage fallback');
+        console.log('📌 localStorage:', `${imageUrls.length} optimized base64 image(s) stored`);
+      }
       console.log('━'.repeat(80));
-      console.log('🔗 VIEW AT:', `https://nara-web-73384.web.app/divisions/${selectedDivision.slug}`);
-      console.log('⚠️  IMPORTANT: REFRESH the division page to see new images!');
+      console.log('🔗 VIEW AT:', `https://nara-web-73384.web.app/`);
+      console.log('⚠️  IMPORTANT: REFRESH the homepage to see new images!');
       console.log('━'.repeat(80));
     } catch (error) {
       setMessage({ type: 'error', text: `Error: ${error.message}` });
