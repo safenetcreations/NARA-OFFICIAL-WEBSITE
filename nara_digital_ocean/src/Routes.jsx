@@ -96,10 +96,6 @@ const SimulationsEconomicAdmin = lazy(() => import('./pages/admin/SimulationsEco
 const FishAdvisorySystem = lazy(() => import('./pages/fish-advisory-system'));
 const FishAdvisoryAdmin = lazy(() => import('./pages/admin/FishAdvisoryAdmin'));
 
-// Podcasts
-const PodcastsPage = lazy(() => import('./pages/podcasts'));
-const PodcastAdmin = lazy(() => import('./pages/admin/PodcastAdmin'));
-
 // Lab Results Portal
 const LabResultsPortal = lazy(() => import('./pages/lab-results'));
 const LabResultsAdmin = lazy(() => import('./pages/admin/LabResultsAdmin'));

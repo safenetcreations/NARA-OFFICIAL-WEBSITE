@@ -256,6 +256,44 @@ const MarineIncidentPortal = () => {
     return matchesType && matchesStatus && matchesSeverity;
   });
 
+  // Emergency contact numbers
+  const NARA_EMERGENCY_PHONE = '+94112521000';
+  const NARA_WHATSAPP = '+94712345678'; // Update with actual WhatsApp number
+  const NARA_EMAIL = 'emergency@nara.gov.lk';
+
+  const openWhatsAppReport = () => {
+    const message = encodeURIComponent(
+      `🚨 MARINE INCIDENT REPORT\n\n` +
+      `I would like to report a marine incident.\n\n` +
+      `Type: [Please specify]\n` +
+      `Location: [Please specify]\n` +
+      `Description: [Please describe what you observed]\n\n` +
+      `Contact: [Your name and phone]`
+    );
+    window.open(`https://wa.me/${NARA_WHATSAPP.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
+  };
+
+  const openPhoneCall = () => {
+    window.location.href = `tel:${NARA_EMERGENCY_PHONE}`;
+  };
+
+  const openSMS = () => {
+    const message = encodeURIComponent('MARINE INCIDENT: [Describe incident and location]');
+    window.location.href = `sms:${NARA_EMERGENCY_PHONE}?body=${message}`;
+  };
+
+  const openEmail = () => {
+    const subject = encodeURIComponent('Marine Incident Report');
+    const body = encodeURIComponent(
+      'Incident Type: \n' +
+      'Location: \n' +
+      'Date/Time: \n' +
+      'Description: \n' +
+      'Your Contact: '
+    );
+    window.location.href = `mailto:${NARA_EMAIL}?subject=${subject}&body=${body}`;
+  };
+
   const tabs = useMemo(
     () => [
       { id: 'home', label: tabLabels.home, icon: Icons.Home },
@@ -418,6 +456,43 @@ const MarineIncidentPortal = () => {
 
   const renderHomeView = () => (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      {/* Quick Contact Methods */}
+      <div className="mb-8 rounded-3xl bg-gradient-to-r from-emerald-500 to-teal-600 p-6 text-white shadow-xl">
+        <h3 className="mb-4 text-2xl font-bold">🚨 Quick Report Options</h3>
+        <p className="mb-4 text-emerald-50">Report an incident immediately using your preferred method:</p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <button
+            onClick={openWhatsAppReport}
+            className="flex items-center justify-center space-x-2 rounded-xl bg-white/20 px-4 py-3 font-semibold backdrop-blur-lg transition-all hover:bg-white/30 hover:scale-105"
+          >
+            <Icons.MessageCircle className="h-5 w-5" />
+            <span>WhatsApp</span>
+          </button>
+          <button
+            onClick={openPhoneCall}
+            className="flex items-center justify-center space-x-2 rounded-xl bg-white/20 px-4 py-3 font-semibold backdrop-blur-lg transition-all hover:bg-white/30 hover:scale-105"
+          >
+            <Icons.Phone className="h-5 w-5" />
+            <span>Call Now</span>
+          </button>
+          <button
+            onClick={openSMS}
+            className="flex items-center justify-center space-x-2 rounded-xl bg-white/20 px-4 py-3 font-semibold backdrop-blur-lg transition-all hover:bg-white/30 hover:scale-105"
+          >
+            <Icons.MessageSquare className="h-5 w-5" />
+            <span>SMS</span>
+          </button>
+          <button
+            onClick={openEmail}
+            className="flex items-center justify-center space-x-2 rounded-xl bg-white/20 px-4 py-3 font-semibold backdrop-blur-lg transition-all hover:bg-white/30 hover:scale-105"
+          >
+            <Icons.Mail className="h-5 w-5" />
+            <span>Email</span>
+          </button>
+        </div>
+        <p className="mt-3 text-center text-sm text-emerald-100">Emergency: {NARA_EMERGENCY_PHONE}</p>
+      </div>
+
       <div className="mb-12 grid gap-6 md:grid-cols-2">
         {quickActionCards.map((action) => (
           <motion.div
@@ -1064,44 +1139,63 @@ const MarineIncidentPortal = () => {
         </div>
       </div>
 
-      <div className="absolute left-6 top-6 z-[1000] rounded-2xl bg-white p-4 shadow-xl">
-        <h4 className="mb-3 font-bold text-gray-900">{mapStrings.filtersTitle}</h4>
+      <div className="absolute left-6 top-6 z-[1000] w-64 rounded-2xl bg-white p-5 shadow-2xl">
+        <div className="mb-4 flex items-center space-x-2">
+          <Icons.Filter className="h-5 w-5 text-blue-600" />
+          <h4 className="text-lg font-bold text-gray-900">{mapStrings.filtersTitle}</h4>
+        </div>
         <div className="space-y-3">
-          <select
-            value={filters.incidentType}
-            onChange={(e) => setFilters({ ...filters, incidentType: e.target.value })}
-            className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm"
-          >
-            {mapFilterOptions.incidentType.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700">Incident Type</label>
+            <select
+              value={filters.incidentType}
+              onChange={(e) => setFilters({ ...filters, incidentType: e.target.value })}
+              className="w-full rounded-lg border-2 border-gray-300 bg-white px-3 py-2.5 text-base font-medium text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            >
+              {mapFilterOptions.incidentType.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <select
-            value={filters.status}
-            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-            className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm"
-          >
-            {mapFilterOptions.status.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700">Status</label>
+            <select
+              value={filters.status}
+              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+              className="w-full rounded-lg border-2 border-gray-300 bg-white px-3 py-2.5 text-base font-medium text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            >
+              {mapFilterOptions.status.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <select
-            value={filters.severity}
-            onChange={(e) => setFilters({ ...filters, severity: e.target.value })}
-            className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm"
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700">Severity</label>
+            <select
+              value={filters.severity}
+              onChange={(e) => setFilters({ ...filters, severity: e.target.value })}
+              className="w-full rounded-lg border-2 border-gray-300 bg-white px-3 py-2.5 text-base font-medium text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            >
+              {mapFilterOptions.severity.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            onClick={() => setFilters({ incidentType: 'all', status: 'all', severity: 'all' })}
+            className="mt-2 w-full rounded-lg bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200"
           >
-            {mapFilterOptions.severity.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+            Reset Filters
+          </button>
         </div>
       </div>
     </div>
@@ -1144,6 +1238,33 @@ const MarineIncidentPortal = () => {
 
         {renderReportModal()}
         {renderObservationModal()}
+
+        {/* Floating Action Button for Quick Report */}
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+          <motion.button
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={openWhatsAppReport}
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-2xl transition-shadow hover:shadow-green-500/50"
+            title="Quick Report via WhatsApp"
+          >
+            <Icons.MessageCircle className="h-6 w-6" />
+          </motion.button>
+          <motion.button
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.1 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setShowReportModal(true)}
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-orange-600 text-white shadow-2xl transition-shadow hover:shadow-red-500/50"
+            title="Full Report Form"
+          >
+            <Icons.AlertTriangle className="h-6 w-6" />
+          </motion.button>
+        </div>
       </div>
     </MultilingualContent>
   );

@@ -89,7 +89,6 @@ const ThemeNavbar = () => {
           ]
         },
         { labelKey: 'navbar.menu.about.links.newsUpdates', path: '/nara-news-updates-center', icon: Icons.Newspaper },
-        { labelKey: 'navbar.menu.about.links.podcasts', path: '/podcasts', icon: Icons.Mic, badge: 'LIVE' },
         { labelKey: 'navbar.menu.about.links.mediaGallery', path: '/media-gallery', icon: Icons.Image },
         { labelKey: 'navbar.menu.news.links.mediaPressKit', path: '/media-press-kit', icon: Icons.Camera },
         { labelKey: 'navbar.menu.about.links.procurement', path: '/procurement-recruitment-portal', icon: Icons.Briefcase },
