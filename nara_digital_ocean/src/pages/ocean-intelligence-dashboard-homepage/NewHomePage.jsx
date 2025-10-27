@@ -24,6 +24,7 @@ const AcademyShowcase = lazy(() => import('../../components/sections/AcademyShow
 const LibraryBooksCarousel = lazy(() => import('../../components/library/LibraryBooksCarousel'));
 const GovFooter = lazy(() => import('../../components/compliance/GovFooter'));
 const UnifiedServicesHub = lazy(() => import('../../components/UnifiedServicesHub'));
+const LiveOceanDataShowcase = lazy(() => import('../../components/LiveOceanDataShowcase'));
 
 const NewHomePage = () => {
   const [lastUpdate, setLastUpdate] = useState(new Date());
@@ -985,6 +986,20 @@ const NewHomePage = () => {
           </div>
         </section>
       </main>
+
+      {/* Live Ocean Data Showcase - Above Footer */}
+      <Suspense fallback={
+        <div className="bg-gradient-to-br from-blue-950 via-slate-900 to-cyan-950 py-16">
+          <div className="container mx-auto px-4 text-center">
+            <div className="animate-pulse">
+              <div className="h-8 bg-white/10 rounded w-64 mx-auto mb-4" />
+              <div className="h-4 bg-white/10 rounded w-96 mx-auto" />
+            </div>
+          </div>
+        </div>
+      }>
+        <LiveOceanDataShowcase />
+      </Suspense>
 
       <GovFooter />
     </div>
