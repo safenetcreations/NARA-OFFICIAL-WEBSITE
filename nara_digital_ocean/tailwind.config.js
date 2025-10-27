@@ -73,11 +73,17 @@ export default {
           DEFAULT: "var(--color-error)",
           foreground: "var(--color-error-foreground)",
         },
-        // UWA Oceans Institute + NASA Palette
+        // NARA Sky Blue + Navy Palette (from logo)
         ocean: {
-          deep: "var(--color-ocean-deep)",
-          medium: "var(--color-ocean-medium)",
-          light: "var(--color-ocean-light)",
+          deep: "#001F54",
+          medium: "#00BFFF",
+          light: "#87CEEB",
+        },
+        // Logo-exact colors
+        'logo-blue': {
+          DEFAULT: '#00BFFF',  // Deep Sky Blue (primary)
+          light: '#87CEEB',    // Light Sky Blue
+          dark: '#001F54',     // Navy Blue
         },
         coral: {
           warm: "var(--color-coral-warm)",
@@ -150,11 +156,11 @@ export default {
         "ocean-pulse": {
           "0%, 100%": {
             transform: "scale(1)",
-            boxShadow: "0 0 30px rgba(6, 182, 212, 0.3)",
+            boxShadow: "0 0 30px rgba(0, 191, 255, 0.3)",
           },
           "50%": {
             transform: "scale(1.05)",
-            boxShadow: "0 0 50px rgba(6, 182, 212, 0.6)",
+            boxShadow: "0 0 50px rgba(0, 191, 255, 0.6)",
           },
         },
         "data-flow": {
@@ -239,8 +245,8 @@ export default {
         },
       },
       boxShadow: {
-        // UWA/NASA Shadow System
-        'ocean-depth': '0 4px 16px rgba(12, 74, 110, 0.2), 0 8px 32px rgba(12, 74, 110, 0.1), 0 16px 64px rgba(12, 74, 110, 0.05)',
+        // NARA Shadow System
+        'ocean-depth': '0 4px 16px rgba(0, 31, 84, 0.2), 0 8px 32px rgba(0, 31, 84, 0.1), 0 16px 64px rgba(0, 31, 84, 0.05)',
         'coral-glow': '0 0 24px rgba(249, 115, 22, 0.3), 0 0 48px rgba(249, 115, 22, 0.15)',
         'scientific': '0 2px 8px rgba(0, 0, 0, 0.15)',
         'glass': '0 4px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
@@ -272,7 +278,8 @@ export default {
       // Glass Morphism Utilities
       backgroundImage: {
         'glass-gradient': 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
-        'ocean-gradient': 'linear-gradient(135deg, var(--color-ocean-deep) 0%, var(--color-ocean-light) 100%)',
+        'ocean-gradient': 'linear-gradient(135deg, #001F54 0%, #87CEEB 100%)',
+        'sky-gradient': 'linear-gradient(135deg, #00BFFF 0%, #87CEEB 100%)',
         'coral-gradient': 'linear-gradient(135deg, var(--color-coral-warm) 0%, var(--color-accent) 100%)',
       },
       // Particle System Support

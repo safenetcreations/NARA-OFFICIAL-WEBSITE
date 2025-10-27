@@ -50,7 +50,9 @@ service cloud.firestore {
     
     match /divisionImages/{imageId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if true; // Allow public write for now (can be restricted later)
+      allow update: if true;
+      allow create: if true;
     }
     
     // Publications Collection

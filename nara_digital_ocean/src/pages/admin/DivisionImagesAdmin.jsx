@@ -169,53 +169,63 @@ const DivisionImagesAdmin = () => {
     if (!file) return;
 
     setUploading(true);
-    setMessage({ type: 'info', text: 'Converting image to data URL...' });
+    setMessage({ type: 'info', text: '☁️ Uploading to Firebase Storage...' });
 
     try {
-      // Convert to data URL (works immediately, no Firebase auth needed!)
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const dataUrl = e.target.result;
-        
-        console.log('📤 Manual upload: Converting to data URL...');
-        console.log('📏 Data URL length:', dataUrl.length, 'characters');
-        
-        // Add to existing images
-        const newImage = {
-          id: `manual_${Date.now()}`,
-          url: dataUrl,
-          aiGenerated: false,
-          uploadedAt: new Date().toISOString(),
-          filename: file.name
-        };
-        
-        const updatedImages = [...divisionImages, newImage];
-        setDivisionImages(updatedImages);
-        
-        console.log('📊 Total images after upload:', updatedImages.length);
-        
-        // Save to localStorage
-        const urls = updatedImages.map(img => img.url);
-        saveLocalDivisionImages(selectedDivision.id, urls);
-        
-        console.log('💾 Saved to localStorage for division:', selectedDivision.id);
-        console.log('✅ Image added successfully!');
-        
-        setMessage({ 
-          type: 'success', 
-          text: `✅ Image added as data URL! Total: ${updatedImages.length} images. Refresh hero section to see it.` 
-        });
-        setUploading(false);
+      console.log('%c📤 UPLOADING TO FIREBASE STORAGE', 'background: #ff6b00; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
+      console.log('   Division:', selectedDivision.name);
+      console.log('   File:', file.name);
+      console.log('   Size:', (file.size / 1024).toFixed(2), 'KB');
+      
+      // Upload directly to Firebase Storage
+      const result = await uploadDivisionImage(selectedDivision.id, file, {
+        uploadedBy: 'admin',
+        source: 'manual_upload'
+      });
+
+      if (!result.success) {
+        throw new Error(result.error || 'Upload failed');
+      }
+
+      console.log('✅ Firebase upload successful!');
+      console.log('   URL:', result.image.url);
+      
+      // Auto-set as primary if it's the first image for this division
+      if (divisionImages.length === 0) {
+        const imageId = `${selectedDivision.id}_${Date.now()}`;
+        await setPrimaryImage(imageId, selectedDivision.id);
+        console.log('🌟 Set as primary image (first upload)');
+      }
+      
+      // Add to display
+      const newImage = {
+        id: result.image.uploadedAt,
+        url: result.image.url,
+        aiGenerated: false,
+        uploadedAt: result.image.uploadedAt,
+        filename: file.name,
+        isPrimary: divisionImages.length === 0
       };
       
-      reader.onerror = () => {
-        setMessage({ type: 'error', text: 'Failed to read image file' });
-        setUploading(false);
-      };
+      const updatedImages = [...divisionImages, newImage];
+      setDivisionImages(updatedImages);
       
-      reader.readAsDataURL(file);
+      // Reload images to get updated data
+      await loadDivisionImages();
+      
+      // Notify homepage to reload images
+      window.dispatchEvent(new Event('divisionImagesUpdated'));
+      console.log('📢 Dispatched divisionImagesUpdated event');
+      
+      setMessage({ 
+        type: 'success', 
+        text: `✅ Image uploaded to Firebase & live on homepage! ${divisionImages.length === 0 ? '(Set as primary)' : ''}` 
+      });
+      setUploading(false);
+      
     } catch (error) {
-      setMessage({ type: 'error', text: error.message });
+      console.error('❌ Firebase upload failed:', error);
+      setMessage({ type: 'error', text: `Upload failed: ${error.message}` });
       setUploading(false);
     }
   };
@@ -493,8 +503,16 @@ const DivisionImagesAdmin = () => {
           const storageRef = ref(storage, `divisions/${selectedDivision.id}/${filename}`);
 
           console.log(`📤 Uploading image ${i + 1}/${successfulImages.length} to Firebase Storage...`);
+          
+          // Clean base64 string (remove data URL prefix if present)
+          let cleanBase64 = result.base64Data;
+          if (cleanBase64.includes(',')) {
+            cleanBase64 = cleanBase64.split(',')[1];
+          }
+          
+          console.log('Base64 length:', cleanBase64.length);
 
-          const uploadResult = await uploadString(storageRef, result.base64Data, 'base64', {
+          const uploadResult = await uploadString(storageRef, cleanBase64, 'base64', {
             contentType: result.mimeType || 'image/png',
             customMetadata: {
               generatedBy: 'gemini-2.5-flash',
@@ -511,18 +529,38 @@ const DivisionImagesAdmin = () => {
 
           // Save metadata to Firestore
           try {
-            await saveAIGeneratedImage(selectedDivision.id, downloadURL, {
+            const docId = `${selectedDivision.id}_ai_${timestamp}`;
+            const saveResult = await saveAIGeneratedImage(selectedDivision.id, downloadURL, {
               prompt: 'Gemini 2.5 Flash Generated',
               model: 'gemini-2.5-flash',
               generatedAt: new Date().toISOString(),
               storagePath: uploadResult.ref.fullPath
             });
+            console.log('📝 Firestore save result:', saveResult);
+            
+            // Set FIRST image as primary for homepage carousel
+            if (i === 0) {
+              console.log('🎯 Attempting to set as primary:', docId);
+              const primaryResult = await setPrimaryImage(docId, selectedDivision.id);
+              console.log('🌟 Primary image result:', primaryResult);
+              if (primaryResult.success) {
+                console.log('✅ Successfully set as PRIMARY image for homepage carousel!');
+              } else {
+                console.error('❌ Failed to set primary:', primaryResult.error);
+              }
+            }
           } catch (firestoreError) {
+            console.error('❌ Firestore error:', firestoreError);
             console.log('⚠️ Firestore metadata save skipped:', firestoreError.message);
           }
         } catch (uploadError) {
           uploadsFailed++;
-          console.log(`❌ Firebase upload failed for image ${i + 1}:`, uploadError.message);
+          console.error(`❌ Firebase upload failed for image ${i + 1}:`, uploadError);
+          console.error('Error details:', {
+            message: uploadError.message,
+            code: uploadError.code,
+            stack: uploadError.stack
+          });
         }
       }
 
@@ -562,6 +600,10 @@ const DivisionImagesAdmin = () => {
       console.log('   Storage key: nara_division_images');
       console.log('   📸 First image:', imageUrls[0]?.substring(0, 100) + '...');
       console.log(`%c🎉 ${storageType.toUpperCase()} SAVED TO LOCALSTORAGE!`, 'background: #10b981; color: white; padding: 8px; font-size: 16px; font-weight: bold;');
+      
+      // Notify homepage to reload images
+      window.dispatchEvent(new Event('divisionImagesUpdated'));
+      console.log('📢 Dispatched divisionImagesUpdated event');
 
       // Update display
       setDivisionImages(imageUrls.map((url, idx) => ({
@@ -803,6 +845,10 @@ const DivisionImagesAdmin = () => {
     console.log('   ✅ VERIFICATION: Retrieved', verifyImages.length, 'images from localStorage');
     console.log('   Storage key: nara_division_images');
     console.log('%c🎉 POLLINATIONS IMAGES SAVED TO LOCALSTORAGE!', 'background: #10b981; color: white; padding: 8px; font-size: 16px; font-weight: bold;');
+    
+    // Notify homepage to reload images
+    window.dispatchEvent(new Event('divisionImagesUpdated'));
+    console.log('📢 Dispatched divisionImagesUpdated event');
 
     // Try to save to Firebase too (for future when permissions are fixed)
     for (let i = 0; i < generatedUrls.length; i++) {

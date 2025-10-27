@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, lazy, Suspense, useMemo } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense, useMemo, useCallback } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import * as Icons from 'lucide-react';
@@ -15,6 +15,7 @@ import AppImage from '../../components/AppImage';
 import { useOceanData } from '../../hooks/useOceanData';
 import DIVISIONS_CONFIG from '../../data/divisionsConfig';
 import { getLocalDivisionImages } from '../../utils/localImageStorage';
+import { getPrimaryDivisionImage } from '../../services/divisionImagesService';
 
 // Lazy load heavy components
 const SriLankaEEZMap = lazy(() => import('../../components/SriLankaEEZMap'));
@@ -48,35 +49,53 @@ const NewHomePage = () => {
   const missionControlContent = t('missionControl', { ns: 'home', returnObjects: true });
   const essentialServicesContent = t('essentialServices', { ns: 'home', returnObjects: true });
 
-  // Load division hero images from localStorage
-  useEffect(() => {
-    console.log('%c🎨 LOADING DIVISION HERO IMAGES', 'background: #3b82f6; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
+  // Function to load division hero images from Firebase Storage
+  const loadDivisionHeroImages = useCallback(async () => {
+    console.log('%c🎨 LOADING DIVISION HERO IMAGES FROM FIREBASE', 'background: #3b82f6; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
     console.log('━'.repeat(80));
 
     const loadedImages = {};
     let totalImagesLoaded = 0;
 
-    DIVISIONS_CONFIG.forEach(division => {
-      const images = getLocalDivisionImages(division.id);
-
+    // Load images in parallel for all divisions
+    const loadPromises = DIVISIONS_CONFIG.map(async (division) => {
       console.log(`\n🔍 Division: ${division.name.en}`);
       console.log(`   ID: ${division.id}`);
-      console.log(`   Found in localStorage: ${images?.length || 0} images`);
 
-      if (images && images.length > 0) {
-        loadedImages[division.id] = images[0]; // Use first image as hero
-        totalImagesLoaded++;
-
-        // Log image type
-        const imageUrl = images[0];
-        const imageType = imageUrl.startsWith('data:') ? 'Base64 Data URL (AI Generated)' :
-                         imageUrl.startsWith('http') ? 'Firebase Storage URL' : 'Unknown';
-        console.log(`   ✅ Loaded ${imageType}`);
-        console.log(`   📸 Preview: ${imageUrl.substring(0, 100)}...`);
-      } else {
-        console.log(`   ⚠️  No custom images - will use default: ${division.heroImage?.substring(0, 100) || 'Unsplash fallback'}...`);
+      try {
+        // Try Firebase first
+        const result = await getPrimaryDivisionImage(division.id);
+        
+        console.log(`   Firebase response:`, result);
+        
+        if (result.success && result.image?.url) {
+          loadedImages[division.id] = result.image.url;
+          totalImagesLoaded++;
+          console.log(`   ✅ Loaded from Firebase Storage`);
+          console.log(`   📸 URL: ${result.image.url.substring(0, 100)}...`);
+          return;
+        } else if (result.success === false) {
+          console.log(`   ℹ️  No Firebase image: ${result.message || result.error || 'Not found'}`);
+        }
+      } catch (error) {
+        console.log(`   ⚠️  Firebase error: ${error.message}`);
+        console.error(error);
       }
+
+      // Fallback to localStorage (for backward compatibility)
+      const localImages = getLocalDivisionImages(division.id);
+      if (localImages && localImages.length > 0) {
+        loadedImages[division.id] = localImages[0];
+        totalImagesLoaded++;
+        console.log(`   ✅ Loaded from localStorage (fallback)`);
+        console.log(`   📸 Preview: ${localImages[0].substring(0, 100)}...`);
+        return;
+      }
+
+      console.log(`   ⚠️  No custom images - will use default: ${division.heroImage?.substring(0, 100) || 'Unsplash fallback'}...`);
     });
+
+    await Promise.all(loadPromises);
 
     console.log('\n━'.repeat(80));
     console.log(`%c📊 SUMMARY: Loaded ${totalImagesLoaded} custom hero images for ${DIVISIONS_CONFIG.length} divisions`, 'background: #10b981; color: white; padding: 8px; font-size: 14px; font-weight: bold;');
@@ -88,6 +107,32 @@ const NewHomePage = () => {
     console.log('\n🎯 Final divisionHeroImages state:', Object.keys(loadedImages).length, 'divisions with custom images');
     console.log('Division IDs with custom images:', Object.keys(loadedImages));
   }, []);
+
+  // Load images on mount
+  useEffect(() => {
+    loadDivisionHeroImages();
+  }, [loadDivisionHeroImages]);
+
+  // Listen for localStorage changes (when images are uploaded in admin)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key && e.key.startsWith('division_images_')) {
+        console.log('🔄 Division images updated in localStorage, reloading...');
+        loadDivisionHeroImages();
+      }
+    };
+
+    // Listen for storage events from other tabs
+    window.addEventListener('storage', handleStorageChange);
+
+    // Listen for custom event in same tab
+    window.addEventListener('divisionImagesUpdated', loadDivisionHeroImages);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('divisionImagesUpdated', loadDivisionHeroImages);
+    };
+  }, [loadDivisionHeroImages]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -101,7 +146,7 @@ const NewHomePage = () => {
     {
       key: 'marineBiodiversity',
       icon: Fish,
-      color: 'from-blue-500 to-cyan-500',
+      color: 'from-sky-400 to-sky-500',
       statValue: oceanData?.speciesCount,
       trend: oceanData?.speciesTrend || 'stable'
     },
@@ -148,7 +193,7 @@ const NewHomePage = () => {
   const divisionsConfig = [
     { icon: Icons.Leaf, gradient: 'from-green-500 to-emerald-500', slug: 'environmental-studies-division' },
     { icon: Icons.Anchor, gradient: 'from-indigo-500 to-purple-500', slug: 'fishing-technology-division' },
-    { icon: Icons.Droplets, gradient: 'from-cyan-500 to-blue-500', slug: 'inland-aquatic-aquaculture-division' },
+    { icon: Icons.Droplets, gradient: 'from-sky-400 to-sky-500', slug: 'inland-aquatic-aquaculture-division' },
     { icon: Icons.Award, gradient: 'from-purple-500 to-pink-500', slug: 'post-harvest-technology-division' },
     { icon: Icons.Waves, gradient: 'from-teal-500 to-emerald-500', slug: 'marine-biological-division' },
     { icon: Icons.Compass, gradient: 'from-blue-500 to-indigo-500', slug: 'oceanography-marine-sciences-division' },
@@ -159,7 +204,7 @@ const NewHomePage = () => {
   ];
 
   const servicesConfig = [
-    { icon: Icons.FlaskConical, gradient: 'from-cyan-500 to-blue-500', link: '/lab-results' },
+    { icon: Icons.FlaskConical, gradient: 'from-sky-400 to-sky-500', link: '/lab-results' },
     { icon: Icons.Info, gradient: 'from-green-500 to-teal-500', link: '/fish-advisory-system' },
     { icon: Icons.Database, gradient: 'from-purple-500 to-pink-500', link: '/open-data-portal' },
     { icon: Icons.GraduationCap, gradient: 'from-orange-500 to-amber-500', link: '/learning-development-academy' }
@@ -210,11 +255,11 @@ const NewHomePage = () => {
     {
       key: 'fishAdvisory',
       link: '/fish-advisory-system',
-      cornerClass: 'bg-cyan-500/10',
-      borderHover: 'hover:border-cyan-500/50',
-      shadowHover: 'hover:shadow-cyan-500/10',
-      headingHover: 'group-hover:text-cyan-400',
-      ctaClass: 'text-cyan-400'
+      cornerClass: 'bg-sky-500/10',
+      borderHover: 'hover:border-sky-500/50',
+      shadowHover: 'hover:shadow-sky-500/10',
+      headingHover: 'group-hover:text-sky-400',
+      ctaClass: 'text-sky-400'
     },
     {
       key: 'labTesting',
@@ -265,7 +310,7 @@ const NewHomePage = () => {
 
   const milestonesIcons = [Icons.Flag, Icons.Ship, Icons.Waves, Icons.TreePine];
   const milestonesGradients = [
-    'from-cyan-500 to-blue-500',
+    'from-sky-400 to-sky-500',
     'from-blue-500 to-purple-500',
     'from-purple-500 to-pink-500',
     'from-green-500 to-teal-500'
@@ -273,7 +318,7 @@ const NewHomePage = () => {
 
   const achievementsIcons = [Icons.Search, Icons.Shield, Icons.Globe2, Icons.GraduationCap];
   const achievementsGradients = [
-    'from-cyan-500 to-blue-500',
+    'from-sky-500 to-blue-500',
     'from-green-500 to-teal-500',
     'from-purple-500 to-pink-500',
     'from-orange-500 to-amber-500'
@@ -283,7 +328,7 @@ const NewHomePage = () => {
   const newsGradients = [
     'from-green-500 to-teal-500',
     'from-purple-500 to-pink-500',
-    'from-blue-500 to-cyan-500'
+    'from-sky-500 to-sky-400'
   ];
 
   const livePointColors = ['bg-green-500', 'bg-blue-500', 'bg-yellow-500'];
@@ -342,10 +387,10 @@ const NewHomePage = () => {
       <main>
         <section
           ref={heroRef}
-          className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-[#03101d] to-blue-950"
+          className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-[#001238] to-[#001F54]"
         >
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-32 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-cyan-500/15 blur-3xl" />
+            <div className="absolute -top-32 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-sky-400/15 blur-3xl" />
             <div className="absolute top-1/2 right-0 h-[420px] w-[420px] rounded-full bg-blue-500/20 blur-3xl" />
             <div
               className="absolute inset-0 opacity-30"
@@ -372,29 +417,29 @@ const NewHomePage = () => {
                   <div className="space-y-2">
                     <div className="relative h-12 sm:h-16 md:h-20 flex items-center justify-center">
                       <div className="text-center text-xl sm:text-2xl md:text-4xl font-bold welcome-text-si absolute inset-0 flex items-center justify-center">
-                        <span className="typewriter-wrapper bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                        <span className="typewriter-wrapper bg-gradient-to-r from-sky-300 via-blue-400 to-sky-300 bg-clip-text text-transparent">
                           {t('hero.welcome.sinhala', { ns: 'home', defaultValue: 'NARA වෙත සාදරයෙන් පිළිගනිමු' })}
                         </span>
                       </div>
                       <div className="text-center text-xl sm:text-2xl md:text-4xl font-bold welcome-text-ta opacity-0 absolute inset-0 flex items-center justify-center">
-                        <span className="typewriter-wrapper bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                        <span className="typewriter-wrapper bg-gradient-to-r from-sky-300 via-blue-400 to-sky-300 bg-clip-text text-transparent">
                           {t('hero.welcome.tamil', { ns: 'home', defaultValue: 'NARA க்கு வரவேற்கிறோம்' })}
                         </span>
                       </div>
                       <div className="text-center text-xl sm:text-2xl md:text-4xl font-bold welcome-text-en opacity-0 absolute inset-0 flex items-center justify-center">
-                        <span className="typewriter-wrapper bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                        <span className="typewriter-wrapper bg-gradient-to-r from-sky-300 via-blue-400 to-sky-300 bg-clip-text text-transparent">
                           {t('hero.welcome.english', { ns: 'home', defaultValue: 'Welcome to NARA' })}
                         </span>
                       </div>
                     </div>
                     <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-space leading-tight">
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-logo-blue-light via-logo-blue to-blue-500">
                         {heroTitle?.lineOne || 'Pioneering Aquatic'}
                       </span>
                       <br />
                       <span className="text-white">{heroTitle?.lineTwo || 'Stewardship in Sri Lanka'}</span>
                     </h1>
-                    <p className="text-sm sm:text-base md:text-lg text-cyan-300/90 font-semibold">
+                    <p className="text-sm sm:text-base md:text-lg text-sky-300/90 font-semibold">
                       {heroOverview?.tagline || "Sri Lanka's Premier Marine & Freshwater Research Agency"}
                     </p>
                   </div>
@@ -406,17 +451,17 @@ const NewHomePage = () => {
 
                   <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-slate-400">
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-cyan-400" />
+                      <Calendar className="h-4 w-4 text-sky-400" />
                       <span>{heroOverview?.since || 'Since 1981'}</span>
                     </div>
                     <span>•</span>
                     <div className="flex items-center gap-2">
-                      <Layers className="h-4 w-4 text-cyan-400" />
+                      <Layers className="h-4 w-4 text-sky-400" />
                       <span>{heroOverview?.divisions || '9 Research Divisions'}</span>
                     </div>
                     <span>•</span>
                     <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-cyan-400" />
+                      <Users className="h-4 w-4 text-sky-400" />
                       <span>{heroOverview?.scientists || '100+ Scientists'}</span>
                     </div>
                   </div>
@@ -424,14 +469,14 @@ const NewHomePage = () => {
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                     <Link
                       to="/research-excellence-portal"
-                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-500 px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-slate-950 shadow-lg shadow-cyan-500/25 transition hover:shadow-cyan-400/40 active:scale-95"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-logo-blue-light via-logo-blue to-logo-blue-light px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-white shadow-lg shadow-logo-blue/30 transition hover:shadow-logo-blue/50 active:scale-95"
                     >
                       <Microscope className="h-4 w-4" />
                       {heroOverview?.primaryCta || 'Explore Research'}
                     </Link>
                     <Link
                       to="/contact-us"
-                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-500/40 px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10 active:scale-95"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-sky-400/40 px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-sky-200 transition hover:border-sky-400 hover:bg-sky-500/10 active:scale-95"
                     >
                     <Send className="h-4 w-4" />
                     {heroOverview?.secondaryCta ||
@@ -449,8 +494,8 @@ const NewHomePage = () => {
                   transition={{ duration: 1, delay: 0.2 }}
                   className="relative"
                 >
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/20 via-transparent to-blue-500/10 blur-3xl" />
-                  <div className="relative rounded-3xl border border-cyan-500/20 bg-slate-950/70 p-3 sm:p-4 backdrop-blur-2xl shadow-[0_25px_80px_-40px_rgba(8,145,178,0.6)]">
+                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-sky-400/20 via-transparent to-sky-500/10 blur-3xl" />
+                  <div className="relative rounded-3xl border border-sky-400/20 bg-slate-950/70 p-3 sm:p-4 backdrop-blur-2xl shadow-[0_25px_80px_-40px_rgba(0,191,255,0.6)]">
                     <motion.div
                       className="relative mx-auto h-[420px] sm:h-[480px] md:h-[540px] w-full max-w-[380px]"
                       initial={{ scale: 0.92, opacity: 0 }}
@@ -460,7 +505,7 @@ const NewHomePage = () => {
                       <div className="relative h-full w-full overflow-hidden rounded-3xl">
                         <Suspense fallback={
                           <div className="h-full w-full flex items-center justify-center bg-slate-900">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-400"></div>
                           </div>
                         }>
                           <SriLankaEEZMap className="h-full w-full" showMarkers />
@@ -500,7 +545,7 @@ const NewHomePage = () => {
                       </motion.div>
                     </motion.div>
 
-                    <div className="mt-3 sm:mt-4 rounded-2xl border border-cyan-500/10 bg-slate-950/80 p-2">
+                    <div className="mt-3 sm:mt-4 rounded-2xl border border-sky-400/10 bg-slate-950/80 p-2">
                       <div className="mb-1.5">
                         <p className="text-center text-xs sm:text-sm md:text-base font-semibold text-sparkle leading-tight">
                           National Aquatic Resources Research & Development Agency
@@ -511,7 +556,7 @@ const NewHomePage = () => {
                           <div key={item?.label || index} className="rounded-xl bg-slate-900/80 p-2 text-left">
                             <p className="text-[11px] uppercase tracking-wide text-slate-500">{item?.label}</p>
                             <p className="text-base font-semibold text-white">{item?.value}</p>
-                            <p className="text-[11px] text-cyan-300/80">{item?.status}</p>
+                            <p className="text-[11px] text-sky-300/80">{item?.status}</p>
                           </div>
                         ))}
                       </div>
@@ -526,7 +571,7 @@ const NewHomePage = () => {
 
         <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-12 sm:py-16 md:py-20 px-4 md:px-8 lg:px-12">
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-cyan-500/15 blur-3xl" />
+            <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-sky-400/15 blur-3xl" />
             <div className="absolute bottom-0 left-24 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" />
           </div>
 
@@ -535,7 +580,7 @@ const NewHomePage = () => {
               {/* Left Tile - Mission Info */}
               <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-6 sm:p-8 md:p-10 backdrop-blur h-full flex flex-col">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 border border-cyan-500/20">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-400/15 border border-sky-400/20">
                     <AppImage
                       src="/assets/nara-logo.png"
                       alt="NARA crest"
@@ -543,7 +588,7 @@ const NewHomePage = () => {
                     />
                   </div>
                   <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-cyan-200/80">
+                    <p className="text-xs uppercase tracking-[0.3em] text-sky-200/80">
                       {t('mission.badge', {
                         ns: 'home',
                         defaultValue: 'National Aquatic Research Authority'
@@ -566,7 +611,7 @@ const NewHomePage = () => {
 
                 <div className="grid gap-4 sm:grid-cols-2 mb-6">
                   <div className="flex items-start gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
-                    <Compass className="h-5 w-5 text-cyan-300 mt-0.5 flex-shrink-0" />
+                    <Compass className="h-5 w-5 text-sky-300 mt-0.5 flex-shrink-0" />
                     <p className="text-sm text-slate-300 leading-relaxed">
                       {t('mission.focusResearch', {
                         ns: 'home',
@@ -576,7 +621,7 @@ const NewHomePage = () => {
                     </p>
                   </div>
                   <div className="flex items-start gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
-                    <UserCheck className="h-5 w-5 text-cyan-300 mt-0.5 flex-shrink-0" />
+                    <UserCheck className="h-5 w-5 text-sky-300 mt-0.5 flex-shrink-0" />
                     <p className="text-sm text-slate-300 leading-relaxed">
                       {t('mission.focusCommunity', {
                         ns: 'home',
@@ -590,14 +635,14 @@ const NewHomePage = () => {
                 <div className="mt-auto flex flex-col sm:flex-row sm:items-center gap-3">
                   <Link
                     to="/about-nara-our-story"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-logo-blue px-5 py-3 text-sm font-semibold text-white transition hover:bg-logo-blue-light"
                   >
                     <BookOpen className="h-4 w-4" />
                     {t('mission.ctaLearn', { ns: 'home', defaultValue: 'About NARA' })}
                   </Link>
                   <Link
                     to="/contact-us"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-500/40 px-5 py-3 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-sky-400/40 px-5 py-3 text-sm font-semibold text-sky-200 transition hover:border-sky-400 hover:bg-sky-500/10"
                   >
                     <MessageCircle className="h-4 w-4" />
                     {t('mission.ctaConsult', { ns: 'home', defaultValue: 'Request a briefing' })}
@@ -610,14 +655,14 @@ const NewHomePage = () => {
                 <div className="space-y-8">
                   {(missionContent?.stats || []).map((stat, index) => {
                     const StatIcon = missionStatsIcons[index] || Icons.Award;
-                    const gradient = ['from-cyan-500 to-blue-500', 'from-blue-500 to-purple-500', 'from-purple-500 to-pink-500'][index];
-                    const colorClass = ['text-cyan-300', 'text-blue-300', 'text-purple-300'][index] || 'text-cyan-300';
+                    const gradient = ['from-sky-500 to-blue-500', 'from-blue-500 to-purple-500', 'from-purple-500 to-pink-500'][index];
+                    const colorClass = ['text-sky-300', 'text-blue-300', 'text-purple-300'][index] || 'text-sky-300';
                     return (
                       <div
                         key={stat?.label || index}
                         className="flex items-center gap-6 rounded-2xl border border-slate-800 bg-slate-900/80 p-6 backdrop-blur"
                       >
-                        <div className={`flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r ${gradient || 'from-cyan-500 to-blue-500'}`}>
+                        <div className={`flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r ${gradient || 'from-sky-500 to-blue-500'}`}>
                           <StatIcon className="w-8 h-8 text-white" />
                         </div>
                         <div className="flex-1">
@@ -631,95 +676,121 @@ const NewHomePage = () => {
               </div>
             </div>
 
-            <div>
-              <div className="text-center mb-12">
+            {/* COMPLETELY NEW RESEARCH DIVISIONS SHOWCASE */}
+            <div className="relative">
+              {/* Premium Section Header */}
+              <div className="text-center mb-20">
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
+                  transition={{ duration: 0.8 }}
+                  className="space-y-6"
                 >
-                  <span className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-5 py-2.5 text-sm uppercase tracking-[0.3em] text-cyan-200/80 mb-6">
-                    <LayoutGrid className="h-5 w-5" />
-                    {t('divisions.badge', { ns: 'home', defaultValue: 'Research Excellence' })}
-                  </span>
-                  <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-space mb-4 leading-tight">
-                    {t('divisions.heading', { ns: 'home', defaultValue: 'Our Research Divisions' })}
-                  </h3>
-                  <p className="text-lg text-slate-400 max-w-3xl mx-auto leading-relaxed">
+                  <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-logo-blue/20 via-logo-blue/10 to-transparent border border-logo-blue/30 backdrop-blur-xl">
+                    <LayoutGrid className="h-6 w-6 text-logo-blue" />
+                    <span className="text-sm font-bold uppercase tracking-[0.3em] text-logo-blue-light">
+                      {t('divisions.badge', { ns: 'home', defaultValue: 'Research Excellence Centers' })}
+                    </span>
+                  </div>
+                  
+                  <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-logo-blue-light to-logo-blue">
+                      {t('divisions.heading', { ns: 'home', defaultValue: 'Our Research Divisions' })}
+                    </span>
+                  </h2>
+                  
+                  <p className="text-xl md:text-2xl text-slate-300/90 max-w-4xl mx-auto leading-relaxed">
                     {t('divisions.subheading', {
                       ns: 'home',
-                      defaultValue: 'Ten specialized divisions advancing marine and freshwater science, conservation, and innovation across Sri Lanka'
+                      defaultValue: '10 specialized divisions driving breakthrough discoveries in marine and freshwater science'
                     })}
                   </p>
                 </motion.div>
               </div>
 
-              {/* Animated Horizontal Ticker - All 10 Divisions */}
-              <div className="relative overflow-hidden py-8">
-                <div className="flex animate-scroll-smooth">
-                  {/* Render divisions 3 times for seamless infinite loop */}
-                  {[...divisionsConfig, ...divisionsConfig, ...divisionsConfig].map((config, idx) => {
+              {/* FEATURED AUTO-ROTATING CAROUSEL */}
+              <div className="relative overflow-hidden py-12">
+                {/* Gradient Edges */}
+                <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-slate-900 to-transparent z-10 pointer-events-none" />
+                <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-slate-900 to-transparent z-10 pointer-events-none" />
+                
+                {/* Scrolling Container */}
+                <div className="flex gap-8 animate-scroll-smooth">
+                  {[...divisionsConfig, ...divisionsConfig].map((config, idx) => {
                     const index = idx % divisionsConfig.length;
                     const realDivision = DIVISIONS_CONFIG[index];
                     if (!realDivision) return null;
 
-                    const IconComponent = config.icon;
-
-                    // Priority-based image selection with detailed logging
+                    // Get hero image - Priority: Firebase -> Config Default -> Unsplash
                     let heroImage;
-                    let imageSource;
-
                     if (divisionHeroImages[realDivision?.id]) {
+                      // From Firebase Storage
                       heroImage = divisionHeroImages[realDivision.id];
-                      imageSource = heroImage.startsWith('data:') ? '🤖 AI Generated' : '☁️ Firebase Storage';
                     } else if (realDivision?.heroImage) {
+                      // From divisions config default
                       heroImage = realDivision.heroImage;
-                      imageSource = '🌐 Config Default';
                     } else {
+                      // Fallback to Unsplash
                       heroImage = 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&q=85';
-                      imageSource = '📸 Unsplash Fallback';
-                    }
-
-                    // Log only for first iteration (avoid spam)
-                    if (idx < divisionsConfig.length) {
-                      console.log(`[Ticker] ${realDivision.name.en}: ${imageSource}`);
                     }
 
                     const divisionName = realDivision.name[i18n.language] || realDivision.name.en;
+                    const IconComponent = config.icon;
                     
                     return (
                       <Link
-                        key={`division-ticker-${idx}`}
+                        key={`division-featured-${idx}`}
                         to={`/divisions/${config.slug}`}
-                        className="group flex-shrink-0 w-[320px] mx-3"
+                        className="group flex-shrink-0 w-[600px]"
                       >
-                        <div className="relative h-[140px] overflow-hidden rounded-xl border border-slate-800/50 bg-slate-900/80 backdrop-blur-sm shadow-xl transition-all duration-300 hover:border-cyan-500/60 hover:shadow-2xl hover:shadow-cyan-500/20 hover:scale-105">
-                          {/* Compact Hero Image Background */}
+                        <div className="relative h-[400px] rounded-3xl overflow-hidden bg-slate-900/50 border border-slate-700/30 backdrop-blur-xl transition-all duration-700 hover:scale-105 hover:border-logo-blue/50 hover:shadow-2xl hover:shadow-logo-blue/30">
+                          {/* Background Image with Overlay */}
                           <div className="absolute inset-0">
                             <img
                               src={heroImage}
                               alt={divisionName}
-                              className="w-full h-full object-cover opacity-30 group-hover:opacity-50 transition-opacity duration-500"
+                              className="w-full h-full object-cover opacity-70 group-hover:opacity-85 group-hover:scale-110 transition-all duration-700"
                               loading="lazy"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/80 to-transparent" />
-                            <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-20 mix-blend-overlay`} />
+                            {/* Multi-layer Gradients - Less dark for better visibility */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/50 to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-transparent to-slate-950/30" />
+                            <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-20 mix-blend-overlay group-hover:opacity-35 transition-opacity duration-700`} />
                           </div>
-                          
-                          {/* Compact Content */}
-                          <div className="relative h-full flex flex-col justify-center p-6">
-                            {/* Text */}
-                            <div>
-                              <h4 className="text-xl md:text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors line-clamp-2 leading-tight mb-2">
-                                {divisionName}
-                              </h4>
-                              <div className="flex items-center gap-2 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
-                                <span>{t('common:explore', { defaultValue: 'Explore' })}</span>
-                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+
+                          {/* Animated Glow Effect */}
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-logo-blue via-blue-500 to-logo-blue opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-700" />
+
+                          {/* Content - Centered Large Title */}
+                          <div className="relative h-full flex flex-col justify-center items-center p-10 text-center">
+                            {/* GIANT Shining Title */}
+                            <div className="space-y-6">
+                              <h3 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight">
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-logo-blue-light to-logo-blue animate-pulse-slow drop-shadow-[0_0_30px_rgba(0,191,255,0.5)]">
+                                  {divisionName}
+                                </span>
+                              </h3>
+                              
+                              {/* CTA Line with Animated Arrow */}
+                              <div className="flex items-center justify-center gap-3">
+                                <div className="h-1 w-16 bg-gradient-to-r from-transparent via-logo-blue to-transparent rounded-full animate-pulse" />
+                                <span className="text-base font-bold uppercase tracking-widest text-logo-blue-light drop-shadow-[0_0_10px_rgba(135,206,235,0.8)]">
+                                  {t('common:explore', { defaultValue: 'Explore' })}
+                                </span>
+                                <ArrowRight className="h-6 w-6 text-logo-blue-light drop-shadow-[0_0_10px_rgba(135,206,235,0.8)] group-hover:translate-x-2 transition-transform duration-300 animate-pulse" />
+                                <div className="h-1 w-16 bg-gradient-to-r from-logo-blue via-transparent to-transparent rounded-full animate-pulse" />
                               </div>
                             </div>
                           </div>
+
+                          {/* Shimmer Effect */}
+                          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1500" />
+                          </div>
+                          
+                          {/* Glowing Border Effect */}
+                          <div className="absolute inset-0 rounded-3xl border-2 border-transparent group-hover:border-logo-blue/30 transition-all duration-700" />
                         </div>
                       </Link>
                     );
@@ -727,69 +798,104 @@ const NewHomePage = () => {
                 </div>
               </div>
 
+              {/* View All CTA - Enhanced */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="mt-12 text-center"
+                transition={{ duration: 0.8, delay: 0.3 }}
+                className="mt-16 text-center"
               >
                 <Link
                   to="/divisions"
-                  className="inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-cyan-500/25 transition-all hover:shadow-cyan-500/40 hover:scale-105"
+                  className="group inline-flex items-center gap-4 px-10 py-5 rounded-2xl bg-gradient-to-r from-logo-blue via-logo-blue-light to-logo-blue text-white text-lg font-bold shadow-2xl shadow-logo-blue/40 transition-all duration-500 hover:shadow-logo-blue/60 hover:scale-105 hover:-translate-y-1"
                 >
-                  <Microscope className="h-5 w-5" />
-                  {t('mission.viewAllDivisions', { ns: 'home', defaultValue: 'Explore All Divisions' })}
-                  <ArrowRight className="h-5 w-5" />
+                  <Microscope className="h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
+                  <span>{t('mission.viewAllDivisions', { ns: 'home', defaultValue: 'Explore All 10 Research Divisions' })}</span>
+                  <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
                 </Link>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Key Services Section - Clean & Translated */}
-        <section className="relative bg-slate-950 py-16 md:py-24 px-4 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-blue-500/5" />
+        {/* Essential Services Section - Modern Redesign */}
+        <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-20 md:py-28 px-4 overflow-hidden">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-20 left-10 w-96 h-96 bg-logo-blue/10 rounded-full blur-3xl animate-pulse-slow" />
+            <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
+          </div>
+
           <div className="max-w-7xl mx-auto relative">
+            {/* Section Header */}
             <div className="text-center mb-16">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.7 }}
               >
-                <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                <span className="inline-block px-4 py-2 mb-6 text-sm font-semibold tracking-wider uppercase bg-logo-blue/10 text-logo-blue border border-logo-blue/20 rounded-full">
+                  Core Services
+                </span>
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-logo-blue-light via-logo-blue to-white mb-6">
                   {essentialServicesContent?.heading}
                 </h2>
-                <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+                <p className="text-lg md:text-xl text-slate-300/90 max-w-3xl mx-auto leading-relaxed">
                   {essentialServicesContent?.subheading}
                 </p>
               </motion.div>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {essentialServicesCards.map(card => {
+            {/* Services Grid - Modern Card Design */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {essentialServicesCards.map((card, index) => {
                 const content = essentialServicesContent?.cards?.[card.key] || {};
+                
                 return (
-                  <Link key={card.key} to={card.link} className="group">
-                    <div
-                      className={`relative h-full p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${card.borderHover} ${card.shadowHover}`}
-                    >
-                      <div className={`absolute top-0 right-0 w-32 h-32 ${card.cornerClass} rounded-bl-full`} />
-                      <div className="relative">
-                        <h3 className={`text-2xl font-bold text-white mb-3 transition-colors ${card.headingHover}`}>
-                          {content.title}
-                        </h3>
-                        <p className="text-slate-400 leading-relaxed mb-4">
-                          {content.description}
-                        </p>
-                        <div className={`inline-flex items-center gap-2 text-sm font-semibold ${card.ctaClass}`}>
-                          <span>{content.cta}</span>
-                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <motion.div
+                    key={card.key}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: index * 0.15 }}
+                  >
+                    <Link to={card.link} className="group block h-full">
+                      <div className="relative h-full p-8 rounded-3xl bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/90 backdrop-blur-xl border border-slate-700/30 overflow-hidden transition-all duration-500 hover:scale-105 hover:border-logo-blue/50 hover:shadow-2xl hover:shadow-logo-blue/20">
+                        {/* Animated Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-logo-blue/5 via-transparent to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        
+                        {/* Floating Icon Circle */}
+                        <div className="absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br from-logo-blue/20 to-blue-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+                        
+                        <div className="relative z-10">
+                          {/* Title */}
+                          <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 group-hover:text-logo-blue-light transition-colors duration-300">
+                            {content.title}
+                          </h3>
+
+                          {/* Description */}
+                          <p className="text-slate-400 leading-relaxed mb-6 line-clamp-3">
+                            {content.description}
+                          </p>
+
+                          {/* CTA Arrow */}
+                          <div className="flex items-center gap-3 text-logo-blue font-semibold">
+                            <span className="group-hover:translate-x-1 transition-transform duration-300">{content.cta}</span>
+                            <div className="w-10 h-10 rounded-full bg-logo-blue/10 border border-logo-blue/30 flex items-center justify-center group-hover:bg-logo-blue group-hover:border-logo-blue transition-all duration-300">
+                              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 group-hover:text-white transition-all duration-300" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Shimmer Effect */}
+                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-logo-blue/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                         </div>
                       </div>
-                    </div>
-                  </Link>
+                    </Link>
+                  </motion.div>
                 );
               })}
             </div>
@@ -810,12 +916,12 @@ const NewHomePage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
               {milestonesContent?.timeline?.map((milestone, index) => {
                 const IconComponent = milestonesIcons[index] || Icons.Flag;
-                const gradient = milestonesGradients[index] || 'from-cyan-500 to-blue-500';
-                const colorClass = ['text-cyan-400', 'text-blue-400', 'text-purple-400', 'text-green-400'][index] || 'text-cyan-400';
+                const gradient = milestonesGradients[index] || 'from-sky-500 to-blue-500';
+                const colorClass = ['text-sky-400', 'text-blue-400', 'text-purple-400', 'text-green-400'][index] || 'text-sky-400';
                 return (
                   <div
                     key={`${milestone?.title}-${index}`}
-                    className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6 transition hover:border-cyan-500/40"
+                    className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6 transition hover:border-sky-500/40"
                   >
                     <span className={`text-4xl font-bold ${colorClass} font-mono mb-4 block`}>{milestone?.year}</span>
                     <h3 className="text-2xl font-bold text-white mb-3 font-mono tracking-tight">{milestone?.title}</h3>
@@ -827,8 +933,8 @@ const NewHomePage = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               {milestonesContent?.achievements?.map((achievement, index) => {
                 const IconComponent = achievementsIcons[index] || Icons.Award;
-                const gradient = achievementsGradients[index] || 'from-cyan-500 to-blue-500';
-                const colorClass = ['text-cyan-400', 'text-green-400', 'text-purple-400', 'text-orange-400'][index] || 'text-cyan-400';
+                const gradient = achievementsGradients[index] || 'from-sky-500 to-blue-500';
+                const colorClass = ['text-sky-400', 'text-green-400', 'text-purple-400', 'text-orange-400'][index] || 'text-sky-400';
                 return (
                   <div key={`${achievement?.label}-${index}`} className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 text-center">
                     <div className={`text-5xl font-bold ${colorClass} mb-3 font-mono`}>{achievement?.number}</div>
@@ -840,7 +946,7 @@ const NewHomePage = () => {
             <div className="mt-12 text-center">
               <Link
                 to="/about-nara-our-story"
-                className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-slate-950 transition hover:bg-cyan-400 active:scale-95"
+                className="inline-flex items-center gap-2 rounded-xl bg-logo-blue px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-white transition hover:bg-logo-blue-light active:scale-95"
               >
                 <Icons.BookOpen className="h-5 w-5" />
                 {milestonesContent?.cta}
@@ -853,7 +959,7 @@ const NewHomePage = () => {
         <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-blue-950/40 py-12 sm:py-16 md:py-20 px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 font-space">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-logo-blue-light via-logo-blue to-blue-500 font-space">
                 {portalContent?.heading || 'Navigate Our Flagship Platforms'}
               </h2>
               <p className="text-base md:text-lg text-slate-300 max-w-3xl mx-auto">
@@ -864,12 +970,12 @@ const NewHomePage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {portalCards.map(({ key, icon: IconComponent, gradient, link, copy }) => (
                 <Link key={key} to={link} className="group">
-                  <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6 transition hover:border-cyan-500/40 active:scale-[0.98]">
-                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors font-mono tracking-tight">
+                  <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6 transition hover:border-sky-500/40 active:scale-[0.98]">
+                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 group-hover:text-sky-300 transition-colors font-mono tracking-tight">
                       {copy?.title}
                     </h3>
                     <p className="text-base text-slate-400 leading-relaxed">{copy?.description}</p>
-                    <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-cyan-300">
+                    <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-300">
                       {portalContent?.cta || 'Enter portal'}
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </div>
@@ -896,8 +1002,8 @@ const NewHomePage = () => {
                 const IconComponent = config.icon;
                 return (
                   <Link key={config.link} to={config.link} className="group">
-                    <div className="relative h-full overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-5 sm:p-6 text-center transition hover:border-cyan-500/40 active:scale-[0.98]">
-                      <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                    <div className="relative h-full overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-5 sm:p-6 text-center transition hover:border-sky-500/40 active:scale-[0.98]">
+                      <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors">
                         {service?.name}
                       </h3>
                       <p className="text-sm text-slate-400 leading-relaxed">{service?.description}</p>
@@ -911,7 +1017,7 @@ const NewHomePage = () => {
 
         <Suspense fallback={
           <div className="py-20 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-400"></div>
           </div>
         }>
           <AcademyShowcase />
@@ -927,8 +1033,8 @@ const NewHomePage = () => {
 
         <section className="relative bg-gradient-to-br from-cyan-900/20 via-slate-900 to-blue-900/20 py-12 sm:py-16 md:py-20 px-4">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(6,182,212,0.2),_transparent_60%)] opacity-40" />
-          <div className="relative max-w-5xl mx-auto rounded-3xl border border-cyan-500/30 bg-slate-950/80 p-6 sm:p-10 md:p-14 text-center backdrop-blur">
-            <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-5 py-2 text-xs uppercase tracking-[0.3em] text-cyan-200">
+          <div className="relative max-w-5xl mx-auto rounded-3xl border border-sky-500/30 bg-slate-950/80 p-6 sm:p-10 md:p-14 text-center backdrop-blur">
+            <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-sky-500/40 bg-sky-500/10 px-5 py-2 text-xs uppercase tracking-[0.3em] text-sky-200">
               <Icons.RadioTower className="h-4 w-4" />
               {missionControlContent?.badge || 'National Mission Control'}
             </div>
@@ -942,14 +1048,14 @@ const NewHomePage = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 sm:gap-4">
               <Link
                 to="/contact-us"
-                className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-slate-950 transition hover:bg-cyan-400 active:scale-95"
+                className="inline-flex items-center gap-2 rounded-xl bg-logo-blue px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-white transition hover:bg-logo-blue-light active:scale-95"
               >
                 <Icons.Navigation className="h-5 w-5" />
                 {missionControlContent?.form?.cta || 'Join the mission'}
               </Link>
               <Link
                 to="/about-nara-our-story"
-                className="inline-flex items-center gap-2 rounded-xl border border-cyan-500/40 px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10 active:scale-95"
+                className="inline-flex items-center gap-2 rounded-xl border border-sky-500/40 px-5 py-3.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-sky-200 transition hover:border-sky-400 hover:bg-sky-500/10 active:scale-95"
               >
                 <Icons.FileText className="h-5 w-5" />
                 {t('home:missionControl.learnMore', { defaultValue: 'Review mandate brief' })}
