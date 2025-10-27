@@ -104,13 +104,8 @@ const ProfessionalHeader = ({ className = '' }) => {
           icon: 'AlertTriangle',
           description: '24/7 emergency coordination',
           badge: 'URGENT'
-        },
-        {
-          name: 'Integration Systems Platform',
-          path: '/integration-systems-platform',
-          icon: 'Network',
-          description: 'API & data integration services'
         }
+        // Integration Systems moved to admin panel
       ]
     },
     education: {

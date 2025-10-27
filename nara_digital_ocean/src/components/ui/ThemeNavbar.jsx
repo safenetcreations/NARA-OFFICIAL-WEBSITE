@@ -89,6 +89,7 @@ const ThemeNavbar = () => {
           ]
         },
         { labelKey: 'navbar.menu.about.links.newsUpdates', path: '/nara-news-updates-center', icon: Icons.Newspaper },
+        { labelKey: 'navbar.menu.about.links.podcasts', path: '/podcasts', icon: Icons.Mic, badge: 'LIVE' },
         { labelKey: 'navbar.menu.about.links.mediaGallery', path: '/media-gallery', icon: Icons.Image },
         { labelKey: 'navbar.menu.news.links.mediaPressKit', path: '/media-press-kit', icon: Icons.Camera },
         { labelKey: 'navbar.menu.about.links.procurement', path: '/procurement-recruitment-portal', icon: Icons.Briefcase },
@@ -120,8 +121,8 @@ const ThemeNavbar = () => {
         { labelKey: 'navbar.menu.services.links.fishAdvisory', path: '/fish-advisory-system', icon: Icons.Fish },
         { labelKey: 'navbar.menu.services.links.maritimeServices', path: '/maritime-services-hub', icon: Icons.Ship },
         { labelKey: 'navbar.menu.services.links.marineIncident', path: '/marine-incident-portal', icon: Icons.AlertCircle },
-        { labelKey: 'navbar.menu.services.links.exportIntelligence', path: '/export-market-intelligence', icon: Icons.TrendingUp },
-        { labelKey: 'navbar.menu.services.links.integrationSystems', path: '/integration-systems-platform', icon: Icons.Workflow }
+        { labelKey: 'navbar.menu.services.links.exportIntelligence', path: '/export-market-intelligence', icon: Icons.TrendingUp }
+        // Integration Systems moved to admin panel
       ]
     },
     {

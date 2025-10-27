@@ -651,6 +651,18 @@ service cloud.firestore {
     }
 
     // ============================================
+    // PODCAST SYSTEM COLLECTIONS
+    // ============================================
+
+    // Podcasts Collection
+    match /podcasts/{podcastId} {
+      // Anyone can read published podcasts
+      allow read: if true;
+      // Only admins can create/update/delete podcasts
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ============================================
     // FISH MARKET INTELLIGENCE COLLECTIONS
     // ============================================
 

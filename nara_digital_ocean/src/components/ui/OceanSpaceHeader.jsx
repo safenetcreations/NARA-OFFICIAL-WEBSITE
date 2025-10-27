@@ -45,8 +45,8 @@ const OceanSpaceHeader = () => {
       submenu: [
         { name: 'Maritime Services', path: '/maritime-services-hub', icon: Icons.Ship },
         { name: 'Government Portal', path: '/government-services-portal', icon: Icons.Building2, status: 'GOV' },
-        { name: 'Emergency Network', path: '/emergency-response-network', icon: Icons.AlertCircle, status: 'ALERT' },
-        { name: 'Systems Integration', path: '/integration-systems-platform', icon: Icons.Network }
+        { name: 'Emergency Network', path: '/emergency-response-network', icon: Icons.AlertCircle, status: 'ALERT' }
+        // Systems Integration moved to admin panel
       ]
     },
     {

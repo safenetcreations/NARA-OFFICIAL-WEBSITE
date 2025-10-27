@@ -69,16 +69,26 @@ const ExportMarketIntelligence = () => {
   const handleSeedData = async () => {
     setSeeding(true);
     try {
+      console.log('🌊 Starting seed process...');
       const result = await seedAllExportMarketData();
+      console.log('📊 Seed result:', result);
+      
       if (result.success) {
         alert(`✅ Success! Added ${result.total} records:\n\n📊 Prices: ${result.prices}\n🌍 Opportunities: ${result.opportunities}\n\nReloading data...`);
         await loadData(); // Reload data after seeding
       } else {
-        alert('❌ Error seeding data. Check console for details.');
+        const errorMsg = result.error || 'Unknown error';
+        console.error('❌ Seeding failed:', errorMsg);
+        alert(`❌ Error seeding data:\n\n${errorMsg}\n\nCheck browser console (F12) for details.`);
       }
     } catch (error) {
-      console.error('Error seeding data:', error);
-      alert('❌ Error: ' + error.message);
+      console.error('❌ Error seeding data:', error);
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        stack: error.stack
+      });
+      alert(`❌ Error: ${error.message}\n\nCode: ${error.code || 'N/A'}\n\nCheck browser console (F12) for full details.`);
     } finally {
       setSeeding(false);
     }

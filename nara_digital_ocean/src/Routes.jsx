@@ -25,7 +25,8 @@ const PaymentGatewayHub = lazy(() => import("./pages/payment-gateway-hub"));
 const NARADigitalMarketplace = lazy(() => import("./pages/nara-digital-marketplace"));
 const ResearchCollaborationPlatform = lazy(() => import("./pages/research-collaboration-platform"));
 const GovernmentServicesPortal = lazy(() => import("./pages/government-services-portal"));
-const IntegrationSystemsPlatform = lazy(() => import("./pages/integration-systems-platform"));
+// Integration Systems Platform moved to admin panel as DataCenterIntegrationAdmin
+// const IntegrationSystemsPlatform = lazy(() => import("./pages/integration-systems-platform"));
 const AboutNARAStoryPage = lazy(() => import("./pages/about-nara-our-story"));
 const NARANewsUpdatesCenter = lazy(() => import("./pages/nara-news-updates-center"));
 const NARAActPage = lazy(() => import("./pages/nara-act"));
@@ -94,6 +95,10 @@ const SimulationsEconomicAdmin = lazy(() => import('./pages/admin/SimulationsEco
 // Fish Advisory System
 const FishAdvisorySystem = lazy(() => import('./pages/fish-advisory-system'));
 const FishAdvisoryAdmin = lazy(() => import('./pages/admin/FishAdvisoryAdmin'));
+
+// Podcasts
+const PodcastsPage = lazy(() => import('./pages/podcasts'));
+const PodcastAdmin = lazy(() => import('./pages/admin/PodcastAdmin'));
 
 // Lab Results Portal
 const LabResultsPortal = lazy(() => import('./pages/lab-results'));
@@ -296,7 +301,8 @@ function Routes() {
               <Route path="/payment/cancel" element={<PaymentReturn />} />
               <Route path="/research-collaboration-platform" element={<ResearchCollaborationPlatform />} />
               <Route path="/government-services-portal" element={<GovernmentServicesPortal />} />
-              <Route path="/integration-systems-platform" element={<IntegrationSystemsPlatform />} />
+              {/* Integration Systems Platform moved to admin panel - use /admin/data-center-integration instead */}
+              {/* <Route path="/integration-systems-platform" element={<IntegrationSystemsPlatform />} /> */}
               <Route path="/about-nara-our-story" element={<AboutNARAStoryPage />} />
               <Route path="/nara-act" element={<NARAActPage />} />
               <Route path="/divisions/supporting" element={<SupportingDivisionsPage />} />
@@ -441,6 +447,10 @@ function Routes() {
               {/* Fish Advisory System Routes */}
               <Route path="/fish-advisory-system" element={<FishAdvisorySystem />} />
               <Route path="/admin/fish-advisory" element={<FishAdvisoryAdmin />} />
+
+              {/* Podcast Routes */}
+              <Route path="/podcasts" element={<PodcastsPage />} />
+              <Route path="/admin/podcasts" element={<PodcastAdmin />} />
 
               {/* Lab Results Portal Routes */}
               <Route path="/lab-results" element={<LabResultsPortal />} />
