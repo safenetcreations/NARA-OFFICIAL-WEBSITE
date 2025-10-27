@@ -32,25 +32,78 @@ const FishAdvisorySystem = () => {
   }, []);
 
   const loadDashboardData = async () => {
+    console.log('🔄 Loading fish advisory data...');
     setLoading(true);
     try {
-      const [statsResult, advisoriesResult, zonesResult, pricesResult, restrictionsResult] = await Promise.all([
-        fishAdvisoryDashboardService.getStatistics(),
-        fishAdvisoryService.getActive(),
+      const [advisoriesResult, zonesResult, pricesResult, restrictionsResult] = await Promise.all([
+        fishAdvisoryService.getAll({ limit: 50 }),
         fishingZonesService.getAll(),
         fishMarketPricesService.getLatest(20),
-        seasonalRestrictionsService.getActive()
+        seasonalRestrictionsService.getAll({ limit: 50 })
       ]);
 
-      if (statsResult.data) setStatistics(statsResult.data);
-      if (advisoriesResult.data) setAdvisories(advisoriesResult.data);
-      if (zonesResult.data) setZones(zonesResult.data);
-      if (pricesResult.data) setPrices(pricesResult.data);
-      if (restrictionsResult.data) setRestrictions(restrictionsResult.data);
+      console.log('📊 Raw data received:', {
+        advisories: advisoriesResult.data?.length || 0,
+        zones: zonesResult.data?.length || 0,
+        prices: pricesResult.data?.length || 0,
+        restrictions: restrictionsResult.data?.length || 0
+      });
+
+      // Filter active advisories client-side
+      const activeAdvisories = advisoriesResult.data?.filter(a => a.status === 'active') || [];
+      console.log('✅ Active advisories:', activeAdvisories.length);
+      setAdvisories(activeAdvisories);
+
+      // Set zones
+      const allZones = zonesResult.data || [];
+      console.log('🗺️ Zones:', allZones.length);
+      setZones(allZones);
+
+      // Set prices
+      const allPrices = pricesResult.data || [];
+      console.log('💰 Prices:', allPrices.length);
+      setPrices(allPrices);
+
+      // Filter active restrictions client-side
+      const activeRestrictions = restrictionsResult.data?.filter(r => r.status === 'active') || [];
+      console.log('🚫 Active restrictions:', activeRestrictions.length);
+      setRestrictions(activeRestrictions);
+
+      // Calculate statistics manually from the retrieved data
+      const openZones = allZones.filter(z => z.status === 'open').length;
+      const restrictedZones = allZones.filter(z => z.status === 'restricted').length;
+      const closedZones = allZones.filter(z => z.status === 'closed').length;
+
+      const stats = {
+        advisories: {
+          total: advisoriesResult.data?.length || 0,
+          active: activeAdvisories.length,
+          critical: activeAdvisories.filter(a => a.severity === 'critical').length
+        },
+        zones: {
+          total: allZones.length,
+          open: openZones,
+          restricted: restrictedZones,
+          closed: closedZones
+        },
+        prices: {
+          total: allPrices.length,
+          updated: allPrices[0]?.date || new Date()
+        },
+        restrictions: {
+          total: restrictionsResult.data?.length || 0,
+          active: activeRestrictions.length
+        }
+      };
+
+      console.log('📈 Calculated statistics:', stats);
+      setStatistics(stats);
+
     } catch (error) {
-      console.error('Error loading fish advisory data:', error);
+      console.error('❌ Error loading fish advisory data:', error);
     } finally {
       setLoading(false);
+      console.log('✅ Loading complete');
     }
   };
 
@@ -63,15 +116,21 @@ const FishAdvisorySystem = () => {
     try {
       const result = await seedFishAdvisoryData();
       if (result.success) {
-        alert(`✅ Successfully seeded data!\n\nAdded:\n- ${result.counts.advisories} Advisories\n- ${result.counts.zones} Zones\n- ${result.counts.prices} Prices\n- ${result.counts.restrictions} Restrictions`);
-        loadDashboardData(); // Reload data
+        alert(`✅ Successfully seeded data!\n\nAdded:\n- ${result.counts.advisories} Advisories\n- ${result.counts.zones} Zones\n- ${result.counts.prices} Prices\n- ${result.counts.restrictions} Restrictions\n\nReloading data...`);
+
+        // Wait a moment for Firebase to process, then reload
+        setTimeout(async () => {
+          await loadDashboardData();
+          setSeeding(false);
+          alert('✅ Data loaded! Check the Dashboard, Advisories, Zones, and Prices tabs.');
+        }, 1000);
       } else {
         alert('❌ Error seeding data: ' + result.error);
+        setSeeding(false);
       }
     } catch (error) {
       console.error('Error seeding data:', error);
       alert('❌ Failed to seed data: ' + error.message);
-    } finally {
       setSeeding(false);
     }
   };

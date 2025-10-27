@@ -50,6 +50,7 @@ export const fishAdvisoryService = {
    */
   getAll: async (filters = {}) => {
     try {
+      console.log('🐟 Fetching fish advisories with filters:', filters);
       let q = collection(db, 'fish_advisories');
       const constraints = [];
 
@@ -65,7 +66,10 @@ export const fishAdvisoryService = {
         constraints.push(where('zone', '==', filters.zone));
       }
 
-      constraints.push(orderBy('createdAt', 'desc'));
+      // Only add orderBy if we have other constraints, to avoid index issues
+      if (constraints.length > 0 || filters.limit) {
+        constraints.push(orderBy('createdAt', 'desc'));
+      }
 
       if (filters.limit) {
         constraints.push(firestoreLimit(filters.limit));
@@ -76,6 +80,8 @@ export const fishAdvisoryService = {
       }
 
       const snapshot = await getDocs(q);
+      console.log('🐟 Fish advisories snapshot size:', snapshot.size);
+
       const advisories = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -85,9 +91,10 @@ export const fishAdvisoryService = {
         validUntil: doc.data().validUntil?.toDate()
       }));
 
+      console.log('🐟 Returning advisories:', advisories.length);
       return { data: advisories, error: null };
     } catch (error) {
-      console.error('Error getting fish advisories:', error);
+      console.error('❌ Error getting fish advisories:', error);
       return { data: [], error };
     }
   },
@@ -219,6 +226,7 @@ export const fishingZonesService = {
    */
   getAll: async (filters = {}) => {
     try {
+      console.log('🗺️ Fetching fishing zones with filters:', filters);
       let q = collection(db, 'fishing_zones');
       const constraints = [];
 
@@ -235,6 +243,8 @@ export const fishingZonesService = {
       }
 
       const snapshot = await getDocs(q);
+      console.log('🗺️ Fishing zones snapshot size:', snapshot.size);
+
       const zones = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -242,9 +252,10 @@ export const fishingZonesService = {
         updatedAt: doc.data().updatedAt?.toDate()
       }));
 
+      console.log('🗺️ Returning zones:', zones.length);
       return { data: zones, error: null };
     } catch (error) {
-      console.error('Error getting fishing zones:', error);
+      console.error('❌ Error getting fishing zones:', error);
       return { data: [], error };
     }
   },
@@ -385,6 +396,7 @@ export const fishMarketPricesService = {
    */
   getLatest: async (limit = 20) => {
     try {
+      console.log('💰 Fetching latest fish market prices, limit:', limit);
       const q = query(
         collection(db, 'fish_market_prices'),
         orderBy('date', 'desc'),
@@ -392,6 +404,8 @@ export const fishMarketPricesService = {
       );
 
       const snapshot = await getDocs(q);
+      console.log('💰 Fish market prices snapshot size:', snapshot.size);
+
       const prices = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -400,9 +414,10 @@ export const fishMarketPricesService = {
         updatedAt: doc.data().updatedAt?.toDate()
       }));
 
+      console.log('💰 Returning prices:', prices.length);
       return { data: prices, error: null };
     } catch (error) {
-      console.error('Error getting latest fish market prices:', error);
+      console.error('❌ Error getting latest fish market prices:', error);
       return { data: [], error };
     }
   },
@@ -503,6 +518,7 @@ export const seasonalRestrictionsService = {
    */
   getAll: async (filters = {}) => {
     try {
+      console.log('🚫 Fetching seasonal restrictions with filters:', filters);
       let q = collection(db, 'seasonal_restrictions');
       const constraints = [];
 
@@ -514,13 +530,22 @@ export const seasonalRestrictionsService = {
         constraints.push(where('species', '==', filters.species));
       }
 
-      constraints.push(orderBy('startDate', 'desc'));
+      // Only add orderBy if we have filters to avoid index issues
+      if (constraints.length > 0 || filters.limit) {
+        constraints.push(orderBy('startDate', 'desc'));
+      }
+
+      if (filters.limit) {
+        constraints.push(firestoreLimit(filters.limit));
+      }
 
       if (constraints.length > 0) {
         q = query(q, ...constraints);
       }
 
       const snapshot = await getDocs(q);
+      console.log('🚫 Seasonal restrictions snapshot size:', snapshot.size);
+
       const restrictions = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -530,9 +555,10 @@ export const seasonalRestrictionsService = {
         updatedAt: doc.data().updatedAt?.toDate()
       }));
 
+      console.log('🚫 Returning restrictions:', restrictions.length);
       return { data: restrictions, error: null };
     } catch (error) {
-      console.error('Error getting seasonal restrictions:', error);
+      console.error('❌ Error getting seasonal restrictions:', error);
       return { data: [], error };
     }
   },

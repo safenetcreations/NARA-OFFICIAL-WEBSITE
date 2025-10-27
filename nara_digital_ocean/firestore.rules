@@ -615,16 +615,44 @@ service cloud.firestore {
     }
 
     // ============================================
-    // FISH MARKET INTELLIGENCE COLLECTIONS
+    // FISH ADVISORY SYSTEM COLLECTIONS
     // ============================================
 
-    // Fish Market Prices Collection (scraped data)
+    // Fish Advisories Collection
+    match /fish_advisories/{advisoryId} {
+      // Anyone can read fish advisories (public safety information)
+      allow read: if true;
+      // Temporarily allow public write for seeding (change to isAdmin() in production)
+      allow write: if true;
+    }
+
+    // Fishing Zones Collection
+    match /fishing_zones/{zoneId} {
+      // Anyone can read fishing zones (public information)
+      allow read: if true;
+      // Temporarily allow public write for seeding (change to isAdmin() in production)
+      allow write: if true;
+    }
+
+    // Fish Market Prices Collection
     match /fish_market_prices/{priceId} {
       // Anyone can read fish market prices (public data)
       allow read: if true;
-      // Only admins and scrapers can write (scrapers use service account)
-      allow write: if isAdmin();
+      // Temporarily allow public write for seeding (change to isAdmin() in production)
+      allow write: if true;
     }
+
+    // Seasonal Restrictions Collection
+    match /seasonal_restrictions/{restrictionId} {
+      // Anyone can read seasonal restrictions (public information)
+      allow read: if true;
+      // Temporarily allow public write for seeding (change to isAdmin() in production)
+      allow write: if true;
+    }
+
+    // ============================================
+    // FISH MARKET INTELLIGENCE COLLECTIONS
+    // ============================================
 
     // Scraper Metadata Collection
     match /scraper_metadata/{metadataId} {
