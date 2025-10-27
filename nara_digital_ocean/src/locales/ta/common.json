@@ -74,8 +74,11 @@
           "supportingDivisions": "துணை பிரிவுகள்",
           "mediaGallery": "ஊடக காட்சியகம்",
           "newsUpdates": "செய்திகள் மற்றும் புதுப்பிப்புகள்",
+          "podcasts": "பாட்காஸ்ட்கள்",
           "procurement": "கொள்முதல்",
-          "naraAct": "NARA சட்டம்"
+          "naraAct": "NARA சட்டம்",
+          "rti": "தகவல் அறியும் உரிமை",
+          "annualReports": "ஆண்டு அறிக்கைகள்"
         }
       },
       "divisions": {

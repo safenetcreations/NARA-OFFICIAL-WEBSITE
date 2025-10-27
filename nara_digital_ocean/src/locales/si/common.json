@@ -74,8 +74,11 @@
           "supportingDivisions": "සහායක අංශ",
           "mediaGallery": "මාධ්‍ය ගැලරිය",
           "newsUpdates": "පුවත් හා යාවත්කාලීන",
+          "podcasts": "පොඩ්කාස්ට්",
           "procurement": "මිලදී ගැනීම්",
-          "naraAct": "NARA පනත"
+          "naraAct": "NARA පනත",
+          "rti": "තොරතුරු දැනගැනීමේ අයිතිය",
+          "annualReports": "වාර්ෂික වාර්තා"
         }
       },
       "divisions": {
