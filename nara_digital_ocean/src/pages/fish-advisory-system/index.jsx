@@ -501,23 +501,50 @@ const FishAdvisorySystem = () => {
               {t('hero.subtitle', { defaultValue: 'Real-time fish advisories, fishing zone status, and market prices for Sri Lankan waters' })}
             </p>
 
-            <div className="flex items-center justify-center gap-4">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setActiveTab('advisories')}
-                className="px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 font-semibold text-white shadow-lg shadow-cyan-500/25 transition-all"
-              >
-                {t('hero.primaryCta', { defaultValue: 'View Advisories' })}
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setActiveTab('zones')}
-                className="px-8 py-4 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/20 font-semibold text-white transition-all"
-              >
-                {t('hero.secondaryCta', { defaultValue: 'Fishing Zones' })}
-              </motion.button>
+            <div className="flex flex-col items-center justify-center gap-4">
+              <div className="flex items-center gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setActiveTab('advisories')}
+                  className="px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 font-semibold text-white shadow-lg shadow-cyan-500/25 transition-all"
+                >
+                  {t('hero.primaryCta', { defaultValue: 'View Advisories' })}
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setActiveTab('zones')}
+                  className="px-8 py-4 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/20 font-semibold text-white transition-all"
+                >
+                  {t('hero.secondaryCta', { defaultValue: 'Fishing Zones' })}
+                </motion.button>
+              </div>
+
+              {/* Seed Data Button - Show only when database is empty */}
+              {!loading && statistics && statistics.advisories?.total === 0 && (
+                <motion.button
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleSeedData}
+                  disabled={seeding}
+                  className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-semibold text-white shadow-lg shadow-green-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {seeding ? (
+                    <>
+                      <Icons.Loader2 className="w-5 h-5 animate-spin" />
+                      Seeding Data...
+                    </>
+                  ) : (
+                    <>
+                      <Icons.Database className="w-5 h-5" />
+                      Add Sample Data
+                    </>
+                  )}
+                </motion.button>
+              )}
             </div>
           </motion.div>
         </div>

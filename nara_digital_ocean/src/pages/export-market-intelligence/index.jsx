@@ -11,6 +11,7 @@ import {
   marketReportsService,
   exportMarketDashboardService
 } from '../../services/exportMarketService';
+import { seedAllExportMarketData } from '../../utils/seedExportMarketData';
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat('en-US', {
@@ -42,29 +43,48 @@ const ExportMarketIntelligence = () => {
   const [selectedSpecies, setSelectedSpecies] = useState('all');
   const [selectedMarket, setSelectedMarket] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [seeding, setSeeding] = useState(false);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [dashResult, pricesResult, oppsResult, reportsResult] = await Promise.all([
+        exportMarketDashboardService.getStatistics(),
+        marketPricesService.getAll({ limit: 100 }),
+        exportOpportunitiesService.getAll({ status: 'active', limit: 50 }),
+        marketReportsService.getAll({ limit: 20 })
+      ]);
+
+      if (dashResult.data) setDashboardData(dashResult.data);
+      if (pricesResult.data) setPrices(pricesResult.data);
+      if (oppsResult.data) setOpportunities(oppsResult.data);
+      if (reportsResult.data) setReports(reportsResult.data);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSeedData = async () => {
+    setSeeding(true);
+    try {
+      const result = await seedAllExportMarketData();
+      if (result.success) {
+        alert(`✅ Success! Added ${result.total} records:\n\n📊 Prices: ${result.prices}\n🌍 Opportunities: ${result.opportunities}\n\nReloading data...`);
+        await loadData(); // Reload data after seeding
+      } else {
+        alert('❌ Error seeding data. Check console for details.');
+      }
+    } catch (error) {
+      console.error('Error seeding data:', error);
+      alert('❌ Error: ' + error.message);
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const [dashResult, pricesResult, oppsResult, reportsResult] = await Promise.all([
-          exportMarketDashboardService.getStatistics(),
-          marketPricesService.getAll({ limit: 100 }),
-          exportOpportunitiesService.getAll({ status: 'active', limit: 50 }),
-          marketReportsService.getAll({ limit: 20 })
-        ]);
-
-        if (dashResult.data) setDashboardData(dashResult.data);
-        if (pricesResult.data) setPrices(pricesResult.data);
-        if (oppsResult.data) setOpportunities(oppsResult.data);
-        if (reportsResult.data) setReports(reportsResult.data);
-      } catch (error) {
-        console.error('Error loading data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadData();
   }, []);
 
@@ -329,23 +349,46 @@ const ExportMarketIntelligence = () => {
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">No Prices Found</h3>
                     <p className="text-gray-600 mb-6">
                       {prices.length === 0 
-                        ? "No market price data is currently available in the database. Contact NARA to add export market prices."
+                        ? "No market price data is currently available in the database."
                         : searchQuery || selectedSpecies !== 'all' || selectedMarket !== 'all'
                           ? "No prices match your search criteria. Try different filters or clear them."
                           : "No price data available."}
                     </p>
-                    {(searchQuery || selectedSpecies !== 'all' || selectedMarket !== 'all') && (
-                      <button
-                        onClick={() => {
-                          setSearchQuery('');
-                          setSelectedSpecies('all');
-                          setSelectedMarket('all');
-                        }}
-                        className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
-                      >
-                        Clear All Filters
-                      </button>
-                    )}
+                    <div className="flex items-center justify-center gap-4">
+                      {prices.length === 0 && (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={handleSeedData}
+                          disabled={seeding}
+                          className="flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-semibold text-white shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {seeding ? (
+                            <>
+                              <Icons.Loader2 className="w-5 h-5 animate-spin" />
+                              Adding Sample Data...
+                            </>
+                          ) : (
+                            <>
+                              <Icons.Database className="w-5 h-5" />
+                              Add Sample Data (47 Prices)
+                            </>
+                          )}
+                        </motion.button>
+                      )}
+                      {(searchQuery || selectedSpecies !== 'all' || selectedMarket !== 'all') && (
+                        <button
+                          onClick={() => {
+                            setSearchQuery('');
+                            setSelectedSpecies('all');
+                            setSelectedMarket('all');
+                          }}
+                          className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
+                        >
+                          Clear All Filters
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <div className="overflow-hidden rounded-xl bg-white shadow-xl">
