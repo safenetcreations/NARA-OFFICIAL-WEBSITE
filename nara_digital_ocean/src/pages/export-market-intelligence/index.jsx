@@ -90,10 +90,10 @@ const ExportMarketIntelligence = () => {
 
   const navTabs = useMemo(
     () => [
-      { id: 'dashboard', label: tabStrings.dashboard, icon: Icons.LayoutDashboard },
-      { id: 'prices', label: tabStrings.prices, icon: Icons.DollarSign },
-      { id: 'opportunities', label: tabStrings.opportunities, icon: Icons.TrendingUp },
-      { id: 'reports', label: tabStrings.reports, icon: Icons.FileText }
+      { id: 'dashboard', label: 'Dashboard', icon: Icons.LayoutDashboard },
+      { id: 'prices', label: 'Prices', icon: Icons.DollarSign },
+      { id: 'opportunities', label: 'Opportunities', icon: Icons.TrendingUp },
+      { id: 'reports', label: 'Reports', icon: Icons.FileText }
     ],
     [tabStrings]
   );
@@ -126,7 +126,7 @@ const ExportMarketIntelligence = () => {
     return (
       <MultilingualContent language={language}>
         <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-emerald-50 to-blue-50">
-          <div className="text-xl text-emerald-900">{t('loading')}</div>
+          <div className="text-xl text-emerald-900">Loading...</div>
         </div>
       </MultilingualContent>
     );
@@ -135,8 +135,8 @@ const ExportMarketIntelligence = () => {
   return (
     <MultilingualContent language={language}>
       <Helmet>
-        <title>{t('seo.title')}</title>
-        <meta name="description" content={t('seo.description')} />
+        <title>Export Market Intelligence - NARA</title>
+        <meta name="description" content="Export market intelligence and fish trade data" />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-blue-50">
@@ -160,27 +160,27 @@ const ExportMarketIntelligence = () => {
               <div className="mx-auto mb-6 flex items-center justify-center gap-4">
                 <Icons.Globe className="h-16 w-16" />
               </div>
-              <h1 className="mb-6 text-5xl font-bold md:text-6xl">{heroStrings.title}</h1>
-              <p className="mx-auto mb-4 max-w-3xl text-xl text-emerald-100">{heroStrings.subtitle}</p>
-              <p className="mx-auto max-w-3xl text-lg text-emerald-50">{heroStrings.description}</p>
+              <h1 className="mb-6 text-5xl font-bold md:text-6xl">Export Market Intelligence</h1>
+              <p className="mx-auto mb-4 max-w-3xl text-xl text-emerald-100">Real-time export market data and intelligence</p>
+              <p className="mx-auto max-w-3xl text-lg text-emerald-50">Access comprehensive fish export data, market prices, and trade opportunities</p>
 
               {dashboardData && (
                 <div className="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-6 md:grid-cols-4">
                   <div className="rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-lg">
                     <div className="text-3xl font-bold">{formatCurrency(dashboardData.overview.totalExportValue)}</div>
-                    <div className="text-sm text-emerald-200">{heroStrings.stats.totalValue}</div>
+                    <div className="text-sm text-emerald-200">Total Export Value</div>
                   </div>
                   <div className="rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-lg">
                     <div className="text-3xl font-bold">{formatNumber(dashboardData.overview.totalExportVolume)} MT</div>
-                    <div className="text-sm text-emerald-200">{heroStrings.stats.totalVolume}</div>
+                    <div className="text-sm text-emerald-200">Total Export Volume</div>
                   </div>
                   <div className="rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-lg">
                     <div className="text-3xl font-bold">{dashboardData.overview.activeOpportunities}</div>
-                    <div className="text-sm text-emerald-200">{heroStrings.stats.activeOpportunities}</div>
+                    <div className="text-sm text-emerald-200">Active Opportunities</div>
                   </div>
                   <div className="rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-lg">
                     <div className="text-3xl font-bold">{dashboardData.overview.marketsCount}</div>
-                    <div className="text-sm text-emerald-200">{heroStrings.stats.globalMarkets}</div>
+                    <div className="text-sm text-emerald-200">Global Markets</div>
                   </div>
                 </div>
               )}
@@ -213,7 +213,7 @@ const ExportMarketIntelligence = () => {
                   <div className="rounded-xl bg-white p-6 shadow-lg">
                     <h3 className="mb-4 flex items-center gap-2 text-xl font-bold text-gray-900">
                       <Icons.Fish className="h-6 w-6 text-emerald-600" />
-                      {dashboardStrings.topSpeciesTitle}
+                      Top Species by Export Value
                     </h3>
                     <div className="space-y-3">
                       {dashboardData.pricesBySpecies.slice(0, 5).map((item, idx) => (
@@ -228,7 +228,7 @@ const ExportMarketIntelligence = () => {
                   <div className="rounded-xl bg-white p-6 shadow-lg">
                     <h3 className="mb-4 flex items-center gap-2 text-xl font-bold text-gray-900">
                       <Icons.MapPin className="h-6 w-6 text-blue-600" />
-                      {dashboardStrings.topMarketsTitle}
+                      Top Export Markets
                     </h3>
                     <div className="space-y-3">
                       {Object.values(dashboardData.tradeByCountry).slice(0, 5).map((country, idx) => (
@@ -245,7 +245,7 @@ const ExportMarketIntelligence = () => {
                 </div>
 
                 <div className="mb-8">
-                  <h3 className="mb-4 text-2xl font-bold text-gray-900">{dashboardStrings.recentOpportunitiesTitle}</h3>
+                  <h3 className="mb-4 text-2xl font-bold text-gray-900">Recent Export Opportunities</h3>
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {dashboardData.activeOpportunities.map((opp) => (
                       <div key={opp.id} className="rounded-xl bg-white p-6 shadow-lg transition-all hover:shadow-xl">
@@ -260,7 +260,7 @@ const ExportMarketIntelligence = () => {
                         <h4 className="mb-2 text-lg font-bold text-gray-900">{opp.title}</h4>
                         <p className="mb-4 line-clamp-3 text-sm text-gray-600">{opp.description}</p>
                         <button className="w-full rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white transition-colors hover:bg-emerald-700">
-                          {dashboardStrings.viewDetails}
+                          View Details
                         </button>
                       </div>
                     ))}
@@ -437,7 +437,7 @@ const ExportMarketIntelligence = () => {
 
             {activeView === 'opportunities' && (
               <motion.div key="opportunities" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                <h2 className="mb-6 text-3xl font-bold text-gray-900">{opportunitiesStrings.title}</h2>
+                <h2 className="mb-6 text-3xl font-bold text-gray-900">Export Opportunities</h2>
                 <div className="grid gap-6 md:grid-cols-2">
                   {opportunities.map((opp) => (
                     <div key={opp.id} className="rounded-xl bg-white p-6 shadow-lg transition-all hover:shadow-xl">
@@ -451,12 +451,12 @@ const ExportMarketIntelligence = () => {
                             <span className="text-sm text-gray-500">{opp.targetMarket}</span>
                           </div>
                         </div>
-                        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">{opportunitiesStrings.activeBadge}</span>
+                        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">Active</span>
                       </div>
                       <p className="mb-4 text-gray-600">{opp.description}</p>
                       {opp.requirements && (
                         <div className="mb-4">
-                          <div className="mb-2 text-sm font-semibold text-gray-700">{opportunitiesStrings.requirementsHeading}</div>
+                          <div className="mb-2 text-sm font-semibold text-gray-700">Requirements</div>
                           <ul className="space-y-1 text-sm text-gray-600">
                             {opp.requirements.slice(0, 3).map((req, i) => (
                               <li key={i} className="flex items-start gap-2">
@@ -469,10 +469,10 @@ const ExportMarketIntelligence = () => {
                       )}
                       <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                         <div className="text-sm text-gray-500">
-                          {opportunitiesStrings.posted} {opp.postedDate?.toDate?.()?.toLocaleDateString()}
+                          Posted: {opp.postedDate?.toDate?.()?.toLocaleDateString()}
                         </div>
                         <button className="rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white transition-colors hover:bg-emerald-700">
-                          {opportunitiesStrings.learnMore}
+                          Learn More
                         </button>
                       </div>
                     </div>
@@ -481,7 +481,7 @@ const ExportMarketIntelligence = () => {
                 {opportunities.length === 0 && (
                   <div className="rounded-xl bg-white py-16 text-center text-gray-500">
                     <Icons.TrendingUp className="mx-auto mb-4 h-16 w-16 opacity-30" />
-                    <p>{opportunitiesStrings.empty}</p>
+                    <p>No export opportunities available at this time</p>
                   </div>
                 )}
               </motion.div>
@@ -489,7 +489,7 @@ const ExportMarketIntelligence = () => {
 
             {activeView === 'reports' && (
               <motion.div key="reports" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                <h2 className="mb-6 text-3xl font-bold text-gray-900">{reportsStrings.title}</h2>
+                <h2 className="mb-6 text-3xl font-bold text-gray-900">Market Reports</h2>
                 <div className="grid gap-6 md:grid-cols-3">
                   {reports.map((report) => (
                     <div key={report.id} className="rounded-xl bg-white p-6 shadow-lg transition-all hover:shadow-xl">
@@ -504,11 +504,11 @@ const ExportMarketIntelligence = () => {
                       <h3 className="mb-3 text-lg font-bold text-gray-900">{report.title}</h3>
                       <p className="mb-4 line-clamp-3 text-sm text-gray-600">{report.summary}</p>
                       <div className="mb-4 text-xs text-gray-500">
-                        {reportsStrings.published} {report.publishedDate?.toDate?.()?.toLocaleDateString()}
+                        Published: {report.publishedDate?.toDate?.()?.toLocaleDateString()}
                       </div>
                       <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700">
                         <Icons.Download className="h-4 w-4" />
-                        {reportsStrings.download}
+                        Download Report
                       </button>
                     </div>
                   ))}
@@ -516,7 +516,7 @@ const ExportMarketIntelligence = () => {
                 {reports.length === 0 && (
                   <div className="rounded-xl bg-white py-16 text-center text-gray-500">
                     <Icons.FileText className="mx-auto mb-4 h-16 w-16 opacity-30" />
-                    <p>{reportsStrings.empty}</p>
+                    <p>No market reports available at this time</p>
                   </div>
                 )}
               </motion.div>
