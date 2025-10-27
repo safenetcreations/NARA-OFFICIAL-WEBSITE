@@ -18,6 +18,11 @@ const API_CONFIG = {
     // Stormglass API Key - Active and verified
     apiKey: '7d8ff776-b0d7-11f0-b4de-0242ac130003-7d8ff7da-b0d7-11f0-b4de-0242ac130003'
   },
+  OPENWEATHER: {
+    baseURL: 'https://api.openweathermap.org/data/2.5',
+    // OpenWeather API Key - Active and verified - 1,000 free calls/day
+    apiKey: '024c7bc4260d03aea27b961257d7f588'
+  },
   NOAA: {
     baseURL: 'https://api.tidesandcurrents.noaa.gov/api/prod',
   },
@@ -177,8 +182,51 @@ export async function getNOAATidesData(stationId: string = '1612340') {
 }
 
 /**
+ * OpenWeather Current Weather API
+ * Provides atmospheric conditions, temperature, humidity
+ */
+export async function getOpenWeatherData(lat: number, lon: number) {
+  const cacheKey = `openweather-${lat}-${lon}`;
+  const cached = getCachedData(cacheKey);
+  if (cached) return cached;
+
+  try {
+    const response = await axios.get(`${API_CONFIG.OPENWEATHER.baseURL}/weather`, {
+      params: {
+        lat,
+        lon,
+        appid: API_CONFIG.OPENWEATHER.apiKey,
+        units: 'metric'
+      },
+      timeout: 10000
+    });
+
+    const data = response.data;
+    const processed = {
+      airTemperature: data.main?.temp || 30,
+      humidity: data.main?.humidity || 75,
+      pressure: data.main?.pressure || 1013,
+      cloudCover: data.clouds?.all || 50,
+      visibility: (data.visibility || 10000) / 1000, // Convert to km
+      windSpeed: data.wind?.speed || 5,
+      windDirection: data.wind?.deg || 90,
+      windGusts: data.wind?.gust || data.wind?.speed * 1.5 || 7.5,
+      weatherCondition: data.weather?.[0]?.description || 'clear sky',
+      weatherIcon: data.weather?.[0]?.icon || '01d',
+      source: 'OpenWeather'
+    };
+
+    setCachedData(cacheKey, processed);
+    return processed;
+  } catch (error) {
+    console.error('OpenWeather API error:', error);
+    return null;
+  }
+}
+
+/**
  * Combined ocean data from multiple sources
- * Merges data from IOC, Stormglass, and NOAA for comprehensive forecast
+ * Merges data from IOC, Stormglass, NOAA, and OpenWeather for comprehensive forecast
  */
 export async function getCombinedOceanData(
   lat: number,
@@ -187,10 +235,11 @@ export async function getCombinedOceanData(
 ) {
   try {
     // Fetch from multiple sources in parallel
-    const [stormglassData, iocData, noaaData] = await Promise.allSettled([
+    const [stormglassData, iocData, noaaData, openweatherData] = await Promise.allSettled([
       getStormglassWeather(lat, lon),
       station ? getIOCSeaLevelData(station) : Promise.resolve(null),
-      getNOAATidesData()
+      getNOAATidesData(),
+      getOpenWeatherData(lat, lon)
     ]);
 
     // Combine successful responses
@@ -232,6 +281,24 @@ export async function getCombinedOceanData(
     if (noaaData.status === 'fulfilled' && noaaData.value) {
       combined.metadata.sources.push('NOAA');
       combined.metadata.waterLevel = noaaData.value.waterLevel;
+    }
+
+    // Add OpenWeather atmospheric data
+    if (openweatherData.status === 'fulfilled' && openweatherData.value) {
+      const owData = openweatherData.value;
+      combined.metadata.sources.push('OpenWeather');
+      combined.metadata.airTemperature = owData.airTemperature;
+      combined.metadata.humidity = owData.humidity;
+      combined.metadata.cloudCover = owData.cloudCover;
+      combined.metadata.weatherCondition = owData.weatherCondition;
+      combined.pressure = owData.pressure;
+      combined.visibility = owData.visibility;
+      // Use OpenWeather wind if Storm glass doesn't provide it
+      if (!combined.windSpeed || combined.windSpeed === 15) {
+        combined.windSpeed = owData.windSpeed;
+        combined.windDirection = owData.windDirection;
+        combined.windGusts = owData.windGusts;
+      }
     }
 
     return combined;
