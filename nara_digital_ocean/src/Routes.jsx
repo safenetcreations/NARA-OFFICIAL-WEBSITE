@@ -120,6 +120,10 @@ const OpenDataPortal = lazy(() => import('./pages/open-data-portal'));
 const MarineIncidentPortal = lazy(() => import('./pages/marine-incident-portal'));
 const MarineIncidentAdmin = lazy(() => import('./pages/admin/MarineIncidentAdmin'));
 
+// Podcast System
+const PodcastsPage = lazy(() => import('./pages/podcasts'));
+const PodcastAdmin = lazy(() => import('./pages/admin/PodcastAdmin'));
+
 // Aqua School Directory
 const AquaSchoolDirectory = lazy(() => import('./pages/aqua-school-directory'));
 
@@ -443,6 +447,10 @@ function Routes() {
               {/* Fish Advisory System Routes */}
               <Route path="/fish-advisory-system" element={<FishAdvisorySystem />} />
               <Route path="/admin/fish-advisory" element={<FishAdvisoryAdmin />} />
+
+              {/* Podcast System Routes */}
+              <Route path="/podcasts" element={<PodcastsPage />} />
+              <Route path="/admin/podcasts" element={<PodcastAdmin />} />
 
               {/* Lab Results Portal Routes */}
               <Route path="/lab-results" element={<LabResultsPortal />} />

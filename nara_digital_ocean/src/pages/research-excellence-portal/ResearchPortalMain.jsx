@@ -7,6 +7,7 @@ import { useFirebaseAuth } from '../../contexts/FirebaseAuthContext';
 import { getResearchContent, searchResearchContent } from '../../services/researchContentService';
 import SearchBar from './components/SearchBar';
 import AdminUpload from './components/AdminUpload';
+import { seedNARAResearchPapers } from '../../utils/seedResearchData';
 
 const ResearchPortalMain = () => {
   const { t, i18n } = useTranslation(['researchPortal']);
@@ -15,11 +16,32 @@ const ResearchPortalMain = () => {
   const [filteredContent, setFilteredContent] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [seeding, setSeeding] = useState(false);
   const [filters, setFilters] = useState({
     category: '',
     language: '',
     sortBy: 'newest'
   });
+
+  const handleSeedData = async () => {
+    setSeeding(true);
+    try {
+      console.log('🌊 Starting to seed NARA research papers...');
+      const result = await seedNARAResearchPapers();
+      
+      if (result.success) {
+        alert(`✅ Success! Added ${result.count} NARA research papers!\n\nIncluding:\n- Coral Reef Studies\n- Tuna Fisheries Management\n- Climate Change Impact\n- Marine Conservation\n- And more!\n\nRefreshing data...`);
+        await loadContent();
+      } else {
+        alert(`❌ ${result.error || 'Failed to seed data'}`);
+      }
+    } catch (error) {
+      console.error('❌ Error seeding data:', error);
+      alert(`❌ Error: ${error.message}\n\nCheck console for details.`);
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   useEffect(() => {
     loadContent();
@@ -209,13 +231,32 @@ const ResearchPortalMain = () => {
                   <p className="text-blue-800 text-sm mb-4">
                     <strong>Note:</strong> This is a new portal. Research content will appear here once researchers upload their papers.
                   </p>
-                  <Link
-                    to="/register"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    <Icons.UserPlus className="w-5 h-5" />
-                    Register to Access Research
-                  </Link>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={handleSeedData}
+                      disabled={seeding}
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                    >
+                      {seeding ? (
+                        <>
+                          <Icons.Loader2 className="w-5 h-5 animate-spin" />
+                          Loading Papers...
+                        </>
+                      ) : (
+                        <>
+                          <Icons.Database className="w-5 h-5" />
+                          Load 10 Real NARA Papers
+                        </>
+                      )}
+                    </button>
+                    <Link
+                      to="/register"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <Icons.UserPlus className="w-5 h-5" />
+                      Register to Access Research
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
