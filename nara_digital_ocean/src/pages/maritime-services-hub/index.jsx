@@ -1,10 +1,10 @@
 import React from 'react';
-import NewMaritimeHub from './NewMaritimeHub';
+import MaritimeServicesRedesign from './MaritimeServicesRedesign';
 
 const MaritimeServicesHub = () => {
   return (
     <>
-      <NewMaritimeHub />
+      <MaritimeServicesRedesign />
     </>
   );
 };
