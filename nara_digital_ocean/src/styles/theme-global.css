@@ -4,7 +4,7 @@ html, body, #root { height: 100%; }
 html { scroll-behavior: smooth; }
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
+  font-family: 'Poppins', 'Noto Sans Sinhala', 'Noto Sans Tamil', system-ui, -apple-system, sans-serif;
   background: var(--bg);
   color: var(--text);
   overflow-x: hidden;
@@ -27,7 +27,13 @@ a:hover { text-decoration: underline; }
   padding: 64px 0;
 }
 
-h1,h2,h3,h4 { line-height: 1.2; margin: 0 0 12px; }
+h1,h2,h3,h4 {
+  line-height: 1.2;
+  margin: 0 0 12px;
+  font-family: 'Montserrat', 'Noto Sans Sinhala', 'Noto Sans Tamil', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
 p { line-height: 1.7; margin: 0 0 16px; }
 
 .theme-card {
@@ -161,4 +167,52 @@ button.theme-btn:active, .theme-btn:active { transform: translateY(0); }
 }
 @keyframes marquee {
   0% { transform: translateX(0); } 100% { transform: translateX(-50%); }
+}
+
+/* Ocean theme animations */
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translateY(-5px) translateX(10px);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-8px) translateX(0);
+    opacity: 0.35;
+  }
+  75% {
+    transform: translateY(-5px) translateX(-10px);
+    opacity: 0.4;
+  }
+}
+
+@keyframes oceanShimmer {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(100vh) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) scale(1);
+    opacity: 0;
+  }
 }

@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import AppImage from '../AppImage';
 import { AVAILABLE_LANGUAGES } from '../../i18n';
 import { useFirebaseAuth } from '../../contexts/FirebaseAuthContext';
+import WaterBubbles from './WaterBubbles';
+import DolphinAnimation from './DolphinAnimation';
 
 const ThemeNavbar = () => {
   const navigate = useNavigate();
@@ -20,8 +22,8 @@ const ThemeNavbar = () => {
   const languageMenuRef = useRef(null);
   const dropdownTimeoutRef = useRef(null);
   const navbarRef = useRef(null);
-  const primaryFont = "'Noto Sans Sinhala', 'Noto Sans Tamil', 'Inter', 'Segoe UI', sans-serif";
-  const secondaryFont = "'Inter', 'Segoe UI', sans-serif";
+  const primaryFont = "'Montserrat', 'Noto Sans Sinhala', 'Noto Sans Tamil', system-ui, sans-serif";
+  const secondaryFont = "'Poppins', 'Noto Sans Sinhala', 'Noto Sans Tamil', system-ui, sans-serif";
   const langBadgeMap = {
     si: { label: 'සිංහල', short: 'සි', flag: '🇱🇰' },
     ta: { label: 'தமிழ்', short: 'த', flag: '🇱🇰' },
@@ -269,14 +271,15 @@ const ThemeNavbar = () => {
         zIndex: 1000,
         width: '100%',
         background: scrolled
-          ? 'linear-gradient(90deg, rgba(147, 196, 235, 0.95), rgba(125, 178, 219, 0.95))'
-          : 'linear-gradient(90deg, rgba(168, 210, 238, 0.92), rgba(143, 194, 226, 0.92))',
-        borderBottom: '2px solid rgba(0, 86, 179, 0.4)',
+          ? 'linear-gradient(135deg, rgba(100, 180, 240, 0.95), rgba(70, 150, 220, 0.95), rgba(50, 130, 210, 0.95))'
+          : 'linear-gradient(135deg, rgba(120, 195, 245, 0.92), rgba(85, 165, 230, 0.92), rgba(60, 140, 215, 0.92))',
+        borderBottom: '3px solid rgba(0, 86, 179, 0.5)',
         boxShadow: scrolled
-          ? '0 10px 28px rgba(0, 88, 164, 0.18)'
-          : '0 8px 18px rgba(0, 88, 164, 0.12)',
+          ? '0 10px 28px rgba(0, 88, 164, 0.25), 0 4px 12px rgba(100, 180, 240, 0.15)'
+          : '0 8px 18px rgba(0, 88, 164, 0.18), 0 2px 8px rgba(100, 180, 240, 0.12)',
         transition: 'background 0.35s ease, box-shadow 0.35s ease',
-        fontFamily: primaryFont
+        fontFamily: primaryFont,
+        overflow: 'hidden'
       }}
       onMouseLeave={() => {
         clearDropdownTimeout();
@@ -286,6 +289,25 @@ const ThemeNavbar = () => {
         }, 220);
       }}
     >
+      {/* Ocean Background Effects */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+        {/* Wave effect overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%)',
+            animation: 'wave 8s ease-in-out infinite',
+            opacity: 0.3
+          }}
+        />
+
+        {/* Water bubbles animation */}
+        <WaterBubbles count={8} />
+
+        {/* Dolphin animation - visible on all screens */}
+        <DolphinAnimation count={2} />
+      </div>
       <div style={{
         display: 'flex',
         alignItems: 'center',

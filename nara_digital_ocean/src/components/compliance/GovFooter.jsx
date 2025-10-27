@@ -12,6 +12,8 @@ import {
   Youtube,
   Building2
 } from 'lucide-react';
+import WaterBubbles from '../ui/WaterBubbles';
+import DolphinAnimation from '../ui/DolphinAnimation';
 
 const navigationColumns = [
   {
@@ -80,13 +82,43 @@ const GovFooter = () => {
 
   return (
     <footer className="relative mt-16 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950" />
+      {/* Ocean-themed gradient background matching navbar */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-blue-900/40 to-slate-950"
+        style={{
+          background: 'linear-gradient(180deg, rgba(50, 130, 210, 0.15) 0%, rgba(30, 58, 95, 0.95) 40%, rgba(15, 23, 42, 0.98) 100%)'
+        }}
+      />
+
+      {/* Ocean effects layer */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Water bubbles animation */}
+        <WaterBubbles count={12} />
+
+        {/* Dolphin swimming animation - responsive */}
+        <div className="hidden lg:block">
+          <DolphinAnimation count={2} />
+        </div>
+
+        {/* Wave overlay effect */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(180deg, transparent 0%, rgba(100, 180, 240, 0.08) 50%, transparent 100%)',
+            animation: 'wave 10s ease-in-out infinite',
+            opacity: 0.4
+          }}
+        />
+      </div>
+
       <div className="absolute inset-0 opacity-30" style={{ backgroundImage: shimmerBackground }} />
-      <svg className="absolute bottom-0 w-full h-[100px] opacity-40" viewBox="0 0 1440 120" preserveAspectRatio="none">
-        <path d="M0,60 C240,90 480,30 720,60 C960,90 1200,40 1440,70 L1440,120 L0,120 Z" fill="rgba(30, 58, 95, 0.4)" />
-        <path d="M0,75 C180,95 360,60 540,80 C720,100 900,65 1080,85 C1260,70 1350,75 1440,80 L1440,120 L0,120 Z" fill="rgba(148, 163, 184, 0.15)" />
-        <path d="M0,85 C120,105 360,75 540,90 C720,105 900,80 1080,95 C1260,85 1350,90 1440,92 L1440,120 L0,120 Z" fill="rgba(6, 182, 212, 0.1)" />
+
+      {/* Enhanced wave SVG with ocean colors */}
+      <svg className="absolute bottom-0 w-full h-[100px] opacity-50" viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path d="M0,60 C240,90 480,30 720,60 C960,90 1200,40 1440,70 L1440,120 L0,120 Z" fill="rgba(70, 150, 220, 0.3)" />
+        <path d="M0,75 C180,95 360,60 540,80 C720,100 900,65 1080,85 C1260,70 1350,75 1440,80 L1440,120 L0,120 Z" fill="rgba(100, 180, 240, 0.2)" />
+        <path d="M0,85 C120,105 360,75 540,90 C720,105 900,80 1080,95 C1260,85 1350,90 1440,92 L1440,120 L0,120 Z" fill="rgba(50, 130, 210, 0.15)" />
       </svg>
+
       <div className="absolute inset-0 overflow-hidden">
         {foamParticles.map((particle, index) => (
           <div

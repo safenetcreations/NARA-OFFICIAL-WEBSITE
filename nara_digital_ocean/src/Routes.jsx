@@ -17,6 +17,7 @@ const EmergencyResponseNetwork = lazy(() => import("./pages/emergency-response-n
 const LearningDevelopmentAcademy = lazy(() => import("./pages/learning-development-academy"));
 const RegionalImpactNetwork = lazy(() => import("./pages/regional-impact-network"));
 const MaritimeServicesHub = lazy(() => import("./pages/maritime-services-hub"));
+const MarineForecastPortal = lazy(() => import("./pages/marine-forecast/MarineForecastPortal"));
 const KnowledgeDiscoveryCenter = lazy(() => import("./pages/knowledge-discovery-center"));
 const PartnershipInnovationGateway = lazy(() => import("./pages/partnership-innovation-gateway"));
 const DigitalProductLibrary = lazy(() => import("./pages/digital-product-library"));
@@ -280,6 +281,7 @@ function Routes() {
               <Route path="/lda-login" element={<LDALogin />} />
               <Route path="/regional-impact-network" element={<RegionalImpactNetwork />} />
               <Route path="/maritime-services-hub" element={<MaritimeServicesHub />} />
+              <Route path="/marine-forecast" element={<MarineForecastPortal />} />
               <Route path="/live-ocean-data" element={<LiveOceanDataView />} />
               <Route path="/stormglass-maritime" element={<StormglassMaritimePage />} />
               <Route path="/nasa-ocean-color" element={<NASAOceanColorPage />} />
