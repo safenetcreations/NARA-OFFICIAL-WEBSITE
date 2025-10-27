@@ -15,6 +15,7 @@ const ThemeNavbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const [expandedSubmenu, setExpandedSubmenu] = useState(null);
   const { t, i18n } = useTranslation(['common', 'audiences']);
   const languageMenuRef = useRef(null);
   const dropdownTimeoutRef = useRef(null);
@@ -76,11 +77,23 @@ const ThemeNavbar = () => {
       icon: Icons.Info,
       dropdown: [
         { labelKey: 'navbar.menu.about.links.ourStory', path: '/about-nara-our-story', icon: Icons.Heart },
-        { labelKey: 'navbar.menu.divisions.links.allDivisions', path: '/divisions', icon: Icons.Grid3x3 },
+        { 
+          labelKey: 'navbar.menu.divisions.links.allDivisions', 
+          path: '/divisions', 
+          icon: Icons.Grid3x3,
+          submenu: [
+            { labelKey: 'navbar.menu.divisions.submenu.research', path: '/divisions', icon: Icons.Microscope },
+            { labelKey: 'navbar.menu.divisions.submenu.regional', path: '/divisions/regional-centers', icon: Icons.MapPin },
+            { labelKey: 'navbar.menu.divisions.submenu.supporting', path: '/divisions/supporting', icon: Icons.Users }
+          ]
+        },
         { labelKey: 'navbar.menu.about.links.newsUpdates', path: '/nara-news-updates-center', icon: Icons.Newspaper },
         { labelKey: 'navbar.menu.about.links.mediaGallery', path: '/media-gallery', icon: Icons.Image },
         { labelKey: 'navbar.menu.news.links.mediaPressKit', path: '/media-press-kit', icon: Icons.Camera },
-        { labelKey: 'navbar.menu.about.links.procurement', path: '/procurement-recruitment-portal', icon: Icons.Briefcase }
+        { labelKey: 'navbar.menu.about.links.procurement', path: '/procurement-recruitment-portal', icon: Icons.Briefcase },
+        { labelKey: 'navbar.menu.about.links.naraAct', path: '/nara-act', icon: Icons.Scale },
+        { labelKey: 'navbar.menu.about.links.rti', path: '/rti', icon: Icons.FileText },
+        { labelKey: 'navbar.menu.about.links.annualReports', path: '/annual-reports', icon: Icons.BookOpen }
       ]
     },
     {
@@ -180,6 +193,7 @@ const ThemeNavbar = () => {
   const closeAllDropdowns = useCallback(() => {
     clearDropdownTimeout();
     setActiveDropdown(null);
+    setExpandedSubmenu(null);
   }, [clearDropdownTimeout]);
 
   useEffect(() => {
@@ -369,6 +383,8 @@ const ThemeNavbar = () => {
                       >
                         {item.dropdown.map((subItem) => {
                           const isExternal = subItem.isExternal || subItem.path.startsWith('http');
+                          const hasSubmenu = subItem.submenu && subItem.submenu.length > 0;
+                          
                           const linkStyle = {
                             display: 'flex',
                             alignItems: 'center',
@@ -410,7 +426,13 @@ const ThemeNavbar = () => {
                                 fontFamily: secondaryFont,
                                 color: isActivePath(subItem.path) ? '#0066CC' : '#003366'
                               }}>{t(subItem.labelKey)}</span>
-                              {isExternal && (
+                              {hasSubmenu && (
+                                <Icons.ChevronRight 
+                                  className="w-4 h-4 ml-auto" 
+                                  style={{ color: '#005A9C', opacity: 0.6 }}
+                                />
+                              )}
+                              {isExternal && !hasSubmenu && (
                                 <Icons.ExternalLink 
                                   className="w-3 h-3 ml-auto" 
                                   style={{ color: '#005A9C', opacity: 0.6 }}
@@ -418,6 +440,76 @@ const ThemeNavbar = () => {
                               )}
                             </>
                           );
+                          
+                          if (hasSubmenu) {
+                            const isExpanded = expandedSubmenu === subItem.labelKey;
+                            return (
+                              <div key={subItem.path} style={{ position: 'relative', width: '100%' }}>
+                                <div
+                                  className="dropdown-item"
+                                  style={{...linkStyle, cursor: 'pointer'}}
+                                  onClick={() => setExpandedSubmenu(isExpanded ? null : subItem.labelKey)}
+                                  onMouseEnter={handleMouseEnter}
+                                  onMouseLeave={handleMouseLeave}
+                                >
+                                  {content}
+                                </div>
+                                {isExpanded && (
+                                  <div style={{
+                                    paddingLeft: '1.5rem',
+                                    marginTop: '0.25rem',
+                                    borderLeft: '2px solid rgba(0, 86, 179, 0.15)',
+                                    marginLeft: '0.85rem'
+                                  }}>
+                                    {subItem.submenu.map((nestedItem) => {
+                                    const nestedLinkStyle = {
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '0.5rem',
+                                      padding: '0.5rem 0.75rem',
+                                      borderRadius: '10px',
+                                      background: isActivePath(nestedItem.path) ? 'rgba(100, 181, 246, 0.15)' : 'transparent',
+                                      textDecoration: 'none',
+                                      transition: 'all 0.2s ease',
+                                      fontFamily: secondaryFont
+                                    };
+
+                                    return (
+                                      <Link
+                                        key={nestedItem.path}
+                                        to={nestedItem.path}
+                                        onClick={handleDropdownLinkClick}
+                                        style={nestedLinkStyle}
+                                        onMouseEnter={(e) => {
+                                          if (!isActivePath(nestedItem.path)) {
+                                            e.currentTarget.style.background = 'rgba(0, 86, 179, 0.06)';
+                                            e.currentTarget.style.transform = 'translateX(2px)';
+                                          }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                          if (!isActivePath(nestedItem.path)) {
+                                            e.currentTarget.style.background = 'transparent';
+                                            e.currentTarget.style.transform = 'translateX(0)';
+                                          }
+                                        }}
+                                      >
+                                        <nestedItem.icon
+                                          className="w-3.5 h-3.5"
+                                          style={{ color: isActivePath(nestedItem.path) ? '#0066CC' : '#005A9C' }}
+                                        />
+                                        <span style={{
+                                          fontSize: '0.82rem',
+                                          fontWeight: isActivePath(nestedItem.path) ? 600 : 500,
+                                          color: isActivePath(nestedItem.path) ? '#0066CC' : '#003366'
+                                        }}>{t(nestedItem.labelKey)}</span>
+                                      </Link>
+                                    );
+                                  })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
                           
                           return isExternal ? (
                             <a

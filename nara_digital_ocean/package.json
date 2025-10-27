@@ -33,6 +33,7 @@
     "@google/genai": "^1.27.0",
     "@google/generative-ai": "^0.21.0",
     "@radix-ui/react-slot": "^1.2.3",
+    "@react-google-maps/api": "^2.20.7",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.0.0",
     "@reduxjs/toolkit": "^2.6.1",

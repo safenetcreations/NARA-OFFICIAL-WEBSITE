@@ -36,6 +36,10 @@ import enResearchPortal from './locales/en/researchPortal.json';
 import enDivisions from './locales/en/divisions.json';
 import enAnalytics from './locales/en/analytics.json';
 import enIndustryExporters from './locales/en/industryExporters.json';
+import enNaraAct from './locales/en/naraAct.json';
+import enSupportingDivisions from './locales/en/supportingDivisions.json';
+import enRegionalCenters from './locales/en/regionalCenters.json';
+import enRTI from './locales/en/rti.json';
 import taCommon from './locales/ta/common.json';
 import taLda from './locales/ta/lda.json';
 import taMarketplace from './locales/ta/marketplace.json';
@@ -71,6 +75,10 @@ import taResearchPortal from './locales/ta/researchPortal.json';
 import taDivisions from './locales/ta/divisions.json';
 import taAnalytics from './locales/ta/analytics.json';
 import taIndustryExporters from './locales/ta/industryExporters.json';
+import taNaraAct from './locales/ta/naraAct.json';
+import taSupportingDivisions from './locales/ta/supportingDivisions.json';
+import taRegionalCenters from './locales/ta/regionalCenters.json';
+import taRTI from './locales/ta/rti.json';
 import siCommon from './locales/si/common.json';
 import siLda from './locales/si/lda.json';
 import siMarketplace from './locales/si/marketplace.json';
@@ -106,6 +114,10 @@ import siResearchPortal from './locales/si/researchPortal.json';
 import siDivisions from './locales/si/divisions.json';
 import siAnalytics from './locales/si/analytics.json';
 import siIndustryExporters from './locales/si/industryExporters.json';
+import siNaraAct from './locales/si/naraAct.json';
+import siSupportingDivisions from './locales/si/supportingDivisions.json';
+import siRegionalCenters from './locales/si/regionalCenters.json';
+import siRTI from './locales/si/rti.json';
 
 const resources = {
   en: {
@@ -143,7 +155,11 @@ const resources = {
     researchPortal: enResearchPortal,
     divisions: enDivisions,
     analytics: enAnalytics,
-    industryExporters: enIndustryExporters
+    industryExporters: enIndustryExporters,
+    naraAct: enNaraAct,
+    supportingDivisions: enSupportingDivisions,
+    regionalCenters: enRegionalCenters,
+    rti: enRTI
   },
   ta: {
     common: taCommon,
@@ -180,7 +196,11 @@ const resources = {
     researchPortal: taResearchPortal,
     divisions: taDivisions,
     analytics: taAnalytics,
-    industryExporters: taIndustryExporters
+    industryExporters: taIndustryExporters,
+    naraAct: taNaraAct,
+    supportingDivisions: taSupportingDivisions,
+    regionalCenters: taRegionalCenters,
+    rti: taRTI
   },
   si: {
     common: siCommon,
@@ -217,7 +237,11 @@ const resources = {
     researchPortal: siResearchPortal,
     divisions: siDivisions,
     analytics: siAnalytics,
-    industryExporters: siIndustryExporters
+    industryExporters: siIndustryExporters,
+    naraAct: siNaraAct,
+    supportingDivisions: siSupportingDivisions,
+    regionalCenters: siRegionalCenters,
+    rti: siRTI
   }
 };
 

@@ -27,6 +27,11 @@ const GovernmentServicesPortal = lazy(() => import("./pages/government-services-
 const IntegrationSystemsPlatform = lazy(() => import("./pages/integration-systems-platform"));
 const AboutNARAStoryPage = lazy(() => import("./pages/about-nara-our-story"));
 const NARANewsUpdatesCenter = lazy(() => import("./pages/nara-news-updates-center"));
+const NARAActPage = lazy(() => import("./pages/nara-act"));
+const SupportingDivisionsPage = lazy(() => import("./pages/supporting-divisions"));
+const RegionalCentersPage = lazy(() => import("./pages/regional-centers"));
+const RTIPage = lazy(() => import("./pages/rti"));
+const AnnualReportsPage = lazy(() => import("./pages/annual-reports"));
 // OLD COMPLEX PORTAL - Replaced with simple version
 // const ProcurementRecruitmentPortal = lazy(() => import("./pages/procurement-recruitment-portal"));
 const ProcurementRecruitmentPortal = lazy(() => import("./pages/procurement-recruitment-portal/SimplePortal"));
@@ -291,6 +296,11 @@ function Routes() {
               <Route path="/government-services-portal" element={<GovernmentServicesPortal />} />
               <Route path="/integration-systems-platform" element={<IntegrationSystemsPlatform />} />
               <Route path="/about-nara-our-story" element={<AboutNARAStoryPage />} />
+              <Route path="/nara-act" element={<NARAActPage />} />
+              <Route path="/divisions/supporting" element={<SupportingDivisionsPage />} />
+              <Route path="/divisions/regional-centers" element={<RegionalCentersPage />} />
+              <Route path="/rti" element={<RTIPage />} />
+              <Route path="/annual-reports" element={<AnnualReportsPage />} />
               <Route path="/media-gallery" element={<MediaGallery />} />
               <Route path="/nara-news-updates-center" element={<NARANewsUpdatesCenter />} />
               <Route path="/procurement-recruitment-portal" element={<ProcurementRecruitmentPortal />} />

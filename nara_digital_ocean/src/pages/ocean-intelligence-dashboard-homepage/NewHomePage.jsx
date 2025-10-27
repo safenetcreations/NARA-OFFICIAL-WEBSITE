@@ -23,6 +23,7 @@ const APIIntegrationShowcase = lazy(() => import('../../components/sections/APII
 const AcademyShowcase = lazy(() => import('../../components/sections/AcademyShowcase'));
 const LibraryBooksCarousel = lazy(() => import('../../components/library/LibraryBooksCarousel'));
 const GovFooter = lazy(() => import('../../components/compliance/GovFooter'));
+const UnifiedServicesHub = lazy(() => import('../../components/UnifiedServicesHub'));
 
 const NewHomePage = () => {
   const [lastUpdate, setLastUpdate] = useState(new Date());
@@ -40,9 +41,7 @@ const NewHomePage = () => {
   const missionContent = t('mission', { ns: 'home', returnObjects: true });
   const researchContent = t('research', { ns: 'home', returnObjects: true });
   const divisionsContent = t('divisions', { ns: 'home', returnObjects: true });
-  const servicesContent = t('services', { ns: 'home', returnObjects: true });
   const highlightsContent = t('highlights', { ns: 'home', returnObjects: true });
-  const portalContent = t('portal', { ns: 'home', returnObjects: true });
   const milestonesContent = t('milestones', { ns: 'home', returnObjects: true });
   const newsContent = t('news', { ns: 'home', returnObjects: true });
   const integrationContent = t('integration', { ns: 'home', returnObjects: true });
@@ -203,13 +202,6 @@ const NewHomePage = () => {
     { icon: Icons.Building2, gradient: 'from-emerald-500 to-green-500', slug: 'aquaculture-research-center' }
   ];
 
-  const servicesConfig = [
-    { icon: Icons.FlaskConical, gradient: 'from-sky-400 to-sky-500', link: '/lab-results' },
-    { icon: Icons.Info, gradient: 'from-green-500 to-teal-500', link: '/fish-advisory-system' },
-    { icon: Icons.Database, gradient: 'from-purple-500 to-pink-500', link: '/open-data-portal' },
-    { icon: Icons.GraduationCap, gradient: 'from-orange-500 to-amber-500', link: '/learning-development-academy' }
-  ];
-
   const highlightCards = Object.entries(highlightsContent?.cards || {}).map(([key, item]) => {
     const iconMap = {
       programs: Icons.Microscope,
@@ -226,30 +218,6 @@ const NewHomePage = () => {
       description: item.description
     };
   });
-
-  const portalCards = [
-    {
-      key: 'research',
-      icon: Icons.Microscope,
-      gradient: 'from-purple-600 to-pink-600',
-      link: '/research-excellence-portal',
-      copy: portalContent?.cards?.research || {}
-    },
-    {
-      key: 'maritime',
-      icon: Icons.Ship,
-      gradient: 'from-blue-600 to-cyan-600',
-      link: '/maritime-services-hub',
-      copy: portalContent?.cards?.maritime || {}
-    },
-    {
-      key: 'marketplace',
-      icon: Icons.ShoppingBag,
-      gradient: 'from-green-600 to-teal-600',
-      link: '/nara-digital-marketplace',
-      copy: portalContent?.cards?.marketplace || {}
-    }
-  ];
 
   const essentialServicesCards = [
     {
@@ -956,64 +924,13 @@ const NewHomePage = () => {
           </div>
         </section>
 
-        <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-blue-950/40 py-12 sm:py-16 md:py-20 px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-logo-blue-light via-logo-blue to-blue-500 font-space">
-                {portalContent?.heading || 'Navigate Our Flagship Platforms'}
-              </h2>
-              <p className="text-base md:text-lg text-slate-300 max-w-3xl mx-auto">
-                {portalContent?.subheading ||
-                  'Dive into specialised environments built for scientists, maritime teams, and policy makers.'}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-              {portalCards.map(({ key, icon: IconComponent, gradient, link, copy }) => (
-                <Link key={key} to={link} className="group">
-                  <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6 transition hover:border-sky-500/40 active:scale-[0.98]">
-                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 group-hover:text-sky-300 transition-colors font-mono tracking-tight">
-                      {copy?.title}
-                    </h3>
-                    <p className="text-base text-slate-400 leading-relaxed">{copy?.description}</p>
-                    <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-300">
-                      {portalContent?.cta || 'Enter portal'}
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+        <Suspense fallback={
+          <div className="py-20 flex items-center justify-center bg-slate-950">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
           </div>
-        </section>
-
-        <section className="relative bg-slate-950 py-12 sm:py-16 md:py-20 px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-white font-space">
-                {servicesContent?.heading}
-              </h2>
-              <p className="text-base md:text-lg text-slate-400 max-w-3xl mx-auto">
-                {servicesContent?.subheading}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {servicesConfig.map((config, index) => {
-                const service = servicesContent?.list?.[index] || {};
-                const IconComponent = config.icon;
-                return (
-                  <Link key={config.link} to={config.link} className="group">
-                    <div className="relative h-full overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-5 sm:p-6 text-center transition hover:border-sky-500/40 active:scale-[0.98]">
-                      <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors">
-                        {service?.name}
-                      </h3>
-                      <p className="text-sm text-slate-400 leading-relaxed">{service?.description}</p>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+        }>
+          <UnifiedServicesHub />
+        </Suspense>
 
         <Suspense fallback={
           <div className="py-20 flex items-center justify-center">

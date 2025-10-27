@@ -70,9 +70,14 @@
         "title": "About",
         "links": {
           "ourStory": "Our Story",
+          "regionalCenters": "Regional Research Centers",
+          "supportingDivisions": "Supporting Divisions",
           "mediaGallery": "Media Gallery",
           "newsUpdates": "News & Updates",
-          "procurement": "Procurement"
+          "procurement": "Procurement",
+          "naraAct": "NARA Act",
+          "rti": "Right to Information",
+          "annualReports": "Annual Reports"
         }
       },
       "divisions": {
@@ -88,6 +93,11 @@
           "hydrography": "Hydrography & Nautical Charts",
           "environmental": "Environmental Monitoring & Advisory",
           "information": "Information & Outreach"
+        },
+        "submenu": {
+          "research": "Research Divisions",
+          "regional": "Regional Research Centers",
+          "supporting": "Supporting Divisions"
         }
       },
       "news": {

@@ -70,9 +70,12 @@
         "title": "எங்களை பற்றி",
         "links": {
           "ourStory": "எங்கள் கதை",
+          "regionalCenters": "பிராந்திய ஆராய்ச்சி மையங்கள்",
+          "supportingDivisions": "துணை பிரிவுகள்",
           "mediaGallery": "ஊடக காட்சியகம்",
           "newsUpdates": "செய்திகள் மற்றும் புதுப்பிப்புகள்",
-          "procurement": "கொள்முதல்"
+          "procurement": "கொள்முதல்",
+          "naraAct": "NARA சட்டம்"
         }
       },
       "divisions": {
@@ -88,6 +91,11 @@
           "hydrography": "நீர்நிலை வரைவியல் மற்றும் கடல்சார் வரைபடங்கள்",
           "environmental": "சுற்றுச்சூழல் கண்காணிப்பு மற்றும் ஆலோசனை",
           "information": "தகவல் மற்றும் விழிப்புணர்வு"
+        },
+        "submenu": {
+          "research": "ஆராய்ச்சி பிரிவுகள்",
+          "regional": "பிராந்திய ஆராய்ச்சி மையங்கள்",
+          "supporting": "துணை பிரிவுகள்"
         }
       },
       "news": {

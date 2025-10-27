@@ -70,9 +70,12 @@
         "title": "අප ගැන",
         "links": {
           "ourStory": "අපේ කතාව",
+          "regionalCenters": "ප්‍රාදේශීය පර්යේෂණ මධ්‍යස්ථාන",
+          "supportingDivisions": "සහායක අංශ",
           "mediaGallery": "මාධ්‍ය ගැලරිය",
           "newsUpdates": "පුවත් හා යාවත්කාලීන",
-          "procurement": "මිලදී ගැනීම්"
+          "procurement": "මිලදී ගැනීම්",
+          "naraAct": "NARA පනත"
         }
       },
       "divisions": {
@@ -87,7 +90,12 @@
           "socioEconomics": "සමාජ-ආර්ථික විද්‍යාව සහ අලෙවිකරණය",
           "hydrography": "ජල විද්‍යාව සහ නාවික සිතියම්",
           "environmental": "පරිසර අධීක්ෂණය සහ උපදේශන",
-          "information": "තොරතුරු සහ ප්‍රචාරණය"
+          "information": "තොරතුරු සහ ව්‍යාප්තිය"
+        },
+        "submenu": {
+          "research": "පර්යේෂණ අංශ",
+          "regional": "ප්‍රාදේශීය පර්යේෂණ මධ්‍යස්ථාන",
+          "supporting": "සහායක අංශ"
         }
       },
       "news": {

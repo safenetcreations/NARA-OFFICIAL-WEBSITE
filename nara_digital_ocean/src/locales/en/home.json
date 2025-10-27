@@ -125,24 +125,106 @@
     "briefing": "Live observatories, ocean drones, and GovCERT-secured data streams coordinate a 200 NM protective radius across Sri Lanka’s sovereign waters.",
     "viewAllDivisions": "View all divisions"
   },
-  "portal": {
-    "heading": "Quick Access Portal",
-    "subheading": "Navigate to our specialized platforms",
-    "cards": {
-      "research": {
-        "title": "Research Portal",
-        "description": "Access scientific publications and data"
-      },
-      "maritime": {
-        "title": "Maritime Services",
-        "description": "Vessel tracking and port information"
-      },
-      "marketplace": {
-        "title": "Digital Marketplace",
-        "description": "Purchase research data and reports"
-      }
+  "unifiedHub": {
+    "badge": "All-in-One Command Center",
+    "heading": "NARA Services Hub",
+    "subheading": "Everything you need in one powerful platform – from research data to real-time maritime intelligence",
+    "tabs": {
+      "portals": "Flagship Portals",
+      "services": "Essential Services",
+      "tools": "Quick Tools"
     },
-    "cta": "Enter Portal"
+    "portals": [
+      {
+        "title": "Research Excellence",
+        "subtitle": "Portal",
+        "description": "Scientific publications, datasets, and collaborative research tools",
+        "metrics": [
+          { "label": "Publications", "value": "2,500+" },
+          { "label": "Datasets", "value": "850+" }
+        ],
+        "features": ["API Access", "Data Downloads", "Collaboration Tools"],
+        "cta": "Explore Research",
+        "icon": "microscope",
+        "gradient": "from-purple-600 via-violet-600 to-fuchsia-600"
+      },
+      {
+        "title": "Maritime Services",
+        "subtitle": "Hub",
+        "description": "Real-time vessel tracking, port operations, and marine intelligence",
+        "metrics": [
+          { "label": "Vessels Tracked", "value": "1,200+" },
+          { "label": "Ports Monitored", "value": "15" }
+        ],
+        "features": ["Live Tracking", "Port Info", "Weather Alerts"],
+        "cta": "Access Maritime",
+        "icon": "ship",
+        "gradient": "from-blue-600 via-cyan-600 to-teal-600"
+      },
+      {
+        "title": "Digital Marketplace",
+        "subtitle": "Platform",
+        "description": "Purchase research data, reports, and specialized marine products",
+        "metrics": [
+          { "label": "Products", "value": "350+" },
+          { "label": "Downloads", "value": "12K+" }
+        ],
+        "features": ["Secure Checkout", "Instant Delivery", "API Access"],
+        "cta": "Browse Store",
+        "icon": "shopping",
+        "gradient": "from-emerald-600 via-green-600 to-teal-600"
+      }
+    ],
+    "services": [
+      {
+        "title": "Marine Laboratory",
+        "description": "ISO-certified water quality testing and fish sample analysis",
+        "turnaround": "24-48 hours",
+        "icon": "flask",
+        "link": "/lab-results"
+      },
+      {
+        "title": "Fisheries Advisory",
+        "description": "Expert guidance, safety alerts, and fishing zone recommendations",
+        "availability": "24/7 Support",
+        "icon": "info",
+        "link": "/fish-advisory-system"
+      },
+      {
+        "title": "Data & Publications",
+        "description": "Access research papers, technical reports, and ocean datasets",
+        "access": "Open Access",
+        "icon": "database",
+        "link": "/open-data-portal"
+      },
+      {
+        "title": "Training Programs",
+        "description": "Workshops, certifications, and capacity building initiatives",
+        "programs": "25+ Courses",
+        "icon": "graduation",
+        "link": "/learning-development-academy"
+      },
+      {
+        "title": "Emergency Response",
+        "description": "24/7 marine incident reporting and rapid response coordination",
+        "response": "< 2 hours",
+        "icon": "alert",
+        "link": "/marine-incident-portal"
+      },
+      {
+        "title": "Export Intelligence",
+        "description": "Market trends, trade statistics, and export opportunities",
+        "updated": "Daily Updates",
+        "icon": "trending",
+        "link": "/market-intelligence"
+      }
+    ],
+    "quickTools": [
+      { "title": "Weather Forecast", "icon": "cloud", "link": "/weather" },
+      { "title": "Fish Prices", "icon": "dollar", "link": "/fish-prices" },
+      { "title": "Tide Tables", "icon": "waves", "link": "/tide-tables" },
+      { "title": "License Portal", "icon": "file", "link": "/licenses" }
+    ]
   },
   "integration": {
     "badge": "Seamless Partnerships",
@@ -445,28 +527,6 @@
         "cta": "Join Discussion"
       }
     }
-  },
-  "services": {
-    "heading": "Services for Stakeholders",
-    "subheading": "Supporting researchers, fishermen, industry, and the public with specialized services",
-    "list": [
-      {
-        "name": "Marine Laboratory Services",
-        "description": "Water quality testing and analysis"
-      },
-      {
-        "name": "Fisheries Advisory",
-        "description": "Expert guidance for fishing communities"
-      },
-      {
-        "name": "Data & Publications",
-        "description": "Access research data and reports"
-      },
-      {
-        "name": "Training Programs",
-        "description": "Capacity building and workshops"
-      }
-    ]
   },
   "milestones": {
     "heading": "Four Decades of Excellence",
