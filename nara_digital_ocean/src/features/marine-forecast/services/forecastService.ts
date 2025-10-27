@@ -12,6 +12,11 @@ import {
   Timestamp 
 } from 'firebase/firestore';
 import { db } from '../../../firebase';
+import { 
+  fetchRealOceanData, 
+  getCombinedOceanData,
+  predictFishAbundance 
+} from './oceanDataAPI';
 import type { 
   OceanForecastPoint, 
   ForecastDocument, 
@@ -23,6 +28,9 @@ import type {
 
 const FORECAST_COLLECTION = 'marine_forecasts';
 const OBSERVATIONS_COLLECTION = 'marine_observations';
+
+// Feature flag for real API usage
+const USE_REAL_APIS = true;
 
 /**
  * Fetch ocean forecasts with optional filters

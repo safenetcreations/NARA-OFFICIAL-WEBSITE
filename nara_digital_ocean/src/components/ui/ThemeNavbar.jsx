@@ -7,7 +7,6 @@ import AppImage from '../AppImage';
 import { AVAILABLE_LANGUAGES } from '../../i18n';
 import { useFirebaseAuth } from '../../contexts/FirebaseAuthContext';
 import WaterBubbles from './WaterBubbles';
-import DolphinAnimation from './DolphinAnimation';
 
 const ThemeNavbar = () => {
   const navigate = useNavigate();
@@ -22,8 +21,8 @@ const ThemeNavbar = () => {
   const languageMenuRef = useRef(null);
   const dropdownTimeoutRef = useRef(null);
   const navbarRef = useRef(null);
-  const primaryFont = "'Montserrat', 'Noto Sans Sinhala', 'Noto Sans Tamil', system-ui, sans-serif";
-  const secondaryFont = "'Poppins', 'Noto Sans Sinhala', 'Noto Sans Tamil', system-ui, sans-serif";
+  const primaryFont = "'Outfit', 'Noto Sans Sinhala', 'Noto Sans Tamil', system-ui, sans-serif";
+  const secondaryFont = "'Plus Jakarta Sans', 'Noto Sans Sinhala', 'Noto Sans Tamil', system-ui, sans-serif";
   const langBadgeMap = {
     si: { label: 'සිංහල', short: 'සි', flag: '🇱🇰' },
     ta: { label: 'தமிழ்', short: 'த', flag: '🇱🇰' },
@@ -279,7 +278,7 @@ const ThemeNavbar = () => {
           : '0 8px 18px rgba(0, 88, 164, 0.18), 0 2px 8px rgba(100, 180, 240, 0.12)',
         transition: 'background 0.35s ease, box-shadow 0.35s ease',
         fontFamily: primaryFont,
-        overflow: 'hidden'
+        overflow: 'visible'
       }}
       onMouseLeave={() => {
         clearDropdownTimeout();
@@ -303,10 +302,7 @@ const ThemeNavbar = () => {
         />
 
         {/* Water bubbles animation */}
-        <WaterBubbles count={8} />
-
-        {/* Dolphin animation - visible on all screens */}
-        <DolphinAnimation count={2} />
+        <WaterBubbles count={12} />
       </div>
       <div style={{
         display: 'flex',

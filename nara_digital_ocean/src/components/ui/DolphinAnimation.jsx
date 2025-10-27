@@ -7,17 +7,17 @@ const DolphinAnimation = ({ count = 3 }) => {
   useEffect(() => {
     const newDolphins = Array.from({ length: count }, (_, i) => ({
       id: i,
-      startY: Math.random() * 30 + 30, // Middle of screen
-      delay: i * 5, // Faster intervals
-      duration: 8 + Math.random() * 2, // Faster animation
-      arcHeight: 200 + Math.random() * 150, // Higher jumps
-      size: 80 + Math.random() * 40 // MUCH BIGGER dolphins
+      startY: 40 + (i * 15), // Spread vertically
+      delay: i === 0 ? 0 : i * 3, // First dolphin starts immediately!
+      duration: 6 + Math.random() * 2, // Even faster animation
+      arcHeight: 180 + Math.random() * 100, // Big jumps
+      size: 100 + Math.random() * 50 // HUGE dolphins (100-150px)
     }));
     setDolphins(newDolphins);
   }, [count]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-visible pointer-events-none" style={{ zIndex: 9999 }}>
       {dolphins.map((dolphin) => (
         <motion.div
           key={dolphin.id}
@@ -27,6 +27,8 @@ const DolphinAnimation = ({ count = 3 }) => {
             height: dolphin.size * 0.6,
             left: '-10%',
             top: `${dolphin.startY}%`,
+            zIndex: 9999,
+            position: 'absolute'
           }}
           animate={{
             x: ['-10%', '50%', '110%'],

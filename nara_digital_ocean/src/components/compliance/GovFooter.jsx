@@ -13,7 +13,6 @@ import {
   Building2
 } from 'lucide-react';
 import WaterBubbles from '../ui/WaterBubbles';
-import DolphinAnimation from '../ui/DolphinAnimation';
 
 const navigationColumns = [
   {
@@ -89,15 +88,25 @@ const GovFooter = () => {
         }}
       />
 
-      {/* Ocean effects layer */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Water bubbles animation */}
-        <WaterBubbles count={12} />
+      {/* Spinning NARA Logo Background - Horizontal Spin */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" style={{ opacity: 0.1 }}>
+        <img
+          src="/assets/nara-logo.png"
+          alt="NARA Logo"
+          style={{
+            width: '500px',
+            height: '500px',
+            objectFit: 'contain',
+            animation: 'spinHorizontal 8s linear infinite',
+            transformStyle: 'preserve-3d'
+          }}
+        />
+      </div>
 
-        {/* Dolphin swimming animation - responsive */}
-        <div className="hidden lg:block">
-          <DolphinAnimation count={2} />
-        </div>
+      {/* Ocean effects layer */}
+      <div className="absolute inset-0 pointer-events-none overflow-visible" style={{ zIndex: 100 }}>
+        {/* Water bubbles animation */}
+        <WaterBubbles count={15} />
 
         {/* Wave overlay effect */}
         <div
