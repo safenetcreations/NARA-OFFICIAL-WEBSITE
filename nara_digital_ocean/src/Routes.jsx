@@ -444,10 +444,6 @@ function Routes() {
               <Route path="/fish-advisory-system" element={<FishAdvisorySystem />} />
               <Route path="/admin/fish-advisory" element={<FishAdvisoryAdmin />} />
 
-              {/* Podcast Routes */}
-              <Route path="/podcasts" element={<PodcastsPage />} />
-              <Route path="/admin/podcasts" element={<PodcastAdmin />} />
-
               {/* Lab Results Portal Routes */}
               <Route path="/lab-results" element={<LabResultsPortal />} />
               <Route path="/admin/lab-results" element={<LabResultsAdmin />} />
