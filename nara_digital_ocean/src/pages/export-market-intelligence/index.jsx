@@ -273,7 +273,7 @@ const ExportMarketIntelligence = () => {
               <motion.div key="prices" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-3xl font-bold text-gray-900">{pricesStrings.title}</h2>
+                    <h2 className="text-3xl font-bold text-gray-900">Market Prices</h2>
                     {prices.length > 0 && (
                       <div className="flex items-center gap-2 px-4 py-2 bg-green-100 border border-green-300 rounded-lg">
                         <Icons.CheckCircle className="w-5 h-5 text-green-600" />
@@ -312,7 +312,7 @@ const ExportMarketIntelligence = () => {
                     >
                       {speciesOptions.map((species) => (
                         <option key={species} value={species}>
-                          {species === 'all' ? pricesStrings.speciesFilter || 'All Species' : species}
+                          {species === 'all' ? 'All Species' : species}
                         </option>
                       ))}
                     </select>
@@ -323,7 +323,7 @@ const ExportMarketIntelligence = () => {
                     >
                       {marketOptions.map((market) => (
                         <option key={market} value={market}>
-                          {market === 'all' ? pricesStrings.marketFilter || 'All Markets' : market}
+                          {market === 'all' ? 'All Markets' : market}
                         </option>
                       ))}
                     </select>
@@ -396,11 +396,11 @@ const ExportMarketIntelligence = () => {
                       <table className="w-full">
                         <thead className="bg-emerald-600 text-white">
                           <tr>
-                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">{pricesStrings.table?.species || 'Species'}</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">{pricesStrings.table?.market || 'Market'}</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">{pricesStrings.table?.price || 'Price (USD/kg)'}</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">{pricesStrings.table?.grade || 'Grade'}</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">{pricesStrings.table?.date || 'Date'}</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">Species</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">Market</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">Price (USD/kg)</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">Grade</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">Date</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
