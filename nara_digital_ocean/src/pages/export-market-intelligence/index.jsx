@@ -41,6 +41,7 @@ const ExportMarketIntelligence = () => {
   const [loading, setLoading] = useState(true);
   const [selectedSpecies, setSelectedSpecies] = useState('all');
   const [selectedMarket, setSelectedMarket] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const loadData = async () => {
@@ -82,9 +83,13 @@ const ExportMarketIntelligence = () => {
       prices.filter((p) => {
         const matchesSpecies = selectedSpecies === 'all' || p.species === selectedSpecies;
         const matchesMarket = selectedMarket === 'all' || p.market === selectedMarket;
-        return matchesSpecies && matchesMarket;
+        const matchesSearch = !searchQuery || 
+          p.species?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.market?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.grade?.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesSpecies && matchesMarket && matchesSearch;
       }),
-    [prices, selectedSpecies, selectedMarket]
+    [prices, selectedSpecies, selectedMarket, searchQuery]
   );
 
   const speciesOptions = useMemo(
@@ -246,9 +251,40 @@ const ExportMarketIntelligence = () => {
 
             {activeView === 'prices' && (
               <motion.div key="prices" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                <div className="mb-6 flex items-center justify-between">
-                  <h2 className="text-3xl font-bold text-gray-900">{pricesStrings.title}</h2>
-                  <div className="flex gap-3">
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-3xl font-bold text-gray-900">{pricesStrings.title}</h2>
+                    {prices.length > 0 && (
+                      <div className="flex items-center gap-2 px-4 py-2 bg-green-100 border border-green-300 rounded-lg">
+                        <Icons.CheckCircle className="w-5 h-5 text-green-600" />
+                        <span className="text-sm font-medium text-green-800">
+                          {prices.length} Live Prices from Firebase
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Search Bar for Fishermen */}
+                  <div className="mb-4 relative">
+                    <Icons.Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="🔍 Search fish species, market, or grade... (e.g., Tuna, Japan, Grade A)"
+                      className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        <Icons.X className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="flex gap-3 flex-wrap">
                     <select
                       value={selectedSpecies}
                       onChange={(e) => setSelectedSpecies(e.target.value)}
@@ -256,7 +292,7 @@ const ExportMarketIntelligence = () => {
                     >
                       {speciesOptions.map((species) => (
                         <option key={species} value={species}>
-                          {species === 'all' ? pricesStrings.speciesFilter : species}
+                          {species === 'all' ? pricesStrings.speciesFilter || 'All Species' : species}
                         </option>
                       ))}
                     </select>
@@ -267,40 +303,92 @@ const ExportMarketIntelligence = () => {
                     >
                       {marketOptions.map((market) => (
                         <option key={market} value={market}>
-                          {market === 'all' ? pricesStrings.marketFilter : market}
+                          {market === 'all' ? pricesStrings.marketFilter || 'All Markets' : market}
                         </option>
                       ))}
                     </select>
+                    {(searchQuery || selectedSpecies !== 'all' || selectedMarket !== 'all') && (
+                      <button
+                        onClick={() => {
+                          setSearchQuery('');
+                          setSelectedSpecies('all');
+                          setSelectedMarket('all');
+                        }}
+                        className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center gap-2 transition-colors"
+                      >
+                        <Icons.X className="w-4 h-4" />
+                        Clear Filters
+                      </button>
+                    )}
                   </div>
                 </div>
 
-                <div className="overflow-hidden rounded-xl bg-white shadow-xl">
-                  <table className="w-full">
-                    <thead className="bg-emerald-600 text-white">
-                      <tr>
-                        <th className="px-6 py-4 text-left text-sm font-semibold">{pricesStrings.table.species}</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold">{pricesStrings.table.market}</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold">{pricesStrings.table.price}</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold">{pricesStrings.table.grade}</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold">{pricesStrings.table.date}</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {filteredPrices.slice(0, 20).map((price) => (
-                        <tr key={price.id} className="transition-colors hover:bg-emerald-50">
-                          <td className="px-6 py-4 font-medium text-gray-900">{price.species}</td>
-                          <td className="px-6 py-4 text-gray-700">{price.market}</td>
-                          <td className="px-6 py-4 font-bold text-emerald-600">{formatCurrency(price.price)}</td>
-                          <td className="px-6 py-4 text-gray-700">{price.grade || 'N/A'}</td>
-                          <td className="px-6 py-4 text-sm text-gray-500">{price.recordDate?.toDate?.()?.toLocaleDateString()}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {filteredPrices.length === 0 && (
-                    <div className="py-12 text-center text-gray-500">{pricesStrings.noData}</div>
-                  )}
-                </div>
+                {filteredPrices.length === 0 ? (
+                  <div className="rounded-xl bg-white shadow-xl p-12 text-center">
+                    <Icons.AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">No Prices Found</h3>
+                    <p className="text-gray-600 mb-6">
+                      {prices.length === 0 
+                        ? "No market price data is currently available in the database. Contact NARA to add export market prices."
+                        : searchQuery || selectedSpecies !== 'all' || selectedMarket !== 'all'
+                          ? "No prices match your search criteria. Try different filters or clear them."
+                          : "No price data available."}
+                    </p>
+                    {(searchQuery || selectedSpecies !== 'all' || selectedMarket !== 'all') && (
+                      <button
+                        onClick={() => {
+                          setSearchQuery('');
+                          setSelectedSpecies('all');
+                          setSelectedMarket('all');
+                        }}
+                        className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
+                      >
+                        Clear All Filters
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="overflow-hidden rounded-xl bg-white shadow-xl">
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-emerald-600 text-white">
+                          <tr>
+                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">{pricesStrings.table?.species || 'Species'}</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">{pricesStrings.table?.market || 'Market'}</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">{pricesStrings.table?.price || 'Price (USD/kg)'}</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">{pricesStrings.table?.grade || 'Grade'}</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold whitespace-nowrap">{pricesStrings.table?.date || 'Date'}</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                          {filteredPrices.slice(0, 50).map((price) => (
+                            <tr key={price.id} className="transition-colors hover:bg-emerald-50">
+                              <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">🐟 {price.species}</td>
+                              <td className="px-6 py-4 text-gray-700 whitespace-nowrap">🌍 {price.market}</td>
+                              <td className="px-6 py-4 font-bold text-emerald-600 text-lg whitespace-nowrap">{formatCurrency(price.price)}/kg</td>
+                              <td className="px-6 py-4 text-gray-700">
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                  price.grade?.toLowerCase().includes('a') ? 'bg-green-100 text-green-800' :
+                                  price.grade?.toLowerCase().includes('b') ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {price.grade || 'N/A'}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                {price.recordDate?.toDate?.()?.toLocaleDateString() || 'N/A'}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="p-4 bg-gray-50 border-t border-gray-200 text-sm text-gray-600 text-center">
+                      Showing {Math.min(filteredPrices.length, 50)} of {filteredPrices.length} prices
+                      {filteredPrices.length > 50 && ' (showing first 50)'}
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
 

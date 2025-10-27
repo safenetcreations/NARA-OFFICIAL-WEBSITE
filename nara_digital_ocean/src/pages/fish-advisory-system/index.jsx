@@ -10,6 +10,7 @@ import {
   seasonalRestrictionsService,
   fishAdvisoryDashboardService
 } from '../../services/fishAdvisoryService';
+import { seedFishAdvisoryData } from '../../utils/seedFishAdvisoryData';
 
 const FishAdvisorySystem = () => {
   const { t, i18n } = useTranslation('fishAdvisory');
@@ -20,6 +21,7 @@ const FishAdvisorySystem = () => {
   const [restrictions, setRestrictions] = useState([]);
   const [statistics, setStatistics] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [seeding, setSeeding] = useState(false);
 
   const { scrollYProgress } = useScroll();
   const heroY = useTransform(scrollYProgress, [0, 0.5], [0, 200]);
@@ -49,6 +51,28 @@ const FishAdvisorySystem = () => {
       console.error('Error loading fish advisory data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSeedData = async () => {
+    if (!window.confirm('This will add sample data to the database. Continue?')) {
+      return;
+    }
+
+    setSeeding(true);
+    try {
+      const result = await seedFishAdvisoryData();
+      if (result.success) {
+        alert(`✅ Successfully seeded data!\n\nAdded:\n- ${result.counts.advisories} Advisories\n- ${result.counts.zones} Zones\n- ${result.counts.prices} Prices\n- ${result.counts.restrictions} Restrictions`);
+        loadDashboardData(); // Reload data
+      } else {
+        alert('❌ Error seeding data: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Error seeding data:', error);
+      alert('❌ Failed to seed data: ' + error.message);
+    } finally {
+      setSeeding(false);
     }
   };
 
