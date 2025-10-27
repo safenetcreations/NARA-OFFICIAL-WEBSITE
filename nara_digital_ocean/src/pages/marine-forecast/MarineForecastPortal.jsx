@@ -214,14 +214,14 @@ const MarineForecastPortal = () => {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               {locations.map((location) => (
-                <motion.button key={location.id} whileHover={{ scale: 1.05, y: -5 }} whileTap={{ scale: 0.95 }} onClick={() => setSelectedLocation(location)} className={`p-4 rounded-xl text-left transition-all ${selectedLocation?.id === location.id ? 'bg-gradient-to-br from-cyan-500 to-blue-500 text-white shadow-2xl shadow-cyan-500/50' : 'bg-white/5 backdrop-blur-lg border border-white/10 text-white hover:bg-white/10'}`}>
+                <motion.button key={location.id} whileHover={{ scale: 1.05, y: -5 }} whileTap={{ scale: 0.95 }} onClick={() => setSelectedLocation(location)} className={`p-4 rounded-xl text-left transition-all overflow-hidden ${selectedLocation?.id === location.id ? 'bg-gradient-to-br from-cyan-500 to-blue-500 text-white shadow-2xl shadow-cyan-500/50' : 'bg-white/5 backdrop-blur-lg border border-white/10 text-white hover:bg-white/10'}`}>
                   <div className="flex items-start justify-between mb-2">
-                    <Icons.MapPin className="w-5 h-5" />
-                    {selectedLocation?.id === location.id && <Icons.Check className="w-5 h-5" />}
+                    <Icons.MapPin className="w-5 h-5 flex-shrink-0" />
+                    {selectedLocation?.id === location.id && <Icons.Check className="w-5 h-5 flex-shrink-0" />}
                   </div>
-                  <h3 className="font-bold mb-1">{location.name}</h3>
-                  <p className="text-xs opacity-80">{location.region}</p>
-                  <p className="text-xs opacity-60 mt-1">Depth: {location.depth}</p>
+                  <h3 className="font-bold mb-1 text-sm leading-tight line-clamp-2">{location.name}</h3>
+                  <p className="text-xs opacity-80 truncate">{location.region}</p>
+                  <p className="text-xs opacity-60 mt-1 truncate">Depth: {location.depth}</p>
                 </motion.button>
               ))}
             </div>
