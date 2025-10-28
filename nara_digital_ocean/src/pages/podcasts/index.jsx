@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { podcastService, podcastAnalyticsService } from '../../services/podcastService';
 import * as Icons from 'lucide-react';
-import AIPodcastGenerator from './AIPodcastGenerator';
+import EnhancedAIPodcastGenerator from './EnhancedAIPodcastGenerator';
 
 const PodcastsPage = () => {
   const { t, i18n } = useTranslation('common');
@@ -763,7 +763,7 @@ const PodcastsPage = () => {
       {/* AI Podcast Generator Modal */}
       <AnimatePresence>
         {showAIGenerator && (
-          <AIPodcastGenerator
+          <EnhancedAIPodcastGenerator
             onClose={() => setShowAIGenerator(false)}
             onGenerate={(podcast) => {
               console.log('Generated podcast:', podcast);
