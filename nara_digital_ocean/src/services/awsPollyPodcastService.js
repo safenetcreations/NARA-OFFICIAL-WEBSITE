@@ -324,22 +324,34 @@ export async function generateNotebookLMPodcast(podcastData, onProgress) {
 
     // 9. Save podcast metadata to Firestore
     updateProgress('save', 97, 'Saving podcast metadata...');
+    
+    // Clean settings object - remove any non-serializable data
+    const cleanSettings = {
+      host: settings?.host || 'Joanna',
+      guest: settings?.guest || 'Matthew',
+      language: settings?.language || 'en-US',
+      conversationStyle: settings?.conversationStyle || 'balanced'
+    };
+    
     const podcastRef = await addDoc(collection(db, 'podcasts'), {
-      title: title,
-      description: content?.substring(0, 300) || 'AI-generated podcast',
+      title: title || 'AI Generated Podcast',
+      description: (content?.substring(0, 300) || 'AI-generated podcast').trim(),
       audioUrl: audioUrl,
       duration: durationSeconds,
       durationFormatted: durationFormatted,
-      script: finalScript,
-      segments: segments.length,
+      script: finalScript || '',
+      segments: segments?.length || 0,
       generatedBy: 'ai',
       aiEngine: 'aws-polly',
       aiStyle: 'notebooklm-conversational',
-      settings: settings,
+      settings: cleanSettings,
       status: 'published',
       createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
       plays: 0,
-      likes: 0
+      likes: 0,
+      category: 'ai-generated',
+      tags: ['ai', 'polly', 'conversational']
     });
 
     updateProgress('complete', 100, 'Podcast created successfully!');
@@ -431,15 +443,24 @@ export async function generateSingleVoicePodcast(podcastData, onProgress) {
 
     // Save metadata
     updateProgress('save', 95, 'Saving podcast...');
+    const durationSeconds = Math.ceil(audioBuffer.length / 4000);
+    
     const podcastRef = await addDoc(collection(db, 'podcasts'), {
-      title,
-      description: content.substring(0, 300),
-      audioUrl,
-      duration: Math.ceil(audioBuffer.length / 4000),
+      title: title || 'AI Generated Podcast',
+      description: (content?.substring(0, 300) || 'AI-generated podcast').trim(),
+      audioUrl: audioUrl,
+      duration: durationSeconds,
+      durationFormatted: formatDuration(durationSeconds),
       generatedBy: 'ai',
       aiEngine: 'aws-polly',
       aiStyle: 'single-voice',
-      createdAt: serverTimestamp()
+      status: 'published',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      plays: 0,
+      likes: 0,
+      category: 'ai-generated',
+      tags: ['ai', 'polly', 'single-voice']
     });
 
     updateProgress('complete', 100, 'Done!');
