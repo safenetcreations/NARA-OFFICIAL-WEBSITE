@@ -355,8 +355,12 @@ export async function generateNotebookLMPodcast(podcastData, onProgress) {
       status: 'published',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
+      publishedAt: serverTimestamp(), // ✅ REQUIRED for display
       plays: 0,
       likes: 0,
+      likedBy: [],
+      views: 0,
+      featured: false,
       category: 'ai-generated',
       tags: ['ai', 'polly', 'conversational']
     });
@@ -472,8 +476,12 @@ export async function generateSingleVoicePodcast(podcastData, onProgress) {
       status: 'published',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
+      publishedAt: serverTimestamp(), // ✅ REQUIRED for display
       plays: 0,
       likes: 0,
+      likedBy: [],
+      views: 0,
+      featured: false,
       category: 'ai-generated',
       tags: ['ai', 'polly', 'single-voice']
     });
