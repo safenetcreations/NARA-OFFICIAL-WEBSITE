@@ -894,7 +894,7 @@ const UltraEnhancedMarineSpatialPlanning = () => {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Total Area:</span>
-                <span className="font-semibold">{stats.totalArea} km²</span>
+                <span className="font-semibold whitespace-nowrap">{stats.totalArea} km²</span>
               </div>
               {Object.keys(stats.zonesByType).length > 0 && (
                 <div className="border-t pt-2 mt-2">

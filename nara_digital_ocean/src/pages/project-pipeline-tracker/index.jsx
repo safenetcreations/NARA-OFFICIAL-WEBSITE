@@ -9,6 +9,7 @@ import {
   budgetTrackingService,
   projectPipelineDashboardService
 } from '../../services/projectPipelineService';
+import EnhancedProjectFilters from '../../components/project-pipeline/EnhancedProjectFilters';
 
 const ProjectPipelineTracker = () => {
   const { t } = useTranslation('project-pipeline');
@@ -19,13 +20,17 @@ const ProjectPipelineTracker = () => {
   const [dashboardStats, setDashboardStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Filters
+  // Enhanced Filters
   const [filters, setFilters] = useState({
+    timeline: 'all', // all | past | ongoing | future
     status: 'all',
     ragStatus: 'all',
     division: 'all',
     fundingSource: 'all',
-    searchTerm: ''
+    year: 'all',
+    searchTerm: '',
+    startDateFrom: '',
+    endDateTo: ''
   });
 
   useEffect(() => {
@@ -56,28 +61,75 @@ const ProjectPipelineTracker = () => {
   const applyFilters = () => {
     let filtered = [...projects];
 
+    // Timeline filter (Past/Ongoing/Future)
+    if (filters.timeline !== 'all') {
+      const now = new Date();
+      if (filters.timeline === 'past') {
+        filtered = filtered.filter(p => p.status === 'completed');
+      } else if (filters.timeline === 'ongoing') {
+        filtered = filtered.filter(p => 
+          (p.status === 'active' || p.status === 'planning') &&
+          (!p.startDate || new Date(p.startDate) <= now)
+        );
+      } else if (filters.timeline === 'future') {
+        filtered = filtered.filter(p => 
+          p.status === 'planning' && 
+          p.startDate && 
+          new Date(p.startDate) > now
+        );
+      }
+    }
+
+    // Status filter
     if (filters.status !== 'all') {
       filtered = filtered.filter(p => p.status === filters.status);
     }
 
+    // RAG Status filter
     if (filters.ragStatus !== 'all') {
       filtered = filtered.filter(p => p.ragStatus === filters.ragStatus);
     }
 
+    // Division filter
     if (filters.division !== 'all') {
       filtered = filtered.filter(p => p.division === filters.division);
     }
 
+    // Funding Source filter
     if (filters.fundingSource !== 'all') {
       filtered = filtered.filter(p => p.fundingSource === filters.fundingSource);
     }
 
+    // Year filter
+    if (filters.year !== 'all') {
+      filtered = filtered.filter(p => {
+        const startYear = p.startDate ? new Date(p.startDate).getFullYear().toString() : null;
+        const endYear = p.endDate ? new Date(p.endDate).getFullYear().toString() : null;
+        return startYear === filters.year || endYear === filters.year;
+      });
+    }
+
+    // Date range filters
+    if (filters.startDateFrom) {
+      filtered = filtered.filter(p => 
+        p.startDate && new Date(p.startDate) >= new Date(filters.startDateFrom)
+      );
+    }
+    if (filters.endDateTo) {
+      filtered = filtered.filter(p => 
+        p.endDate && new Date(p.endDate) <= new Date(filters.endDateTo)
+      );
+    }
+
+    // Enhanced search (ID, Title, Description, PI, Keywords)
     if (filters.searchTerm) {
       const term = filters.searchTerm.toLowerCase();
       filtered = filtered.filter(p =>
-        p.title.toLowerCase().includes(term) ||
-        p.description.toLowerCase().includes(term) ||
-        p.principalInvestigator.toLowerCase().includes(term)
+        (p.projectId && p.projectId.toLowerCase().includes(term)) ||
+        (p.title && p.title.toLowerCase().includes(term)) ||
+        (p.description && p.description.toLowerCase().includes(term)) ||
+        (p.principalInvestigator && p.principalInvestigator.toLowerCase().includes(term)) ||
+        (p.keywords && p.keywords.some(k => k.toLowerCase().includes(term)))
       );
     }
 
@@ -289,92 +341,13 @@ const ProjectPipelineTracker = () => {
         <p className="text-blue-100 mt-2">{t('projects.subtitle')}</p>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          {/* Search */}
-          <div className="lg:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('filters.search')}</label>
-            <div className="relative">
-              <Icons.Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                value={filters.searchTerm}
-                onChange={(e) => setFilters({ ...filters, searchTerm: e.target.value })}
-                placeholder={t('filters.searchPlaceholder')}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          {/* Status Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('filters.status')}</label>
-            <select
-              value={filters.status}
-              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">{t('filters.allStatuses')}</option>
-              <option value="planning">{t('projectStatus.planning')}</option>
-              <option value="active">{t('projectStatus.active')}</option>
-              <option value="on_hold">{t('projectStatus.on_hold')}</option>
-              <option value="completed">{t('projectStatus.completed')}</option>
-            </select>
-          </div>
-
-          {/* RAG Status Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('filters.ragStatus')}</label>
-            <select
-              value={filters.ragStatus}
-              onChange={(e) => setFilters({ ...filters, ragStatus: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">{t('filters.allRAG')}</option>
-              <option value="green">{t('ragLabels.green')}</option>
-              <option value="amber">{t('ragLabels.amber')}</option>
-              <option value="red">{t('ragLabels.red')}</option>
-            </select>
-          </div>
-
-          {/* Division Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('filters.division')}</label>
-            <select
-              value={filters.division}
-              onChange={(e) => setFilters({ ...filters, division: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">{t('filters.allDivisions')}</option>
-              <option value="Marine Biology & Ecosystems">Marine Biology & Ecosystems</option>
-              <option value="Fisheries Science">Fisheries Science</option>
-              <option value="Aquaculture">Aquaculture</option>
-              <option value="Environmental Monitoring">Environmental Monitoring</option>
-              <option value="Post-Harvest & Quality">Post-Harvest & Quality</option>
-              <option value="Hydrography">Hydrography</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-          <span className="text-sm text-gray-600">
-            {t('filters.showing', { filtered: filteredProjects.length, total: projects.length })}
-          </span>
-          <button
-            onClick={() => setFilters({
-              status: 'all',
-              ragStatus: 'all',
-              division: 'all',
-              fundingSource: 'all',
-              searchTerm: ''
-            })}
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-          >
-            {t('filters.clearFilters')}
-          </button>
-        </div>
-      </div>
+      {/* Enhanced Filters */}
+      <EnhancedProjectFilters
+        filters={filters}
+        onFilterChange={setFilters}
+        projects={projects}
+        filteredProjects={filteredProjects}
+      />
 
       {/* Projects Grid */}
       {loading ? (
