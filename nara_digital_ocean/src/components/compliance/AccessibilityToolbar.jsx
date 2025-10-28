@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Eye, Type, Contrast, MousePointer, Moon, Sun, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 
 const AccessibilityToolbar = () => {
+  const { t } = useTranslation('common');
   const [isOpen, setIsOpen] = useState(false);
   const [settings, setSettings] = useState(() => {
     const saved = localStorage.getItem('nara-accessibility');
@@ -101,8 +103,8 @@ const AccessibilityToolbar = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-6 right-6 z-[9998] w-14 h-14 bg-gradient-to-br from-cyan-500 to-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center group"
-        aria-label="Accessibility Options"
-        title="Accessibility Options"
+        aria-label={t('accessibility.toolbar.title')}
+        title={t('accessibility.toolbar.title')}
       >
         <Eye className="w-6 h-6 group-hover:scale-110 transition-transform" />
       </button>
@@ -112,8 +114,8 @@ const AccessibilityToolbar = () => {
         <div className="fixed bottom-24 right-6 z-[9998] w-80 bg-slate-900 border-2 border-cyan-500/30 rounded-2xl shadow-2xl overflow-hidden animate-slideUp">
           {/* Header */}
           <div className="bg-gradient-to-r from-cyan-600 to-blue-600 px-6 py-4">
-            <h3 className="text-white font-bold text-lg">Accessibility Options</h3>
-            <p className="text-cyan-100 text-xs">WCAG 2.2 AA Compliant</p>
+            <h3 className="text-white font-bold text-lg">{t('accessibility.toolbar.title')}</h3>
+            <p className="text-cyan-100 text-xs">{t('accessibility.toolbar.subtitle')}</p>
           </div>
 
           {/* Controls */}
@@ -123,7 +125,7 @@ const AccessibilityToolbar = () => {
             <div>
               <label className="flex items-center gap-2 text-white font-semibold mb-3">
                 <Type className="w-4 h-4 text-cyan-400" />
-                Text Size ({settings.fontSize}%)
+                {t('accessibility.toolbar.fontSize.label')} ({settings.fontSize}%)
               </label>
               <div className="flex items-center gap-3">
                 <button
@@ -132,7 +134,7 @@ const AccessibilityToolbar = () => {
                   disabled={settings.fontSize <= 50}
                 >
                   <ZoomOut className="w-4 h-4" />
-                  Smaller
+                  {t('accessibility.toolbar.fontSize.decrease')}
                 </button>
                 <button
                   onClick={increaseFontSize}
@@ -140,7 +142,7 @@ const AccessibilityToolbar = () => {
                   disabled={settings.fontSize >= 200}
                 >
                   <ZoomIn className="w-4 h-4" />
-                  Larger
+                  {t('accessibility.toolbar.fontSize.increase')}
                 </button>
               </div>
             </div>
@@ -149,7 +151,7 @@ const AccessibilityToolbar = () => {
             <div>
               <label className="flex items-center gap-2 text-white font-semibold mb-3">
                 <Contrast className="w-4 h-4 text-cyan-400" />
-                Contrast Mode
+                {t('accessibility.toolbar.contrast.label')}
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -160,7 +162,7 @@ const AccessibilityToolbar = () => {
                       : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                   }`}
                 >
-                  Normal
+                  {t('accessibility.toolbar.contrast.normal')}
                 </button>
                 <button
                   onClick={() => updateSetting('contrast', 'high')}
@@ -170,7 +172,7 @@ const AccessibilityToolbar = () => {
                       : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                   }`}
                 >
-                  High Contrast
+                  {t('accessibility.toolbar.contrast.high')}
                 </button>
               </div>
             </div>
@@ -179,7 +181,7 @@ const AccessibilityToolbar = () => {
             <div>
               <label className="flex items-center gap-2 text-white font-semibold mb-3">
                 <MousePointer className="w-4 h-4 text-cyan-400" />
-                Cursor Size
+                {t('accessibility.toolbar.cursor.label')}
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -190,7 +192,7 @@ const AccessibilityToolbar = () => {
                       : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                   }`}
                 >
-                  Normal
+                  {t('accessibility.toolbar.cursor.default')}
                 </button>
                 <button
                   onClick={() => updateSetting('cursorSize', 'large')}
@@ -200,7 +202,7 @@ const AccessibilityToolbar = () => {
                       : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                   }`}
                 >
-                  Large
+                  {t('accessibility.toolbar.cursor.large')}
                 </button>
               </div>
             </div>
@@ -208,7 +210,7 @@ const AccessibilityToolbar = () => {
             {/* Line Height */}
             <div>
               <label className="flex items-center gap-2 text-white font-semibold mb-3">
-                Line Spacing
+                {t('accessibility.toolbar.lineSpacing.label')}
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -219,7 +221,7 @@ const AccessibilityToolbar = () => {
                       : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                   }`}
                 >
-                  Normal
+                  {t('accessibility.toolbar.lineSpacing.normal')}
                 </button>
                 <button
                   onClick={() => updateSetting('lineHeight', 'increased')}
@@ -229,7 +231,7 @@ const AccessibilityToolbar = () => {
                       : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                   }`}
                 >
-                  Increased
+                  {t('accessibility.toolbar.lineSpacing.increased')}
                 </button>
               </div>
             </div>
@@ -237,7 +239,7 @@ const AccessibilityToolbar = () => {
             {/* Letter Spacing */}
             <div>
               <label className="flex items-center gap-2 text-white font-semibold mb-3">
-                Letter Spacing
+                {t('accessibility.toolbar.letterSpacing.label')}
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -248,7 +250,7 @@ const AccessibilityToolbar = () => {
                       : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                   }`}
                 >
-                  Normal
+                  {t('accessibility.toolbar.letterSpacing.normal')}
                 </button>
                 <button
                   onClick={() => updateSetting('letterSpacing', 'increased')}
@@ -258,7 +260,7 @@ const AccessibilityToolbar = () => {
                       : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                   }`}
                 >
-                  Increased
+                  {t('accessibility.toolbar.letterSpacing.wide')}
                 </button>
               </div>
             </div>
@@ -273,7 +275,7 @@ const AccessibilityToolbar = () => {
                     : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                 }`}
               >
-                <span>Highlight Links</span>
+                <span>{t('accessibility.toolbar.readingGuide.label')}</span>
                 <div className={`w-5 h-5 rounded ${settings.highlightLinks ? 'bg-white' : 'bg-slate-600'}`} />
               </button>
 
@@ -287,7 +289,7 @@ const AccessibilityToolbar = () => {
               >
                 <span className="flex items-center gap-2">
                   {settings.darkMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-                  Dark Mode
+                  {t('accessibility.toolbar.contrast.dark')}
                 </span>
                 <div className={`w-5 h-5 rounded ${settings.darkMode ? 'bg-white' : 'bg-slate-600'}`} />
               </button>
@@ -299,14 +301,14 @@ const AccessibilityToolbar = () => {
               className="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               <RotateCcw className="w-4 h-4" />
-              Reset to Defaults
+              {t('accessibility.toolbar.reset')}
             </button>
           </div>
 
           {/* Footer */}
           <div className="bg-slate-800 px-6 py-3 text-center">
             <p className="text-xs text-slate-400">
-              These settings are saved to your device
+              {t('accessibility.toolbar.subtitle')}
             </p>
           </div>
         </div>

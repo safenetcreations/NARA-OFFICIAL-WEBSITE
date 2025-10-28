@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import * as Icons from 'lucide-react';
 import { translateResearchPaper } from '../../services/translationService';
 import { uploadResearchContent } from '../../services/researchContentService';
@@ -11,6 +12,7 @@ import { useAuth } from '../../hooks/useAuth';
  */
 const ResearchDocumentUploader = ({ onUploadComplete }) => {
   const { user } = useAuth();
+  const { t } = useTranslation('common');
   const [uploading, setUploading] = useState(false);
   const [translating, setTranslating] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -239,7 +241,7 @@ const ResearchDocumentUploader = ({ onUploadComplete }) => {
               name="title"
               value={formData.title}
               onChange={handleInputChange}
-              placeholder="E.g., Coral Reef Assessment in Sri Lankan Waters"
+              placeholder={t('researchForms.titlePlaceholder')}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
@@ -254,7 +256,7 @@ const ResearchDocumentUploader = ({ onUploadComplete }) => {
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              placeholder="Brief summary of the research..."
+              placeholder={t('researchForms.descriptionPlaceholder')}
               rows={4}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             />
@@ -270,7 +272,7 @@ const ResearchDocumentUploader = ({ onUploadComplete }) => {
               name="authors"
               value={formData.authors}
               onChange={handleInputChange}
-              placeholder="Dr. John Doe, Dr. Jane Smith"
+              placeholder={t('researchForms.authorsPlaceholder')}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -307,7 +309,7 @@ const ResearchDocumentUploader = ({ onUploadComplete }) => {
                 name="tags"
                 value={formData.tags}
                 onChange={handleInputChange}
-                placeholder="coral, reef, climate"
+                placeholder={t('researchForms.keywordsPlaceholder')}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>

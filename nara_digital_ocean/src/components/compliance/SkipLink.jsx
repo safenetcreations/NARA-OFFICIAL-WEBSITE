@@ -1,10 +1,13 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Skip Link Component - WCAG 2.2 AA Requirement
  * Allows keyboard users to skip navigation and jump directly to main content
  */
 const SkipLink = ({ targetId = 'main-content' }) => {
+  const { t } = useTranslation('accessibility');
+
   return (
     <a
       href={`#${targetId}`}
@@ -32,7 +35,7 @@ const SkipLink = ({ targetId = 'main-content' }) => {
         e.target.style.left = '-9999px';
       }}
     >
-      Skip to main content
+      {t('skipToMain')}
     </a>
   );
 };

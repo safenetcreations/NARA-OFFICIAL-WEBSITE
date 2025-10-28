@@ -1,10 +1,13 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Optimized loading fallback component for lazy-loaded routes
  * Minimal footprint for better performance
  */
 const LoadingFallback = () => {
+  const { t } = useTranslation('common');
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-ocean-deep to-ocean-light">
       <div className="text-center space-y-4">
@@ -16,7 +19,7 @@ const LoadingFallback = () => {
         
         {/* Loading text */}
         <p className="text-white text-sm font-medium animate-pulse">
-          Loading...
+          {t('common.loading')}
         </p>
       </div>
     </div>

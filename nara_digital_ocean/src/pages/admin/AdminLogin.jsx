@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
 import * as Icons from 'lucide-react';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -43,8 +45,8 @@ const AdminLogin = () => {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl mb-4 shadow-lg shadow-cyan-500/50">
             <Icons.ShieldCheck className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">NARA Admin Portal</h1>
-          <p className="text-slate-400">Secure access to content management system</p>
+          <h1 className="text-3xl font-bold text-white mb-2">{t('adminLogin.title')}</h1>
+          <p className="text-slate-400">{t('adminLogin.subtitle')}</p>
         </div>
 
         {/* Login Card */}
@@ -53,7 +55,7 @@ const AdminLogin = () => {
             {/* Email Field */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Admin Email
+                {t('adminLogin.emailLabel')}
               </label>
               <div className="relative">
                 <Icons.Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
@@ -62,7 +64,7 @@ const AdminLogin = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 bg-slate-950/50 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
-                  placeholder="admin@nara.gov.lk"
+                  placeholder={t('adminLogin.emailPlaceholder')}
                   required
                 />
               </div>
@@ -71,7 +73,7 @@ const AdminLogin = () => {
             {/* Password Field */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Password
+                {t('adminLogin.passwordLabel')}
               </label>
               <div className="relative">
                 <Icons.Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
@@ -80,7 +82,7 @@ const AdminLogin = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 bg-slate-950/50 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
-                  placeholder="••••••••"
+                  placeholder={t('adminLogin.passwordPlaceholder')}
                   required
                 />
               </div>
@@ -103,12 +105,12 @@ const AdminLogin = () => {
               {loading ? (
                 <>
                   <Icons.Loader2 className="w-5 h-5 animate-spin" />
-                  Authenticating...
+                  {t('adminLogin.signingIn')}
                 </>
               ) : (
                 <>
                   <Icons.LogIn className="w-5 h-5" />
-                  Sign In to Admin Panel
+                  {t('adminLogin.signInButton')}
                 </>
               )}
             </button>
