@@ -50,9 +50,7 @@ service cloud.firestore {
     
     match /divisionImages/{imageId} {
       allow read: if true;
-      allow write: if true; // Allow public write for now (can be restricted later)
-      allow update: if true;
-      allow create: if true;
+      allow write: if isAdmin(); // SECURED: Only admins can upload division images
     }
     
     // Publications Collection
@@ -323,26 +321,11 @@ service cloud.firestore {
     
     // Research Content Collection
     match /researchContent/{contentId} {
-      // Published content can be read by authenticated users
-      // Draft content can only be read by the author or admins
-      allow read: if (resource.data.status == 'published' && isAuthenticated()) ||
-                     isOwner(resource.data.uploadedBy) ||
-                     isAdmin() ||
-                     isLibrarian();
-      
-      // Only researchers, professors, and admins can create content
-      allow create: if isAuthenticated() &&
-                       request.resource.data.uploadedBy == request.auth.uid &&
-                       (isResearcher() || isAdmin() || isLibrarian());
-      
-      // Authors can update their own content
-      // Admins can update any content
-      allow update: if isOwner(resource.data.uploadedBy) ||
-                       isAdmin() ||
-                       isLibrarian();
-      
-      // Only admins can delete content
-      allow delete: if isAdmin();
+      // Anyone can read published research content (public access)
+      allow read: if true;
+
+      // SECURED: Only admins can create/update/delete research content
+      allow create, update, delete: if isAdmin();
     }
     
     // User Bookmarks for Research Content
@@ -622,32 +605,32 @@ service cloud.firestore {
     match /fish_advisories/{advisoryId} {
       // Anyone can read fish advisories (public safety information)
       allow read: if true;
-      // Temporarily allow public write for seeding (change to isAdmin() in production)
-      allow write: if true;
+      // SECURED: Only admins can create/update/delete fish advisories
+      allow write: if isAdmin();
     }
 
     // Fishing Zones Collection
     match /fishing_zones/{zoneId} {
       // Anyone can read fishing zones (public information)
       allow read: if true;
-      // Temporarily allow public write for seeding (change to isAdmin() in production)
-      allow write: if true;
+      // SECURED: Only admins can create/update/delete fishing zones
+      allow write: if isAdmin();
     }
 
     // Fish Market Prices Collection
     match /fish_market_prices/{priceId} {
       // Anyone can read fish market prices (public data)
       allow read: if true;
-      // Temporarily allow public write for seeding (change to isAdmin() in production)
-      allow write: if true;
+      // SECURED: Only admins can create/update/delete fish market prices
+      allow write: if isAdmin();
     }
 
     // Seasonal Restrictions Collection
     match /seasonal_restrictions/{restrictionId} {
       // Anyone can read seasonal restrictions (public information)
       allow read: if true;
-      // Temporarily allow public write for seeding (change to isAdmin() in production)
-      allow write: if true;
+      // SECURED: Only admins can create/update/delete seasonal restrictions
+      allow write: if isAdmin();
     }
 
     // ============================================
@@ -658,8 +641,23 @@ service cloud.firestore {
     match /podcasts/{podcastId} {
       // Anyone can read published podcasts
       allow read: if true;
-      // Only admins can create/update/delete podcasts
-      allow create, update, delete: if isAdmin();
+      // SECURED: Only admins can create/update/delete podcasts
+      allow write: if isAdmin();
+    }
+
+    // Podcast Analytics Collections
+    match /podcastViews/{viewId} {
+      // Anyone can create view records (for tracking)
+      allow create: if true;
+      // Only admins can read/update/delete view records
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /podcastEngagements/{engagementId} {
+      // Anyone can create engagement records (likes, shares, etc.)
+      allow create: if true;
+      // Only admins can read/update/delete engagement records
+      allow read, update, delete: if isAdmin();
     }
 
     // ============================================

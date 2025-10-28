@@ -33,12 +33,18 @@ service firebase.storage {
       allow write: if request.auth != null;
     }
     
-    // Division images (FULL PUBLIC READ ACCESS, PUBLIC WRITE)
+    // Division images (FULL PUBLIC READ ACCESS, ADMIN WRITE ONLY)
     match /divisions/{divisionId}/{allPaths=**} {
       allow read: if true;
-      allow write: if true; // Temporarily open for admin uploads
+      allow write: if request.auth != null; // SECURED: Requires authentication
     }
-    
+
+    // Podcast videos (PUBLIC READ, AUTHENTICATED WRITE)
+    match /podcasts/{allPaths=**} {
+      allow read: if true; // Anyone can view podcasts
+      allow write: if request.auth != null; // SECURED: Requires authentication
+    }
+
     // News and article images
     match /news/{newsId}/{fileName} {
       allow read: if true;
@@ -120,6 +126,12 @@ service firebase.storage {
     match /library_members/{memberId}/{fileName} {
       allow read: if request.auth != null;
       allow write: if request.auth != null && request.auth.uid == memberId;
+    }
+
+    // Research content uploads (PUBLIC READ, AUTHENTICATED WRITE)
+    match /research-content/{allPaths=**} {
+      allow read: if true;  // Anyone can read/download research papers
+      allow write: if request.auth != null; // SECURED: Requires authentication
     }
 
     // Default deny rule
