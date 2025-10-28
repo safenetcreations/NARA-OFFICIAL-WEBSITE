@@ -76,68 +76,138 @@ async function createPollyClient() {
 }
 
 /**
- * Convert text to conversational SSML with natural pauses
- * Note: Neural voices have VERY limited SSML support - only <speak> and <break> are safe
- * NO <amazon:domain>, NO <emphasis>, NO <prosody> - Neural voices sound natural without them
+ * Convert text to SSML with natural pauses and emphasis (Neural-voice compatible)
+ * Adds casual speech patterns for realistic conversation
  */
 function textToConversationalSSML(text, speaker = 'host') {
-  // Clean the text and escape XML special characters
-  let cleanText = text.trim()
+  // Escape special XML characters
+  text = text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
 
-  // Start with just the speak tag - Neural voices need minimal SSML
-  let ssml = `<speak>${cleanText}</speak>`;
+  let ssml = `<speak>`;
+  
+  // Add natural thinking pauses for casual words
+  text = text.replace(/\bHmm\b/g, 'Hmm<break time="400ms"/>');
+  text = text.replace(/\bUh\b/g, 'Uh<break time="300ms"/>');
+  text = text.replace(/\bUm\b/g, 'Um<break time="300ms"/>');
+  text = text.replace(/\bWell\b/g, 'Well<break time="350ms"/>');
+  text = text.replace(/\bSo\b/g, 'So<break time="250ms"/>');
+  text = text.replace(/\bOkay\b/g, 'Okay<break time="300ms"/>');
+  text = text.replace(/\bAlright\b/g, 'Alright<break time="300ms"/>');
+  text = text.replace(/\bYeah\b/g, 'Yeah<break time="250ms"/>');
+  text = text.replace(/\bRight\?\b/g, 'Right?<break time="500ms"/>');
+  text = text.replace(/\bI know!\b/g, 'I know!<break time="400ms"/>');
+  text = text.replace(/\bWow\b/g, 'Wow<break time="450ms"/>');
+  
+  // Add natural pauses at punctuation
+  ssml += text;
+  ssml = ssml.replace(/[.!]/g, '$& <break time="550ms"/> ');
+  ssml = ssml.replace(/[,;]/g, '$& <break time="350ms"/> ');
+  ssml = ssml.replace(/[:]/g, '$& <break time="300ms"/> ');
+  ssml = ssml.replace(/\?/g, '$& <break time="700ms"/> '); // Longer pause after questions
+  ssml = ssml.replace(/\n/g, ' <break time="500ms"/> ');
+  
+  // Add pauses before important transitions
+  ssml = ssml.replace(/\bbasically\b/gi, '<break time="250ms"/>basically');
+  ssml = ssml.replace(/\bactually\b/gi, '<break time="250ms"/>actually');
+  ssml = ssml.replace(/\bhonestly\b/gi, '<break time="250ms"/>honestly');
+  ssml = ssml.replace(/\binteresting\b/gi, '<break time="200ms"/>interesting');
 
-  // Only add pauses - this is the safest SSML for Neural voices
-  ssml = ssml.replace(/\. /g, '. <break time="500ms"/> ');
-  ssml = ssml.replace(/\? /g, '? <break time="600ms"/> ');
-  ssml = ssml.replace(/! /g, '! <break time="600ms"/> ');
-  ssml = ssml.replace(/\n\n/g, ' <break time="1s"/> ');
-  ssml = ssml.replace(/\n/g, ' <break time="400ms"/> ');
+  ssml += `</speak>`;
 
-  // NO emphasis, NO prosody - Neural voices don't support them well
-  // They sound natural by default!
-
-  console.log('✅ Generated Neural-safe SSML (first 150 chars):', ssml.substring(0, 150));
+  console.log('✅ Generated Natural SSML with casual speech patterns');
   return ssml;
 }
 
 /**
  * Auto-generate NotebookLM-style conversation from content
+ * Creates NATURAL, CASUAL dialogue like real people talking
  */
 export function generateConversationalScript(title, content) {
-  let script = `Host: Welcome to NARA Podcasts! I'm excited to dive into today's topic: ${title}.\n\n`;
-  script += `Guest: Thanks for having me! This is such an interesting subject.\n\n`;
+  // Natural conversation starters
+  const intros = [
+    `Host: Hey everyone! Welcome back to the show. Today we're diving into something really interesting - ${title}. I've got our expert here to break it down for us.\n\nGuest: Hey! Thanks for having me. Yeah, I'm really excited to talk about this.\n\n`,
+    `Host: Alright, so today we're talking about ${title}, and honestly, I've been looking forward to this one.\n\nGuest: Right? It's fascinating stuff. Where do you want to start?\n\n`,
+    `Host: Welcome! Today's topic is ${title}. I have to say, when I first read about this, I was like "wow, this is huge."\n\nGuest: Oh absolutely! It's one of those things that sounds simple but there's so much depth to it.\n\n`
+  ];
 
-  // Split content into paragraphs
-  const paragraphs = content.split('\n\n').filter(p => p.trim().length > 0);
+  let script = intros[Math.floor(Math.random() * intros.length)];
 
-  // Create conversation from paragraphs
-  paragraphs.forEach((paragraph, index) => {
-    if (paragraph.length < 20) return; // Skip very short paragraphs
+  // Split content intelligently
+  const paragraphs = content.split('\n\n').filter(p => p.trim().length > 20);
+  
+  // Natural conversational elements
+  const transitions = [
+    "Host: So, tell me more about that.\n\nGuest: ",
+    "Host: Wait, that's interesting. Can you elaborate?\n\nGuest: Yeah, so ",
+    "Host: Hmm, okay. What else should people know?\n\nGuest: ",
+    "Host: Right, right. And how does that work exactly?\n\nGuest: ",
+    "Host: I see. So basically...\n\nGuest: Exactly! ",
+  ];
 
-    if (index % 2 === 0) {
-      script += `Host: ${paragraph}\n\n`;
+  const reactions = [
+    "Host: Wow, that's actually pretty cool.\n\nGuest: Right? ",
+    "Host: Okay, hold on. That's mind-blowing.\n\nGuest: I know! ",
+    "Host: No way! Really?\n\nGuest: Yeah! ",
+    "Host: Interesting... I never thought about it that way.\n\nGuest: ",
+    "Host: Makes sense. So...\n\nGuest: ",
+  ];
+
+  const questions = [
+    "Host: So what does that mean for people?\n\nGuest: ",
+    "Host: Why is that important?\n\nGuest: ",
+    "Host: How does that actually work?\n\nGuest: ",
+    "Host: What's the big deal about that?\n\nGuest: ",
+    "Host: Can you give us an example?\n\nGuest: ",
+  ];
+
+  // Build natural conversation
+  paragraphs.forEach((para, index) => {
+    // Summarize/rephrase content naturally
+    const sentences = para.split(/[.!?]+/).filter(s => s.trim().length > 10);
+    
+    if (index === 0) {
+      // First paragraph - set the scene
+      script += `Host: So, let's start with the basics. What are we talking about here?\n\n`;
+      script += `Guest: Okay, so basically, ${sentences[0].trim().toLowerCase()}. ${sentences[1] || ''}\n\n`;
     } else {
-      // Add conversational reactions
-      const reactions = [
-        "That's fascinating. ",
-        "Interesting point. ",
-        "Absolutely. ",
-        "I completely agree. ",
-        "Right. "
-      ];
-      const reaction = reactions[index % reactions.length];
-      script += `Guest: ${reaction}${paragraph}\n\n`;
+      // Use variety of transitions
+      const transType = index % 4;
+      
+      if (transType === 0 && questions.length > 0) {
+        // Ask a question
+        const q = questions[index % questions.length];
+        script += q + sentences.slice(0, 2).join('. ').trim() + '.\n\n';
+      } else if (transType === 1 && reactions.length > 0) {
+        // React naturally
+        const r = reactions[index % reactions.length];
+        script += r + sentences.slice(0, 2).join('. ').trim() + '.\n\n';
+      } else {
+        // Natural transition
+        const t = transitions[index % transitions.length];
+        script += t + sentences.slice(0, 2).join('. ').trim() + '.\n\n';
+      }
+
+      // Add occasional back-and-forth
+      if (index % 3 === 0 && sentences.length > 2) {
+        script += `Host: Oh, interesting. So you're saying ${sentences[2].trim().toLowerCase()}?\n\n`;
+        script += `Guest: Exactly! That's the key point here.\n\n`;
+      }
     }
   });
 
-  script += `Host: This has been incredibly insightful. Thanks for joining us today!\n\n`;
-  script += `Guest: My pleasure! Don't forget to subscribe for more insights from NARA!\n\n`;
+  // Natural endings
+  const endings = [
+    `Host: This has been awesome. Thanks so much for breaking this down for us!\n\nGuest: My pleasure! Happy to chat about this anytime.\n\nHost: And hey, if you enjoyed this, don't forget to subscribe. We've got more great content coming up!\n\n`,
+    `Host: Wow, I learned so much today. Thanks for joining us!\n\nGuest: Thanks for having me! This was fun.\n\nHost: Alright everyone, that's it for today. Catch you next time!\n\n`,
+    `Host: This was really insightful. Appreciate you taking the time!\n\nGuest: Anytime! Thanks for the great questions.\n\nHost: See you all next episode!\n\n`
+  ];
+
+  script += endings[Math.floor(Math.random() * endings.length)];
 
   return script;
 }
