@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, ImageOverlay } from 'react-leaflet';
 import { Ship, Anchor, Navigation, Clock, Flag } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -395,6 +395,47 @@ const LiveVesselTracker = () => {
             dashArray: '10, 10'
           }}
         />
+        
+        {/* NARA Logo Marker - Center of Sri Lanka */}
+        <Marker
+          position={sriLankaCenter}
+          icon={L.divIcon({
+            html: `
+              <div style="
+                background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+                border: 3px solid white;
+                border-radius: 50%;
+                width: 60px;
+                height: 60px;
+                display: flex;
+                align-items: center;
+                justify-center;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                font-weight: bold;
+                color: white;
+                font-size: 16px;
+                font-family: 'Outfit', sans-serif;
+                text-align: center;
+                line-height: 1.2;
+              ">
+                NARA<br>
+                <span style="font-size: 10px;">🇱🇰</span>
+              </div>
+            `,
+            className: 'nara-logo-marker',
+            iconSize: [60, 60],
+            iconAnchor: [30, 30]
+          })}
+        >
+          <Popup>
+            <div className="p-3 text-center">
+              <div className="font-bold text-lg text-cyan-600">NARA</div>
+              <div className="text-sm text-slate-600">National Aquatic Resources</div>
+              <div className="text-sm text-slate-600">Research & Development Agency</div>
+              <div className="mt-2 text-xs text-slate-500">🇱🇰 Sri Lanka</div>
+            </div>
+          </Popup>
+        </Marker>
         
         {/* Vessel Markers */}
         {loading ? (
