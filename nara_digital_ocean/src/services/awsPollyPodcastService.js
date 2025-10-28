@@ -126,8 +126,30 @@ function textToConversationalSSML(text, speaker = 'host') {
 /**
  * Auto-generate NotebookLM-style conversation from content
  * Creates NATURAL, CASUAL dialogue like real people talking
+ * @param {string} title - Podcast title
+ * @param {string} content - Content to convert
+ * @param {string} style - Conversation style: 'conversational' (default), 'interview', 'debate', 'storytelling'
  */
-export function generateConversationalScript(title, content) {
+export function generateConversationalScript(title, content, style = 'conversational') {
+  // Route to appropriate template
+  switch(style) {
+    case 'interview':
+      return generateInterviewScript(title, content);
+    case 'debate':
+      return generateDebateScript(title, content);
+    case 'storytelling':
+      return generateStorytellingScript(title, content);
+    case 'conversational':
+    default:
+      return generateConversationalStyleScript(title, content);
+  }
+}
+
+/**
+ * TEMPLATE 1: CONVERSATIONAL STYLE (Default)
+ * Casual, friendly discussion between two people
+ */
+function generateConversationalStyleScript(title, content) {
   // Natural conversation starters
   const intros = [
     `Host: Hey everyone! Welcome back to the show. Today we're diving into something really interesting - ${title}. I've got our expert here to break it down for us.\n\nGuest: Hey! Thanks for having me. Yeah, I'm really excited to talk about this.\n\n`,
@@ -209,6 +231,132 @@ export function generateConversationalScript(title, content) {
 
   script += endings[Math.floor(Math.random() * endings.length)];
 
+  return script;
+}
+
+/**
+ * TEMPLATE 2: INTERVIEW STYLE
+ * Professional Q&A format with thoughtful questions
+ */
+function generateInterviewScript(title, content) {
+  let script = `Host: Welcome to NARA Podcasts. I'm your host, and today I'm thrilled to have an expert joining us to discuss ${title}. Welcome to the show!\n\nGuest: Thank you for having me. It's a pleasure to be here.\n\nHost: Let's dive right in. For our listeners who might be unfamiliar, can you give us an overview of what we're discussing today?\n\n`;
+
+  const paragraphs = content.split('\n\n').filter(p => p.trim().length > 20);
+  
+  const interviewQuestions = [
+    "Host: That's fascinating. Can you tell us more about",
+    "Host: I'd love to hear your perspective on",
+    "Host: What led you to study",
+    "Host: How does this impact",
+    "Host: What's the most important thing people should understand about",
+    "Host: Can you walk us through",
+    "Host: What are the implications of",
+    "Host: How do you see this developing in the future",
+  ];
+
+  paragraphs.forEach((para, index) => {
+    const sentences = para.split(/[.!?]+/).filter(s => s.trim().length > 10);
+    
+    if (index === 0) {
+      script += `Guest: ${sentences.slice(0, 2).join('. ')}.\n\n`;
+    } else {
+      const question = interviewQuestions[index % interviewQuestions.length];
+      script += `${question} ${sentences[0].trim().toLowerCase()}?\n\n`;
+      script += `Guest: That's an excellent question. ${sentences.slice(0, 2).join('. ')}.\n\n`;
+      
+      // Add follow-up occasionally
+      if (index % 2 === 0 && sentences.length > 2) {
+        script += `Host: Could you elaborate on that last point?\n\n`;
+        script += `Guest: Certainly. ${sentences[2] || ''}\n\n`;
+      }
+    }
+  });
+
+  script += `Host: This has been incredibly informative. Thank you so much for sharing your expertise with us today.\n\nGuest: My pleasure. Thank you for having me and for asking such thoughtful questions.\n\nHost: And thank you to our listeners for joining us. Until next time!\n\n`;
+  
+  return script;
+}
+
+/**
+ * TEMPLATE 3: DEBATE STYLE
+ * Presenting multiple perspectives with respectful discourse
+ */
+function generateDebateScript(title, content) {
+  let script = `Host: Welcome to NARA Podcasts. Today we're exploring different perspectives on ${title}. This is a complex topic with valid viewpoints on multiple sides.\n\nGuest: Thanks for having me. I think it's important we have these thoughtful discussions.\n\nHost: Absolutely. Let's start by establishing the key questions at stake here.\n\n`;
+
+  const paragraphs = content.split('\n\n').filter(p => p.trim().length > 20);
+  
+  const debateFrames = [
+    { host: "Host: One perspective holds that", guest: "Guest: While I see that argument, consider this:" },
+    { host: "Host: But what about the concern that", guest: "Guest: That's a fair point. However," },
+    { host: "Host: Some might argue", guest: "Guest: I understand that view, but" },
+    { host: "Host: The counterargument would be", guest: "Guest: That's true, yet we must also consider" },
+    { host: "Host: Critics often point out that", guest: "Guest: Valid criticism. At the same time," },
+  ];
+
+  paragraphs.forEach((para, index) => {
+    const sentences = para.split(/[.!?]+/).filter(s => s.trim().length > 10);
+    const frame = debateFrames[index % debateFrames.length];
+    
+    script += `${frame.host} ${sentences[0].trim().toLowerCase()}.\n\n`;
+    script += `${frame.guest} ${sentences.slice(1, 3).join('. ')}.\n\n`;
+    
+    // Add clarification occasionally
+    if (index % 2 === 0 && sentences.length > 3) {
+      script += `Host: So you're saying there's a balance to be struck here?\n\nGuest: Exactly. ${sentences[3] || 'We need to consider all angles.'}\n\n`;
+    }
+  });
+
+  script += `Host: I think we've explored this from multiple angles today. It's clear this is a nuanced issue.\n\nGuest: Absolutely. I appreciate the opportunity to have this balanced discussion.\n\nHost: Thank you for joining us and helping our listeners think critically about ${title}.\n\n`;
+  
+  return script;
+}
+
+/**
+ * TEMPLATE 4: STORYTELLING STYLE
+ * Narrative format with dramatic structure
+ */
+function generateStorytellingScript(title, content) {
+  let script = `Host: Welcome to NARA Podcasts. Today's episode is special. We're going to tell you a story about ${title}. A story that might surprise you.\n\nGuest: I've been looking forward to sharing this.\n\nHost: So, where does our story begin?\n\n`;
+
+  const paragraphs = content.split('\n\n').filter(p => p.trim().length > 20);
+  
+  const narrativeTransitions = [
+    "Guest: It started with",
+    "Guest: And then,",
+    "Guest: But here's where it gets interesting.",
+    "Guest: What happened next was unexpected.",
+    "Guest: This is the turning point.",
+    "Guest: As time went on,",
+    "Guest: The crucial moment came when",
+  ];
+
+  const hostReactions = [
+    "Host: No way. What happened next?",
+    "Host: I can't believe that. Tell me more.",
+    "Host: That's incredible. And then?",
+    "Host: Wait, so what did that mean?",
+    "Host: This is fascinating. Continue.",
+  ];
+
+  paragraphs.forEach((para, index) => {
+    const sentences = para.split(/[.!?]+/).filter(s => s.trim().length > 10);
+    
+    if (index < narrativeTransitions.length) {
+      script += `${narrativeTransitions[index]} ${sentences.slice(0, 2).join('. ')}.\n\n`;
+    } else {
+      script += `Guest: ${sentences.slice(0, 2).join('. ')}.\n\n`;
+    }
+    
+    // Add host reactions to maintain engagement
+    if (index % 2 === 1 && index < paragraphs.length - 1) {
+      const reaction = hostReactions[Math.floor(Math.random() * hostReactions.length)];
+      script += `${reaction}\n\n`;
+    }
+  });
+
+  script += `Host: Wow. That's an amazing story. I think our listeners will find this as compelling as I do.\n\nGuest: I hope so. It's a story that needed to be told.\n\nHost: Thank you for sharing it with us. And to our listeners, thank you for joining us on this journey today.\n\n`;
+  
   return script;
 }
 
@@ -339,7 +487,10 @@ export async function generateNotebookLMPodcast(podcastData, onProgress) {
     let finalScript = script;
 
     if (!finalScript || !finalScript.includes('Host:')) {
-      finalScript = generateConversationalScript(title, content || 'Welcome to this NARA podcast.');
+      // Get conversation style from settings (conversational, interview, debate, storytelling)
+      const conversationStyle = settings?.style || settings?.conversationStyle || 'conversational';
+      console.log(`📝 Generating script with style: ${conversationStyle}`);
+      finalScript = generateConversationalScript(title, content || 'Welcome to this NARA podcast.', conversationStyle);
     }
 
     updateProgress('script', 20, 'Script prepared');
