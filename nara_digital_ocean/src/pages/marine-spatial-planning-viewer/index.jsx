@@ -1049,4 +1049,11 @@ const UltraEnhancedMarineSpatialPlanning = () => {
   );
 };
 
-export default UltraEnhancedMarineSpatialPlanning;
+// Export the Research-Enhanced version for NARA staff
+import ResearchEnhancedMSP from './ResearchEnhancedMSP';
+
+// Use Research-Enhanced MSP as default export
+export default ResearchEnhancedMSP;
+
+// Still export the original for backwards compatibility
+export { UltraEnhancedMarineSpatialPlanning };
