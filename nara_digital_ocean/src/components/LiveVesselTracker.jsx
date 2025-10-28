@@ -155,8 +155,8 @@ const LiveVesselTracker = () => {
       {
         mmsi: '419000001',
         name: 'MV Lanka Pride',
-        latitude: 6.8500,  // Off Colombo coast (in ocean)
-        longitude: 79.7200,
+        latitude: 6.7000,  // West of Colombo (in ocean)
+        longitude: 79.2000,
         speed: 12.5,
         course: 135,
         type: 'cargo',
@@ -169,8 +169,8 @@ const LiveVesselTracker = () => {
       {
         mmsi: '419000002',
         name: 'SS Ocean Star',
-        latitude: 8.6500,  // Off Trincomalee coast (in ocean)
-        longitude: 81.4500,
+        latitude: 8.8000,  // East of Trincomalee (in ocean)
+        longitude: 82.2000,
         speed: 8.3,
         course: 270,
         type: 'tanker',
@@ -183,8 +183,8 @@ const LiveVesselTracker = () => {
       {
         mmsi: '419000003',
         name: 'Fishing Vessel Ruhuna',
-        latitude: 5.9800,  // Off Galle coast (in ocean)
-        longitude: 79.9500,
+        latitude: 5.7000,  // South of Galle (in ocean)
+        longitude: 80.2000,
         speed: 4.2,
         course: 90,
         type: 'fishing',
@@ -211,8 +211,8 @@ const LiveVesselTracker = () => {
       {
         mmsi: '419000005',
         name: 'Passenger Ferry Negombo',
-        latitude: 7.1500,  // Off Negombo coast (in ocean)
-        longitude: 79.7000,
+        latitude: 7.3000,  // West of Negombo (in ocean)
+        longitude: 79.3000,
         speed: 18.5,
         course: 180,
         type: 'passenger',
@@ -225,8 +225,8 @@ const LiveVesselTracker = () => {
       {
         mmsi: '419000006',
         name: 'Oil Tanker Pacific Queen',
-        latitude: 6.5000,  // South of Sri Lanka (in ocean)
-        longitude: 80.5000,
+        latitude: 5.5000,  // DEEP South of Sri Lanka (definitely in ocean)
+        longitude: 80.8000,
         speed: 10.2,
         course: 315,
         type: 'tanker',
