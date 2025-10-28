@@ -311,9 +311,16 @@ export async function generateNotebookLMPodcast(podcastData, onProgress) {
     updateProgress('upload', 90, 'Uploading to cloud storage...');
     const filename = `${Date.now()}_${title.replace(/[^a-zA-Z0-9]/g, '_')}.mp3`;
     const storageRef = ref(storage, `podcasts/ai-generated/${filename}`);
-    const audioBlob = new Blob([finalAudio], { type: 'audio/mpeg' });
+    const audioBlob = new Blob([finalAudio], { type: 'audio/mp3' });
 
-    await uploadBytes(storageRef, audioBlob);
+    // Upload with proper metadata
+    await uploadBytes(storageRef, audioBlob, {
+      contentType: 'audio/mp3',
+      customMetadata: {
+        'generatedBy': 'aws-polly',
+        'originalName': filename
+      }
+    });
     const audioUrl = await getDownloadURL(storageRef);
 
     updateProgress('upload', 95, 'Audio uploaded successfully');
@@ -438,7 +445,15 @@ export async function generateSingleVoicePodcast(podcastData, onProgress) {
     updateProgress('upload', 80, 'Uploading to cloud...');
     const filename = `${Date.now()}_${title.replace(/[^a-zA-Z0-9]/g, '_')}.mp3`;
     const storageRef = ref(storage, `podcasts/ai-generated/${filename}`);
-    await uploadBytes(storageRef, new Blob([audioBuffer], { type: 'audio/mpeg' }));
+    const audioBlob = new Blob([audioBuffer], { type: 'audio/mp3' });
+    
+    await uploadBytes(storageRef, audioBlob, {
+      contentType: 'audio/mp3',
+      customMetadata: {
+        'generatedBy': 'aws-polly',
+        'originalName': filename
+      }
+    });
     const audioUrl = await getDownloadURL(storageRef);
 
     // Save metadata
