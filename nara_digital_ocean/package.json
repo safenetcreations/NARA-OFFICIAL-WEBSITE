@@ -27,6 +27,7 @@
     "warning": "🚨 CRITICAL: DO NOT REMOVE OR MODIFY ABOVE DEPENDENCIES - Required for app functionality"
   },
   "dependencies": {
+    "@aws-sdk/client-polly": "^3.918.0",
     "@dhiwise/component-tagger": "^1.0.10",
     "@fontsource/space-grotesk": "^5.2.10",
     "@google-cloud/translate": "^9.2.1",

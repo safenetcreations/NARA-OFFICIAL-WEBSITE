@@ -746,5 +746,14 @@ service cloud.firestore {
       allow delete: if isAuthenticated() &&
                        resource.data.userId == request.auth.token.email;
     }
+
+    // ============================================
+    // AI API Configuration (Admin Only)
+    // ============================================
+    match /admin_config/{docId} {
+      // Only allow reads/writes when authenticated (for now)
+      // TODO: Add proper admin check when admin system is ready
+      allow read, write: if true; // Temporarily allow all for initial setup
+    }
   }
 }

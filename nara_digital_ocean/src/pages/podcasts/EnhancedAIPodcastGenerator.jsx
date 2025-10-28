@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import * as Icons from 'lucide-react';
+import { generateNotebookLMPodcast, generateSingleVoicePodcast, testAWSPollyConnection } from '../../services/awsPollyPodcastService';
 
 /**
  * ENHANCED AI Podcast Generator
@@ -198,31 +199,102 @@ Thank you for listening to this episode. Don't forget to subscribe for more ocea
   };
 
   const handleGenerate = async () => {
+    console.log('🎬 Starting podcast generation...');
+    console.log('📋 Title:', title);
+    console.log('📝 Content length:', content?.length);
+    console.log('🎛️ Format:', podcastSettings.format);
+
     setGenerationStep('processing');
     setProgress(0);
 
-    // Simulate generation steps
-    await simulateProgress('processing', 20);
-    await simulateProgress('script', 40);
-    await simulateProgress('voice', 60);
-    await simulateProgress('visuals', 80);
-    await simulateProgress('rendering', 100);
+    try {
+      // Validate inputs
+      if (!title || title.trim() === '') {
+        alert('❌ Please enter a podcast title!');
+        return;
+      }
 
-    setGenerationStep('complete');
+      if (!content || content.trim() === '') {
+        alert('❌ Please enter podcast content!');
+        return;
+      }
+
+      // Prepare podcast data
+      const podcastData = {
+        title: title || 'Untitled NARA Podcast',
+        content: content,
+        script: aiGeneratedScript || content,
+        settings: podcastSettings
+      };
+
+      console.log('📦 Podcast data prepared:', {
+        title: podcastData.title,
+        contentLength: podcastData.content.length,
+        format: podcastData.settings.format
+      });
+
+      // Progress callback
+      const onProgress = ({ stage, progress: prog, message }) => {
+        setGenerationStep(stage);
+        setProgress(prog);
+        console.log(`[${stage}] ${prog}% - ${message}`);
+      };
+
+      // Generate podcast based on format
+      console.log('🚀 Calling generation function...');
+      let result;
+      if (podcastSettings.format === 'conversation') {
+        console.log('💬 Using NotebookLM-style conversation format');
+        result = await generateNotebookLMPodcast(podcastData, onProgress);
+      } else {
+        console.log('🎙️ Using single voice format');
+        result = await generateSingleVoicePodcast(podcastData, onProgress);
+      }
+
+      console.log('✅ Generation result:', result);
+
+      if (result.success) {
+        setGenerationStep('complete');
+        setProgress(100);
+
+        // Show success message with details
+        alert(`✅ Podcast Created Successfully!\n\nTitle: ${title}\nDuration: ${result.durationFormatted || 'N/A'}\nSegments: ${result.segments || 1}\n\nAudio URL: ${result.audioUrl}\n\nThe podcast has been saved to Firebase and is ready to play!`);
+
+        // Call parent callback if provided
+        if (onGenerate) {
+          onGenerate(result);
+        }
+      }
+    } catch (error) {
+      console.error('❌ FULL ERROR DETAILS:', error);
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+
+      setGenerationStep('error');
+
+      let errorMessage = error.message;
+      if (error.message.includes('not found')) {
+        errorMessage = `${error.message}\n\n💡 Quick Fix:\n1. Run: node save-aws-credentials.js\n2. Hard refresh browser (Ctrl+Shift+R)\n3. Try again`;
+      }
+
+      alert(`❌ Error Generating Podcast:\n\n${errorMessage}\n\nPlease check browser console (F12) for detailed logs.`);
+    }
   };
 
-  const simulateProgress = (step, targetProgress) => {
-    return new Promise((resolve) => {
-      let current = progress;
-      const interval = setInterval(() => {
-        current += 2;
-        setProgress(Math.min(current, targetProgress));
-        if (current >= targetProgress) {
-          clearInterval(interval);
-          resolve();
-        }
-      }, 100);
-    });
+  const handleTestConnection = async () => {
+    try {
+      console.log('🧪 Testing AWS Polly connection...');
+      const result = await testAWSPollyConnection();
+
+      if (result.success) {
+        alert(`✅ AWS Polly Connection Successful!\n\n${result.message}\n\nYour AI Podcast Generator is ready to use!`);
+      } else {
+        alert(`❌ AWS Polly Connection Failed!\n\n${result.message}\n\nPlease check:\n1. AWS credentials in Firebase (admin_config/ai_api_keys)\n2. Access Key ID: Should start with AKIA...\n3. Secret Access Key: Check for typos\n4. Region is set to: us-east-1\n5. 'enabled' field is set to true`);
+      }
+    } catch (error) {
+      alert(`❌ Connection Test Error:\n\n${error.message}\n\nThis usually means:\n- AWS credentials not found in Firebase\n- Invalid credentials\n- Network connection issue`);
+    }
   };
 
   const renderStepContent = () => {
@@ -806,6 +878,16 @@ Thank you for listening to this episode. Don't forget to subscribe for more ocea
           <p className="text-slate-400 text-sm">Volume: {Math.round(podcastSettings.musicVolume * 100)}%</p>
         </div>
       </div>
+
+      {/* Test AWS Connection Button */}
+      <button
+        onClick={handleTestConnection}
+        className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 rounded-xl text-white font-bold shadow-lg shadow-cyan-500/30 transition-all flex items-center justify-center gap-3"
+      >
+        <Icons.Zap className="w-6 h-6" />
+        Test AWS Polly Connection
+        <Icons.CheckCircle className="w-6 h-6" />
+      </button>
 
       {/* Generate Button */}
       <button
