@@ -45,7 +45,7 @@ const UnifiedServicesHub = () => {
 
   const portalLinks = [
     '/research-excellence-portal',
-    '/maritime-services-hub',
+    '/government-services-portal',
     '/nara-digital-marketplace'
   ];
 

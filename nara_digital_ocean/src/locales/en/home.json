@@ -128,7 +128,7 @@
   "unifiedHub": {
     "badge": "All-in-One Command Center",
     "heading": "NARA Services Hub",
-    "subheading": "Everything you need in one powerful platform – from research data to real-time maritime intelligence",
+    "subheading": "Everything you need in one powerful platform – from research data to government services and ocean intelligence",
     "tabs": {
       "portals": "Flagship Portals",
       "services": "Essential Services",
@@ -149,16 +149,16 @@
         "gradient": "from-purple-600 via-violet-600 to-fuchsia-600"
       },
       {
-        "title": "Maritime Services",
-        "subtitle": "Hub",
-        "description": "Real-time vessel tracking, port operations, and marine intelligence",
+        "title": "Government Services",
+        "subtitle": "Portal",
+        "description": "EIA applications, licenses, compliance monitoring, and emergency response",
         "metrics": [
-          { "label": "Vessels Tracked", "value": "1,200+" },
-          { "label": "Ports Monitored", "value": "15" }
+          { "label": "Active Services", "value": "8" },
+          { "label": "Applications", "value": "24/7" }
         ],
-        "features": ["Live Tracking", "Port Info", "Weather Alerts"],
-        "cta": "Access Maritime",
-        "icon": "ship",
+        "features": ["EIA & Licensing", "Emergency Response", "Nautical Charts & Surveys"],
+        "cta": "Access Services",
+        "icon": "file",
         "gradient": "from-blue-600 via-cyan-600 to-teal-600"
       },
       {
