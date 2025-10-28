@@ -1,7 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { podcastService, podcastAnalyticsService } from '../../services/podcastService';
 import * as Icons from 'lucide-react';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { Timestamp } from 'firebase/firestore';
+import { storage } from '../../config/firebase';
+
+const PodcastAnalyticsDashboard = lazy(() => import('./PodcastAnalyticsDashboard'));
 
 const PodcastAdmin = () => {
   const [podcasts, setPodcasts] = useState([]);
@@ -9,11 +14,16 @@ const PodcastAdmin = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingPodcast, setEditingPodcast] = useState(null);
   const [stats, setStats] = useState(null);
+  const [activeTab, setActiveTab] = useState('manage'); // 'manage' or 'analytics'
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [videoFile, setVideoFile] = useState(null);
 
   const [formData, setFormData] = useState({
     title: { en: '', si: '', ta: '' },
     description: { en: '', si: '', ta: '' },
     category: 'marine-research',
+    languages: ['en'], // Available languages for this podcast
     youtubeId: '',
     youtubeUrl: '',
     audioUrl: '',
@@ -32,6 +42,12 @@ const PodcastAdmin = () => {
     { value: 'conservation', label: 'Conservation' },
     { value: 'interviews', label: 'Interviews' },
     { value: 'live', label: 'Live Sessions' }
+  ];
+
+  const availableLanguages = [
+    { value: 'en', label: 'English', flag: '🇬🇧' },
+    { value: 'si', label: 'Sinhala', flag: '🇱🇰' },
+    { value: 'ta', label: 'Tamil', flag: '🇱🇰' }
   ];
 
   useEffect(() => {
@@ -91,20 +107,157 @@ const PodcastAdmin = () => {
     setFormData(prev => ({ ...prev, tags }));
   };
 
+  const toggleLanguage = (langCode) => {
+    setFormData(prev => {
+      const currentLangs = prev.languages || [];
+      const hasLang = currentLangs.includes(langCode);
+
+      if (hasLang) {
+        // Remove language (but keep at least one)
+        if (currentLangs.length > 1) {
+          return { ...prev, languages: currentLangs.filter(l => l !== langCode) };
+        }
+        return prev; // Don't remove if it's the only language
+      } else {
+        // Add language
+        return { ...prev, languages: [...currentLangs, langCode] };
+      }
+    });
+  };
+
+  const handleVideoFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check if file is a video
+      if (!file.type.startsWith('video/')) {
+        alert('Please select a valid video file');
+        return;
+      }
+      // Check file size (max 500MB)
+      if (file.size > 500 * 1024 * 1024) {
+        alert('Video file size must be less than 500MB');
+        return;
+      }
+      setVideoFile(file);
+    }
+  };
+
+  const uploadVideoToFirebase = async () => {
+    if (!videoFile) {
+      alert('Please select a video file first');
+      return;
+    }
+
+    setUploadingVideo(true);
+    setUploadProgress(0);
+
+    try {
+      // Create a unique filename
+      const timestamp = Date.now();
+      const fileName = `podcasts/${timestamp}_${videoFile.name}`;
+      const storageRef = ref(storage, fileName);
+
+      // Upload file with progress tracking
+      const uploadTask = uploadBytesResumable(storageRef, videoFile);
+
+      return new Promise((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            // Track upload progress
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setUploadProgress(Math.round(progress));
+          },
+          (error) => {
+            console.error('Upload error:', error);
+            setUploadingVideo(false);
+            alert('Error uploading video: ' + error.message);
+            reject(error);
+          },
+          async () => {
+            // Upload completed successfully
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            setUploadingVideo(false);
+            setUploadProgress(0);
+            setVideoFile(null);
+
+            // Set the video URL in form data
+            setFormData(prev => ({
+              ...prev,
+              youtubeUrl: downloadURL,
+              youtubeId: '' // Clear YouTube ID when using uploaded video
+            }));
+
+            alert('Video uploaded successfully!');
+            resolve(downloadURL);
+          }
+        );
+      });
+    } catch (error) {
+      console.error('Error uploading video:', error);
+      setUploadingVideo(false);
+      alert('Error uploading video: ' + error.message);
+      throw error;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      // Validate that we have either a YouTube URL or uploaded video
+      if (!formData.youtubeUrl && !formData.youtubeId) {
+        alert('Please either upload a video or provide a YouTube URL');
+        setLoading(false);
+        return;
+      }
+
+      // Convert publishedAt to Firestore Timestamp
+      const publishedAtDate = formData.publishedAt || new Date();
+      const publishedAtTimestamp = publishedAtDate instanceof Date
+        ? Timestamp.fromDate(publishedAtDate)
+        : publishedAtDate;
+
+      // Clean the data - remove any undefined/null values and ensure proper types
       const podcastData = {
-        ...formData,
-        publishedAt: new Date(formData.publishedAt)
+        title: formData.title || { en: '', si: '', ta: '' },
+        description: formData.description || { en: '', si: '', ta: '' },
+        category: formData.category || 'marine-research',
+        languages: Array.isArray(formData.languages) ? formData.languages : ['en'],
+        youtubeId: formData.youtubeId || '',
+        youtubeUrl: formData.youtubeUrl || '',
+        audioUrl: formData.audioUrl || '',
+        notebooklmUrl: formData.notebooklmUrl || '',
+        duration: formData.duration || '',
+        thumbnail: formData.thumbnail || '',
+        tags: Array.isArray(formData.tags) ? formData.tags : [],
+        featured: Boolean(formData.featured),
+        status: formData.status || 'published',
+        publishedAt: publishedAtTimestamp
       };
 
+      console.log('💾 Saving podcast data:', JSON.stringify(podcastData, null, 2));
+      console.log('📹 Video URL:', podcastData.youtubeUrl);
+      console.log('🌐 Languages:', podcastData.languages);
+      console.log('📅 PublishedAt:', publishedAtTimestamp);
+
       if (editingPodcast) {
-        await podcastService.update(editingPodcast.id, podcastData);
+        const result = await podcastService.update(editingPodcast.id, podcastData);
+        if (result.error) {
+          console.error('❌ Update failed:', result.error);
+          alert('Error updating podcast: ' + result.error);
+          return;
+        }
+        alert('Podcast updated successfully! ✅');
       } else {
-        await podcastService.create(podcastData);
+        const result = await podcastService.create(podcastData);
+        if (result.error) {
+          console.error('❌ Create failed:', result.error);
+          alert('Error creating podcast: ' + result.error);
+          return;
+        }
+        alert('Podcast created successfully! ✅ Your video is now live!');
       }
 
       resetForm();
@@ -124,6 +277,7 @@ const PodcastAdmin = () => {
       title: podcast.title || { en: '', si: '', ta: '' },
       description: podcast.description || { en: '', si: '', ta: '' },
       category: podcast.category || 'marine-research',
+      languages: podcast.languages || ['en'],
       youtubeId: podcast.youtubeId || '',
       youtubeUrl: podcast.youtubeUrl || '',
       audioUrl: podcast.audioUrl || '',
@@ -154,6 +308,7 @@ const PodcastAdmin = () => {
       title: { en: '', si: '', ta: '' },
       description: { en: '', si: '', ta: '' },
       category: 'marine-research',
+      languages: ['en'],
       youtubeId: '',
       youtubeUrl: '',
       audioUrl: '',
@@ -171,7 +326,7 @@ const PodcastAdmin = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+        {/* Header with Tabs */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -180,9 +335,51 @@ const PodcastAdmin = () => {
           <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
             Podcast Management
           </h1>
-          <p className="text-slate-400">Manage NARA podcast episodes and NotebookLM integrations</p>
+          <p className="text-slate-400 mb-6">Manage NARA podcast episodes and NotebookLM integrations</p>
+
+          {/* Tab Navigation */}
+          <div className="flex gap-4">
+            <button
+              onClick={() => setActiveTab('manage')}
+              className={`px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-3 ${
+                activeTab === 'manage'
+                  ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/50'
+                  : 'bg-white/10 text-slate-300 hover:bg-white/20'
+              }`}
+            >
+              <Icons.Settings className="w-5 h-5" />
+              Manage Episodes
+            </button>
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className={`px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-3 ${
+                activeTab === 'analytics'
+                  ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/50'
+                  : 'bg-white/10 text-slate-300 hover:bg-white/20'
+              }`}
+            >
+              <Icons.BarChart3 className="w-5 h-5" />
+              Analytics Dashboard
+            </button>
+          </div>
         </motion.div>
 
+        {/* Analytics Tab */}
+        {activeTab === 'analytics' ? (
+          <Suspense fallback={
+            <div className="flex items-center justify-center py-20">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              >
+                <Icons.BarChart3 className="w-16 h-16 text-cyan-400" />
+              </motion.div>
+            </div>
+          }>
+            <PodcastAnalyticsDashboard />
+          </Suspense>
+        ) : (
+          <>
         {/* Statistics Cards */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -334,6 +531,100 @@ const PodcastAdmin = () => {
                   )}
                 </div>
 
+                {/* OR DIVIDER */}
+                <div className="md:col-span-2 flex items-center gap-4">
+                  <div className="flex-1 h-px bg-white/20"></div>
+                  <span className="text-slate-400 font-semibold">OR</span>
+                  <div className="flex-1 h-px bg-white/20"></div>
+                </div>
+
+                {/* Video Upload Section */}
+                <div className="md:col-span-2">
+                  <label className="block text-white font-semibold mb-3">Upload Video File to Firebase Storage</label>
+
+                  {/* File Input */}
+                  <div className="mb-4">
+                    <label className="flex items-center justify-center w-full px-6 py-8 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border-2 border-dashed border-cyan-500/50 rounded-2xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-500/20 transition-all group">
+                      <input
+                        type="file"
+                        accept="video/*"
+                        onChange={handleVideoFileChange}
+                        className="hidden"
+                        disabled={uploadingVideo}
+                      />
+                      <div className="text-center">
+                        <Icons.Upload className="w-12 h-12 text-cyan-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                        <p className="text-white font-semibold mb-1">
+                          {videoFile ? videoFile.name : 'Click to select video file'}
+                        </p>
+                        <p className="text-slate-400 text-sm">
+                          MP4, MOV, AVI (Max 500MB)
+                        </p>
+                        {videoFile && (
+                          <p className="text-cyan-400 text-sm mt-2">
+                            Size: {(videoFile.size / (1024 * 1024)).toFixed(2)} MB
+                          </p>
+                        )}
+                      </div>
+                    </label>
+                  </div>
+
+                  {/* Upload Button */}
+                  {videoFile && !uploadingVideo && (
+                    <motion.button
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      type="button"
+                      onClick={uploadVideoToFirebase}
+                      className="w-full px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-cyan-500/50 transition-all flex items-center justify-center gap-3"
+                    >
+                      <Icons.CloudUpload className="w-5 h-5" />
+                      Upload Video to Firebase
+                    </motion.button>
+                  )}
+
+                  {/* Upload Progress */}
+                  {uploadingVideo && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="mt-4 space-y-3"
+                    >
+                      <div className="flex items-center justify-between text-white">
+                        <span className="font-semibold">Uploading...</span>
+                        <span className="text-cyan-400 font-bold">{uploadProgress}%</span>
+                      </div>
+                      <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${uploadProgress}%` }}
+                          className="h-full bg-gradient-to-r from-cyan-500 to-blue-500"
+                          transition={{ duration: 0.3 }}
+                        />
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-400 text-sm">
+                        <Icons.Loader className="w-4 h-4 animate-spin" />
+                        <span>Please wait while your video is being uploaded...</span>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Success Message */}
+                  {formData.youtubeUrl && !formData.youtubeId && !uploadingVideo && (
+                    <div className="mt-4 p-4 bg-green-500/20 border border-green-500/30 rounded-xl">
+                      <div className="flex items-center gap-3">
+                        <Icons.CheckCircle className="w-5 h-5 text-green-400" />
+                        <div>
+                          <p className="text-green-400 font-semibold">Video uploaded successfully!</p>
+                          <p className="text-green-300 text-sm mt-1 break-all">
+                            {formData.youtubeUrl}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* NotebookLM URL */}
                 <div className="md:col-span-2">
                   <label className="block text-white font-semibold mb-2">NotebookLM URL (Optional)</label>
@@ -399,6 +690,36 @@ const PodcastAdmin = () => {
                     <option value="published" className="bg-slate-900">Published</option>
                     <option value="draft" className="bg-slate-900">Draft</option>
                   </select>
+                </div>
+
+                {/* Available Languages */}
+                <div className="md:col-span-2">
+                  <label className="block text-white font-semibold mb-3">Available Languages</label>
+                  <div className="flex gap-4 flex-wrap">
+                    {availableLanguages.map(lang => (
+                      <motion.button
+                        key={lang.value}
+                        type="button"
+                        onClick={() => toggleLanguage(lang.value)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${
+                          formData.languages.includes(lang.value)
+                            ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/50'
+                            : 'bg-white/10 text-slate-300 hover:bg-white/20'
+                        }`}
+                      >
+                        <span className="text-2xl">{lang.flag}</span>
+                        <span>{lang.label}</span>
+                        {formData.languages.includes(lang.value) && (
+                          <Icons.CheckCircle className="w-5 h-5" />
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+                  <p className="text-slate-400 text-sm mt-2">
+                    Select all languages in which this podcast is available
+                  </p>
                 </div>
 
                 {/* Tags */}
@@ -569,6 +890,8 @@ const PodcastAdmin = () => {
             </div>
           )}
         </div>
+        </>
+        )}
       </div>
     </div>
   );

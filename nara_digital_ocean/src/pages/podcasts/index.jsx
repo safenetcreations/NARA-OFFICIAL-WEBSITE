@@ -11,8 +11,16 @@ const PodcastsPage = () => {
   const [trending, setTrending] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedLanguages, setSelectedLanguages] = useState(['en', 'si', 'ta']); // All languages by default
   const [searchQuery, setSearchQuery] = useState('');
   const [stats, setStats] = useState(null);
+  const [currentlyPlaying, setCurrentlyPlaying] = useState(null); // Currently playing podcast
+
+  const availableLanguages = [
+    { code: 'en', label: 'English', flag: '🇬🇧' },
+    { code: 'si', label: 'Sinhala', flag: '🇱🇰' },
+    { code: 'ta', label: 'Tamil', flag: '🇱🇰' }
+  ];
 
   const categories = [
     { id: 'all', label: 'All Podcasts', icon: Icons.Radio },
@@ -31,8 +39,11 @@ const PodcastsPage = () => {
   const loadPodcasts = async () => {
     setLoading(true);
     try {
+      console.log('🔍 PUBLIC PAGE: Loading podcasts...');
+
       // Load featured podcast
       const { data: featured } = await podcastService.getFeatured(1);
+      console.log('📺 Featured podcasts:', featured);
       if (featured && featured.length > 0) {
         setFeaturedPodcast(featured[0]);
       }
@@ -43,14 +54,20 @@ const PodcastsPage = () => {
         filters.category = selectedCategory;
       }
 
-      const { data: allPodcasts } = await podcastService.getAll(filters);
+      console.log('🔍 Fetching with filters:', filters);
+      const { data: allPodcasts, error } = await podcastService.getAll(filters);
+      console.log('📦 Fetched podcasts count:', allPodcasts?.length || 0);
+      console.log('📦 Fetched podcasts data:', allPodcasts);
+      console.log('❌ Fetch error:', error);
+
       setPodcasts(allPodcasts || []);
 
       // Load trending
       const { data: trendingData } = await podcastAnalyticsService.getTrending(6);
+      console.log('🔥 Trending podcasts:', trendingData);
       setTrending(trendingData || []);
     } catch (error) {
-      console.error('Error loading podcasts:', error);
+      console.error('❌ Error loading podcasts:', error);
     } finally {
       setLoading(false);
     }
@@ -74,7 +91,36 @@ const PodcastsPage = () => {
     setLoading(false);
   };
 
+  const toggleLanguageFilter = (langCode) => {
+    setSelectedLanguages(prev => {
+      const hasLang = prev.includes(langCode);
+      if (hasLang) {
+        // Remove language (but keep at least one)
+        if (prev.length > 1) {
+          return prev.filter(l => l !== langCode);
+        }
+        return prev;
+      } else {
+        // Add language
+        return [...prev, langCode];
+      }
+    });
+  };
+
   const filteredPodcasts = podcasts.filter(podcast => {
+    // Filter by language
+    const podcastLangs = podcast.languages || ['en'];
+    const hasMatchingLang = selectedLanguages.some(lang => podcastLangs.includes(lang));
+
+    console.log(`🔍 Filtering podcast "${podcast.title?.en}":`, {
+      podcastLangs,
+      selectedLanguages,
+      hasMatchingLang
+    });
+
+    if (!hasMatchingLang) return false;
+
+    // Filter by search query
     if (searchQuery) {
       const searchLower = searchQuery.toLowerCase();
       const title = podcast.title?.[i18n.language] || podcast.title?.en || '';
@@ -85,9 +131,19 @@ const PodcastsPage = () => {
     return true;
   });
 
+  console.log('✅ Filtered podcasts count:', filteredPodcasts.length);
+  console.log('✅ Filtered podcasts:', filteredPodcasts);
+
   const getCategoryLabel = (categoryId) => {
     const category = categories.find(c => c.id === categoryId);
     return category ? category.label : categoryId;
+  };
+
+  const handlePodcastClick = (podcast) => {
+    setCurrentlyPlaying(podcast);
+    // Scroll to top to show the TV frame
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    console.log('🎬 Now playing:', podcast.title?.en);
   };
 
   return (
@@ -204,17 +260,31 @@ const PodcastsPage = () => {
 
                 {/* Video Player Container */}
                 <div className="relative rounded-2xl overflow-hidden bg-black shadow-2xl aspect-video">
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    controls
-                    className="w-full h-full object-cover"
-                  >
-                    <source src="/videos/PODCAST VIDEO HERO SECTION.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
+                  {currentlyPlaying && currentlyPlaying.youtubeUrl ? (
+                    // YouTube/Firebase Storage Video Player
+                    <video
+                      key={currentlyPlaying.youtubeUrl} // Force remount when video changes
+                      autoPlay
+                      controls
+                      className="w-full h-full object-contain"
+                      src={currentlyPlaying.youtubeUrl}
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : (
+                    // Default intro video when no podcast is selected
+                    <video
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      controls
+                      className="w-full h-full object-cover"
+                    >
+                      <source src="/videos/PODCAST VIDEO HERO SECTION.mp4" type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
 
                   {/* ON AIR Indicator */}
                   <motion.div
@@ -224,12 +294,26 @@ const PodcastsPage = () => {
                     className="absolute top-4 right-4 flex items-center gap-2 bg-red-600/90 backdrop-blur-sm px-4 py-2 rounded-full z-30"
                   >
                     <div className="w-3 h-3 rounded-full bg-white animate-pulse" />
-                    <span className="text-white font-bold text-sm tracking-wider">ON AIR</span>
+                    <span className="text-white font-bold text-sm tracking-wider">
+                      {currentlyPlaying ? 'LIVE' : 'ON AIR'}
+                    </span>
                   </motion.div>
+
+                  {/* Now Playing Display */}
+                  {currentlyPlaying && (
+                    <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm px-4 py-2 rounded-lg border border-cyan-400 z-30 max-w-md">
+                      <div className="flex items-center gap-2">
+                        <Icons.Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
+                        <span className="text-white font-semibold text-sm line-clamp-1">
+                          {currentlyPlaying.title?.[i18n.language] || currentlyPlaying.title?.en}
+                        </span>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Channel Display */}
                   <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-700 z-30">
-                    <span className="text-green-400 font-mono text-sm">CH-01</span>
+                    <span className="text-green-400 font-mono text-sm">NARA-FM</span>
                   </div>
 
                   {/* TV Static Effect (subtle overlay) */}
@@ -267,13 +351,196 @@ const PodcastsPage = () => {
             </div>
           </motion.div>
 
+          {/* Social Share Buttons */}
+          <motion.div
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="mt-12 max-w-4xl mx-auto"
+          >
+            <div className="bg-gradient-to-r from-slate-900/80 via-slate-800/80 to-slate-900/80 backdrop-blur-xl rounded-3xl border-2 border-white/10 p-8 shadow-2xl">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-white mb-2 flex items-center justify-center gap-3">
+                  <Icons.Share2 className="w-6 h-6 text-cyan-400" />
+                  Share NARA Podcasts
+                </h3>
+                <p className="text-slate-300 text-sm">Share our ocean research podcasts with your community</p>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {/* WhatsApp */}
+                <motion.a
+                  href={`https://wa.me/?text=${encodeURIComponent('Check out NARA Podcasts - Ocean Research & Marine Science! ' + window.location.href)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex flex-col items-center gap-3 bg-gradient-to-br from-green-500 to-green-600 p-6 rounded-2xl shadow-lg hover:shadow-green-500/50 transition-all group"
+                >
+                  <Icons.MessageCircle className="w-10 h-10 text-white" />
+                  <span className="text-white font-bold text-sm">WhatsApp</span>
+                  <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-white"
+                      initial={{ width: 0 }}
+                      whileHover={{ width: '100%' }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
+                </motion.a>
+
+                {/* Facebook */}
+                <motion.a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex flex-col items-center gap-3 bg-gradient-to-br from-blue-600 to-blue-700 p-6 rounded-2xl shadow-lg hover:shadow-blue-500/50 transition-all group"
+                >
+                  <Icons.Facebook className="w-10 h-10 text-white" />
+                  <span className="text-white font-bold text-sm">Facebook</span>
+                  <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-white"
+                      initial={{ width: 0 }}
+                      whileHover={{ width: '100%' }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
+                </motion.a>
+
+                {/* LinkedIn */}
+                <motion.a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex flex-col items-center gap-3 bg-gradient-to-br from-blue-700 to-blue-800 p-6 rounded-2xl shadow-lg hover:shadow-blue-600/50 transition-all group"
+                >
+                  <Icons.Linkedin className="w-10 h-10 text-white" />
+                  <span className="text-white font-bold text-sm">LinkedIn</span>
+                  <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-white"
+                      initial={{ width: 0 }}
+                      whileHover={{ width: '100%' }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
+                </motion.a>
+
+                {/* Instagram (Copy Link) */}
+                <motion.button
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert('Link copied! Paste it in your Instagram bio or story.');
+                  }}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex flex-col items-center gap-3 bg-gradient-to-br from-pink-600 via-purple-600 to-orange-500 p-6 rounded-2xl shadow-lg hover:shadow-pink-500/50 transition-all group"
+                >
+                  <Icons.Instagram className="w-10 h-10 text-white" />
+                  <span className="text-white font-bold text-sm">Instagram</span>
+                  <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-white"
+                      initial={{ width: 0 }}
+                      whileHover={{ width: '100%' }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
+                </motion.button>
+
+                {/* TikTok (Copy Link) */}
+                <motion.button
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert('Link copied! Share it on your TikTok.');
+                  }}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex flex-col items-center gap-3 bg-gradient-to-br from-black via-slate-900 to-black p-6 rounded-2xl shadow-lg hover:shadow-cyan-400/50 transition-all group border-2 border-cyan-400"
+                >
+                  <Icons.Music className="w-10 h-10 text-cyan-400" />
+                  <span className="text-cyan-400 font-bold text-sm">TikTok</span>
+                  <div className="w-full h-1 bg-cyan-400/20 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-cyan-400"
+                      initial={{ width: 0 }}
+                      whileHover={{ width: '100%' }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
+                </motion.button>
+              </div>
+
+              {/* Share Counter (Optional) */}
+              <div className="mt-6 text-center">
+                <div className="inline-flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full">
+                  <Icons.Users className="w-4 h-4 text-cyan-400" />
+                  <span className="text-slate-300 text-sm">Join thousands sharing ocean knowledge</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Language Filter Buttons */}
+          <motion.div
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-12 max-w-4xl mx-auto"
+          >
+            <div className="bg-gradient-to-r from-slate-900/50 via-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-2xl">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-3">
+                  <Icons.Languages className="w-6 h-6 text-cyan-400" />
+                  <h3 className="text-white font-bold text-lg">Filter by Language</h3>
+                </div>
+
+                <div className="flex gap-3 flex-wrap">
+                  {availableLanguages.map(lang => (
+                    <motion.button
+                      key={lang.code}
+                      onClick={() => toggleLanguageFilter(lang.code)}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className={`px-5 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${
+                        selectedLanguages.includes(lang.code)
+                          ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/50'
+                          : 'bg-white/10 text-slate-300 hover:bg-white/20'
+                      }`}
+                    >
+                      <span className="text-xl">{lang.flag}</span>
+                      <span>{lang.label}</span>
+                      {selectedLanguages.includes(lang.code) && (
+                        <Icons.Check className="w-4 h-4" />
+                      )}
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center gap-2 text-slate-400 text-sm">
+                <Icons.Info className="w-4 h-4" />
+                <span>
+                  Showing podcasts available in: {selectedLanguages.map(code =>
+                    availableLanguages.find(l => l.code === code)?.label
+                  ).join(', ')}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+
           {/* Search Bar */}
           <motion.form
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.7 }}
             onSubmit={handleSearch}
-            className="mt-12 max-w-3xl mx-auto"
+            className="mt-8 max-w-3xl mx-auto"
           >
             <div className="relative">
               <input
@@ -360,7 +627,8 @@ const PodcastsPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ y: -10, scale: 1.02 }}
-                    className="group relative bg-white/10 backdrop-blur-lg rounded-3xl overflow-hidden border border-white/20 hover:border-cyan-400/50 transition-all shadow-xl hover:shadow-2xl hover:shadow-cyan-500/20"
+                    onClick={() => handlePodcastClick(podcast)}
+                    className="group relative bg-white/10 backdrop-blur-lg rounded-3xl overflow-hidden border border-white/20 hover:border-cyan-400/50 transition-all shadow-xl hover:shadow-2xl hover:shadow-cyan-500/20 cursor-pointer"
                   >
                     {/* Thumbnail */}
                     <div className="relative h-64 overflow-hidden bg-slate-900">

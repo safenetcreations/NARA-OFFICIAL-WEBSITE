@@ -65,6 +65,9 @@ const MasterAdminPanel = lazy(() => import('./pages/admin/MasterAdminPanel'));
 // Research Data Admin
 const ResearchAdminLogin = lazy(() => import('./pages/admin/ResearchAdminLogin'));
 const ResearchDataAdmin = lazy(() => import('./pages/admin/ResearchDataAdmin'));
+const ResearchUploadAdmin = lazy(() => import('./pages/admin/ResearchUploadAdmin'));
+const BulkResearchUpload = lazy(() => import('./pages/admin/BulkResearchUpload'));
+const ManagePapers = lazy(() => import('./pages/admin/ManagePapers'));
 
 // Media Admin
 const MediaAdmin = lazy(() => import('./pages/admin/MediaAdmin'));
@@ -214,6 +217,8 @@ function Layout({ children }) {
     '/admin/content',
     '/admin/research-login',
     '/admin/research-data',
+    '/admin/research-upload',
+    '/admin/research-bulk-upload',
     '/admin/media',
     '/admin/lda',
     '/admin/government-services',
@@ -412,17 +417,20 @@ function Routes() {
               {/* New Admin Panel Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
               
-              {/* Master Admin Panel - Unified Admin Dashboard */}
+              {/* Master Admin Panel - Unified Admin Dashboard (Main Entry Point) */}
+              <Route path="/admin" element={<Navigate to="/admin/master" replace />} />
               <Route path="/admin/master" element={<MasterAdminPanel />} />
               
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="content" element={<ContentManager />} />
-              </Route>
+              {/* Legacy Admin Routes */}
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/content" element={<ContentManager />} />
 
               {/* Research Data Admin Routes */}
               <Route path="/admin/research-login" element={<ResearchAdminLogin />} />
               <Route path="/admin/research-data" element={<ResearchDataAdmin />} />
+              <Route path="/admin/research-upload" element={<ResearchUploadAdmin />} />
+              <Route path="/admin/research-bulk-upload" element={<BulkResearchUpload />} />
+              <Route path="/admin/manage-papers" element={<ManagePapers />} />
 
               {/* Media Admin Route */}
               <Route path="/admin/media" element={<MediaAdmin />} />

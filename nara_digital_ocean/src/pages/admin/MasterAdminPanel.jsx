@@ -13,7 +13,7 @@ import {
   FileCheck, Briefcase, GraduationCap, Building2, Award, Target,
   Zap, Activity, PieChart, TrendingDown, DollarSign, Package,
   CheckCircle, XCircle, Clock, Archive, ExternalLink, Filter,
-  Grid3x3, List, SlidersHorizontal, Heart, Share2, MessageSquare
+  Grid3x3, List, SlidersHorizontal, Heart, Share2, MessageSquare, Radio, Languages
 } from 'lucide-react';
 
 const MasterAdminPanel = () => {
@@ -52,6 +52,9 @@ const MasterAdminPanel = () => {
       icon: Microscope,
       color: 'blue',
       subsections: [
+        { id: 'research-upload', label: 'Upload Research Paper', icon: Upload, path: '/admin/research-upload', highlight: true },
+        { id: 'research-bulk-upload', label: 'Bulk Upload Papers', icon: Package, path: '/admin/research-bulk-upload', highlight: true },
+        { id: 'manage-papers', label: 'Manage & Translate Papers', icon: Languages, path: '/admin/manage-papers', highlight: true },
         { id: 'research-data', label: 'Research Data', icon: Database, path: '/admin/research-data' },
         { id: 'publications', label: 'Publications', icon: FileText, path: '/admin/research-data', collection: 'publications' },
         { id: 'projects', label: 'Projects', icon: Briefcase, path: '/admin/research-data', collection: 'projects' },
@@ -130,6 +133,17 @@ const MasterAdminPanel = () => {
       ]
     },
     {
+      id: 'podcasts',
+      label: 'Podcast System',
+      icon: Video,
+      color: 'violet',
+      subsections: [
+        { id: 'manage-podcasts', label: 'Manage Episodes', icon: Video, path: '/admin/podcasts' },
+        { id: 'podcast-analytics', label: 'Analytics Dashboard', icon: BarChart3, path: '/admin/podcasts' },
+        { id: 'public-podcasts', label: 'Public Page', icon: ExternalLink, external: '/podcasts' }
+      ]
+    },
+    {
       id: 'integration',
       label: 'Data Integration',
       icon: Database,
@@ -180,6 +194,15 @@ const MasterAdminPanel = () => {
           console.error(`Error loading ${collectionName}:`, error);
           statsData[collectionName] = 0;
         }
+      }
+
+      // Load podcasts count
+      try {
+        const podcastsSnapshot = await getDocs(collection(db, 'podcasts'));
+        statsData.podcasts = podcastsSnapshot.size;
+      } catch (error) {
+        console.error('Error loading podcasts:', error);
+        statsData.podcasts = 0;
       }
 
       setStats(statsData);
@@ -423,6 +446,13 @@ const MasterAdminPanel = () => {
                   trend="+10%"
                 />
                 <StatCard
+                  icon={Radio}
+                  label="Podcast Episodes"
+                  value={stats.podcasts || 0}
+                  color="violet"
+                  trend="+20%"
+                />
+                <StatCard
                   icon={TrendingUp}
                   label="Total Views"
                   value="125.4K"
@@ -441,7 +471,25 @@ const MasterAdminPanel = () => {
               {/* Quick Actions */}
               <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-800">
                 <h3 className="text-xl font-bold mb-4 text-white">Quick Actions</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  <QuickActionButton
+                    icon={Upload}
+                    label="Upload Research"
+                    onClick={() => navigate('/admin/research-upload')}
+                    color="cyan"
+                  />
+                  <QuickActionButton
+                    icon={Package}
+                    label="Bulk Upload"
+                    onClick={() => navigate('/admin/research-bulk-upload')}
+                    color="blue"
+                  />
+                  <QuickActionButton
+                    icon={Languages}
+                    label="Manage Papers"
+                    onClick={() => navigate('/admin/manage-papers')}
+                    color="green"
+                  />
                   <QuickActionButton
                     icon={Plus}
                     label="Add Media"
@@ -450,18 +498,18 @@ const MasterAdminPanel = () => {
                   />
                   <QuickActionButton
                     icon={FileText}
-                    label="New Publication"
+                    label="Publications"
                     onClick={() => navigate('/admin/research-data')}
-                    color="blue"
-                  />
-                  <QuickActionButton
-                    icon={Ship}
-                    label="Add Vessel"
-                    onClick={() => navigate('/admin/maritime')}
                     color="indigo"
                   />
                   <QuickActionButton
-                    icon={Upload}
+                    icon={Ship}
+                    label="Maritime"
+                    onClick={() => navigate('/admin/maritime')}
+                    color="teal"
+                  />
+                  <QuickActionButton
+                    icon={Database}
                     label="Import Data"
                     onClick={() => navigate('/admin/data-center')}
                     color="green"

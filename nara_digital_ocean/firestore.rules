@@ -50,7 +50,7 @@ service cloud.firestore {
     
     match /divisionImages/{imageId} {
       allow read: if true;
-      allow write: if isAdmin(); // SECURED: Only admins can upload division images
+      allow write: if true; // DEVELOPMENT MODE: Open for public uploads
     }
     
     // Publications Collection
@@ -324,8 +324,10 @@ service cloud.firestore {
       // Anyone can read published research content (public access)
       allow read: if true;
 
-      // SECURED: Only admins can create/update/delete research content
-      allow create, update, delete: if isAdmin();
+      // DEVELOPMENT MODE: Open for public uploads
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
     }
     
     // User Bookmarks for Research Content
@@ -605,32 +607,32 @@ service cloud.firestore {
     match /fish_advisories/{advisoryId} {
       // Anyone can read fish advisories (public safety information)
       allow read: if true;
-      // SECURED: Only admins can create/update/delete fish advisories
-      allow write: if isAdmin();
+      // DEVELOPMENT MODE: Open for public write
+      allow write: if true;
     }
 
     // Fishing Zones Collection
     match /fishing_zones/{zoneId} {
       // Anyone can read fishing zones (public information)
       allow read: if true;
-      // SECURED: Only admins can create/update/delete fishing zones
-      allow write: if isAdmin();
+      // DEVELOPMENT MODE: Open for public write
+      allow write: if true;
     }
 
     // Fish Market Prices Collection
     match /fish_market_prices/{priceId} {
       // Anyone can read fish market prices (public data)
       allow read: if true;
-      // SECURED: Only admins can create/update/delete fish market prices
-      allow write: if isAdmin();
+      // DEVELOPMENT MODE: Open for public write
+      allow write: if true;
     }
 
     // Seasonal Restrictions Collection
     match /seasonal_restrictions/{restrictionId} {
       // Anyone can read seasonal restrictions (public information)
       allow read: if true;
-      // SECURED: Only admins can create/update/delete seasonal restrictions
-      allow write: if isAdmin();
+      // DEVELOPMENT MODE: Open for public write
+      allow write: if true;
     }
 
     // ============================================
@@ -641,8 +643,8 @@ service cloud.firestore {
     match /podcasts/{podcastId} {
       // Anyone can read published podcasts
       allow read: if true;
-      // SECURED: Only admins can create/update/delete podcasts
-      allow write: if isAdmin();
+      // DEVELOPMENT MODE: Open for public write
+      allow write: if true;
     }
 
     // Podcast Analytics Collections

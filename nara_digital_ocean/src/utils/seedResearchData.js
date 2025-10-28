@@ -256,28 +256,59 @@ export const seedNARAResearchPapers = async () => {
     
     const researchCollection = collection(db, 'researchContent');
     
-    // Check if data already exists
+    // Get already uploaded paper IDs to avoid duplicates
     const snapshot = await getDocs(researchCollection);
-    if (snapshot.size > 0) {
-      console.log(`⚠️  Database already has ${snapshot.size} papers. Skipping seed.`);
+    const existingIds = new Set();
+    snapshot.docs.forEach(doc => {
+      const data = doc.data();
+      if (data.researchId) {
+        existingIds.add(data.researchId);
+      }
+    });
+    
+    console.log(`📊 Database has ${snapshot.size} papers. ${existingIds.size} with IDs.`);
+    
+    // Filter out already uploaded papers
+    const availablePapers = naraResearchPapers.filter(paper => !existingIds.has(paper.id));
+    
+    if (availablePapers.length === 0) {
+      console.log(`⚠️  All ${naraResearchPapers.length} papers from pool have been uploaded!`);
       return {
         success: false,
-        error: 'Database already contains research papers. Clear the collection first if you want to reseed.',
-        count: snapshot.size
+        error: `All papers uploaded! Total in database: ${snapshot.size}`,
+        count: snapshot.size,
+        total: naraResearchPapers.length
       };
     }
+    
+    // Select 5 random papers from available ones
+    const shuffled = availablePapers.sort(() => 0.5 - Math.random());
+    const selectedPapers = shuffled.slice(0, Math.min(5, availablePapers.length));
+    
+    console.log(`📚 Uploading ${selectedPapers.length} NEW papers...`);
 
     let successCount = 0;
     const errors = [];
 
-    for (const paper of naraResearchPapers) {
+    for (const paper of selectedPapers) {
       try {
         const docData = {
-          ...paper,
-          uploadedBy: 'nara_admin',
+          researchId: paper.id, // Track which paper this is
+          title: paper.title,
+          description: paper.description,
+          authors: paper.authors,
+          category: paper.category,
+          tags: paper.tags,
+          publicationDate: paper.publicationDate,
+          language: paper.language,
+          views: paper.views || Math.floor(Math.random() * 500) + 100,
+          downloads: paper.downloads || Math.floor(Math.random() * 100) + 20,
+          bookmarks: paper.bookmarks || Math.floor(Math.random() * 50) + 10,
+          uploadedBy: 'seed_button',
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
-          fileURL: null, // No actual files in seed data
+          status: 'published',
+          fileURL: null,
           fileName: null
         };
         
@@ -290,7 +321,11 @@ export const seedNARAResearchPapers = async () => {
       }
     }
 
-    console.log(`\n🎉 Seeding complete! Added ${successCount}/${naraResearchPapers.length} papers`);
+    const remaining = availablePapers.length - selectedPapers.length;
+    
+    console.log(`\n🎉 Upload complete! Added ${successCount}/${selectedPapers.length} papers`);
+    console.log(`📊 Total in database: ${snapshot.size + successCount}`);
+    console.log(`📚 Remaining in pool: ${remaining}`);
     
     if (errors.length > 0) {
       console.log('\n❌ Errors:', errors);
@@ -300,6 +335,8 @@ export const seedNARAResearchPapers = async () => {
       success: true,
       count: successCount,
       total: naraResearchPapers.length,
+      totalInDatabase: snapshot.size + successCount,
+      remaining: remaining,
       errors: errors.length > 0 ? errors : null
     };
 

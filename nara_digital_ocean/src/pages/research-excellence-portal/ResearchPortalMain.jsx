@@ -30,10 +30,10 @@ const ResearchPortalMain = () => {
       const result = await seedNARAResearchPapers();
       
       if (result.success) {
-        alert(`✅ Success! Added ${result.count} NARA research papers!\n\nIncluding:\n- Coral Reef Studies\n- Tuna Fisheries Management\n- Climate Change Impact\n- Marine Conservation\n- And more!\n\nRefreshing data...`);
+        alert(`✅ Success! Added ${result.count} NEW research papers!\n\n📊 Total in database: ${result.totalInDatabase}\n📚 Remaining in pool: ${result.remaining}\n\n✨ Click this button daily to add 5 more papers!\n\nRefreshing data...`);
         await loadContent();
       } else {
-        alert(`❌ ${result.error || 'Failed to seed data'}`);
+        alert(`ℹ️ ${result.error || 'No new papers to add'}\n\n${result.total ? `Pool has ${result.total} papers total.` : ''}`);
       }
     } catch (error) {
       console.error('❌ Error seeding data:', error);
@@ -245,7 +245,7 @@ const ResearchPortalMain = () => {
                       ) : (
                         <>
                           <Icons.Database className="w-5 h-5" />
-                          Load 10 Real NARA Papers
+                          Add 5 NEW Research Papers
                         </>
                       )}
                     </button>

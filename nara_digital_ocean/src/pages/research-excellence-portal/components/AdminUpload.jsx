@@ -4,6 +4,7 @@ import * as Icons from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useFirebaseAuth } from '../../../contexts/FirebaseAuthContext';
 import { uploadResearchContent } from '../../../services/researchContentService';
+import { translateWithGemini } from '../../../services/translationService';
 
 const AdminUpload = ({ onSuccess }) => {
   const { t, i18n } = useTranslation(['researchPortal']);
@@ -11,6 +12,9 @@ const AdminUpload = ({ onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
+  const [translating, setTranslating] = useState(false);
+  const [autoTranslate, setAutoTranslate] = useState(true);
+  const [translationProgress, setTranslationProgress] = useState(0);
   
   const [formData, setFormData] = useState({
     title: { en: '', si: '', ta: '' },
@@ -55,6 +59,7 @@ const AdminUpload = ({ onSuccess }) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
+    setTranslationProgress(0);
 
     try {
       const contentData = {
@@ -63,9 +68,66 @@ const AdminUpload = ({ onSuccess }) => {
         tags: formData.keywords.split(',').map(k => k.trim()),
       };
 
+      // Auto-translate if enabled and only English is filled
+      if (autoTranslate && formData.title.en && (!formData.title.si || !formData.title.ta)) {
+        setTranslating(true);
+        setMessage({ type: 'info', text: '🌐 Translating to Sinhala & Tamil...' });
+        
+        try {
+          // Translate title to Sinhala
+          if (!formData.title.si) {
+            const titleSi = await translateWithGemini(formData.title.en, 'si');
+            contentData.title.si = titleSi;
+            setTranslationProgress(20);
+          }
+          
+          // Translate title to Tamil
+          if (!formData.title.ta) {
+            const titleTa = await translateWithGemini(formData.title.en, 'ta');
+            contentData.title.ta = titleTa;
+            setTranslationProgress(40);
+          }
+          
+          // Translate description to Sinhala
+          if (formData.description.en && !formData.description.si) {
+            const descSi = await translateWithGemini(formData.description.en, 'si');
+            contentData.description.si = descSi;
+            setTranslationProgress(60);
+          }
+          
+          // Translate description to Tamil
+          if (formData.description.en && !formData.description.ta) {
+            const descTa = await translateWithGemini(formData.description.en, 'ta');
+            contentData.description.ta = descTa;
+            setTranslationProgress(80);
+          }
+          
+          // Translate abstract if provided
+          if (formData.abstract.en) {
+            if (!formData.abstract.si) {
+              const absSi = await translateWithGemini(formData.abstract.en, 'si');
+              contentData.abstract.si = absSi;
+            }
+            if (!formData.abstract.ta) {
+              const absTa = await translateWithGemini(formData.abstract.en, 'ta');
+              contentData.abstract.ta = absTa;
+            }
+          }
+          
+          setTranslationProgress(100);
+          setMessage({ type: 'success', text: '✅ Translation complete! Uploading...' });
+        } catch (translationError) {
+          console.warn('Translation failed, continuing with manual entries:', translationError);
+          setMessage({ type: 'warning', text: '⚠️ Auto-translation failed. Using manual entries...' });
+        } finally {
+          setTranslating(false);
+        }
+      }
+
+      // Upload to Firebase
       await uploadResearchContent(contentData, pdfFile, user.uid);
       
-      setMessage({ type: 'success', text: t('admin.form.success') });
+      setMessage({ type: 'success', text: autoTranslate ? '🎉 Success! Paper uploaded in all languages!' : t('admin.form.success') });
       
       // Reset form
       setFormData({
@@ -361,6 +423,45 @@ const AdminUpload = ({ onSuccess }) => {
             placeholder="10.1000/xyz123"
             className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
+        </div>
+
+        {/* Auto-Translate Option */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
+          <div className="flex items-center gap-3 mb-3">
+            <Icons.Languages className="w-6 h-6 text-blue-600" />
+            <h3 className="font-bold text-gray-900">Auto-Translation (AI-Powered)</h3>
+          </div>
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="auto-translate"
+              checked={autoTranslate}
+              onChange={(e) => setAutoTranslate(e.target.checked)}
+              className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+            />
+            <label htmlFor="auto-translate" className="text-sm text-gray-700">
+              Automatically translate English content to Sinhala & Tamil using Gemini AI
+            </label>
+          </div>
+          {autoTranslate && (
+            <p className="text-xs text-gray-600 mt-2">
+              💡 Just fill in English fields! AI will auto-translate to සිංහල & தமிழ்
+            </p>
+          )}
+          {translating && (
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-medium text-blue-600">Translating...</span>
+                <span className="text-xs font-bold text-blue-600">{translationProgress}%</span>
+              </div>
+              <div className="w-full bg-blue-200 rounded-full h-2">
+                <div
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${translationProgress}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* PDF Upload */}

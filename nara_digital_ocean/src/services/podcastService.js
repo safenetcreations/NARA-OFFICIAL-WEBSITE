@@ -29,6 +29,15 @@ export const podcastService = {
    */
   create: async (podcastData) => {
     try {
+      console.log('📝 Creating podcast in Firestore...');
+      console.log('📦 Data to save:', JSON.stringify({
+        ...podcastData,
+        status: podcastData.status || 'published',
+        views: 0,
+        likes: 0,
+        likedBy: [],
+      }, null, 2));
+
       const docRef = await addDoc(collection(db, 'podcasts'), {
         ...podcastData,
         status: podcastData.status || 'published',
@@ -39,6 +48,8 @@ export const podcastService = {
         updatedAt: serverTimestamp()
       });
 
+      console.log('✅ Podcast created successfully with ID:', docRef.id);
+
       return {
         data: {
           id: docRef.id,
@@ -47,7 +58,10 @@ export const podcastService = {
         error: null
       };
     } catch (error) {
-      console.error('Error creating podcast:', error);
+      console.error('❌ Error creating podcast:', error);
+      console.error('❌ Error code:', error.code);
+      console.error('❌ Error message:', error.message);
+      console.error('❌ Full error:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
       return { data: null, error: error.message };
     }
   },
@@ -97,10 +111,36 @@ export const podcastService = {
 
       return { data: podcasts, error: null };
     } catch (error) {
-      console.error('Error getting podcasts:', error);
-      // If ordering by publishedAt fails, try without ordering
+      console.error('❌ Error getting podcasts (likely missing Firestore index):', error);
+      console.log('🔄 Trying fallback query without ordering...');
+
+      // If ordering by publishedAt fails, try without ordering but WITH filters
       try {
-        const querySnapshot = await getDocs(collection(db, 'podcasts'));
+        let fallbackConstraints = [];
+
+        // Apply the same filters but without ordering
+        if (filters.status) {
+          fallbackConstraints.push(where('status', '==', filters.status));
+        }
+
+        if (filters.category && filters.category !== 'all') {
+          fallbackConstraints.push(where('category', '==', filters.category));
+        }
+
+        if (filters.featured !== undefined) {
+          fallbackConstraints.push(where('featured', '==', filters.featured));
+        }
+
+        // Apply limit
+        if (filters.limit) {
+          fallbackConstraints.push(limit(filters.limit));
+        }
+
+        const fallbackQuery = fallbackConstraints.length > 0
+          ? query(collection(db, 'podcasts'), ...fallbackConstraints)
+          : collection(db, 'podcasts');
+
+        const querySnapshot = await getDocs(fallbackQuery);
         const podcasts = [];
         querySnapshot.forEach((doc) => {
           podcasts.push({
@@ -111,6 +151,9 @@ export const podcastService = {
             publishedAt: doc.data().publishedAt?.toDate?.() || null
           });
         });
+
+        console.log(`✅ Fallback query succeeded! Fetched ${podcasts.length} podcasts`);
+
         // Sort manually by publishedAt
         podcasts.sort((a, b) => {
           const dateA = a.publishedAt || a.createdAt || new Date(0);
@@ -119,6 +162,7 @@ export const podcastService = {
         });
         return { data: podcasts, error: null };
       } catch (fallbackError) {
+        console.error('❌ Fallback query also failed:', fallbackError);
         return { data: [], error: fallbackError.message };
       }
     }

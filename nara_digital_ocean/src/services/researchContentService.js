@@ -23,23 +23,40 @@ import { db, storage } from '../firebase';
 
 const COLLECTION_NAME = 'researchContent';
 
-// Upload research content
-export const uploadResearchContent = async (contentData, file, userId) => {
+// Upload research content with multiple language PDFs
+export const uploadResearchContent = async (contentData, files, userId) => {
   try {
-    let fileURL = null;
+    const fileURLs = {};
+    const fileNames = {};
     
-    // Upload file to Firebase Storage if provided
-    if (file) {
-      const fileRef = ref(storage, `research-content/${Date.now()}_${file.name}`);
-      await uploadBytes(fileRef, file);
-      fileURL = await getDownloadURL(fileRef);
+    // Handle single file (backward compatible) or multiple files object
+    if (files instanceof File) {
+      // Single file - English only
+      const fileRef = ref(storage, `research-content/${Date.now()}_${files.name}`);
+      await uploadBytes(fileRef, files);
+      fileURLs.en = await getDownloadURL(fileRef);
+      fileNames.en = files.name;
+    } else if (files && typeof files === 'object') {
+      // Multiple files object: { en: File, si: File, ta: File }
+      for (const [lang, file] of Object.entries(files)) {
+        if (file instanceof File) {
+          const timestamp = Date.now();
+          const fileRef = ref(storage, `research-content/${timestamp}_${lang}_${file.name}`);
+          await uploadBytes(fileRef, file);
+          fileURLs[lang] = await getDownloadURL(fileRef);
+          fileNames[lang] = file.name;
+        }
+      }
     }
 
-    // Create content document
+    // Create content document with language-specific URLs
     const docData = {
       ...contentData,
-      fileURL,
-      fileName: file?.name || null,
+      fileURL: fileURLs.en || fileURLs, // Backward compatible
+      fileURLs, // New: URLs for each language
+      fileName: fileNames.en || fileNames, // Backward compatible
+      fileNames, // New: Filenames for each language
+      availableLanguages: Object.keys(fileURLs), // Track which PDFs exist
       uploadedBy: userId,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
@@ -63,22 +80,9 @@ export const getResearchContent = async (filters = {}) => {
     let q = collection(db, COLLECTION_NAME);
     const constraints = [];
 
-    if (filters.category) {
-      constraints.push(where('category', '==', filters.category));
-    }
-
-    if (filters.language) {
-      constraints.push(where('language', '==', filters.language));
-    }
-
+    // Only add status filter to avoid index requirement
     if (filters.status) {
       constraints.push(where('status', '==', filters.status));
-    }
-
-    constraints.push(orderBy('createdAt', 'desc'));
-
-    if (filters.limit) {
-      constraints.push(limit(filters.limit));
     }
 
     if (constraints.length > 0) {
@@ -86,10 +90,33 @@ export const getResearchContent = async (filters = {}) => {
     }
 
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
+    let results = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
+
+    // Client-side filtering and sorting
+    if (filters.category) {
+      results = results.filter(item => item.category === filters.category);
+    }
+
+    if (filters.language) {
+      results = results.filter(item => item.language === filters.language);
+    }
+
+    // Sort by createdAt (client-side)
+    results.sort((a, b) => {
+      const aTime = a.createdAt?.seconds || 0;
+      const bTime = b.createdAt?.seconds || 0;
+      return bTime - aTime; // Descending order (newest first)
+    });
+
+    // Apply limit if specified
+    if (filters.limit) {
+      results = results.slice(0, filters.limit);
+    }
+
+    return results;
   } catch (error) {
     console.error('Error getting research content:', error);
     throw error;
