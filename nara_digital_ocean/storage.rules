@@ -134,6 +134,31 @@ service firebase.storage {
       allow write: if true; // DEVELOPMENT MODE: Open for public uploads
     }
 
+    // ============================================
+    // MARINE SPATIAL PLANNING (MSP) STORAGE
+    // ============================================
+
+    // MSP Photo Attachments
+    match /msp-photos/{projectId}/{photoId} {
+      // Anyone authenticated can read MSP photos
+      allow read: if request.auth != null;
+
+      // Anyone authenticated can upload photos
+      allow write: if request.auth != null;
+
+      // Can delete if authenticated
+      allow delete: if request.auth != null;
+    }
+
+    // MSP Exports (GeoJSON, CSV, PDF, etc.)
+    match /msp-exports/{projectId}/{exportId} {
+      // Anyone authenticated can read exports
+      allow read: if request.auth != null;
+
+      // Anyone authenticated can create exports
+      allow write: if request.auth != null;
+    }
+
     // Default deny rule
     match /{allPaths=**} {
       allow read, write: if false;

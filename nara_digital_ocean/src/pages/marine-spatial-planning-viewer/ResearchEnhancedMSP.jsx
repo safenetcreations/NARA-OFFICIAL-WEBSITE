@@ -26,11 +26,25 @@ import {
   Database, TrendingUp, Filter, Search, Users, Calendar, Clipboard,
   PlusCircle, Settings, Eye, EyeOff, Printer, Mail, Link2, Copy,
   CheckCircle, XCircle, AlertCircle, ChevronDown, ChevronRight,
-  Maximize2, Minimize2, RotateCcw, ZoomIn, ZoomOut, Globe, Wifi
+  Maximize2, Minimize2, RotateCcw, ZoomIn, ZoomOut, Globe, Wifi, Cloud, CloudOff
 } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../contexts/AuthContext';
+
+// Import cloud services
+import {
+  saveProjectToCloud,
+  loadProjectFromCloud,
+  getUserProjects,
+  subscribeToProject,
+  uploadZonePhoto,
+  getZonePhotos,
+  deleteZonePhoto
+} from '../../services/mspCloudService';
+import { generatePDFReport } from '../../services/mspPDFReportService';
+import { importFile } from '../../services/mspImportService';
 
 // Fix Leaflet default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -42,8 +56,17 @@ L.Icon.Default.mergeOptions({
 
 const ResearchEnhancedMSP = () => {
   const { t } = useTranslation('common');
+  const { currentUser } = useAuth();
 
   // ==================== STATE MANAGEMENT ====================
+
+  // Cloud Sync State
+  const [cloudSyncStatus, setCloudSyncStatus] = useState('offline'); // 'offline', 'syncing', 'synced', 'error'
+  const [cloudProjects, setCloudProjects] = useState([]);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [showPhotoUpload, setShowPhotoUpload] = useState(false);
+  const [selectedZoneForPhoto, setSelectedZoneForPhoto] = useState(null);
+  const [zonePhotos, setZonePhotos] = useState({});
 
   // Project Management
   const [currentProject, setCurrentProject] = useState({
@@ -55,7 +78,8 @@ const ResearchEnhancedMSP = () => {
     type: 'general',
     status: 'draft',
     tags: [],
-    metadata: {}
+    metadata: {},
+    isCloudSynced: false
   });
   const [savedProjects, setSavedProjects] = useState([]);
   const [showProjectManager, setShowProjectManager] = useState(false);
@@ -382,7 +406,7 @@ const ResearchEnhancedMSP = () => {
 
   // ==================== PROJECT MANAGEMENT ====================
 
-  const saveProject = () => {
+  const saveProject = async () => {
     const project = {
       ...currentProject,
       id: currentProject.id || `project_${Date.now()}`,
@@ -394,31 +418,95 @@ const ResearchEnhancedMSP = () => {
       layers: activeLayers
     };
 
-    // Save to localStorage (in production, save to Firebase/backend)
-    const projects = JSON.parse(localStorage.getItem('naraProjects') || '[]');
-    const existingIndex = projects.findIndex(p => p.id === project.id);
+    try {
+      // Save to cloud if user is authenticated
+      if (currentUser) {
+        setCloudSyncStatus('syncing');
+        const result = await saveProjectToCloud(currentUser.email, project);
+        if (result.success) {
+          project.isCloudSynced = true;
+          project.id = result.projectId;
+          setCloudSyncStatus('synced');
+          alert(`Project "${project.name}" saved to cloud successfully!`);
+        }
+      } else {
+        // Fallback to localStorage
+        const projects = JSON.parse(localStorage.getItem('naraProjects') || '[]');
+        const existingIndex = projects.findIndex(p => p.id === project.id);
 
-    if (existingIndex >= 0) {
-      projects[existingIndex] = project;
-    } else {
-      projects.push(project);
+        if (existingIndex >= 0) {
+          projects[existingIndex] = project;
+        } else {
+          projects.push(project);
+        }
+
+        localStorage.setItem('naraProjects', JSON.stringify(projects));
+        alert(`Project "${project.name}" saved locally (sign in for cloud sync)`);
+      }
+
+      setCurrentProject(project);
+
+      // Refresh project list
+      await loadProjectsList();
+    } catch (error) {
+      console.error('Error saving project:', error);
+      setCloudSyncStatus('error');
+      alert('Error saving project: ' + error.message);
     }
-
-    localStorage.setItem('naraProjects', JSON.stringify(projects));
-    setCurrentProject(project);
-    setSavedProjects(projects);
-
-    alert(`Project "${project.name}" saved successfully!`);
   };
 
-  const loadProject = (project) => {
-    setCurrentProject(project);
-    setDrawnShapes(project.shapes || []);
-    setResearchData(project.researchData || {});
-    setComments(project.comments || []);
-    setMeasurements(project.measurements || {});
-    setActiveLayers(project.layers || activeLayers);
-    setShowProjectManager(false);
+  const loadProject = async (project) => {
+    try {
+      // If it's a cloud project, load from cloud for latest version
+      if (project.isCloudSynced && currentUser) {
+        const result = await loadProjectFromCloud(project.id);
+        if (result.success) {
+          project = result.data;
+        }
+      }
+
+      setCurrentProject(project);
+      setDrawnShapes(project.shapes || []);
+      setResearchData(project.researchData || {});
+      setComments(project.comments || []);
+      setMeasurements(project.measurements || {});
+      setActiveLayers(project.layers || activeLayers);
+      setShowProjectManager(false);
+
+      // Load photos for all zones
+      if (project.shapes && currentUser) {
+        const photos = {};
+        for (const shape of project.shapes) {
+          const result = await getZonePhotos(project.id, shape.id);
+          if (result.success) {
+            photos[shape.id] = result.photos;
+          }
+        }
+        setZonePhotos(photos);
+      }
+    } catch (error) {
+      console.error('Error loading project:', error);
+      alert('Error loading project: ' + error.message);
+    }
+  };
+
+  const loadProjectsList = async () => {
+    try {
+      if (currentUser) {
+        // Load cloud projects
+        const result = await getUserProjects(currentUser.email);
+        if (result.success) {
+          setCloudProjects(result.projects);
+          setSavedProjects(result.projects);
+        }
+      } else {
+        // Load local projects
+        const projects = JSON.parse(localStorage.getItem('naraProjects') || '[]');
+        setSavedProjects(projects);
+      }
+    } catch (error) {
+      console.error('Error loading projects list:', error);
+    }
   };
 
   const newProject = () => {
@@ -444,11 +532,17 @@ const ResearchEnhancedMSP = () => {
     setRedoStack([]);
   };
 
-  // Load saved projects on mount
+  // Load saved projects on mount and when user changes
   useEffect(() => {
-    const projects = JSON.parse(localStorage.getItem('naraProjects') || '[]');
-    setSavedProjects(projects);
-  }, []);
+    loadProjectsList();
+
+    // Set cloud sync status based on authentication
+    if (currentUser) {
+      setCloudSyncStatus('synced');
+    } else {
+      setCloudSyncStatus('offline');
+    }
+  }, [currentUser]);
 
   // ==================== EXPORT FUNCTIONS ====================
 
