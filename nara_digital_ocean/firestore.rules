@@ -673,5 +673,78 @@ service cloud.firestore {
       // Only admins and scrapers can write
       allow write: if isAdmin();
     }
+
+    // ============================================
+    // MARINE SPATIAL PLANNING (MSP) COLLECTIONS
+    // ============================================
+
+    // MSP Projects Collection
+    match /mspProjects/{projectId} {
+      // Allow read if user is a collaborator
+      allow read: if isAuthenticated() &&
+                     request.auth.token.email in resource.data.collaborators;
+
+      // Allow create if signed in and user is in collaborators list
+      allow create: if isAuthenticated() &&
+                       request.auth.token.email in request.resource.data.collaborators;
+
+      // Allow update if user is a collaborator
+      allow update: if isAuthenticated() &&
+                       request.auth.token.email in resource.data.collaborators;
+
+      // Allow delete if user is the owner (userId field)
+      allow delete: if isAuthenticated() &&
+                       request.auth.token.email == resource.data.userId;
+    }
+
+    // MSP Templates Collection
+    match /mspTemplates/{templateId} {
+      // Everyone can read public templates or their own templates
+      allow read: if isAuthenticated() &&
+                     (resource.data.isPublic == true ||
+                      resource.data.userId == request.auth.token.email);
+
+      // Only authenticated users can create templates
+      allow create: if isAuthenticated() &&
+                       request.resource.data.userId == request.auth.token.email;
+
+      // Only owner can update their template
+      allow update: if isAuthenticated() &&
+                       resource.data.userId == request.auth.token.email;
+
+      // Only owner can delete their template
+      allow delete: if isAuthenticated() &&
+                       resource.data.userId == request.auth.token.email;
+    }
+
+    // MSP Activity Log Collection
+    match /mspActivityLog/{activityId} {
+      // Anyone authenticated can read activity logs
+      allow read: if isAuthenticated();
+
+      // Only allow creating activity logs (append-only for audit)
+      allow create: if isAuthenticated();
+
+      // No updates or deletes allowed (audit trail integrity)
+      allow update, delete: if false;
+    }
+
+    // MSP Notifications Collection
+    match /notifications/{notificationId} {
+      // Users can only read their own notifications
+      allow read: if isAuthenticated() &&
+                     resource.data.userId == request.auth.token.email;
+
+      // System can create notifications for users
+      allow create: if isAuthenticated();
+
+      // Users can update their own notifications (mark as read)
+      allow update: if isAuthenticated() &&
+                       resource.data.userId == request.auth.token.email;
+
+      // Users can delete their own notifications
+      allow delete: if isAuthenticated() &&
+                       resource.data.userId == request.auth.token.email;
+    }
   }
 }

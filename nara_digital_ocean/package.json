@@ -51,6 +51,7 @@
     "firebase-admin": "^13.5.0",
     "framer-motion": "^12.23.16",
     "google-translate-api-x": "^10.7.2",
+    "html2canvas": "^1.4.1",
     "html5-qrcode": "^2.3.8",
     "i18next": "^25.6.0",
     "jspdf": "^3.0.3",
