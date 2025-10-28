@@ -15,6 +15,10 @@ const PodcastsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [stats, setStats] = useState(null);
   const [currentlyPlaying, setCurrentlyPlaying] = useState(null); // Currently playing podcast
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const videoRef = React.useRef(null);
 
   const availableLanguages = [
     { code: 'en', label: 'English', flag: '🇬🇧' },
@@ -141,9 +145,60 @@ const PodcastsPage = () => {
 
   const handlePodcastClick = (podcast) => {
     setCurrentlyPlaying(podcast);
+    setIsPlaying(true);
     // Scroll to top to show the TV frame
     window.scrollTo({ top: 0, behavior: 'smooth' });
     console.log('🎬 Now playing:', podcast.title?.en);
+  };
+
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const skipForward = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = Math.min(videoRef.current.currentTime + 10, videoRef.current.duration);
+    }
+  };
+
+  const skipBackward = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 10, 0);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      setCurrentTime(videoRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+    }
+  };
+
+  const handleSeek = (e) => {
+    const seekTime = parseFloat(e.target.value);
+    if (videoRef.current) {
+      videoRef.current.currentTime = seekTime;
+      setCurrentTime(seekTime);
+    }
+  };
+
+  const formatTime = (seconds) => {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -263,23 +318,29 @@ const PodcastsPage = () => {
                   {currentlyPlaying && currentlyPlaying.youtubeUrl ? (
                     // YouTube/Firebase Storage Video Player
                     <video
-                      key={currentlyPlaying.youtubeUrl} // Force remount when video changes
+                      ref={videoRef}
+                      key={currentlyPlaying.youtubeUrl}
                       autoPlay
-                      controls
                       className="w-full h-full object-contain"
                       src={currentlyPlaying.youtubeUrl}
+                      onTimeUpdate={handleTimeUpdate}
+                      onLoadedMetadata={handleLoadedMetadata}
+                      onPlay={() => setIsPlaying(true)}
+                      onPause={() => setIsPlaying(false)}
                     >
                       Your browser does not support the video tag.
                     </video>
                   ) : (
                     // Default intro video when no podcast is selected
                     <video
+                      ref={videoRef}
                       autoPlay
                       loop
                       muted
                       playsInline
-                      controls
                       className="w-full h-full object-cover"
+                      onTimeUpdate={handleTimeUpdate}
+                      onLoadedMetadata={handleLoadedMetadata}
                     >
                       <source src="/videos/PODCAST VIDEO HERO SECTION.mp4" type="video/mp4" />
                       Your browser does not support the video tag.
@@ -291,29 +352,99 @@ const PodcastsPage = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: [1, 0.5, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="absolute top-4 right-4 flex items-center gap-2 bg-red-600/90 backdrop-blur-sm px-4 py-2 rounded-full z-30"
+                    className="absolute top-4 right-4 flex items-center gap-2 bg-red-600/90 backdrop-blur-sm px-3 py-1.5 md:px-4 md:py-2 rounded-full z-30"
                   >
-                    <div className="w-3 h-3 rounded-full bg-white animate-pulse" />
-                    <span className="text-white font-bold text-sm tracking-wider">
+                    <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white animate-pulse" />
+                    <span className="text-white font-bold text-xs md:text-sm tracking-wider">
                       {currentlyPlaying ? 'LIVE' : 'ON AIR'}
                     </span>
                   </motion.div>
 
                   {/* Now Playing Display */}
                   {currentlyPlaying && (
-                    <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm px-4 py-2 rounded-lg border border-cyan-400 z-30 max-w-md">
+                    <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-cyan-400 z-30 max-w-[60%] md:max-w-md">
                       <div className="flex items-center gap-2">
-                        <Icons.Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
-                        <span className="text-white font-semibold text-sm line-clamp-1">
+                        <Icons.Radio className="w-3 h-3 md:w-4 md:h-4 text-cyan-400 animate-pulse" />
+                        <span className="text-white font-semibold text-xs md:text-sm line-clamp-1">
                           {currentlyPlaying.title?.[i18n.language] || currentlyPlaying.title?.en}
                         </span>
                       </div>
                     </div>
                   )}
 
-                  {/* Channel Display */}
-                  <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-700 z-30">
-                    <span className="text-green-400 font-mono text-sm">NARA-FM</span>
+                  {/* Custom Mobile-Friendly Controls */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/90 to-transparent p-3 md:p-4 z-30">
+                    {/* Progress Bar */}
+                    <div className="mb-3">
+                      <input
+                        type="range"
+                        min="0"
+                        max={duration || 0}
+                        value={currentTime}
+                        onChange={handleSeek}
+                        className="w-full h-1 md:h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer
+                          [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3
+                          md:[&::-webkit-slider-thumb]:w-4 md:[&::-webkit-slider-thumb]:h-4
+                          [&::-webkit-slider-thumb]:bg-cyan-400 [&::-webkit-slider-thumb]:rounded-full
+                          [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-lg
+                          [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3
+                          md:[&::-moz-range-thumb]:w-4 md:[&::-moz-range-thumb]:h-4
+                          [&::-moz-range-thumb]:bg-cyan-400 [&::-moz-range-thumb]:rounded-full
+                          [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0"
+                        style={{
+                          background: `linear-gradient(to right, #06b6d4 0%, #06b6d4 ${(currentTime / duration) * 100}%, #334155 ${(currentTime / duration) * 100}%, #334155 100%)`
+                        }}
+                      />
+                      <div className="flex justify-between text-xs text-slate-400 mt-1">
+                        <span>{formatTime(currentTime)}</span>
+                        <span>{formatTime(duration)}</span>
+                      </div>
+                    </div>
+
+                    {/* Playback Controls */}
+                    <div className="flex items-center justify-center gap-3 md:gap-6">
+                      {/* Skip Backward */}
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={skipBackward}
+                        className="p-2 md:p-3 bg-slate-800/80 hover:bg-slate-700 rounded-full transition-colors"
+                        title="Skip backward 10s"
+                      >
+                        <Icons.SkipBack className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                      </motion.button>
+
+                      {/* Play/Pause Button */}
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={togglePlayPause}
+                        className="p-4 md:p-5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg shadow-cyan-500/50 hover:shadow-cyan-500/70 transition-all"
+                        title={isPlaying ? 'Pause' : 'Play'}
+                      >
+                        {isPlaying ? (
+                          <Icons.Pause className="w-6 h-6 md:w-8 md:h-8 text-white" />
+                        ) : (
+                          <Icons.Play className="w-6 h-6 md:w-8 md:h-8 text-white ml-1" />
+                        )}
+                      </motion.button>
+
+                      {/* Skip Forward */}
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={skipForward}
+                        className="p-2 md:p-3 bg-slate-800/80 hover:bg-slate-700 rounded-full transition-colors"
+                        title="Skip forward 10s"
+                      >
+                        <Icons.SkipForward className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                      </motion.button>
+
+                      {/* NARA-FM Badge - Repositioned to not block controls */}
+                      <div className="hidden md:flex absolute right-4 bottom-4 bg-black/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-slate-700">
+                        <span className="text-green-400 font-mono text-xs">NARA-FM</span>
+                      </div>
+                    </div>
                   </div>
 
                   {/* TV Static Effect (subtle overlay) */}

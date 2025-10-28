@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import * as Icons from 'lucide-react';
 import { labResultsService, sampleTrackingService, labResultsDashboardService } from '../../services/labResultsService';
 import AdvancedFilters from '../../components/lab-results/AdvancedFilters';
+import BulkActionsToolbar from '../../components/lab-results/BulkActionsToolbar';
+import ResultQRCode from '../../components/lab-results/ResultQRCode';
+import { exportResultsToExcel, exportSingleResultToExcel } from '../../utils/labResultsExport';
 
 const LabResultsPortal = () => {
   const { t, i18n } = useTranslation('labResults');
@@ -21,6 +24,9 @@ const LabResultsPortal = () => {
   const [selectedSample, setSelectedSample] = useState(null);
   const [trackingId, setTrackingId] = useState('');
   const [advancedFilters, setAdvancedFilters] = useState(null);
+  const [selectedResults, setSelectedResults] = useState([]); // For bulk operations
+  const [showQRCode, setShowQRCode] = useState(false);
+  const [qrCodeResultId, setQRCodeResultId] = useState(null);
 
   // Load Dashboard Data
   useEffect(() => {
@@ -100,6 +106,45 @@ const LabResultsPortal = () => {
     setAdvancedFilters(null);
     setSearchQuery('');
     setStatusFilter('all');
+  };
+
+  // Bulk Operations Handlers
+  const toggleResultSelection = (resultId) => {
+    setSelectedResults(prev =>
+      prev.includes(resultId)
+        ? prev.filter(id => id !== resultId)
+        : [...prev, resultId]
+    );
+  };
+
+  const selectAllResults = () => {
+    setSelectedResults(filteredResults.map(r => r.id));
+  };
+
+  const clearSelection = () => {
+    setSelectedResults([]);
+  };
+
+  const handleBulkExport = () => {
+    const selectedData = results.filter(r => selectedResults.includes(r.id));
+    const result = exportResultsToExcel(selectedData, 'NARA_Selected_Results');
+    
+    if (result.success) {
+      alert(`✅ Exported ${result.recordCount} results to ${result.filename}`);
+      clearSelection();
+    } else {
+      alert(`❌ Export failed: ${result.error}`);
+    }
+  };
+
+  const handleBulkDownload = () => {
+    alert('📥 Bulk PDF download feature coming soon!');
+    // TODO: Implement bulk PDF download
+  };
+
+  const showQRCodeModal = (resultId) => {
+    setQRCodeResultId(resultId);
+    setShowQRCode(true);
   };
 
   // Filter Results with Advanced Filters
@@ -523,21 +568,59 @@ const LabResultsPortal = () => {
                   <Icons.Loader className="w-8 h-8 animate-spin text-blue-600" />
                 </div>
               ) : filteredResults.length > 0 ? (
-                <div className="grid gap-4">
-                  {filteredResults.map((result) => (
-                    <motion.div
-                      key={result.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all cursor-pointer group"
-                      onClick={() => setSelectedResult(result)}
-                    >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <Icons.FlaskConical className="text-blue-600 group-hover:scale-110 transition-transform" size={24} />
-                              <h3 className="text-xl font-bold text-gray-900">{result.testType || t('results.fallbackTitle')}</h3>
+                <>
+                  {/* Select All / Clear All */}
+                  <div className="flex items-center justify-between bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedResults.length === filteredResults.length && filteredResults.length > 0}
+                        onChange={(e) => e.target.checked ? selectAllResults() : clearSelection()}
+                        className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
+                      />
+                      <span className="font-semibold text-gray-700">
+                        {selectedResults.length > 0 
+                          ? `${selectedResults.length} of ${filteredResults.length} selected`
+                          : 'Select all results'}
+                      </span>
+                    </label>
+                    {selectedResults.length > 0 && (
+                      <button
+                        onClick={clearSelection}
+                        className="text-sm text-blue-600 hover:text-blue-700 font-semibold"
+                      >
+                        Clear selection
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="grid gap-4">
+                    {filteredResults.map((result) => (
+                      <motion.div
+                        key={result.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all group border-2 ${
+                          selectedResults.includes(result.id) ? 'border-blue-500 bg-blue-50' : 'border-transparent'
+                        }`}
+                      >
+                          <div className="flex items-start gap-4">
+                            {/* Checkbox */}
+                            <div className="pt-1" onClick={(e) => e.stopPropagation()}>
+                              <input
+                                type="checkbox"
+                                checked={selectedResults.includes(result.id)}
+                                onChange={() => toggleResultSelection(result.id)}
+                                className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                              />
                             </div>
+
+                            {/* Main Content */}
+                            <div className="flex-1 cursor-pointer" onClick={() => setSelectedResult(result)}>
+                              <div className="flex items-center gap-3 mb-2">
+                                <Icons.FlaskConical className="text-blue-600 group-hover:scale-110 transition-transform" size={24} />
+                                <h3 className="text-xl font-bold text-gray-900">{result.testType || t('results.fallbackTitle')}</h3>
+                              </div>
                             <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
                               <div className="flex items-center gap-2">
                                 <Icons.TestTube size={16} />
@@ -554,20 +637,47 @@ const LabResultsPortal = () => {
                                 </div>
                               )}
                             </div>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+                              {/* Status Badge */}
+                              <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${getStatusColor(result.status)} text-center`}>
+                                {t(`status.${result.status}`, { defaultValue: result.status })}
+                              </span>
+
+                              {/* Quick Actions */}
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => showQRCodeModal(result.id)}
+                                  className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-all"
+                                  title="Show QR Code"
+                                >
+                                  <Icons.QrCode size={18} />
+                                </button>
+                                <button
+                                  onClick={() => exportSingleResultToExcel(result, 'Lab_Result')}
+                                  className="p-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg transition-all"
+                                  title="Export to Excel"
+                                >
+                                  <Icons.FileSpreadsheet size={18} />
+                                </button>
+                              </div>
+
+                              {/* View Details */}
+                              <button 
+                                onClick={() => setSelectedResult(result)}
+                                className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-1 justify-end"
+                              >
+                                {t('results.card.viewDetails')}
+                                <Icons.ChevronRight size={16} />
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex flex-col items-end gap-2">
-                            <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${getStatusColor(result.status)}`}>
-                            {t(`status.${result.status}`, { defaultValue: result.status })}
-                            </span>
-                            <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-1">
-                            {t('results.card.viewDetails')}
-                              <Icons.ChevronRight size={16} />
-                            </button>
-                          </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </>
               ) : (
                 <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
                   <Icons.FileX className="w-16 h-16 mx-auto mb-4 text-gray-300" />
@@ -798,6 +908,32 @@ const LabResultsPortal = () => {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Bulk Actions Toolbar */}
+        <BulkActionsToolbar
+          selectedCount={selectedResults.length}
+          onExportExcel={handleBulkExport}
+          onDownloadAll={handleBulkDownload}
+          onClearSelection={clearSelection}
+        />
+
+        {/* QR Code Modal */}
+        {showQRCode && qrCodeResultId && (
+          <div 
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowQRCode(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              onClick={(e) => e.stopPropagation()}
+              className="max-w-md w-full"
+            >
+              <ResultQRCode resultId={qrCodeResultId} />
+            </motion.div>
+          </div>
+        )}
       </div>
     </div>
   );

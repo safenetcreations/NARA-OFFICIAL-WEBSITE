@@ -64,6 +64,7 @@
     "pdf-to-text": "^0.0.7",
     "pdfkit": "^0.17.2",
     "qrcode": "^1.5.4",
+    "qrcode.react": "^4.2.0",
     "react": "^19.2.0",
     "react-datepicker": "^8.8.0",
     "react-dom": "^19.2.0",
