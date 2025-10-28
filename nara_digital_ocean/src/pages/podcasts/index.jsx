@@ -315,23 +315,69 @@ const PodcastsPage = () => {
                 {/* Screen Glow Effect */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-blue-500/10 animate-pulse pointer-events-none z-10" />
 
-                {/* Video Player Container */}
+                {/* Video/Audio Player Container */}
                 <div className="relative rounded-2xl overflow-hidden bg-black shadow-2xl aspect-video">
-                  {currentlyPlaying && currentlyPlaying.youtubeUrl ? (
-                    // YouTube/Firebase Storage Video Player
-                    <video
-                      ref={videoRef}
-                      key={currentlyPlaying.youtubeUrl}
-                      autoPlay
-                      className="w-full h-full object-contain"
-                      src={currentlyPlaying.youtubeUrl}
-                      onTimeUpdate={handleTimeUpdate}
-                      onLoadedMetadata={handleLoadedMetadata}
-                      onPlay={() => setIsPlaying(true)}
-                      onPause={() => setIsPlaying(false)}
-                    >
-                      Your browser does not support the video tag.
-                    </video>
+                  {currentlyPlaying && (currentlyPlaying.youtubeUrl || currentlyPlaying.audioUrl) ? (
+                    // Check if it's audio-only (AI-generated) or video
+                    currentlyPlaying.audioUrl && !currentlyPlaying.youtubeUrl ? (
+                      // Audio Player with Visualizer
+                      <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-cyan-900">
+                        <audio
+                          ref={videoRef}
+                          key={currentlyPlaying.audioUrl}
+                          autoPlay
+                          src={currentlyPlaying.audioUrl}
+                          onTimeUpdate={handleTimeUpdate}
+                          onLoadedMetadata={handleLoadedMetadata}
+                          onPlay={() => setIsPlaying(true)}
+                          onPause={() => setIsPlaying(false)}
+                        >
+                          Your browser does not support the audio element.
+                        </audio>
+                        
+                        {/* Audio Visualizer Effect */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="flex items-end gap-1 md:gap-2 h-32 md:h-48">
+                            {[...Array(20)].map((_, i) => (
+                              <motion.div
+                                key={i}
+                                className="w-2 md:w-3 bg-cyan-400 rounded-t-full"
+                                animate={{
+                                  height: isPlaying ? [
+                                    Math.random() * 40 + 20,
+                                    Math.random() * 80 + 40,
+                                    Math.random() * 40 + 20
+                                  ] : 20
+                                }}
+                                transition={{
+                                  duration: 0.8,
+                                  repeat: Infinity,
+                                  delay: i * 0.05
+                                }}
+                              />
+                            ))}
+                          </div>
+                          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <Icons.Radio className="w-16 h-16 md:w-24 md:h-24 text-cyan-400/30" />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      // Video Player
+                      <video
+                        ref={videoRef}
+                        key={currentlyPlaying.youtubeUrl}
+                        autoPlay
+                        className="w-full h-full object-contain"
+                        src={currentlyPlaying.youtubeUrl}
+                        onTimeUpdate={handleTimeUpdate}
+                        onLoadedMetadata={handleLoadedMetadata}
+                        onPlay={() => setIsPlaying(true)}
+                        onPause={() => setIsPlaying(false)}
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    )
                   ) : (
                     // Default intro video when no podcast is selected
                     <video
