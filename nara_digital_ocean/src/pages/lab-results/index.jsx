@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as Icons from 'lucide-react';
@@ -7,6 +7,17 @@ import AdvancedFilters from '../../components/lab-results/AdvancedFilters';
 import BulkActionsToolbar from '../../components/lab-results/BulkActionsToolbar';
 import ResultQRCode from '../../components/lab-results/ResultQRCode';
 import { exportResultsToExcel, exportSingleResultToExcel } from '../../utils/labResultsExport';
+import MonthlyTrendsChart from '../../components/lab-results/charts/MonthlyTrendsChart';
+import TestTypeDistributionChart from '../../components/lab-results/charts/TestTypeDistributionChart';
+import ProcessingTimeChart from '../../components/lab-results/charts/ProcessingTimeChart';
+import StatusOverviewChart from '../../components/lab-results/charts/StatusOverviewChart';
+import { 
+  generateMonthlyTrendsData, 
+  generateTestTypeDistribution, 
+  generateProcessingTimeData,
+  generateStatusOverviewData,
+  generateSampleChartData
+} from '../../utils/labResultsChartData';
 
 const LabResultsPortal = () => {
   const { t, i18n } = useTranslation('labResults');
@@ -146,6 +157,21 @@ const LabResultsPortal = () => {
     setQRCodeResultId(resultId);
     setShowQRCode(true);
   };
+
+  // Generate chart data from results and samples
+  const chartData = useMemo(() => {
+    // Use sample data if no real data available
+    if (results.length === 0 && samples.length === 0) {
+      return generateSampleChartData();
+    }
+
+    return {
+      monthlyTrends: generateMonthlyTrendsData(results),
+      testTypeDistribution: generateTestTypeDistribution(results),
+      processingTime: generateProcessingTimeData(results),
+      statusOverview: generateStatusOverviewData(samples)
+    };
+  }, [results, samples]);
 
   // Filter Results with Advanced Filters
   const filteredResults = results.filter(result => {
@@ -392,6 +418,37 @@ const LabResultsPortal = () => {
                   </motion.div>
                 ))}
               </div>
+
+              {/* Analytics Charts */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="space-y-6"
+              >
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-gray-900">Analytics & Insights</h2>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Icons.TrendingUp size={18} className="text-blue-600" />
+                    <span>Last 6 months</span>
+                  </div>
+                </div>
+
+                {/* Charts Grid */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Monthly Trends */}
+                  <MonthlyTrendsChart data={chartData.monthlyTrends} />
+
+                  {/* Test Type Distribution */}
+                  <TestTypeDistributionChart data={chartData.testTypeDistribution} />
+
+                  {/* Processing Time Analytics */}
+                  <ProcessingTimeChart data={chartData.processingTime} />
+
+                  {/* Status Overview */}
+                  <StatusOverviewChart data={chartData.statusOverview} />
+                </div>
+              </motion.div>
 
               {/* Recent Activity */}
               <div className="grid md:grid-cols-2 gap-8">
