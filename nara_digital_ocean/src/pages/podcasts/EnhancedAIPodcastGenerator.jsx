@@ -515,6 +515,124 @@ Thank you for listening to this episode. Don't forget to subscribe for more ocea
         </div>
       </div>
 
+      {/* AI MODE SELECTOR - ChatGPT vs Basic */}
+      <div className="bg-gradient-to-br from-purple-900/20 to-cyan-900/20 border-2 border-purple-500/50 rounded-xl p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h4 className="text-lg font-bold text-white flex items-center gap-2">
+              <Icons.Brain className="w-5 h-5 text-purple-400" />
+              AI Intelligence Mode
+            </h4>
+            <p className="text-sm text-slate-400 mt-1">Choose script generation engine</p>
+          </div>
+          <div className="text-sm text-cyan-400 font-semibold">
+            {podcastSettings.useAI === 'chatgpt' ? '~$0.10/podcast' : 'FREE'}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* BASIC MODE (FREE) */}
+          <button
+            onClick={() => setPodcastSettings({ ...podcastSettings, useAI: 'basic' })}
+            className={`p-5 rounded-xl transition-all text-left ${
+              podcastSettings.useAI === 'basic'
+                ? 'bg-gradient-to-br from-green-500/30 to-emerald-500/30 border-2 border-green-500'
+                : 'bg-slate-800/50 border-2 border-slate-700 hover:border-slate-600'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Icons.Zap className={`w-5 h-5 ${podcastSettings.useAI === 'basic' ? 'text-green-400' : 'text-slate-400'}`} />
+                <span className={`font-bold ${podcastSettings.useAI === 'basic' ? 'text-white' : 'text-slate-300'}`}>
+                  Basic (FREE)
+                </span>
+              </div>
+              {podcastSettings.useAI === 'basic' && (
+                <div className="px-2 py-1 bg-green-500 rounded-full text-xs font-bold">ACTIVE</div>
+              )}
+            </div>
+            <p className={`text-sm ${podcastSettings.useAI === 'basic' ? 'text-slate-300' : 'text-slate-500'}`}>
+              ✓ Natural conversations<br/>
+              ✓ 4 conversation styles<br/>
+              ✓ Casual speech patterns<br/>
+              ✓ Unlimited use
+            </p>
+          </button>
+
+          {/* CHATGPT MODE (INTELLIGENT) */}
+          <button
+            onClick={() => setPodcastSettings({ ...podcastSettings, useAI: 'chatgpt' })}
+            className={`p-5 rounded-xl transition-all text-left ${
+              podcastSettings.useAI === 'chatgpt'
+                ? 'bg-gradient-to-br from-purple-500/30 to-cyan-500/30 border-2 border-purple-500'
+                : 'bg-slate-800/50 border-2 border-slate-700 hover:border-slate-600'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Icons.Sparkles className={`w-5 h-5 ${podcastSettings.useAI === 'chatgpt' ? 'text-purple-400' : 'text-slate-400'}`} />
+                <span className={`font-bold ${podcastSettings.useAI === 'chatgpt' ? 'text-white' : 'text-slate-300'}`}>
+                  ChatGPT-4 (Intelligent)
+                </span>
+              </div>
+              {podcastSettings.useAI === 'chatgpt' && (
+                <div className="px-2 py-1 bg-purple-500 rounded-full text-xs font-bold">ACTIVE</div>
+              )}
+            </div>
+            <p className={`text-sm ${podcastSettings.useAI === 'chatgpt' ? 'text-slate-300' : 'text-slate-500'}`}>
+              ✓ GPT-4 powered scripts<br/>
+              ✓ Deep context understanding<br/>
+              ✓ Creative dialogue<br/>
+              ✓ Professional quality
+            </p>
+          </button>
+        </div>
+
+        {/* ChatGPT Advanced Settings */}
+        {podcastSettings.useAI === 'chatgpt' && podcastSettings.format === 'conversation' && (
+          <div className="mt-4 pt-4 border-t border-slate-700 space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs text-slate-400 mb-2">Casualness</label>
+                <select
+                  value={podcastSettings.aiCasualness}
+                  onChange={(e) => setPodcastSettings({ ...podcastSettings, aiCasualness: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm"
+                >
+                  <option value="low">Low (Formal)</option>
+                  <option value="medium">Medium (Balanced)</option>
+                  <option value="high">High (Casual) ⭐</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-slate-400 mb-2">Technical Depth</label>
+                <select
+                  value={podcastSettings.aiTechnicalDepth}
+                  onChange={(e) => setPodcastSettings({ ...podcastSettings, aiTechnicalDepth: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm"
+                >
+                  <option value="low">Low (Simple)</option>
+                  <option value="medium">Medium (Balanced) ⭐</option>
+                  <option value="high">High (Detailed)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-slate-400 mb-2">Length</label>
+                <select
+                  value={podcastSettings.conversationLength}
+                  onChange={(e) => setPodcastSettings({ ...podcastSettings, conversationLength: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm"
+                >
+                  <option value="short">Short (5-6 min)</option>
+                  <option value="medium">Medium (7-10 min) ⭐</option>
+                  <option value="long">Long (15+ min)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Podcast Format */}
       <div>
         <label className="block text-sm font-semibold text-slate-300 mb-3">Podcast Format</label>
