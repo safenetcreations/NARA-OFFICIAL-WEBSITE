@@ -238,12 +238,103 @@ export const checkTranslationQuality = (original, translated, language) => {
 };
 
 /**
+ * Translate with LibreTranslate (FREE, No API key needed!)
+ */
+export const translateWithLibre = async (text, targetLang, sourceLang = 'auto') => {
+  try {
+    const response = await fetch('https://libretranslate.de/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        q: text,
+        source: sourceLang,
+        target: targetLang,
+        format: 'text'
+      })
+    });
+
+    const data = await response.json();
+    console.log(`✅ LibreTranslate to ${targetLang} successful (FREE)`);
+    return data.translatedText;
+  } catch (error) {
+    console.error('❌ LibreTranslate failed:', error);
+    return await translateWithGoogle(text, targetLang);
+  }
+};
+
+/**
+ * Translate entire book with progress tracking
+ */
+export const translateBook = async (bookContent, targetLang, onProgress) => {
+  const chunks = chunkText(bookContent, 4000); // 4000 chars per chunk
+  const translated = [];
+  
+  console.log(`📚 Translating book in ${chunks.length} chunks to ${targetLang}...`);
+
+  for (let i = 0; i < chunks.length; i++) {
+    try {
+      const translatedChunk = await translateWithLibre(chunks[i], targetLang);
+      translated.push(translatedChunk);
+      
+      if (onProgress) {
+        onProgress({
+          current: i + 1,
+          total: chunks.length,
+          percentage: Math.round(((i + 1) / chunks.length) * 100),
+          status: `Translating chunk ${i + 1}/${chunks.length}...`
+        });
+      }
+      
+      // Small delay to avoid rate limits
+      await new Promise(resolve => setTimeout(resolve, 500));
+    } catch (error) {
+      console.error(`❌ Failed to translate chunk ${i + 1}:`, error);
+      translated.push(chunks[i]); // Keep original if translation fails
+    }
+  }
+
+  return translated.join('\n\n');
+};
+
+/**
+ * Chunk text for translation
+ */
+const chunkText = (text, maxLength) => {
+  const paragraphs = text.split('\n\n');
+  const chunks = [];
+  let currentChunk = '';
+
+  for (const para of paragraphs) {
+    if ((currentChunk + para).length > maxLength) {
+      if (currentChunk) chunks.push(currentChunk);
+      currentChunk = para;
+    } else {
+      currentChunk += (currentChunk ? '\n\n' : '') + para;
+    }
+  }
+  
+  if (currentChunk) chunks.push(currentChunk);
+  return chunks;
+};
+
+/**
  * Get supported languages
  */
 export const getSupportedLanguages = () => [
   { code: 'en', name: 'English', nativeName: 'English' },
   { code: 'si', name: 'Sinhala', nativeName: 'සිංහල' },
-  { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்' }
+  { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்' },
+  { code: 'es', name: 'Spanish', nativeName: 'Español' },
+  { code: 'fr', name: 'French', nativeName: 'Français' },
+  { code: 'de', name: 'German', nativeName: 'Deutsch' },
+  { code: 'zh', name: 'Chinese', nativeName: '中文' },
+  { code: 'ja', name: 'Japanese', nativeName: '日本語' },
+  { code: 'ko', name: 'Korean', nativeName: '한국어' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
+  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
+  { code: 'pt', name: 'Portuguese', nativeName: 'Português' },
+  { code: 'ru', name: 'Russian', nativeName: 'Русский' },
+  { code: 'it', name: 'Italian', nativeName: 'Italiano' }
 ];
 
 /**
