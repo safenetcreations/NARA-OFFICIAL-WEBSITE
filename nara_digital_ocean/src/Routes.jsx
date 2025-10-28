@@ -83,6 +83,7 @@ const MaritimeDataAdmin = lazy(() => import('./pages/admin/MaritimeDataAdmin'));
 
 // Live Ocean Data
 const LiveOceanDataView = lazy(() => import('./pages/live-ocean-data/LiveOceanDataView'));
+const LiveVesselTracker = lazy(() => import('./components/LiveVesselTracker'));
 
 // Ocean Data Sources
 const StormglassMaritimePage = lazy(() => import('./pages/stormglass-maritime'));
@@ -125,6 +126,9 @@ const MarineIncidentAdmin = lazy(() => import('./pages/admin/MarineIncidentAdmin
 // Podcast System
 const PodcastsPage = lazy(() => import('./pages/podcasts'));
 const PodcastAdmin = lazy(() => import('./pages/admin/PodcastAdmin'));
+
+// AI API Configuration
+const AIAPIConfiguration = lazy(() => import('./pages/admin/AIAPIConfiguration'));
 
 // Aqua School Directory
 const AquaSchoolDirectory = lazy(() => import('./pages/aqua-school-directory'));
@@ -291,6 +295,7 @@ function Routes() {
               <Route path="/regional-impact-network" element={<RegionalImpactNetwork />} />
               <Route path="/marine-forecast" element={<MarineForecastPortal />} />
               <Route path="/live-ocean-data" element={<LiveOceanDataView />} />
+              <Route path="/live-vessel-tracking" element={<LiveVesselTracker />} />
               <Route path="/stormglass-maritime" element={<StormglassMaritimePage />} />
               <Route path="/nasa-ocean-color" element={<NASAOceanColorPage />} />
               <Route path="/weather-dashboard" element={<OpenWeatherDashboard />} />
@@ -457,6 +462,9 @@ function Routes() {
               {/* Podcast System Routes */}
               <Route path="/podcasts" element={<PodcastsPage />} />
               <Route path="/admin/podcasts" element={<PodcastAdmin />} />
+
+              {/* AI API Configuration Route */}
+              <Route path="/admin/ai-api-config" element={<AIAPIConfiguration />} />
 
               {/* Lab Results Portal Routes */}
               <Route path="/lab-results" element={<LabResultsPortal />} />
