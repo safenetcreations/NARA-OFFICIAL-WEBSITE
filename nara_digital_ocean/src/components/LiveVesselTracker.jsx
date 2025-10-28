@@ -396,39 +396,46 @@ const LiveVesselTracker = () => {
           }}
         />
         
-        {/* NARA Logo Marker - Center of Sri Lanka */}
+        {/* NARA Logo Marker - Center of Sri Lanka (Real Logo) */}
         <Marker
           position={sriLankaCenter}
           icon={L.divIcon({
             html: `
               <div style="
-                background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
-                border: 3px solid white;
+                background: white;
+                border: 3px solid #0891b2;
                 border-radius: 50%;
-                width: 60px;
-                height: 60px;
+                width: 80px;
+                height: 80px;
                 display: flex;
                 align-items: center;
-                justify-center;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                font-weight: bold;
-                color: white;
-                font-size: 16px;
-                font-family: 'Outfit', sans-serif;
-                text-align: center;
-                line-height: 1.2;
+                justify-content: center;
+                box-shadow: 0 6px 20px rgba(8, 145, 178, 0.4);
+                padding: 8px;
               ">
-                NARA<br>
-                <span style="font-size: 10px;">🇱🇰</span>
+                <img 
+                  src="/assets/nara-logo.png" 
+                  alt="NARA Logo" 
+                  style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                  "
+                />
               </div>
             `,
             className: 'nara-logo-marker',
-            iconSize: [60, 60],
-            iconAnchor: [30, 30]
+            iconSize: [80, 80],
+            iconAnchor: [40, 40]
           })}
         >
           <Popup>
-            <div className="p-3 text-center">
+            <div className="p-4 text-center">
+              <img 
+                src="/assets/nara-logo.png" 
+                alt="NARA Logo" 
+                className="w-20 h-20 mx-auto mb-3 object-contain"
+              />
               <div className="font-bold text-lg text-cyan-600">NARA</div>
               <div className="text-sm text-slate-600">National Aquatic Resources</div>
               <div className="text-sm text-slate-600">Research & Development Agency</div>
