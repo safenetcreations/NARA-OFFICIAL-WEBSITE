@@ -36,6 +36,55 @@ const VOICE_LIBRARY = {
 };
 
 /**
+ * Split text into chunks to avoid AWS Polly character limit
+ * @param {string} text - Text to split
+ * @param {number} maxLength - Maximum characters per chunk
+ * @returns {string[]} - Array of text chunks
+ */
+function splitTextIntoChunks(text, maxLength) {
+  if (text.length <= maxLength) {
+    return [text];
+  }
+
+  const chunks = [];
+  const sentences = text.split(/(?<=[.!?])\s+/); // Split on sentence boundaries
+  let currentChunk = '';
+
+  for (const sentence of sentences) {
+    // If single sentence is too long, split by paragraphs or force split
+    if (sentence.length > maxLength) {
+      if (currentChunk) {
+        chunks.push(currentChunk.trim());
+        currentChunk = '';
+      }
+      // Force split long sentence
+      for (let i = 0; i < sentence.length; i += maxLength) {
+        chunks.push(sentence.substring(i, i + maxLength));
+      }
+      continue;
+    }
+
+    // Add sentence to current chunk if it fits
+    if ((currentChunk + ' ' + sentence).length <= maxLength) {
+      currentChunk += (currentChunk ? ' ' : '') + sentence;
+    } else {
+      // Current chunk is full, start new one
+      if (currentChunk) {
+        chunks.push(currentChunk.trim());
+      }
+      currentChunk = sentence;
+    }
+  }
+
+  // Add remaining chunk
+  if (currentChunk) {
+    chunks.push(currentChunk.trim());
+  }
+
+  return chunks.filter(chunk => chunk.length > 0);
+}
+
+/**
  * Create AWS Polly client with credentials from Firebase
  */
 async function createPollyClient() {
@@ -637,34 +686,65 @@ export async function generateSingleVoicePodcast(podcastData, onProgress) {
 
     updateProgress('voice', 30, 'Generating AI voice...');
 
-    // Create SSML
-    const ssml = textToConversationalSSML(content);
+    // ========== FIX: Split content into chunks to avoid text length limit ==========
+    // AWS Polly limits: Standard=3000 chars, Neural=6000 chars
+    const MAX_CHARS = voiceConfig.engine === 'neural' ? 5000 : 2500; // Leave buffer
+    const contentChunks = splitTextIntoChunks(content, MAX_CHARS);
+    
+    console.log(`📝 Split content into ${contentChunks.length} chunks`);
+    
+    // Generate audio for each chunk
+    const audioBuffers = [];
+    
+    for (let i = 0; i < contentChunks.length; i++) {
+      updateProgress('rendering', 30 + (i / contentChunks.length) * 50, 
+        `Generating audio ${i + 1}/${contentChunks.length}...`);
+      
+      // Create SSML for this chunk
+      const ssml = textToConversationalSSML(contentChunks[i]);
+      
+      const command = new SynthesizeSpeechCommand({
+        Text: ssml,
+        TextType: 'ssml',
+        OutputFormat: 'mp3',
+        VoiceId: voiceConfig.voice,
+        Engine: voiceConfig.engine,
+        LanguageCode: 'en-US'
+      });
 
-    const command = new SynthesizeSpeechCommand({
-      Text: ssml,
-      TextType: 'ssml',
-      OutputFormat: 'mp3',
-      VoiceId: voiceConfig.voice,
-      Engine: voiceConfig.engine,
-      LanguageCode: 'en-US'
-    });
+      const response = await client.send(command);
 
-    const response = await client.send(command);
-
-    // Convert to buffer
-    updateProgress('rendering', 60, 'Processing audio...');
-    const chunks = [];
-    for await (const chunk of response.AudioStream) {
-      chunks.push(chunk);
+      // Convert to buffer
+      const chunks = [];
+      for await (const chunk of response.AudioStream) {
+        chunks.push(chunk);
+      }
+      
+      // Browser-compatible: Combine chunks
+      const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
+      const chunkBuffer = new Uint8Array(totalLength);
+      let offset = 0;
+      for (const chunk of chunks) {
+        chunkBuffer.set(chunk, offset);
+        offset += chunk.length;
+      }
+      
+      audioBuffers.push(chunkBuffer);
+      
+      console.log(`✅ Chunk ${i + 1}/${contentChunks.length} generated`);
     }
-    // Browser-compatible: Combine chunks
-    const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
+    
+    // Merge all audio buffers
+    updateProgress('rendering', 80, 'Merging audio segments...');
+    const totalLength = audioBuffers.reduce((acc, buf) => acc + buf.length, 0);
     const audioBuffer = new Uint8Array(totalLength);
-    let offset = 0;
-    for (const chunk of chunks) {
-      audioBuffer.set(chunk, offset);
-      offset += chunk.length;
+    let bufferOffset = 0;
+    for (const buf of audioBuffers) {
+      audioBuffer.set(buf, bufferOffset);
+      bufferOffset += buf.length;
     }
+    
+    console.log(`✅ Merged ${audioBuffers.length} audio segments`);
 
     // Upload
     updateProgress('upload', 80, 'Uploading to cloud...');
