@@ -7,6 +7,7 @@ import AdvancedFilters from '../../components/lab-results/AdvancedFilters';
 import BulkActionsToolbar from '../../components/lab-results/BulkActionsToolbar';
 import ResultQRCode from '../../components/lab-results/ResultQRCode';
 import { exportResultsToExcel, exportSingleResultToExcel } from '../../utils/labResultsExport';
+import { exportLabResultToPDF, exportMultipleResultsToPDF } from '../../utils/labResultsPDFExport';
 import MonthlyTrendsChart from '../../components/lab-results/charts/MonthlyTrendsChart';
 import TestTypeDistributionChart from '../../components/lab-results/charts/TestTypeDistributionChart';
 import ProcessingTimeChart from '../../components/lab-results/charts/ProcessingTimeChart';
@@ -148,9 +149,33 @@ const LabResultsPortal = () => {
     }
   };
 
-  const handleBulkDownload = () => {
-    alert('📥 Bulk PDF download feature coming soon!');
-    // TODO: Implement bulk PDF download
+  const handleBulkDownload = async () => {
+    const selectedData = results.filter(r => selectedResults.includes(r.id));
+    
+    if (selectedData.length === 0) {
+      alert('⚠️ No results selected');
+      return;
+    }
+
+    if (selectedData.length === 1) {
+      // Single result - detailed PDF
+      const result = await exportLabResultToPDF(selectedData[0]);
+      if (result.success) {
+        alert(`✅ PDF downloaded: ${result.filename}`);
+        clearSelection();
+      } else {
+        alert(`❌ PDF generation failed: ${result.error}`);
+      }
+    } else {
+      // Multiple results - combined PDF
+      const result = await exportMultipleResultsToPDF(selectedData);
+      if (result.success) {
+        alert(`✅ Combined PDF downloaded: ${result.filename}\n${result.resultCount} results included`);
+        clearSelection();
+      } else {
+        alert(`❌ PDF generation failed: ${result.error}`);
+      }
+    }
   };
 
   const showQRCodeModal = (resultId) => {
@@ -711,6 +736,13 @@ const LabResultsPortal = () => {
                                   title="Show QR Code"
                                 >
                                   <Icons.QrCode size={18} />
+                                </button>
+                                <button
+                                  onClick={() => exportLabResultToPDF(result)}
+                                  className="p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-all"
+                                  title="Export to PDF"
+                                >
+                                  <Icons.FileText size={18} />
                                 </button>
                                 <button
                                   onClick={() => exportSingleResultToExcel(result, 'Lab_Result')}

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { podcastService, podcastAnalyticsService } from '../../services/podcastService';
 import * as Icons from 'lucide-react';
+import AIPodcastGenerator from './AIPodcastGenerator';
 
 const PodcastsPage = () => {
   const { t, i18n } = useTranslation('common');
@@ -19,6 +20,7 @@ const PodcastsPage = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const videoRef = React.useRef(null);
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
 
   const availableLanguages = [
     { code: 'en', label: 'English', flag: '🇬🇧' },
@@ -689,8 +691,88 @@ const PodcastsPage = () => {
               </button>
             </div>
           </motion.form>
+
+          {/* AI Podcast Generator Button */}
+          <motion.div
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="mt-8 max-w-4xl mx-auto"
+          >
+            <div className="bg-gradient-to-r from-purple-900/50 via-pink-900/50 to-purple-900/50 backdrop-blur-xl rounded-3xl border-2 border-purple-500/30 p-8 shadow-2xl">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="text-center md:text-left">
+                  <div className="flex items-center gap-3 justify-center md:justify-start mb-3">
+                    <Icons.Sparkles className="w-8 h-8 text-purple-400 animate-pulse" />
+                    <h3 className="text-3xl font-bold text-white">AI Podcast Generator</h3>
+                  </div>
+                  <p className="text-purple-200 text-lg mb-2">
+                    Create professional video podcasts from your content
+                  </p>
+                  <p className="text-purple-300 text-sm">
+                    Write, upload documents, or paste notes - AI will transform it into an engaging podcast
+                  </p>
+                </div>
+                <motion.button
+                  onClick={() => setShowAIGenerator(true)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 hover:from-purple-600 hover:via-pink-600 hover:to-purple-600 rounded-2xl text-white font-bold text-lg shadow-lg shadow-purple-500/50 hover:shadow-purple-500/70 transition-all flex items-center gap-3 whitespace-nowrap"
+                >
+                  <Icons.Wand2 className="w-6 h-6" />
+                  Create AI Podcast
+                  <Icons.ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </div>
+
+              {/* Features List */}
+              <div className="grid md:grid-cols-3 gap-4 mt-6 pt-6 border-t border-purple-500/30">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                    <Icons.FileText className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold text-sm">Multi-Source</p>
+                    <p className="text-purple-300 text-xs">Text, docs, or paste</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-pink-500/20 flex items-center justify-center">
+                    <Icons.Mic className="w-5 h-5 text-pink-400" />
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold text-sm">AI Narration</p>
+                    <p className="text-purple-300 text-xs">Professional voices</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                    <Icons.Video className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold text-sm">Video Output</p>
+                    <p className="text-purple-300 text-xs">Ready to publish</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </motion.section>
+
+      {/* AI Podcast Generator Modal */}
+      <AnimatePresence>
+        {showAIGenerator && (
+          <AIPodcastGenerator
+            onClose={() => setShowAIGenerator(false)}
+            onGenerate={(podcast) => {
+              console.log('Generated podcast:', podcast);
+              setShowAIGenerator(false);
+              // Optionally add to podcasts list
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Category Filter Tiles */}
       <section className="relative py-12 px-4">
