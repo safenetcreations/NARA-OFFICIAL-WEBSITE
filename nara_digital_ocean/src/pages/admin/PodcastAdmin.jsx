@@ -7,6 +7,7 @@ import { Timestamp } from 'firebase/firestore';
 import { storage } from '../../config/firebase';
 
 const PodcastAnalyticsDashboard = lazy(() => import('./PodcastAnalyticsDashboard'));
+const EnhancedAIPodcastGenerator = lazy(() => import('../podcasts/EnhancedAIPodcastGenerator'));
 
 const PodcastAdmin = () => {
   const [podcasts, setPodcasts] = useState([]);
@@ -18,6 +19,8 @@ const PodcastAdmin = () => {
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [videoFile, setVideoFile] = useState(null);
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
+  const [viewMode, setViewMode] = useState('list'); // 'list', 'compact', 'grid'
 
   const [formData, setFormData] = useState({
     title: { en: '', si: '', ta: '' },
@@ -323,6 +326,13 @@ const PodcastAdmin = () => {
     setShowForm(false);
   };
 
+  const handleAIGenerate = async (result) => {
+    // Refresh podcast list after AI generation
+    await loadPodcasts();
+    await loadStatistics();
+    setShowAIGenerator(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 p-8">
       <div className="max-w-7xl mx-auto">
@@ -428,18 +438,68 @@ const PodcastAdmin = () => {
           </div>
         )}
 
-        {/* Add New Button */}
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setShowForm(!showForm)}
-          className="mb-8 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-2xl font-bold shadow-lg hover:shadow-cyan-500/50 transition-all flex items-center gap-3"
-        >
-          <Icons.Plus className="w-6 h-6" />
-          {showForm ? 'Close Form' : 'Add New Podcast'}
-        </motion.button>
+        {/* Add New Button, AI Generator Button & View Toggle */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex gap-4">
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowForm(!showForm)}
+            className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-2xl font-bold shadow-lg hover:shadow-cyan-500/50 transition-all flex items-center gap-3"
+          >
+            <Icons.Plus className="w-6 h-6" />
+            {showForm ? 'Close Form' : 'Add New Podcast'}
+          </motion.button>
+
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowAIGenerator(true)}
+            className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl font-bold shadow-lg hover:shadow-purple-500/50 transition-all flex items-center gap-3"
+          >
+            <Icons.Sparkles className="w-6 h-6" />
+            AI Podcast Generator
+          </motion.button>
+          </div>
+
+          {/* View Mode Toggle */}
+          <div className="flex items-center gap-2 bg-white/10 backdrop-blur-lg rounded-xl p-1 border border-white/20">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+                viewMode === 'list' ? 'bg-cyan-500 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+              title="List View"
+            >
+              <Icons.List className="w-4 h-4" />
+              List
+            </button>
+            <button
+              onClick={() => setViewMode('compact')}
+              className={`px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+                viewMode === 'compact' ? 'bg-cyan-500 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+              title="Compact View"
+            >
+              <Icons.AlignJustify className="w-4 h-4" />
+              Compact
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+                viewMode === 'grid' ? 'bg-cyan-500 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+              title="Grid View"
+            >
+              <Icons.Grid3x3 className="w-4 h-4" />
+              Grid
+            </button>
+          </div>
+        </div>
 
         {/* Form */}
         <AnimatePresence>
@@ -782,7 +842,159 @@ const PodcastAdmin = () => {
                 <Icons.Radio className="w-12 h-12 text-cyan-400" />
               </motion.div>
             </div>
+          ) : viewMode === 'compact' ? (
+            // COMPACT TABLE VIEW
+            <div className="bg-white/5 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/20">
+              <table className="w-full">
+                <thead className="bg-white/10">
+                  <tr className="border-b border-white/20">
+                    <th className="text-left p-3 text-white font-semibold text-sm">Title</th>
+                    <th className="text-left p-3 text-white font-semibold text-sm">Category</th>
+                    <th className="text-center p-3 text-white font-semibold text-sm">Views</th>
+                    <th className="text-center p-3 text-white font-semibold text-sm">Likes</th>
+                    <th className="text-center p-3 text-white font-semibold text-sm">Status</th>
+                    <th className="text-center p-3 text-white font-semibold text-sm">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {podcasts.map((podcast) => (
+                    <motion.tr
+                      key={podcast.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="border-b border-white/10 hover:bg-white/5 transition-colors"
+                    >
+                      <td className="p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-16 h-10 rounded-lg overflow-hidden bg-slate-900 flex-shrink-0">
+                            {podcast.youtubeId ? (
+                              <img
+                                src={`https://img.youtube.com/vi/${podcast.youtubeId}/mqdefault.jpg`}
+                                alt={podcast.title?.en}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <Icons.Radio className="w-4 h-4 text-slate-700" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-semibold text-sm truncate">{podcast.title?.en}</p>
+                            <p className="text-slate-400 text-xs truncate">{podcast.description?.en}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <span className="text-slate-300 text-sm">{podcast.category}</span>
+                      </td>
+                      <td className="p-3 text-center">
+                        <span className="text-slate-300 text-sm">{podcast.views || 0}</span>
+                      </td>
+                      <td className="p-3 text-center">
+                        <span className="text-slate-300 text-sm">{podcast.likes || 0}</span>
+                      </td>
+                      <td className="p-3 text-center">
+                        <span className={`px-2 py-1 text-xs font-bold rounded-full ${
+                          podcast.status === 'published'
+                            ? 'bg-green-500/20 text-green-400'
+                            : 'bg-slate-500/20 text-slate-400'
+                        }`}>
+                          {podcast.status?.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => handleEdit(podcast)}
+                            className="p-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-all"
+                            title="Edit"
+                          >
+                            <Icons.Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(podcast.id)}
+                            className="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-all"
+                            title="Delete"
+                          >
+                            <Icons.Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : viewMode === 'grid' ? (
+            // SMALL GRID VIEW
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {podcasts.map((podcast) => (
+                <motion.div
+                  key={podcast.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-white/10 backdrop-blur-lg rounded-xl overflow-hidden border border-white/20 hover:border-cyan-400/50 transition-all"
+                >
+                  {/* Thumbnail */}
+                  <div className="w-full h-32 bg-slate-900">
+                    {podcast.youtubeId ? (
+                      <img
+                        src={`https://img.youtube.com/vi/${podcast.youtubeId}/mqdefault.jpg`}
+                        alt={podcast.title?.en}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Icons.Radio className="w-12 h-12 text-slate-700" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="p-4">
+                    <h3 className="text-white font-bold text-sm mb-1 truncate">
+                      {podcast.title?.en}
+                    </h3>
+                    <p className="text-slate-400 text-xs mb-3 line-clamp-2">
+                      {podcast.description?.en}
+                    </p>
+                    
+                    {/* Stats */}
+                    <div className="flex items-center gap-3 text-xs text-slate-400 mb-3">
+                      <span className="flex items-center gap-1">
+                        <Icons.Eye className="w-3 h-3" />
+                        {podcast.views || 0}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Icons.Heart className="w-3 h-3" />
+                        {podcast.likes || 0}
+                      </span>
+                    </div>
+                    
+                    {/* Actions */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(podcast)}
+                        className="flex-1 px-3 py-2 bg-blue-500/20 text-blue-400 rounded-lg text-xs font-semibold hover:bg-blue-500/30 transition-all flex items-center justify-center gap-1"
+                      >
+                        <Icons.Edit className="w-3 h-3" />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(podcast.id)}
+                        className="flex-1 px-3 py-2 bg-red-500/20 text-red-400 rounded-lg text-xs font-semibold hover:bg-red-500/30 transition-all flex items-center justify-center gap-1"
+                      >
+                        <Icons.Trash2 className="w-3 h-3" />
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           ) : (
+            // DEFAULT LIST VIEW
             <div className="grid gap-4">
               {podcasts.map((podcast) => (
                 <motion.div
@@ -892,6 +1104,29 @@ const PodcastAdmin = () => {
         </div>
         </>
         )}
+
+        {/* AI Podcast Generator Modal */}
+        <AnimatePresence>
+          {showAIGenerator && (
+            <Suspense fallback={
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-gradient-to-br from-slate-900 to-slate-950 p-8 rounded-3xl border border-white/20"
+                >
+                  <Icons.Loader className="w-12 h-12 text-cyan-400 animate-spin mx-auto" />
+                  <p className="text-white mt-4">Loading AI Podcast Generator...</p>
+                </motion.div>
+              </div>
+            }>
+              <EnhancedAIPodcastGenerator
+                onClose={() => setShowAIGenerator(false)}
+                onGenerate={handleAIGenerate}
+              />
+            </Suspense>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
