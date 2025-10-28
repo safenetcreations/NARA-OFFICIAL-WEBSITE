@@ -6,8 +6,11 @@ import {
   Plus, Loader, Ship, Anchor, Factory, Building, XCircle, Clock,
   TrendingUp, Sparkles, ArrowUpRight, Search, Filter, Download,
   Eye, ChevronRight, Zap, Target, Shield, Globe, Network, Scale,
-  FileCheck, Bell, Calendar, MapPin, Phone, Mail, ExternalLink
+  FileCheck, Bell, Calendar, MapPin, Phone, Mail, ExternalLink,
+  Map, Waves
 } from 'lucide-react';
+import NauticalChartsSection from '../../components/government-services/NauticalChartsSection';
+import HydrographicSurveySection from '../../components/government-services/HydrographicSurveySection';
 import { useFirebaseAuth } from '../../contexts/FirebaseAuthContext';
 import {
   eiaService,
@@ -111,6 +114,20 @@ const GovernmentServicesPortal = () => {
       icon: Users,
       color: 'from-amber-400 to-yellow-600',
       count: workspaces.length
+    },
+    {
+      id: 'nautical-charts',
+      name: { en: 'Nautical Charts', si: 'නාවික සිතියම්', ta: 'கடல் வரைபடங்கள்' },
+      icon: Map,
+      color: 'from-blue-400 to-cyan-600',
+      count: null
+    },
+    {
+      id: 'hydrographic-survey',
+      name: { en: 'Hydrographic Surveys', si: 'ජල විද්‍යාත්මක සමීක්ෂණ', ta: 'நீர்வியல் ஆய்வுகள்' },
+      icon: Waves,
+      color: 'from-purple-400 to-pink-600',
+      count: null
     }
   ], [stats, workspaces, currentLang]);
 
@@ -982,6 +999,8 @@ const GovernmentServicesPortal = () => {
           {activeSection === 'compliance' && <div key="compliance">{renderCompliance()}</div>}
           {activeSection === 'emergency' && <div key="emergency">{renderEmergency()}</div>}
           {activeSection === 'collaboration' && <div key="collaboration">{renderCollaboration()}</div>}
+          {activeSection === 'nautical-charts' && <div key="nautical-charts"><NauticalChartsSection /></div>}
+          {activeSection === 'hydrographic-survey' && <div key="hydrographic-survey"><HydrographicSurveySection /></div>}
         </AnimatePresence>
       </section>
     </div>
