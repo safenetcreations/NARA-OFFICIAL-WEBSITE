@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Icon from '../AppIcon';
 import Button from './Button';
 import useThemeStore from '../../store/theme';
 
 const Header = ({ className = '' }) => {
+  const { t } = useTranslation('errors');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -269,11 +271,11 @@ const Header = ({ className = '' }) => {
               <button
                 onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/'); }}
                 className="px-2 py-1.5 rounded-lg hover:bg-slate-100 text-slate-700 border border-slate-200 inline-flex items-center"
-                aria-label="Go back"
-                title="Back"
+                aria-label={t('goBack')}
+                title={t('back')}
               >
                 <Icon name="ArrowLeft" size={16} className="mr-1" />
-                <span className="hidden sm:inline text-sm">Back</span>
+                <span className="hidden sm:inline text-sm">{t('back')}</span>
               </button>
 
               <Link

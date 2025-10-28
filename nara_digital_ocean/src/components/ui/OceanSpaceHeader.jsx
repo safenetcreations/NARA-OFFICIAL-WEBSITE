@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as Icons from 'lucide-react';
 
 const OceanSpaceHeader = () => {
+  const { t } = useTranslation('errors');
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeMenu, setActiveMenu] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -123,11 +125,11 @@ const OceanSpaceHeader = () => {
               <button
                 onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/'); }}
                 className="px-3 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 inline-flex items-center"
-                aria-label="Go back"
-                title="Back"
+                aria-label={t('goBack')}
+                title={t('back')}
               >
                 <Icons.ArrowLeft className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Back</span>
+                <span className="hidden sm:inline">{t('back')}</span>
               </button>
 
               <Link to="/" className="flex items-center space-x-4 group">

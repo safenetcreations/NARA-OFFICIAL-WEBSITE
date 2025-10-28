@@ -1,0 +1,134 @@
+{
+  "title": "Marine Spatial Planning Viewer",
+  "subtitle": "A powerful tool for planning and managing ocean space usage",
+  "loadingMessage": "Loading Marine Spatial Planning Data...",
+
+  "navigation": {
+    "userGuide": "User Guide",
+    "help": "Help",
+    "planningMap": "Planning Map",
+    "map": "Map"
+  },
+
+  "guide": {
+    "whatIsTitle": "What is Marine Spatial Planning?",
+    "whatIsDescription": "Marine Spatial Planning (MSP) is a practical way to organize human activities in marine areas. This viewer allows you to:",
+    "benefit1": "Plan marine zones",
+    "benefit1Desc": "Define areas for fishing, shipping, conservation, and other activities",
+    "benefit2": "Avoid conflicts",
+    "benefit2Desc": "Prevent overlapping uses that could cause problems",
+    "benefit3": "Visualize proposals",
+    "benefit3Desc": "Draw and save zone boundaries on an interactive map",
+    "benefit4": "Measure areas",
+    "benefit4Desc": "Calculate sizes and distances for planning purposes",
+
+    "howToUseTitle": "How to Use This Tool",
+
+    "drawingToolsTitle": "Drawing Tools",
+    "polygonDesc": "Click points, double-click to finish",
+    "rectangleDesc": "Click two opposite corners",
+    "circleDesc": "Click to place center point",
+
+    "templatesTitle": "Quick Templates",
+    "templatesDesc": "Use pre-made zone templates for common scenarios:",
+    "fishingZones": "Fishing zones",
+    "protectedAreas": "Protected marine areas",
+    "shippingCorridors": "Shipping corridors",
+    "anchorageZones": "Anchorage zones",
+    "aquacultureGrids": "Aquaculture grids",
+
+    "measurementsTitle": "Measurements",
+    "measurementsDesc": "Calculate area and perimeter of zones. Areas are shown in square kilometers (km²).",
+
+    "saveTitle": "Save Your Work",
+    "saveDesc": "Download your drawings as JSON files to share with colleagues or continue editing later.",
+
+    "zoneTypesTitle": "Available Zone Types",
+
+    "maximizingTitle": "Maximizing This Tool",
+    "planningWorkflows": "Planning Workflows",
+    "planningWorkflowsDesc": "Start with templates, customize sizes, then combine multiple zones to create comprehensive marine plans",
+    "collaboration": "Collaboration",
+    "collaborationDesc": "Export your zones as JSON and share with stakeholders for review and discussion",
+    "undoRedo": "Undo/Redo",
+    "undoRedoDesc": "Experiment freely - use Undo/Redo to step through changes and find the best layout",
+
+    "getStarted": "Start Planning Marine Zones →",
+    "clickOutside": "Click anywhere outside this guide to start using the tool"
+  },
+
+  "toolbar": {
+    "drawingTools": "Drawing Tools",
+    "drawPolygon": "Draw Polygon",
+    "draw": "Draw",
+    "drawRectangle": "Draw Rectangle",
+    "rectangle": "Rectangle",
+    "drawCircle": "Draw Circle",
+    "circle": "Circle",
+    "measureArea": "Measure Area",
+    "measure": "Measure",
+    "zoneTemplates": "Zone Templates",
+    "templates": "Templates",
+    "clearDrawing": "Clear Drawing",
+    "clear": "Clear",
+    "undo": "Undo",
+    "redo": "Redo",
+    "saveDrawing": "Save Drawing",
+    "shapesCount": "shapes",
+    "drawingMode": "Drawing Mode",
+    "polygonInstructions": "Click to add points, double-click to finish",
+    "rectangleInstructions": "Click two opposite corners",
+    "circleInstructions": "Click to place circle",
+    "cancelDrawing": "Cancel Drawing",
+    "drawnShapes": "Drawn Shapes",
+    "deleteShape": "Delete shape"
+  },
+
+  "presets": {
+    "standardFishingZone": "Standard Fishing Zone",
+    "standardFishingZoneDesc": "5km² fishing area template",
+    "circularProtectedArea": "Circular Protected Area",
+    "circularProtectedAreaDesc": "Circular marine sanctuary",
+    "shippingCorridor": "Shipping Corridor",
+    "shippingCorridorDesc": "Standard shipping lane",
+    "anchorageZone": "Anchorage Zone",
+    "anchorageZoneDesc": "Circular anchorage area",
+    "aquacultureGrid": "Aquaculture Grid",
+    "aquacultureGridDesc": "Fish farming area",
+    "tip": "Tip:",
+    "tipText": "Click any template to add it to the map at the center of your view. You can then adjust its position and size."
+  },
+
+  "zoneTypes": {
+    "fishingZone": "Fishing Zone",
+    "protectedArea": "Protected Area",
+    "shippingLane": "Shipping Lane",
+    "anchorage": "Anchorage",
+    "militaryZone": "Military Zone",
+    "oilExploration": "Oil Exploration",
+    "aquaculture": "Aquaculture"
+  },
+
+  "help": {
+    "quickHelp": "Quick Help",
+    "polygon": "Polygon:",
+    "polygonHelp": "Click points, double-click to finish",
+    "rectangle": "Rectangle:",
+    "rectangleHelp": "Click two opposite corners",
+    "circle": "Circle:",
+    "circleHelp": "Click center point",
+    "templates": "Templates:",
+    "templatesHelp": "One-click preset zones",
+    "undoRedo": "Undo/Redo:",
+    "undoRedoHelp": "Step through changes",
+    "save": "Save:",
+    "saveHelp": "Download your drawing as JSON"
+  },
+
+  "popup": {
+    "type": "Type:",
+    "area": "Area:",
+    "radius": "Radius:",
+    "deleteShapeButton": "Delete Shape"
+  }
+}

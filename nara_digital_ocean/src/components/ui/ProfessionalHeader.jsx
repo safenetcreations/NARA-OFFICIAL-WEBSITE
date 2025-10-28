@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Icon from '../AppIcon';
 import Button from './Button';
 
 const ProfessionalHeader = ({ className = '' }) => {
+  const { t } = useTranslation('accessibility');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -627,7 +629,7 @@ const ProfessionalHeader = ({ className = '' }) => {
 
       {/* Accessibility Skip Links */}
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-20 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded">
-        Skip to main content
+        {t('skipToMain')}
       </a>
     </>
   );

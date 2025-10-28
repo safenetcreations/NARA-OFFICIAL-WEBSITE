@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as Icons from 'lucide-react';
 import { labResultsService, sampleTrackingService, labResultsDashboardService } from '../../services/labResultsService';
+import AdvancedFilters from '../../components/lab-results/AdvancedFilters';
 
 const LabResultsPortal = () => {
   const { t, i18n } = useTranslation('labResults');
@@ -19,6 +20,7 @@ const LabResultsPortal = () => {
   const [selectedResult, setSelectedResult] = useState(null);
   const [selectedSample, setSelectedSample] = useState(null);
   const [trackingId, setTrackingId] = useState('');
+  const [advancedFilters, setAdvancedFilters] = useState(null);
 
   // Load Dashboard Data
   useEffect(() => {
@@ -89,8 +91,20 @@ const LabResultsPortal = () => {
     }
   };
 
-  // Filter Results
+  // Handle Advanced Filters
+  const handleAdvancedFilterChange = (filters) => {
+    setAdvancedFilters(filters);
+  };
+
+  const handleClearAdvancedFilters = () => {
+    setAdvancedFilters(null);
+    setSearchQuery('');
+    setStatusFilter('all');
+  };
+
+  // Filter Results with Advanced Filters
   const filteredResults = results.filter(result => {
+    // Basic search
     const matchesSearch = searchQuery === '' ||
       result.testType?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       result.sampleType?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -98,7 +112,58 @@ const LabResultsPortal = () => {
 
     const matchesStatus = statusFilter === 'all' || result.status === statusFilter;
 
+    // Advanced filters
+    if (advancedFilters) {
+      // Date range filter
+      if (advancedFilters.dateFrom && result.createdAt) {
+        const resultDate = new Date(result.createdAt);
+        if (resultDate < advancedFilters.dateFrom) return false;
+      }
+      if (advancedFilters.dateTo && result.createdAt) {
+        const resultDate = new Date(result.createdAt);
+        const endOfDay = new Date(advancedFilters.dateTo);
+        endOfDay.setHours(23, 59, 59, 999);
+        if (resultDate > endOfDay) return false;
+      }
+
+      // Status multi-select filter
+      if (advancedFilters.statuses && advancedFilters.statuses.length > 0) {
+        const statusValues = advancedFilters.statuses.map(s => s.value);
+        if (!statusValues.includes(result.status)) return false;
+      }
+
+      // Test type filter
+      if (advancedFilters.testTypes && advancedFilters.testTypes.length > 0) {
+        const testTypeValues = advancedFilters.testTypes.map(t => t.value);
+        if (!testTypeValues.includes(result.testType)) return false;
+      }
+
+      // Sample type filter
+      if (advancedFilters.sampleTypes && advancedFilters.sampleTypes.length > 0) {
+        const sampleTypeValues = advancedFilters.sampleTypes.map(s => s.value);
+        if (!sampleTypeValues.includes(result.sampleType)) return false;
+      }
+    }
+
     return matchesSearch && matchesStatus;
+  }).sort((a, b) => {
+    // Sorting logic
+    if (!advancedFilters || !advancedFilters.sortBy) {
+      return new Date(b.createdAt) - new Date(a.createdAt); // Default: newest first
+    }
+
+    switch (advancedFilters.sortBy) {
+      case 'date-desc':
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      case 'date-asc':
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      case 'status-asc':
+        return (a.status || '').localeCompare(b.status || '');
+      case 'type-asc':
+        return (a.testType || '').localeCompare(b.testType || '');
+      default:
+        return 0;
+    }
   });
 
   // Filter Samples
@@ -445,6 +510,12 @@ const LabResultsPortal = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Advanced Filters Component */}
+              <AdvancedFilters
+                onFilterChange={handleAdvancedFilterChange}
+                onClear={handleClearAdvancedFilters}
+              />
 
               {/* Results List */}
               {loading ? (

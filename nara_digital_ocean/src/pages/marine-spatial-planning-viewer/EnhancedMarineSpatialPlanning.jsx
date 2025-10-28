@@ -45,6 +45,7 @@ const EnhancedMarineSpatialPlanning = () => {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showIntroGuide, setShowIntroGuide] = useState(true);
 
   // NEW: Drawing and editing state
   const [drawingMode, setDrawingMode] = useState(null); // 'polygon', 'rectangle', 'circle', null
@@ -410,9 +411,225 @@ const EnhancedMarineSpatialPlanning = () => {
   const renderEnhancedMap = () => {
     return (
       <div className="h-screen bg-slate-900 relative">
+        {/* Intro Guide Modal */}
+        <AnimatePresence>
+          {showIntroGuide && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/70 z-[2000] flex items-center justify-center p-4"
+              onClick={() => setShowIntroGuide(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-2xl shadow-2xl max-w-4xl max-h-[90vh] overflow-y-auto"
+              >
+                {/* Header */}
+                <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-6 rounded-t-2xl">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-3xl font-bold flex items-center gap-3">
+                      <Map className="w-10 h-10" />
+                      Marine Spatial Planning Viewer
+                    </h2>
+                    <button
+                      onClick={() => setShowIntroGuide(false)}
+                      className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                    >
+                      <span className="text-2xl">✕</span>
+                    </button>
+                  </div>
+                  <p className="text-blue-100 text-lg">
+                    A powerful tool for planning and managing ocean space usage
+                  </p>
+                </div>
+
+                {/* Content */}
+                <div className="p-6 space-y-6">
+                  {/* What is this? */}
+                  <section>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-3 flex items-center gap-2">
+                      <Info className="w-6 h-6 text-blue-600" />
+                      What is Marine Spatial Planning?
+                    </h3>
+                    <p className="text-slate-700 leading-relaxed mb-4">
+                      Marine Spatial Planning (MSP) is a practical way to organize human activities in marine areas.
+                      This viewer allows you to:
+                    </p>
+                    <ul className="space-y-2 text-slate-700">
+                      <li className="flex items-start gap-3">
+                        <span className="text-blue-600 font-bold">•</span>
+                        <span><strong>Plan marine zones</strong> - Define areas for fishing, shipping, conservation, and other activities</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-green-600 font-bold">•</span>
+                        <span><strong>Avoid conflicts</strong> - Prevent overlapping uses that could cause problems</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-purple-600 font-bold">•</span>
+                        <span><strong>Visualize proposals</strong> - Draw and save zone boundaries on an interactive map</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-orange-600 font-bold">•</span>
+                        <span><strong>Measure areas</strong> - Calculate sizes and distances for planning purposes</span>
+                      </li>
+                    </ul>
+                  </section>
+
+                  {/* How to Use */}
+                  <section className="bg-blue-50 p-6 rounded-xl">
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                      <Edit3 className="w-6 h-6 text-blue-600" />
+                      How to Use This Tool
+                    </h3>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {/* Drawing Tools */}
+                      <div className="bg-white p-4 rounded-lg">
+                        <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                          <Pentagon className="w-5 h-5 text-blue-600" />
+                          Drawing Tools
+                        </h4>
+                        <ul className="space-y-2 text-sm text-slate-700">
+                          <li className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center text-white text-xs">1</div>
+                            <span><strong>Polygon:</strong> Click points, double-click to finish</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-purple-600 rounded flex items-center justify-center text-white text-xs">2</div>
+                            <span><strong>Rectangle:</strong> Click two opposite corners</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-green-600 rounded flex items-center justify-center text-white text-xs">3</div>
+                            <span><strong>Circle:</strong> Click to place center point</span>
+                          </li>
+                        </ul>
+                      </div>
+
+                      {/* Zone Templates */}
+                      <div className="bg-white p-4 rounded-lg">
+                        <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                          <Target className="w-5 h-5 text-pink-600" />
+                          Quick Templates
+                        </h4>
+                        <p className="text-sm text-slate-700 mb-2">
+                          Use pre-made zone templates for common scenarios:
+                        </p>
+                        <ul className="space-y-1 text-sm text-slate-700">
+                          <li>• Fishing zones</li>
+                          <li>• Protected marine areas</li>
+                          <li>• Shipping corridors</li>
+                          <li>• Anchorage zones</li>
+                          <li>• Aquaculture grids</li>
+                        </ul>
+                      </div>
+
+                      {/* Measurement Tools */}
+                      <div className="bg-white p-4 rounded-lg">
+                        <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                          <Ruler className="w-5 h-5 text-orange-600" />
+                          Measurements
+                        </h4>
+                        <p className="text-sm text-slate-700">
+                          Calculate area and perimeter of zones. Areas are shown in square kilometers (km²).
+                        </p>
+                      </div>
+
+                      {/* Saving & Export */}
+                      <div className="bg-white p-4 rounded-lg">
+                        <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                          <Save className="w-5 h-5 text-green-600" />
+                          Save Your Work
+                        </h4>
+                        <p className="text-sm text-slate-700">
+                          Download your drawings as JSON files to share with colleagues or continue editing later.
+                        </p>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Zone Types */}
+                  <section>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                      <Layers className="w-6 h-6 text-blue-600" />
+                      Available Zone Types
+                    </h3>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {Object.entries(zoneTypeConfig).map(([key, config]) => {
+                        const IconComponent = config.icon;
+                        return (
+                          <div key={key} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                            <div
+                              className="w-12 h-12 rounded-lg flex items-center justify-center"
+                              style={{ backgroundColor: config.color + '22' }}
+                            >
+                              <IconComponent className="w-6 h-6" style={{ color: config.color }} />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-slate-900">{config.label}</h4>
+                              <div
+                                className="w-16 h-1 rounded-full mt-1"
+                                style={{ backgroundColor: config.color }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </section>
+
+                  {/* Maximizing Usage */}
+                  <section className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl">
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                      <Maximize2 className="w-6 h-6 text-green-600" />
+                      Maximizing This Tool
+                    </h3>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div className="bg-white p-4 rounded-lg">
+                        <h4 className="font-bold text-green-700 mb-2">Planning Workflows</h4>
+                        <p className="text-sm text-slate-700">
+                          Start with templates, customize sizes, then combine multiple zones to create comprehensive marine plans
+                        </p>
+                      </div>
+                      <div className="bg-white p-4 rounded-lg">
+                        <h4 className="font-bold text-blue-700 mb-2">Collaboration</h4>
+                        <p className="text-sm text-slate-700">
+                          Export your zones as JSON and share with stakeholders for review and discussion
+                        </p>
+                      </div>
+                      <div className="bg-white p-4 rounded-lg">
+                        <h4 className="font-bold text-purple-700 mb-2">Undo/Redo</h4>
+                        <p className="text-sm text-slate-700">
+                          Experiment freely - use Undo/Redo to step through changes and find the best layout
+                        </p>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Get Started Button */}
+                  <div className="text-center pt-4">
+                    <button
+                      onClick={() => setShowIntroGuide(false)}
+                      className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-bold text-lg hover:from-blue-700 hover:to-cyan-700 transform hover:scale-105 transition-all shadow-lg"
+                    >
+                      Start Planning Marine Zones →
+                    </button>
+                    <p className="text-sm text-slate-500 mt-3">
+                      Click anywhere outside this guide to start using the tool
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Enhanced Drawing Toolbar */}
-        <div className="absolute top-4 left-4 z-[1000] bg-white/95 backdrop-blur-lg rounded-xl p-4 shadow-2xl max-w-xs">
-          <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+        <div className="absolute top-4 left-4 z-[1000] bg-white backdrop-blur-lg rounded-xl p-4 shadow-2xl max-w-xs border-2 border-blue-200">
+          <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-slate-900">
             <Edit3 className="w-5 h-5 text-blue-600" />
             Drawing Tools
           </h3>
@@ -423,11 +640,11 @@ const EnhancedMarineSpatialPlanning = () => {
               <button
                 key={action.id}
                 onClick={action.action}
-                className={`${action.color} text-white px-3 py-2 rounded-lg hover:opacity-90 transition-all flex items-center justify-center gap-2 text-sm font-medium`}
+                className={`${action.color} text-white px-3 py-2 rounded-lg hover:opacity-90 hover:scale-105 transform transition-all flex items-center justify-center gap-2 text-sm font-medium shadow-md`}
                 title={action.label}
               >
                 <action.icon className="w-4 h-4" />
-                <span className="hidden lg:inline">{action.label.split(' ')[0]}</span>
+                <span className="text-xs lg:text-sm">{action.label.split(' ')[0]}</span>
               </button>
             ))}
           </div>
@@ -484,21 +701,22 @@ const EnhancedMarineSpatialPlanning = () => {
 
           {/* Shapes List */}
           {drawnShapes.length > 0 && (
-            <div className="mt-4 border-t pt-4">
-              <h4 className="font-semibold text-sm mb-2">Drawn Shapes ({drawnShapes.length})</h4>
+            <div className="mt-4 border-t border-slate-200 pt-4">
+              <h4 className="font-semibold text-sm mb-2 text-slate-900">Drawn Shapes ({drawnShapes.length})</h4>
               <div className="max-h-48 overflow-y-auto space-y-2">
                 {drawnShapes.map(shape => (
-                  <div key={shape.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <div key={shape.id} className="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors">
                     <div className="flex items-center gap-2">
                       <div
-                        className="w-4 h-4 rounded"
+                        className="w-4 h-4 rounded border border-white shadow-sm"
                         style={{ backgroundColor: shape.color }}
                       />
-                      <span className="text-xs font-medium">{shape.name}</span>
+                      <span className="text-xs font-medium text-slate-900">{shape.name}</span>
                     </div>
                     <button
                       onClick={() => removeShape(shape.id)}
-                      className="p-1 text-red-600 hover:bg-red-50 rounded"
+                      className="p-1.5 text-red-600 hover:bg-red-100 rounded transition-colors"
+                      title="Delete shape"
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
@@ -744,11 +962,20 @@ const EnhancedMarineSpatialPlanning = () => {
 
             <div className="flex gap-2">
               <button
+                onClick={() => setShowIntroGuide(true)}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+              >
+                <Info className="w-4 h-4" />
+                <span className="hidden md:inline">User Guide</span>
+                <span className="md:hidden">Help</span>
+              </button>
+              <button
                 onClick={() => setActiveView('map')}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
               >
                 <Edit3 className="w-4 h-4" />
-                Planning Map
+                <span className="hidden md:inline">Planning Map</span>
+                <span className="md:hidden">Map</span>
               </button>
             </div>
           </div>
