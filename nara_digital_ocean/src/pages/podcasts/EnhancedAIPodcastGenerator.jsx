@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import * as Icons from 'lucide-react';
 import { generateNotebookLMPodcast, generateSingleVoicePodcast, testAWSPollyConnection } from '../../services/awsPollyPodcastService';
+import { generateIntelligentScript, estimateCost } from '../../services/chatgptPodcastService';
 
 /**
  * ENHANCED AI Podcast Generator
@@ -24,6 +25,12 @@ const EnhancedAIPodcastGenerator = ({ onClose, onGenerate }) => {
 
   // Enhanced Settings
   const [podcastSettings, setPodcastSettings] = useState({
+    // AI Settings
+    useAI: 'basic', // 'basic' (free), 'chatgpt' (intelligent), 'custom'
+    aiCasualness: 'high', // 'low', 'medium', 'high'
+    aiTechnicalDepth: 'medium', // 'low', 'medium', 'high'
+    conversationLength: 'medium', // 'short', 'medium', 'long'
+    
     // Voice Settings
     voice: 'professional',
     voiceGender: 'neutral',
@@ -219,28 +226,70 @@ Thank you for listening to this episode. Don't forget to subscribe for more ocea
         return;
       }
 
+      // ========== STEP 1: Generate Script with AI (if ChatGPT selected) ==========
+      let finalScript = aiGeneratedScript || content;
+      
+      if (podcastSettings.useAI === 'chatgpt' && podcastSettings.format === 'conversation') {
+        try {
+          console.log('🤖 Using ChatGPT for intelligent script generation...');
+          setGenerationStep('ai-script');
+          setProgress(10);
+
+          // Get OpenAI API key from localStorage
+          const apiConfig = JSON.parse(localStorage.getItem('nara-ai-api-config') || '{}');
+          const openaiApiKey = apiConfig.openaiKey;
+
+          if (!openaiApiKey) {
+            throw new Error('OpenAI API key not configured. Please add it in Admin → AI API Configuration');
+          }
+
+          // Generate intelligent script with ChatGPT
+          finalScript = await generateIntelligentScript(title, content, {
+            apiKey: openaiApiKey,
+            style: podcastSettings.style || 'conversational',
+            length: podcastSettings.conversationLength,
+            casualness: podcastSettings.aiCasualness,
+            technicalDepth: podcastSettings.aiTechnicalDepth,
+            hostName: 'Alex',
+            guestName: 'Sam'
+          });
+
+          console.log('✅ ChatGPT script generated!');
+          console.log('📝 Script preview:', finalScript.substring(0, 200) + '...');
+          setProgress(25);
+          
+        } catch (error) {
+          console.error('❌ ChatGPT error:', error);
+          alert(`⚠️ ChatGPT Error: ${error.message}\n\nFalling back to basic script generation.`);
+          // Fall back to basic generation
+          finalScript = content;
+        }
+      }
+
       // Prepare podcast data
       const podcastData = {
         title: title || 'Untitled NARA Podcast',
         content: content,
-        script: aiGeneratedScript || content,
+        script: finalScript,
         settings: podcastSettings
       };
 
       console.log('📦 Podcast data prepared:', {
         title: podcastData.title,
         contentLength: podcastData.content.length,
+        scriptLength: finalScript.length,
+        aiMode: podcastSettings.useAI,
         format: podcastData.settings.format
       });
 
       // Progress callback
       const onProgress = ({ stage, progress: prog, message }) => {
         setGenerationStep(stage);
-        setProgress(prog);
+        setProgress(Math.max(prog, progress)); // Don't go backwards
         console.log(`[${stage}] ${prog}% - ${message}`);
       };
 
-      // Generate podcast based on format
+      // ========== STEP 2: Generate Audio with AWS Polly ==========
       console.log('🚀 Calling generation function...');
       let result;
       if (podcastSettings.format === 'conversation') {
