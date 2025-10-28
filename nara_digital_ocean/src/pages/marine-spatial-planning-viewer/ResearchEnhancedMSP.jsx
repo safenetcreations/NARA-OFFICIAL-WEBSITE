@@ -630,9 +630,94 @@ const ResearchEnhancedMSP = () => {
     a.click();
   };
 
-  const generatePDFReport = () => {
-    // In a real implementation, use jsPDF or similar library
-    alert('PDF Report generation feature - Would generate a comprehensive report with map, statistics, and research data. Requires jsPDF library integration.');
+  const handleGeneratePDFReport = async () => {
+    try {
+      const mapElement = mapRef.current?.container;
+      if (!mapElement) {
+        alert('Map not ready. Please try again.');
+        return;
+      }
+
+      const projectData = {
+        ...currentProject,
+        shapes: drawnShapes,
+        researchData: researchData,
+        comments: comments
+      };
+
+      const result = await generatePDFReport(projectData, mapElement, {
+        logoUrl: 'https://nara-web-73384.web.app/logo.png',
+        includeMap: true,
+        includeStatistics: true,
+        includeZoneDetails: true
+      });
+
+      if (result.success) {
+        alert(`PDF Report "${result.filename}" generated successfully!`);
+      }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF report: ' + error.message);
+    }
+  };
+
+  // File import handler
+  const handleFileImport = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const result = await importFile(file);
+
+      if (result.success) {
+        // Add imported shapes to current project
+        setUndoStack([...undoStack, drawnShapes]);
+        setRedoStack([]);
+        setDrawnShapes([...drawnShapes, ...result.shapes]);
+        alert(result.message || `Successfully imported ${result.shapes.length} zones`);
+      } else {
+        alert('Import failed: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Error importing file:', error);
+      alert('Error importing file: ' + error.message);
+    }
+
+    // Reset file input
+    event.target.value = '';
+  };
+
+  // Photo upload handler
+  const handlePhotoUpload = async (zoneId, file) => {
+    if (!currentUser || !currentProject.id) {
+      alert('Please sign in and save your project first');
+      return;
+    }
+
+    try {
+      setPhotoUploading(true);
+      const result = await uploadZonePhoto(currentProject.id, zoneId, file, {
+        uploadedBy: currentUser.email,
+        projectName: currentProject.name
+      });
+
+      if (result.success) {
+        // Refresh photos for this zone
+        const photosResult = await getZonePhotos(currentProject.id, zoneId);
+        if (photosResult.success) {
+          setZonePhotos({
+            ...zonePhotos,
+            [zoneId]: photosResult.photos
+          });
+        }
+        alert('Photo uploaded successfully!');
+      }
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      alert('Error uploading photo: ' + error.message);
+    } finally {
+      setPhotoUploading(false);
+    }
   };
 
   // ==================== DRAWING FUNCTIONS ====================
@@ -793,6 +878,17 @@ const ResearchEnhancedMSP = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => fileInputRef.current?.click()}
+                className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg flex items-center gap-2 transition-colors shadow-lg"
+                title="Import GeoJSON, KML, or CSV"
+              >
+                <Upload className="w-4 h-4" />
+                <span className="hidden sm:inline">Import</span>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={saveProject}
                 className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg flex items-center gap-2 transition-colors shadow-lg"
               >
@@ -873,19 +969,28 @@ const ResearchEnhancedMSP = () => {
               </button>
 
               <button
-                onClick={() => { generatePDFReport(); setShowExportMenu(false); }}
+                onClick={() => { handleGeneratePDFReport(); setShowExportMenu(false); }}
                 className="w-full text-left px-4 py-3 hover:bg-slate-100 rounded-lg flex items-center gap-3 transition-colors"
               >
                 <FileText className="w-5 h-5 text-red-500" />
                 <div>
                   <p className="font-medium text-sm">PDF Report</p>
-                  <p className="text-xs text-slate-500">Full research report</p>
+                  <p className="text-xs text-slate-500">Professional report with maps</p>
                 </div>
               </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Hidden file input for import */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileImport}
+        accept=".json,.geojson,.kml,.csv"
+        className="hidden"
+      />
 
       {/* Main Content Area */}
       <div className="flex h-[calc(100vh-4rem)]">
@@ -933,7 +1038,7 @@ const ResearchEnhancedMSP = () => {
                           : 'border-slate-200 hover:border-blue-300 bg-white'
                       }`}
                     >
-                      <Pentagon className="w-6 h-6 mx-auto mb-1 text-blue-600" />
+                      <Square className="w-6 h-6 mx-auto mb-1 text-blue-600" />
                       <p className="text-xs font-medium text-center">Polygon</p>
                     </button>
 
