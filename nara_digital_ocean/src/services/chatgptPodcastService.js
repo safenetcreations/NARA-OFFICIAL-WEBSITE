@@ -55,7 +55,7 @@ export async function generateIntelligentScript(title, content, options = {}) {
     console.log('📤 Sending request to OpenAI API...');
     
     const response = await client.chat.completions.create({
-      model: 'gpt-5', // 🚀 Updated to GPT-5 (Released August 2025)
+      model: 'gpt-4-turbo', // ✅ Using stable GPT-4 Turbo (GPT-5 requires tier 5 access)
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
