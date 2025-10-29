@@ -479,6 +479,97 @@ const AIAPIConfiguration = () => {
           </div>
         </motion.div>
 
+        {/* ========== OPENAI / CHATGPT SECTION ========== */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="bg-white rounded-lg shadow-lg p-6 mb-6 border-2 border-purple-300"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-cyan-500 rounded-lg">
+                <Icons.Brain className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                  OpenAI ChatGPT
+                  <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">NEW!</span>
+                </h2>
+                <p className="text-slate-600">GPT-4 powered intelligent script generation</p>
+              </div>
+            </div>
+
+            <label className="flex items-center gap-2 cursor-pointer">
+              <div className="relative">
+                <input
+                  type="checkbox"
+                  checked={apiKeys.openai.enabled}
+                  onChange={(e) => updateField('openai', 'enabled', e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-slate-300 rounded-full peer-checked:bg-purple-500 peer-focus:ring-2 peer-focus:ring-purple-300 transition-colors"></div>
+                <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
+              </div>
+              <span className="text-sm font-medium text-slate-700">
+                {apiKeys.openai.enabled ? 'Enabled' : 'Disabled'}
+              </span>
+            </label>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                OpenAI API Key
+              </label>
+              <div className="relative">
+                <input
+                  type={showKeys.openai_apiKey ? 'text' : 'password'}
+                  value={apiKeys.openai.apiKey}
+                  onChange={(e) => updateField('openai', 'apiKey', e.target.value)}
+                  placeholder="sk-proj-..."
+                  className="w-full px-4 py-2 pr-12 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                />
+                <button
+                  onClick={() => toggleShowKey('openai', 'apiKey')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  {showKeys.openai_apiKey ? <Icons.EyeOff className="w-5 h-5" /> : <Icons.Eye className="w-5 h-5" />}
+                </button>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                Get your API key from: <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline">platform.openai.com/api-keys</a>
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Model
+              </label>
+              <select
+                value={apiKeys.openai.model}
+                onChange={(e) => updateField('openai', 'model', e.target.value)}
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              >
+                <option value="gpt-4-turbo-preview">GPT-4 Turbo (Recommended)</option>
+                <option value="gpt-4">GPT-4</option>
+                <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Cheaper)</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-cyan-50 rounded-lg border border-purple-200">
+            <p className="text-sm text-purple-900 mb-2">
+              <Icons.Sparkles className="w-4 h-4 inline mr-2" />
+              <strong>Benefits:</strong> Intelligent script generation, natural dialogue, context understanding
+            </p>
+            <p className="text-sm text-purple-800">
+              <Icons.DollarSign className="w-4 h-4 inline mr-2" />
+              <strong>Cost:</strong> ~$0.10 per podcast (GPT-4 Turbo). Pay-as-you-go pricing.
+            </p>
+          </div>
+        </motion.div>
+
         {/* Azure Speech */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
