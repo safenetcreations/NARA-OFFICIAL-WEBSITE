@@ -94,7 +94,7 @@ const AIAPIConfiguration = () => {
           },
           openai: {
             apiKey: '',
-            model: 'gpt-4-turbo-preview',
+            model: 'gpt-5',
             enabled: false,
             ...firebaseData.openai
           }
@@ -589,7 +589,8 @@ const AIAPIConfiguration = () => {
                 onChange={(e) => updateField('openai', 'model', e.target.value)}
                 className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               >
-                <option value="gpt-4-turbo-preview">GPT-4 Turbo (Recommended)</option>
+                <option value="gpt-5">🚀 GPT-5 (Latest & Best!) ⭐</option>
+                <option value="gpt-4-turbo-preview">GPT-4 Turbo</option>
                 <option value="gpt-4">GPT-4</option>
                 <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Cheaper)</option>
               </select>
@@ -599,11 +600,11 @@ const AIAPIConfiguration = () => {
           <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-cyan-50 rounded-lg border border-purple-200">
             <p className="text-sm text-purple-900 mb-2">
               <Icons.Sparkles className="w-4 h-4 inline mr-2" />
-              <strong>Benefits:</strong> Intelligent script generation, natural dialogue, context understanding
+              <strong>Benefits:</strong> 🚀 GPT-5 - Smartest model ever, intelligent script generation, natural dialogue, deep context understanding
             </p>
             <p className="text-sm text-purple-800">
               <Icons.DollarSign className="w-4 h-4 inline mr-2" />
-              <strong>Cost:</strong> ~$0.10 per podcast (GPT-4 Turbo). Pay-as-you-go pricing.
+              <strong>Cost:</strong> ~$0.15 per podcast (GPT-5). Pay-as-you-go pricing.
             </p>
           </div>
         </motion.div>

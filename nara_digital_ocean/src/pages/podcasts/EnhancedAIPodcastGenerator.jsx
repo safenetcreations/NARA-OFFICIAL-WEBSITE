@@ -572,7 +572,7 @@ Thank you for listening to this episode. Don't forget to subscribe for more ocea
               <div className="flex items-center gap-2">
                 <Icons.Sparkles className={`w-5 h-5 ${podcastSettings.useAI === 'chatgpt' ? 'text-purple-400' : 'text-slate-400'}`} />
                 <span className={`font-bold ${podcastSettings.useAI === 'chatgpt' ? 'text-white' : 'text-slate-300'}`}>
-                  ChatGPT-4 (Intelligent)
+                  GPT-5 (Intelligent) 🚀
                 </span>
               </div>
               {podcastSettings.useAI === 'chatgpt' && (
@@ -580,7 +580,7 @@ Thank you for listening to this episode. Don't forget to subscribe for more ocea
               )}
             </div>
             <p className={`text-sm ${podcastSettings.useAI === 'chatgpt' ? 'text-slate-300' : 'text-slate-500'}`}>
-              ✓ GPT-4 powered scripts<br/>
+              ✓ GPT-5 powered scripts ⭐<br/>
               ✓ Deep context understanding<br/>
               ✓ Creative dialogue<br/>
               ✓ Professional quality
