@@ -8,32 +8,117 @@ import { db, storage } from '../config/firebase';
 import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-// Voice pairs for NotebookLM-style conversations
-const CONVERSATION_VOICES = {
-  host: {
-    voice: 'Joanna',      // Female, professional, warm
-    engine: 'neural',
-    language: 'en-US'
+// ========== MULTILINGUAL VOICE SYSTEM =========
+// Comprehensive voice support for English, Tamil, and Sinhala
+
+const MULTILINGUAL_VOICES = {
+  'en-US': {
+    name: 'English (US)',
+    voices: {
+      host: {
+        voice: 'Joanna',      // Female, professional, warm
+        engine: 'neural',
+        language: 'en-US',
+        gender: 'Female'
+      },
+      guest: {
+        voice: 'Matthew',     // Male, friendly, engaging  
+        engine: 'neural',
+        language: 'en-US',
+        gender: 'Male'
+      },
+      alternatives: [
+        { voice: 'Kendra', engine: 'neural', gender: 'Female', style: 'friendly' },
+        { voice: 'Joey', engine: 'neural', gender: 'Male', style: 'energetic' },
+        { voice: 'Ruth', engine: 'neural', gender: 'Female', style: 'soothing' },
+        { voice: 'Stephen', engine: 'neural', gender: 'Male', style: 'authoritative' }
+      ]
+    }
   },
-  guest: {
-    voice: 'Matthew',     // Male, friendly, engaging
-    engine: 'neural',
-    language: 'en-US'
+  'ta-IN': {
+    name: 'Tamil (India)',
+    voices: {
+      host: {
+        voice: 'Aditi',       // Female, Indian English with Tamil support
+        engine: 'standard',   // Note: Neural not available for Tamil yet
+        language: 'ta-IN',
+        gender: 'Female'
+      },
+      guest: {
+        voice: 'Raveena',     // Female, Indian English (alternative)
+        engine: 'standard',
+        language: 'ta-IN',
+        gender: 'Female'
+      },
+      alternatives: [
+        { voice: 'Aditi', engine: 'standard', gender: 'Female', style: 'clear' }
+      ]
+    }
+  },
+  'si-LK': {
+    name: 'Sinhala (Sri Lanka)',
+    voices: {
+      host: {
+        voice: 'Aditi',       // Best available for Sinhala
+        engine: 'standard',
+        language: 'en-IN',    // Using Indian English as base
+        gender: 'Female'
+      },
+      guest: {
+        voice: 'Raveena',
+        engine: 'standard',
+        language: 'en-IN',
+        gender: 'Female'
+      },
+      alternatives: []
+    }
   }
 };
 
-// Voice options for different styles
+// Legacy support - defaults to English
+const CONVERSATION_VOICES = MULTILINGUAL_VOICES['en-US'].voices;
+
+// Enhanced voice library with all options
 const VOICE_LIBRARY = {
-  professional: { voice: 'Joanna', engine: 'neural', gender: 'Female' },
-  friendly: { voice: 'Kendra', engine: 'neural', gender: 'Female' },
-  energetic: { voice: 'Joey', engine: 'neural', gender: 'Male' },
-  authoritative: { voice: 'Matthew', engine: 'neural', gender: 'Male' },
-  soothing: { voice: 'Ruth', engine: 'neural', gender: 'Female' },
-  // More voice options
-  british: { voice: 'Amy', engine: 'neural', gender: 'Female' },
-  australian: { voice: 'Nicole', engine: 'neural', gender: 'Female' },
-  indian: { voice: 'Aditi', engine: 'neural', gender: 'Female' }
+  // English Voices
+  professional: { voice: 'Joanna', engine: 'neural', gender: 'Female', language: 'en-US' },
+  friendly: { voice: 'Kendra', engine: 'neural', gender: 'Female', language: 'en-US' },
+  energetic: { voice: 'Joey', engine: 'neural', gender: 'Male', language: 'en-US' },
+  authoritative: { voice: 'Matthew', engine: 'neural', gender: 'Male', language: 'en-US' },
+  soothing: { voice: 'Ruth', engine: 'neural', gender: 'Female', language: 'en-US' },
+  // International
+  british: { voice: 'Amy', engine: 'neural', gender: 'Female', language: 'en-GB' },
+  australian: { voice: 'Nicole', engine: 'neural', gender: 'Female', language: 'en-AU' },
+  indian: { voice: 'Aditi', engine: 'standard', gender: 'Female', language: 'en-IN' },
+  // Tamil
+  tamil: { voice: 'Aditi', engine: 'standard', gender: 'Female', language: 'ta-IN' },
+  // Sinhala (using Indian English as best approximation)
+  sinhala: { voice: 'Aditi', engine: 'standard', gender: 'Female', language: 'en-IN' }
 };
+
+/**
+ * Get voice configuration based on language
+ * @param {string} language - Language code (en-US, ta-IN, si-LK)
+ * @returns {object} Voice configuration for host and guest
+ */
+function getVoicesForLanguage(language = 'en-US') {
+  const langConfig = MULTILINGUAL_VOICES[language] || MULTILINGUAL_VOICES['en-US'];
+  console.log(`🌍 Selected language: ${langConfig.name}`);
+  console.log(`🎤 Host voice: ${langConfig.voices.host.voice}`);
+  console.log(`🎤 Guest voice: ${langConfig.voices.guest.voice}`);
+  return langConfig.voices;
+}
+
+/**
+ * Export available languages for UI
+ */
+export function getAvailableLanguages() {
+  return Object.keys(MULTILINGUAL_VOICES).map(code => ({
+    code,
+    name: MULTILINGUAL_VOICES[code].name,
+    voices: MULTILINGUAL_VOICES[code].voices
+  }));
+}
 
 /**
  * Split text into chunks to avoid AWS Polly character limit
@@ -475,9 +560,17 @@ function parseConversationalScript(script) {
 
 /**
  * Generate audio for a single segment using AWS Polly
+ * @param {PollyClient} client - AWS Polly client
+ * @param {object} segment - Segment with speaker and text
+ * @param {object} voices - Voice configuration (host and guest)
  */
-async function generateSegmentAudio(client, segment) {
-  const voiceConfig = CONVERSATION_VOICES[segment.speaker] || CONVERSATION_VOICES.host;
+async function generateSegmentAudio(client, segment, voices = CONVERSATION_VOICES) {
+  // ========== FIX: Use language-specific voices ==========
+  const voiceConfig = voices[segment.speaker] || voices.host;
+  
+  // Log which voice is being used
+  console.log(`🎤 Generating audio for ${segment.speaker}: ${voiceConfig.voice} (${voiceConfig.language})`);
+  
   const ssml = textToConversationalSSML(segment.text, segment.speaker);
 
   const command = new SynthesizeSpeechCommand({
@@ -508,9 +601,11 @@ async function generateSegmentAudio(client, segment) {
       result.set(chunk, offset);
       offset += chunk.length;
     }
+    
+    console.log(`✅ Generated ${result.length} bytes for ${segment.speaker}`);
     return result;
   } catch (error) {
-    console.error(`Error generating audio for segment:`, error);
+    console.error(`❌ Error generating audio for ${segment.speaker} (${voiceConfig.voice}):`, error);
     throw error;
   }
 }
@@ -561,6 +656,13 @@ export async function generateNotebookLMPodcast(podcastData, onProgress) {
     const client = await createPollyClient();
     updateProgress('init', 10, 'Connected to AWS Polly');
 
+    // ========== FIX: Get language-specific voices ==========
+    const language = settings?.language || 'en-US';
+    const voices = getVoicesForLanguage(language);
+    console.log(`🌍 Using language: ${language}`);
+    console.log(`🎤 Host voice: ${voices.host.voice}`);
+    console.log(`🎤 Guest voice: ${voices.guest.voice}`);
+
     // 2. Generate conversational script if not provided
     updateProgress('script', 15, 'Generating conversational script...');
     let finalScript = script;
@@ -576,17 +678,22 @@ export async function generateNotebookLMPodcast(podcastData, onProgress) {
 
     // 3. Parse script into segments
     const segments = parseConversationalScript(finalScript);
+    console.log(`📊 Parsed ${segments.length} segments:`);
+    segments.slice(0, 5).forEach((seg, i) => {
+      console.log(`  ${i + 1}. ${seg.speaker}: ${seg.text.substring(0, 50)}...`);
+    });
     updateProgress('script', 25, `Parsed ${segments.length} conversation segments`);
 
-    // 4. Generate audio for each segment
-    updateProgress('voice', 30, 'Generating AI voices...');
+    // 4. Generate audio for each segment with DIFFERENT VOICES
+    updateProgress('voice', 30, 'Generating AI voices with alternating speakers...');
     const audioSegments = [];
 
     for (let i = 0; i < segments.length; i++) {
       const segmentProgress = 30 + (i / segments.length) * 40; // 30-70%
-      updateProgress('voice', segmentProgress, `Generating voice ${i + 1}/${segments.length}...`);
+      updateProgress('voice', segmentProgress, `${segments[i].speaker} speaking (${i + 1}/${segments.length})...`);
 
-      const audioBuffer = await generateSegmentAudio(client, segments[i]);
+      // ========== FIX: Pass voices parameter for language-specific voices ==========
+      const audioBuffer = await generateSegmentAudio(client, segments[i], voices);
       audioSegments.push(audioBuffer);
 
       // Small delay to avoid rate limiting
