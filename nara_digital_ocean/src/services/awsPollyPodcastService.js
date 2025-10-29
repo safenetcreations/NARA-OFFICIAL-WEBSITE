@@ -743,13 +743,30 @@ export async function generateNotebookLMPodcast(podcastData, onProgress) {
     const cleanSettings = {
       host: settings?.host || 'Joanna',
       guest: settings?.guest || 'Matthew',
+      hostName: settings?.hostName || 'Alex',
+      guestName: settings?.guestName || 'Jordan',
       language: settings?.language || 'en-US',
       conversationStyle: settings?.conversationStyle || 'balanced'
     };
     
+    // Detect language from settings
+    const langCode = language || settings?.language || 'en-US';
+    const langKey = langCode === 'ta-IN' ? 'ta' : langCode === 'si-LK' ? 'si' : 'en';
+    
+    // ========== FIX: Save title as multilingual object ==========
+    const podcastTitle = title || 'AI Generated Podcast';
+    const podcastDesc = (content?.substring(0, 300) || 'AI-generated podcast').trim();
+    
     const podcastRef = await addDoc(collection(db, 'podcasts'), {
-      title: title || 'AI Generated Podcast',
-      description: (content?.substring(0, 300) || 'AI-generated podcast').trim(),
+      // ✅ FIX: Multilingual title/description format
+      title: {
+        en: langKey === 'en' ? podcastTitle : `${podcastTitle} (${langKey.toUpperCase()})`,
+        [langKey]: podcastTitle
+      },
+      description: {
+        en: langKey === 'en' ? podcastDesc : `${podcastDesc} (${langKey.toUpperCase()})`,
+        [langKey]: podcastDesc
+      },
       audioUrl: audioUrl,
       duration: durationSeconds,
       durationFormatted: durationFormatted,
@@ -760,6 +777,8 @@ export async function generateNotebookLMPodcast(podcastData, onProgress) {
       aiStyle: 'notebooklm-conversational',
       settings: cleanSettings,
       status: 'published',
+      language: langKey, // ✅ Language tag for filtering
+      languages: [langKey], // ✅ Array format for multi-language support
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       publishedAt: serverTimestamp(), // ✅ REQUIRED for display
@@ -769,8 +788,12 @@ export async function generateNotebookLMPodcast(podcastData, onProgress) {
       views: 0,
       featured: false,
       category: 'ai-generated',
-      tags: ['ai', 'polly', 'conversational']
+      tags: ['ai', 'polly', 'conversational', langKey]
     });
+    
+    console.log(`✅ Podcast saved with multilingual title (${langKey})`);
+    console.log(`📝 Title: ${podcastTitle}`);
+    console.log(`🌍 Language: ${langCode} → ${langKey}`);
 
     updateProgress('complete', 100, 'Podcast created successfully!');
 
