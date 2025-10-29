@@ -60,7 +60,45 @@ const AIAPIConfiguration = () => {
 
       if (docSnap.exists()) {
         const firebaseData = docSnap.data();
-        setApiKeys(firebaseData);
+        
+        // ========== FIX: Merge with defaults to ensure all fields exist ==========
+        setApiKeys({
+          aws: {
+            accessKeyId: '',
+            secretAccessKey: '',
+            region: 'us-east-1',
+            enabled: false,
+            ...firebaseData.aws
+          },
+          elevenlabs: {
+            apiKey: '',
+            enabled: false,
+            ...firebaseData.elevenlabs
+          },
+          googleTTS: {
+            apiKey: '',
+            projectId: '',
+            enabled: false,
+            ...firebaseData.googleTTS
+          },
+          azure: {
+            apiKey: '',
+            region: 'eastus',
+            enabled: false,
+            ...firebaseData.azure
+          },
+          notebooklm: {
+            apiKey: '',
+            enabled: false,
+            ...firebaseData.notebooklm
+          },
+          openai: {
+            apiKey: '',
+            model: 'gpt-4-turbo-preview',
+            enabled: false,
+            ...firebaseData.openai
+          }
+        });
         
         // Also ensure localStorage is synced
         localStorage.setItem('nara-ai-api-config', JSON.stringify({
@@ -90,10 +128,10 @@ const AIAPIConfiguration = () => {
 
       // ========== FIX: Also save to localStorage for ChatGPT integration ==========
       localStorage.setItem('nara-ai-api-config', JSON.stringify({
-        openaiKey: apiKeys.openai.apiKey,
-        awsAccessKeyId: apiKeys.aws.accessKeyId,
-        awsSecretAccessKey: apiKeys.aws.secretAccessKey,
-        awsRegion: apiKeys.aws.region
+        openaiKey: apiKeys.openai?.apiKey || '',
+        awsAccessKeyId: apiKeys.aws?.accessKeyId || '',
+        awsSecretAccessKey: apiKeys.aws?.secretAccessKey || '',
+        awsRegion: apiKeys.aws?.region || 'us-east-1'
       }));
 
       console.log('✅ API keys saved to both Firebase and localStorage');
