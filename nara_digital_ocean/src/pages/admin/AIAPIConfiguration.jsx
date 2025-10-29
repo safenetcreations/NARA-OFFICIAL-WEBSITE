@@ -54,11 +54,23 @@ const AIAPIConfiguration = () => {
 
   const loadAPIKeys = async () => {
     try {
+      // Load from Firebase
       const docRef = doc(db, 'admin_config', 'ai_api_keys');
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        setApiKeys(docSnap.data());
+        const firebaseData = docSnap.data();
+        setApiKeys(firebaseData);
+        
+        // Also ensure localStorage is synced
+        localStorage.setItem('nara-ai-api-config', JSON.stringify({
+          openaiKey: firebaseData.openai?.apiKey || '',
+          awsAccessKeyId: firebaseData.aws?.accessKeyId || '',
+          awsSecretAccessKey: firebaseData.aws?.secretAccessKey || '',
+          awsRegion: firebaseData.aws?.region || 'us-east-1'
+        }));
+        
+        console.log('✅ API keys loaded and synced to localStorage');
       }
     } catch (error) {
       console.error('Error loading API keys:', error);
@@ -72,8 +84,19 @@ const AIAPIConfiguration = () => {
     setSaveMessage(null);
 
     try {
+      // Save to Firebase
       const docRef = doc(db, 'admin_config', 'ai_api_keys');
       await setDoc(docRef, apiKeys);
+
+      // ========== FIX: Also save to localStorage for ChatGPT integration ==========
+      localStorage.setItem('nara-ai-api-config', JSON.stringify({
+        openaiKey: apiKeys.openai.apiKey,
+        awsAccessKeyId: apiKeys.aws.accessKeyId,
+        awsSecretAccessKey: apiKeys.aws.secretAccessKey,
+        awsRegion: apiKeys.aws.region
+      }));
+
+      console.log('✅ API keys saved to both Firebase and localStorage');
 
       setSaveMessage({ type: 'success', text: 'API keys saved successfully!' });
 

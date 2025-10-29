@@ -38,6 +38,8 @@ export async function generateIntelligentScript(title, content, options = {}) {
   } = options;
 
   console.log('🤖 Generating intelligent script with ChatGPT...');
+  console.log('🔑 API Key present:', apiKey ? `Yes (${apiKey.substring(0, 7)}...)` : 'NO!');
+  console.log('📊 Settings:', { style, length, casualness, technicalDepth });
   
   try {
     const client = getOpenAIClient(apiKey);
@@ -50,6 +52,8 @@ export async function generateIntelligentScript(title, content, options = {}) {
 
     console.log('📝 Sending to ChatGPT...');
     
+    console.log('📤 Sending request to OpenAI API...');
+    
     const response = await client.chat.completions.create({
       model: 'gpt-4-turbo-preview',
       messages: [
@@ -61,6 +65,8 @@ export async function generateIntelligentScript(title, content, options = {}) {
       presence_penalty: 0.6, // Encourage variety
       frequency_penalty: 0.3 // Reduce repetition
     });
+    
+    console.log('📥 Received response from OpenAI');
 
     const script = response.choices[0].message.content;
     
@@ -71,16 +77,27 @@ export async function generateIntelligentScript(title, content, options = {}) {
     return script;
 
   } catch (error) {
-    console.error('❌ ChatGPT error:', error);
+    console.error('❌ ChatGPT error details:', {
+      message: error.message,
+      status: error.status,
+      type: error.type,
+      code: error.code,
+      fullError: error
+    });
     
-    if (error.message?.includes('API key')) {
-      throw new Error('Invalid OpenAI API key. Please check your configuration in Admin Panel.');
-    } else if (error.message?.includes('rate_limit')) {
-      throw new Error('OpenAI rate limit exceeded. Please wait a moment and try again.');
-    } else if (error.message?.includes('quota')) {
-      throw new Error('OpenAI quota exceeded. Please check your OpenAI account.');
+    // Handle specific OpenAI errors
+    if (error.status === 401 || error.message?.includes('Incorrect API key') || error.message?.includes('invalid_api_key')) {
+      throw new Error('❌ Invalid OpenAI API key!\n\nPlease configure your API key:\n1. Go to https://platform.openai.com/api-keys\n2. Create a new key\n3. Save it in Admin → AI API Configuration');
+    } else if (error.status === 429 || error.message?.includes('rate_limit')) {
+      throw new Error('⏳ Rate limit exceeded! Please wait a minute and try again.');
+    } else if (error.message?.includes('quota') || error.message?.includes('insufficient_quota')) {
+      throw new Error('💳 OpenAI quota exceeded! Please add credits to your OpenAI account at https://platform.openai.com/account/billing');
+    } else if (error.message?.includes('model_not_found')) {
+      throw new Error('🤖 Model not available. Your OpenAI account may not have access to GPT-4. Try upgrading your OpenAI plan.');
+    } else if (!navigator.onLine) {
+      throw new Error('📡 No internet connection! Please check your connection.');
     } else {
-      throw new Error(`ChatGPT error: ${error.message}`);
+      throw new Error(`ChatGPT API Error: ${error.message || 'Unknown error'}\n\nFull details logged to console.`);
     }
   }
 }
