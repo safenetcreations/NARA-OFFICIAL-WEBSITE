@@ -108,19 +108,49 @@ async function createPollyClient() {
       throw new Error('AWS credentials are missing. Please add them in Admin Panel.');
     }
 
+    // ========== ENHANCED: Better credential validation ==========
+    console.log('🔐 AWS Config:', {
+      hasAccessKey: !!awsConfig.accessKeyId,
+      hasSecretKey: !!awsConfig.secretAccessKey,
+      region: awsConfig.region || 'us-east-1',
+      accessKeyStart: awsConfig.accessKeyId?.substring(0, 8)
+    });
+
+    // Validate credentials format
+    if (!awsConfig.accessKeyId.startsWith('AKIA')) {
+      throw new Error('Invalid AWS Access Key format. Must start with "AKIA"');
+    }
+
+    // Force us-east-1 region for better compatibility
+    const region = 'us-east-1'; // Most reliable region for Polly
+    console.log(`🌍 Using AWS region: ${region}`);
+
     // Create Polly client
     const client = new PollyClient({
-      region: awsConfig.region || 'us-east-1',
+      region: region,
       credentials: {
-        accessKeyId: awsConfig.accessKeyId,
-        secretAccessKey: awsConfig.secretAccessKey
+        accessKeyId: awsConfig.accessKeyId.trim(),
+        secretAccessKey: awsConfig.secretAccessKey.trim()
       }
     });
 
+    console.log('✅ AWS Polly client created successfully');
     return client;
   } catch (error) {
-    console.error('Error creating Polly client:', error);
-    throw error;
+    console.error('❌ Error creating Polly client:', error);
+    
+    // Check for specific errors
+    if (error.message.includes('configuration not found')) {
+      throw new Error('AWS API not configured. Please go to Admin Panel → AI API Configuration and add your AWS credentials.');
+    } else if (error.message.includes('not enabled')) {
+      throw new Error('AWS Polly is not enabled. Please enable it in Admin Panel → AI API Configuration.');
+    } else if (error.name === 'CredentialsProviderError') {
+      throw new Error('Invalid AWS credentials. Please check your Access Key ID and Secret Access Key in Admin Panel.');
+    } else if (error.name === 'ThrottlingException') {
+      throw new Error('AWS rate limit exceeded. Please wait a moment and try again.');
+    } else {
+      throw new Error(`AWS Polly error: ${error.message}`);
+    }
   }
 }
 
