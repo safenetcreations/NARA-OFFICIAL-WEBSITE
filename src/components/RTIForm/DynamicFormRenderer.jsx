@@ -1154,7 +1154,7 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/70 backdrop-blur-md p-4"
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
         onClick={onClose}
       >
         <Toaster position="top-right" />
@@ -1164,19 +1164,19 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
           exit={{ scale: 0.95, y: 30, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 140, damping: 18 }}
           onClick={(event) => event.stopPropagation()}
-          className="relative flex h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-2xl"
+          className="relative flex h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl border-4 border-blue-100"
         >
-          <div className="relative border-b border-white/10 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-5 text-white shadow-lg">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+          <div className="relative border-b-4 border-blue-100 bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 px-8 py-6 text-white shadow-lg">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div className="flex-1">
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/20 backdrop-blur-sm px-4 py-2 text-xs font-bold uppercase tracking-wider border border-white/30 mb-3">
                   <FileText className="h-4 w-4" />
-                  RTI Online Submission
+                  RTI Application Form
                 </div>
-                <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">
+                <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-2">
                   {formData.form_title || formData.form_name}
                 </h2>
-                <p className="text-sm text-blue-100">
+                <p className="text-base text-blue-50 font-medium">
                   {formData.organization}
                   {formData.recipient ? ` • ${formData.recipient}` : ''}
                 </p>
@@ -1184,7 +1184,7 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
               <button
                 type="button"
                 onClick={onClose}
-                className="self-start rounded-full p-2 text-white transition hover:bg-white/20"
+                className="self-start rounded-full p-3 bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110"
                 aria-label="Close form"
               >
                 <X className="h-6 w-6" />
@@ -1192,9 +1192,9 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
             </div>
 
             {formData.note && (
-              <div className="mt-3 flex items-start gap-2 rounded-2xl bg-black/20 p-4 text-sm text-blue-50">
-                <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
-                <span>{formData.note}</span>
+              <div className="mt-4 flex items-start gap-3 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 p-4 text-sm text-white font-medium">
+                <Info className="mt-0.5 h-5 w-5 flex-shrink-0" />
+                <span className="leading-relaxed">{formData.note}</span>
               </div>
             )}
           </div>
@@ -1203,35 +1203,55 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
             onSubmit={handleSubmit(handleFormSubmit)}
             className="flex flex-1 flex-col overflow-hidden"
           >
-            <div className="flex-1 overflow-y-auto px-6 py-6 md:px-8">
-              <div className="space-y-8">
+            <div className="flex-1 overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 px-6 py-8 md:px-10">
+              <div className="max-w-4xl mx-auto space-y-8">
                 {submissionState.status === 'success' && (
-                  <div className="rounded-2xl border border-green-200 bg-green-50 p-4 text-green-700 shadow-sm">
-                    <p className="font-semibold">{submissionState.message}</p>
-                  </div>
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="rounded-2xl border-2 border-green-300 bg-green-50 p-6 text-green-800 shadow-lg flex items-center gap-4"
+                  >
+                    <Check className="h-8 w-8 flex-shrink-0 text-green-600" />
+                    <p className="font-bold text-lg">{submissionState.message}</p>
+                  </motion.div>
                 )}
                 {submissionState.status === 'error' && (
-                  <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700 shadow-sm">
-                    <p className="font-semibold">{submissionState.message}</p>
-                  </div>
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="rounded-2xl border-2 border-red-300 bg-red-50 p-6 text-red-800 shadow-lg flex items-center gap-4"
+                  >
+                    <X className="h-8 w-8 flex-shrink-0 text-red-600" />
+                    <p className="font-bold text-lg">{submissionState.message}</p>
+                  </motion.div>
                 )}
 
                 {formData.description && (
-                  <div className="rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm">
-                    <h3 className="mb-2 text-lg font-semibold text-slate-900">
-                      Overview
-                    </h3>
-                    <p className="text-sm leading-relaxed text-slate-600">
+                  <div className="rounded-2xl border-2 border-blue-200 bg-white p-8 shadow-lg">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-3 bg-blue-100 rounded-xl">
+                        <Info className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-900">
+                        Form Overview
+                      </h3>
+                    </div>
+                    <p className="text-base leading-relaxed text-slate-700">
                       {formData.description}
                     </p>
                   </div>
                 )}
 
                 {formData.fields && formData.fields.length > 0 && (
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-semibold text-slate-900">
-                      Applicant Information
-                    </h3>
+                  <div className="rounded-2xl border-2 border-blue-200 bg-white p-8 shadow-lg space-y-6">
+                    <div className="flex items-center gap-3 pb-4 border-b-2 border-blue-100">
+                      <div className="p-3 bg-blue-100 rounded-xl">
+                        <Icons.User className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-900">
+                        Applicant Information
+                      </h3>
+                    </div>
                     <div className="grid gap-6">
                       {formData.fields.map((field) => (
                         <FieldRenderer
@@ -1248,11 +1268,16 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
                 )}
 
                 {headerFields.length > 0 && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-semibold text-slate-900">
-                      Letter Header
-                    </h3>
-                    <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl border-2 border-blue-200 bg-white p-8 shadow-lg space-y-6">
+                    <div className="flex items-center gap-3 pb-4 border-b-2 border-blue-100">
+                      <div className="p-3 bg-blue-100 rounded-xl">
+                        <FileText className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-900">
+                        Letter Header
+                      </h3>
+                    </div>
+                    <div className="grid gap-6 md:grid-cols-2">
                       {headerFields.map((field) =>
                         renderTemplateField(
                           `header.${field.field_name}`,
@@ -1268,10 +1293,15 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
                   contentFields.length > 0 ||
                   contentGroups.length > 0 ||
                   mannerOptions) && (
-                  <div className="space-y-5 rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-sm">
-                    <h3 className="text-xl font-semibold text-slate-900">
-                      Decision Details
-                    </h3>
+                  <div className="rounded-2xl border-2 border-blue-200 bg-white p-8 shadow-lg space-y-6">
+                    <div className="flex items-center gap-3 pb-4 border-b-2 border-blue-100">
+                      <div className="p-3 bg-blue-100 rounded-xl">
+                        <ListChecks className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-900">
+                        Decision Details
+                      </h3>
+                    </div>
 
                     {contentTextBlocks.length > 0 && (
                       <div className="space-y-3">
@@ -1346,11 +1376,16 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
                 )}
 
                 {designatedOfficerFields.length > 0 && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-semibold text-slate-900">
-                      Designated Officer Details
-                    </h3>
-                    <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl border-2 border-blue-200 bg-white p-8 shadow-lg space-y-6">
+                    <div className="flex items-center gap-3 pb-4 border-b-2 border-blue-100">
+                      <div className="p-3 bg-blue-100 rounded-xl">
+                        <Icons.Users className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-900">
+                        Designated Officer Details
+                      </h3>
+                    </div>
+                    <div className="grid gap-6 md:grid-cols-2">
                       {designatedOfficerFields.map((field) =>
                         renderTemplateField(
                           `designated_officer.${field.field_name}`,
@@ -1363,10 +1398,15 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
                 )}
 
                 {contactSections.length > 0 && (
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-semibold text-slate-900">
-                      Contact Information
-                    </h3>
+                  <div className="rounded-2xl border-2 border-blue-200 bg-white p-8 shadow-lg space-y-6">
+                    <div className="flex items-center gap-3 pb-4 border-b-2 border-blue-100">
+                      <div className="p-3 bg-blue-100 rounded-xl">
+                        <Icons.PhoneCall className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-900">
+                        Contact Information
+                      </h3>
+                    </div>
                     <div className="grid gap-6 md:grid-cols-2">
                       {contactSections.map((section) => (
                         <div
@@ -1392,11 +1432,16 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
                 )}
 
                 {closingFields.length > 0 && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-semibold text-slate-900">
-                      Letter Closing Details
-                    </h3>
-                    <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl border-2 border-blue-200 bg-white p-8 shadow-lg space-y-6">
+                    <div className="flex items-center gap-3 pb-4 border-b-2 border-blue-100">
+                      <div className="p-3 bg-blue-100 rounded-xl">
+                        <Icons.Edit3 className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-900">
+                        Letter Closing Details
+                      </h3>
+                    </div>
+                    <div className="grid gap-6 md:grid-cols-2">
                       {closingFields.map((field) =>
                         renderTemplateField(
                           `closing.${field.field_name}`,
@@ -1409,10 +1454,15 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
                 )}
 
                 {formData.table_columns && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-semibold text-slate-900">
-                      {formData.tableTitle || 'Record Entries'}
-                    </h3>
+                  <div className="rounded-2xl border-2 border-blue-200 bg-white p-8 shadow-lg space-y-6">
+                    <div className="flex items-center gap-3 pb-4 border-b-2 border-blue-100">
+                      <div className="p-3 bg-blue-100 rounded-xl">
+                        <Icons.Table className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-900">
+                        {formData.tableTitle || 'Record Entries'}
+                      </h3>
+                    </div>
                     <TableBuilder
                       columns={formData.table_columns}
                       control={control}
@@ -1423,10 +1473,15 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
                 )}
 
                 {sections.length > 0 && (
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-semibold text-slate-900">
-                      Officer & Administrative Details
-                    </h3>
+                  <div className="rounded-2xl border-2 border-blue-200 bg-white p-8 shadow-lg space-y-6">
+                    <div className="flex items-center gap-3 pb-4 border-b-2 border-blue-100">
+                      <div className="p-3 bg-blue-100 rounded-xl">
+                        <Icons.Briefcase className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-900">
+                        Officer & Administrative Details
+                      </h3>
+                    </div>
                     <div className="space-y-6">
                       {sections.map((section) => (
                         <SectionBlock
@@ -1442,11 +1497,16 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
                 )}
 
                 {formData.signature_section && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-semibold text-slate-900">
-                      Sign & Confirm
-                    </h3>
-                    <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl border-2 border-green-200 bg-green-50 p-8 shadow-lg space-y-6">
+                    <div className="flex items-center gap-3 pb-4 border-b-2 border-green-200">
+                      <div className="p-3 bg-green-100 rounded-xl">
+                        <Icons.PenTool className="h-6 w-6 text-green-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-900">
+                        Sign & Confirm
+                      </h3>
+                    </div>
+                    <div className="grid gap-6 md:grid-cols-2">
                       {Object.entries(formData.signature_section).map(
                         ([key, label]) => (
                           <div key={key} className="space-y-2">
@@ -1468,11 +1528,16 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
                 )}
 
                 {formData.footer && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-semibold text-slate-900">
-                      Publication Details
-                    </h3>
-                    <div className="grid gap-4 md:grid-cols-3">
+                  <div className="rounded-2xl border-2 border-blue-200 bg-white p-8 shadow-lg space-y-6">
+                    <div className="flex items-center gap-3 pb-4 border-b-2 border-blue-100">
+                      <div className="p-3 bg-blue-100 rounded-xl">
+                        <Icons.Calendar className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-900">
+                        Publication Details
+                      </h3>
+                    </div>
+                    <div className="grid gap-6 md:grid-cols-3">
                       {Object.entries(formData.footer).map(([key, label]) => (
                         <div key={key} className="space-y-2">
                           <label className="text-sm font-semibold text-slate-700">
@@ -1495,35 +1560,43 @@ const DynamicFormRenderer = ({ formData, onSubmit, onClose }) => {
               </div>
             </div>
 
-            <div className="border-t border-white/10 bg-slate-900/60 px-6 py-5 md:px-8">
-              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div className="text-xs text-slate-300 md:text-sm">
-                  By submitting this form you certify that the information provided is
-                  accurate to the best of your knowledge.
+            <div className="border-t-4 border-blue-100 bg-white px-8 py-6 shadow-lg">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex items-start gap-3 flex-1">
+                  <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900 mb-1">
+                      Important Notice
+                    </p>
+                    <p className="text-xs text-slate-600">
+                      By submitting this form you certify that the information provided is accurate to the best of your knowledge.
+                      {!isDirty && (
+                        <span className="block mt-1 text-slate-500">
+                          All fields marked with <span className="text-red-600 font-bold">*</span> are required.
+                        </span>
+                      )}
+                    </p>
+                  </div>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <button
                     type="button"
                     onClick={onClose}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-transparent px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition-all hover:bg-slate-50 hover:border-slate-400 shadow-sm"
                   >
+                    <X className="h-5 w-5" />
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting || submissionState.status === 'success'}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-500 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-blue-400"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 text-sm font-bold text-white shadow-xl transition-all hover:from-blue-700 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:from-slate-400 disabled:to-slate-500 hover:shadow-2xl hover:scale-105"
                   >
                     <Send className="h-5 w-5" />
-                    {isSubmitting ? 'Submitting...' : 'Submit Request'}
+                    {isSubmitting ? 'Submitting...' : 'Submit RTI Request'}
                   </button>
                 </div>
               </div>
-              {!isDirty && (
-                <p className="mt-2 text-xs text-slate-400">
-                  All fields marked with <span className="text-red-400">*</span> are required.
-                </p>
-              )}
             </div>
           </form>
         </motion.div>

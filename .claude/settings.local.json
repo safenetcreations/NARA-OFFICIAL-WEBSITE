@@ -12,7 +12,14 @@
       "Bash(npm run:*)",
       "Read(//Users/nanthan/Desktop/NARA-OFFICIAL-WEBSITE-main/**)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(firebase hosting:channel:list:*)",
+      "Bash(firebase hosting:releases:list:*)",
+      "Bash(firebase hosting:sites:*)"
     ],
     "deny": [],
     "ask": []

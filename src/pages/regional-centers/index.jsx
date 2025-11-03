@@ -319,9 +319,231 @@ const RegionalCentersPage = () => {
         </motion.div>
       </section>
 
-      {/* Centers Navigation */}
-      <section className="py-8 px-4 bg-white border-y border-emerald-100">
+      {/* All Centers Map Section */}
+      <section className="py-16 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-gradient-to-br from-white to-emerald-50 rounded-3xl overflow-hidden shadow-2xl p-8"
+          >
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-slate-900 mb-3 flex items-center gap-3">
+                <Icons.MapPinned className="w-8 h-8 text-emerald-600" />
+                All NARA Regional Research Centers
+              </h2>
+              <p className="text-slate-600">Interactive map showing all 5 regional research centers across Sri Lanka</p>
+            </div>
+
+            {/* All Centers Map */}
+            <div className="w-full h-[600px] rounded-2xl overflow-hidden shadow-lg border-4 border-emerald-200 bg-white relative">
+              {loadError ? (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50">
+                  <div className="text-center p-8">
+                    <Icons.AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-600" />
+                    <p className="text-lg font-semibold text-slate-900 mb-2">Map Loading Error</p>
+                    <p className="text-sm text-slate-600">Please check Google Maps API configuration</p>
+                  </div>
+                </div>
+              ) : !isLoaded ? (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-100 to-teal-100">
+                  <div className="text-center">
+                    <Icons.Loader className="w-12 h-12 mx-auto mb-4 text-emerald-600 animate-spin" />
+                    <p className="text-lg font-semibold text-slate-900">Loading Sri Lanka Research Centers Map...</p>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  ref={(el) => {
+                    if (el && isLoaded && !mapInstanceRef.current) {
+                      // Initialize map showing all Sri Lanka with all centers
+                      const sriLankaCenter = { lat: 7.8731, lng: 80.7718 };
+                      const map = new window.google.maps.Map(el, {
+                        center: sriLankaCenter,
+                        zoom: 7,
+                        mapTypeControl: true,
+                        streetViewControl: true,
+                        fullscreenControl: true,
+                        zoomControl: true
+                      });
+
+                      mapInstanceRef.current = map;
+
+                      // Add markers for all centers
+                      const bounds = new window.google.maps.LatLngBounds();
+
+                      centerKeys.forEach((key, index) => {
+                        const center = centers[key];
+                        if (center?.coordinates) {
+                          const position = {
+                            lat: center.coordinates.lat,
+                            lng: center.coordinates.lng
+                          };
+
+                          bounds.extend(position);
+
+                          // Create custom marker for each center
+                          const markerDiv = document.createElement('div');
+                          markerDiv.innerHTML = `
+                            <div style="position: relative; width: 60px; height: 80px; display: flex; flex-direction: column; align-items: center; cursor: pointer;">
+                              <div style="
+                                width: 50px;
+                                height: 50px;
+                                background: white;
+                                border-radius: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                                border: 3px solid #10b981;
+                              ">
+                                <span style="font-size: 24px; font-weight: bold; color: #10b981;">${index + 1}</span>
+                              </div>
+                              <div style="
+                                width: 0;
+                                height: 0;
+                                border-left: 8px solid transparent;
+                                border-right: 8px solid transparent;
+                                border-top: 12px solid #10b981;
+                                margin-top: -2px;
+                              "></div>
+                              <div style="
+                                position: absolute;
+                                bottom: -30px;
+                                background: rgba(16, 185, 129, 0.95);
+                                color: white;
+                                padding: 4px 12px;
+                                border-radius: 12px;
+                                font-size: 11px;
+                                font-weight: 600;
+                                white-space: nowrap;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                              ">${center.name.split('–')[1]?.trim()}</div>
+                            </div>
+                          `;
+
+                          // Info window content
+                          const infoContent = `
+                            <div style="padding: 12px; font-family: 'Inter', sans-serif; max-width: 300px;">
+                              <h3 style="margin: 0 0 8px 0; color: #10b981; font-size: 16px; font-weight: 700;">
+                                ${center.name}
+                              </h3>
+                              <p style="margin: 0 0 6px 0; color: #333; font-size: 13px;">
+                                <strong>📍 ${center.location}</strong>
+                              </p>
+                              <p style="margin: 0 0 8px 0; color: #666; font-size: 12px;">
+                                ${center.tagline}
+                              </p>
+                              <p style="margin: 0; color: #888; font-size: 11px;">
+                                ${center.distance}
+                              </p>
+                              <button
+                                onclick="window.scrollTo(0, 800); document.querySelector('[data-center-id=\\'${key}\\']')?.click();"
+                                style="
+                                  margin-top: 10px;
+                                  padding: 6px 12px;
+                                  background: linear-gradient(to right, #10b981, #14b8a6);
+                                  color: white;
+                                  border: none;
+                                  border-radius: 8px;
+                                  font-weight: 600;
+                                  cursor: pointer;
+                                  font-size: 12px;
+                                "
+                              >View Details →</button>
+                            </div>
+                          `;
+
+                          const infoWindow = new window.google.maps.InfoWindow({
+                            content: infoContent
+                          });
+
+                          // Use Advanced Marker if available
+                          if (window.google.maps.marker?.AdvancedMarkerElement) {
+                            const marker = new window.google.maps.marker.AdvancedMarkerElement({
+                              position: position,
+                              map: map,
+                              content: markerDiv,
+                              title: center.name
+                            });
+
+                            marker.addListener('click', () => {
+                              infoWindow.open(map, marker);
+                            });
+                          } else {
+                            // Fallback to standard marker
+                            const marker = new window.google.maps.Marker({
+                              position: position,
+                              map: map,
+                              label: {
+                                text: `${index + 1}`,
+                                color: 'white',
+                                fontWeight: 'bold'
+                              },
+                              icon: {
+                                path: window.google.maps.SymbolPath.CIRCLE,
+                                scale: 25,
+                                fillColor: '#10b981',
+                                fillOpacity: 1,
+                                strokeColor: 'white',
+                                strokeWeight: 3
+                              },
+                              title: center.name
+                            });
+
+                            marker.addListener('click', () => {
+                              infoWindow.open(map, marker);
+                            });
+                          }
+                        }
+                      });
+
+                      // Fit map to show all centers
+                      map.fitBounds(bounds);
+
+                      // Add some padding
+                      const padding = { top: 50, right: 50, bottom: 50, left: 50 };
+                      map.fitBounds(bounds, padding);
+                    }
+                  }}
+                  className="w-full h-full"
+                />
+              )}
+            </div>
+
+            {/* Centers Legend */}
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-5 gap-4">
+              {centerKeys.map((key, index) => {
+                const center = centers[key];
+                return (
+                  <div
+                    key={key}
+                    className="flex items-center gap-3 p-4 rounded-xl bg-emerald-50 border border-emerald-200"
+                  >
+                    <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
+                      {index + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-bold text-slate-900 truncate">
+                        {center?.name?.split('–')[1]?.trim()}
+                      </div>
+                      <div className="text-xs text-slate-600 truncate">
+                        {center?.location}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Centers Navigation */}
+      <section className="py-8 px-4 bg-gradient-to-br from-emerald-50 to-teal-50 border-y border-emerald-100">
+        <div className="max-w-7xl mx-auto">
+          <h3 className="text-2xl font-bold text-center text-slate-900 mb-6">Select a Center for Detailed Information</h3>
           <div className="flex flex-wrap gap-3 justify-center">
             {centerKeys.map((key) => {
               const center = centers[key];
@@ -330,6 +552,7 @@ const RegionalCentersPage = () => {
               return (
                 <motion.button
                   key={key}
+                  data-center-id={key}
                   onClick={() => {
                     setSelectedCenter(key);
                     setActiveTab('overview');
@@ -339,7 +562,7 @@ const RegionalCentersPage = () => {
                   className={`flex items-center gap-2 px-5 py-3 rounded-xl font-semibold transition-all ${
                     isActive
                       ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      : 'bg-white text-slate-700 hover:bg-emerald-100 border-2 border-emerald-200'
                   }`}
                 >
                   <Icons.Building2 className="w-4 h-4" />

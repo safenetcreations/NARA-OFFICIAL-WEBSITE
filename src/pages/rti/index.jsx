@@ -19,10 +19,16 @@ const RTIPage = () => {
   }, []);
 
   const handleOpenForm = (formId) => {
-    const formData = rtiFormsData.forms[formId];
+    console.log('Opening form:', formId);
+    console.log('Available forms:', Object.keys(rtiFormsData?.forms || {}));
+    const formData = rtiFormsData?.forms?.[formId];
+    console.log('Found form data:', formData ? 'Yes' : 'No');
     if (formData) {
       setSelectedForm(formData);
       setShowFormModal(true);
+    } else {
+      console.error(`Form ${formId} not found in rtiFormsData`);
+      alert(`Form ${formId} is not available yet. Please try downloading the PDF version.`);
     }
   };
 

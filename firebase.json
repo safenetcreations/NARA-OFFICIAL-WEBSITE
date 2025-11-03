@@ -82,6 +82,13 @@
         "**/.*",
         "**/node_modules/**"
       ],
+      "redirects": [
+        {
+          "source": "/",
+          "destination": "https://nara-web-73384.web.app/admin/library",
+          "type": 302
+        }
+      ],
       "rewrites": [
         {
           "source": "**",

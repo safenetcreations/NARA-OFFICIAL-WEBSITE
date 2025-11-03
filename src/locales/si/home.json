@@ -579,6 +579,107 @@
       "link": "පූර්ණ නිවේදනය"
     }
   },
+  "unifiedHub": {
+    "badge": "සියල්ල-එකම විධාන මධ්‍යස්ථානය",
+    "heading": "NARA සේවා මධ්‍යස්ථානය",
+    "subheading": "පර්යේෂණ දත්ත සිට රජයේ සේවා සහ සාගර බුද්ධිය දක්වා ඔබට අවශ්‍ය සියල්ල එක බලගතු වේදිකාවක",
+    "tabs": {
+      "portals": "ප්‍රධාන ද්වාර",
+      "services": "අත්‍යවශ්‍ය සේවා",
+      "tools": "ඉක්මන් මෙවලම්"
+    },
+    "portals": [
+      {
+        "title": "පර්යේෂණ විශිෂ්ටතාවය",
+        "subtitle": "ද්වාරය",
+        "description": "විද්‍යාත්මක ප්‍රකාශන, දත්ත කට්ටල සහ සහයෝගී පර්යේෂණ මෙවලම්",
+        "metrics": [
+          { "label": "ප්‍රකාශන", "value": "2,500+" },
+          { "label": "දත්ත කට්ටල", "value": "850+" }
+        ],
+        "features": ["API ප්‍රවේශය", "දත්ත බාගත කිරීම්", "සහයෝගීතා මෙවලම්"],
+        "cta": "පර්යේෂණ ගවේෂණය කරන්න",
+        "icon": "microscope",
+        "gradient": "from-purple-600 via-violet-600 to-fuchsia-600"
+      },
+      {
+        "title": "රජයේ සේවා",
+        "subtitle": "ද්වාරය",
+        "description": "EIA අයදුම්පත්, බලපත්‍ර, අනුකූලතා නිරීක්ෂණය සහ හදිසි ප්‍රතිචාරය",
+        "metrics": [
+          { "label": "සක්‍රිය සේවා", "value": "8" },
+          { "label": "අයදුම්පත්", "value": "24/7" }
+        ],
+        "features": ["EIA සහ බලපත්‍රකරණය", "හදිසි ප්‍රතිචාරය", "නාවික සිතියම් සහ සමීක්ෂණ"],
+        "cta": "සේවා වෙත ප්‍රවේශ වන්න",
+        "icon": "file",
+        "gradient": "from-blue-600 via-cyan-600 to-teal-600"
+      },
+      {
+        "title": "ඩිජිටල් වෙළඳපොළ",
+        "subtitle": "වේදිකාව",
+        "description": "පර්යේෂණ දත්ත, වාර්තා සහ විශේෂිත සාගර නිෂ්පාදන මිලදී ගන්න",
+        "metrics": [
+          { "label": "නිෂ්පාදන", "value": "350+" },
+          { "label": "බාගත කිරීම්", "value": "12K+" }
+        ],
+        "features": ["ආරක්ෂිත ගෙවීම", "ක්ෂණික බෙදාහැරීම", "API ප්‍රවේශය"],
+        "cta": "ගබඩාව බලන්න",
+        "icon": "shopping",
+        "gradient": "from-emerald-600 via-green-600 to-teal-600"
+      }
+    ],
+    "services": [
+      {
+        "title": "සාගර රසායනාගාරය",
+        "description": "ISO සහතික කළ ජල ගුණාත්මක පරීක්ෂාව සහ මත්ස්‍ය නියැදි විශ්ලේෂණය",
+        "turnaround": "පැය 24-48",
+        "icon": "flask",
+        "link": "/lab-results"
+      },
+      {
+        "title": "ධීවර උපදෙස්",
+        "description": "විශේෂඥ මග පෙන්වීම, ආරක්ෂණ අනතුරු ඇඟවීම් සහ ධීවර කලාප නිර්දේශ",
+        "availability": "24/7 සහාය",
+        "icon": "info",
+        "link": "/fish-advisory-system"
+      },
+      {
+        "title": "දත්ත සහ ප්‍රකාශන",
+        "description": "පර්යේෂණ පත්‍රිකා, තාක්ෂණික වාර්තා සහ සාගර දත්ත කට්ටල වෙත ප්‍රවේශ වන්න",
+        "access": "විවෘත ප්‍රවේශය",
+        "icon": "database",
+        "link": "/open-data-portal"
+      },
+      {
+        "title": "පුහුණු වැඩසටහන්",
+        "description": "වැඩමුළු, සහතික පත්‍ර සහ ධාරිතා ගොඩනැගීමේ මුලපිරීම්",
+        "programs": "පා�මාලා 25+",
+        "icon": "graduation",
+        "link": "/learning-development-academy"
+      },
+      {
+        "title": "හදිසි ප්‍රතිචාරය",
+        "description": "24/7 සාගර සිද්ධි වාර්තාකරණය සහ වේගවත් ප්‍රතිචාර සම්බන්ධීකරණය",
+        "response": "< පැය 2",
+        "icon": "alert",
+        "link": "/marine-incident-portal"
+      },
+      {
+        "title": "අපනයන බුද්ධිය",
+        "description": "වෙළඳපොළ ප්‍රවණතා, වෙළඳ සංඛ්‍යාන සහ අපනයන අවස්ථා",
+        "updated": "දෛනික යාවත්කාලීන",
+        "icon": "trending",
+        "link": "/market-intelligence"
+      }
+    ],
+    "quickTools": [
+      { "title": "කාලගුණ අනාවැකිය", "icon": "cloud", "link": "/weather" },
+      { "title": "මත්ස්‍ය මිල", "icon": "dollar", "link": "/fish-prices" },
+      { "title": "වඩදිය වගු", "icon": "waves", "link": "/tide-tables" },
+      { "title": "බලපත්‍ර ද්වාරය", "icon": "file", "link": "/licenses" }
+    ]
+  },
   "knowledge": {
     "badge": "දැනුම් මධ්‍යස්ථානය",
     "heading": "අලුත් ප්‍රකාශන සොයාගන්න",
