@@ -1,0 +1,80 @@
+{
+  "hero": {
+    "badge": "NARA පර්යේෂණ අංශ",
+    "title": "අපගේ අංශ සොයා බලන්න",
+    "subtitle": "විශේෂඥත්වයැති අංශ 10 කින් සමන්විත ලෝකෝත්තර සාගර පර්යේෂණ අත්විඳින්න. සම්පූර්ණ මාර්ගෝපදේශ බාගත කර අපගේ දැනුම විමර්ශනය කරන්න.",
+    "searchPlaceholder": "අංශ නාමය, විශේෂඥතාවය හෝ සේවා අනුව සොයන්න...",
+    "searchAria": "අංශ සෙවීම",
+    "stats": [
+      { "icon": "Building2", "value": "10", "label": "අංශ" },
+      { "icon": "Users", "value": "200+", "label": "පර්යේෂකයින්" },
+      { "icon": "FileText", "value": "10", "label": "PDF මාර්ගෝපදේශ" },
+      { "icon": "Award", "value": "50+", "label": "සේවා" }
+    ]
+  },
+  "filters": {
+    "categories": {
+      "all": "සියලු අංශ",
+      "research": "පර්යේෂණ",
+      "services": "සේවා",
+      "monitoring": "නිරීක්ෂණ"
+    },
+    "view": {
+      "grid": "ජාලකය",
+      "list": "ලැයිස්තුව"
+    }
+  },
+  "results": {
+    "summary": "සම්පූර්ණ අංශ {{total}} න් {{count}} පෙන්වයි",
+    "summary_one": "සම්පූර්ණ අංශ {{total}} න් {{count}} පෙන්වයි",
+    "matching": "\"{{query}}\" සමග ගැළපේ"
+  },
+  "empty": {
+    "title": "අංශ හමු නොවීය",
+    "description": "ඔබගේ සෙවීම හෝ පෙරහන් සැකසුම් වෙනස් කර බලන්න.",
+    "clear": "පෙරහන් ඉවත් කරන්න"
+  },
+  "card": {
+    "pdfAvailable": "PDF තිබේ",
+    "metrics": {
+      "focusAreas": "අවධානයේ ක්ෂේත්‍ර",
+      "services": "සේවා",
+      "team": "කණ්ඩායම"
+    },
+    "pdfInfo": {
+      "title": "අංශ මාර්ගෝපදේශය බාගත කරන්න",
+      "pages": "{{count}} පිටු",
+      "pages_one": "{{count}} පිටුව",
+      "size": "{{size}} KB"
+    },
+    "actions": {
+      "explore": "අංශය බලන්න",
+      "download": "PDF බාගත කරන්න"
+    }
+  },
+  "cta": {
+    "heading": "සහයෝගයට සූදානම්ද?",
+    "description": "සාගර විද්‍යාව සහ තිරසාර මුහුදු කළමනාකරණය ඉදිරියට ගෙන යාමට අපගේ ලෝකෝත්තර පර්යේෂණ අංශ සමඟ හවුල් වන්න.",
+    "primary": "අපව සම්බන්ධ වන්න",
+    "secondary": "පර්යේෂණ බලන්න",
+    "downloadAll": "සියලු PDF බාගත කරන්න"
+  },
+  "pdfCard": {
+    "headerTitle": "අංශ මාර්ගෝපදේශය",
+    "headerSubtitle": "නිල ලේඛන",
+    "badge": "PDF",
+    "fileInfo": {
+      "formatLabel": "ආකෘතිය",
+      "formatValue": "PDF",
+      "pagesLabel": "පිටු",
+      "sizeLabel": "ප්‍රමාණය"
+    },
+    "buttons": {
+      "download": "PDF බාගත කරන්න",
+      "downloading": "බාගැනේ...",
+      "downloaded": "බාගැනීම සම්පූර්ණ!",
+      "preview": "පෙරදසුන්"
+    },
+    "fileNameLabel": "ගොනු නාමය"
+  }
+}

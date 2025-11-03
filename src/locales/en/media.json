@@ -1,0 +1,69 @@
+{
+  "tabs": {
+    "home": "Home",
+    "releases": "Press Releases",
+    "assets": "Media Assets",
+    "stories": "Stories",
+    "contacts": "Media Contacts"
+  },
+  "hero": {
+    "title": "Media Press Kit",
+    "description": "Access press releases, high-resolution media assets, and story content for accurate reporting on NARA's marine research and conservation efforts"
+  },
+  "quickActions": {
+    "download": "Download Full Media Kit",
+    "subscribe": "Subscribe to Updates",
+    "rss": "RSS Feed"
+  },
+  "stats": {
+    "pressReleases": "Press Releases",
+    "mediaAssets": "Media Assets",
+    "stories": "Stories",
+    "mediaContacts": "Media Contacts"
+  },
+  "toolbar": {
+    "lastUpdated": "Last Updated: Today, 3:45 PM",
+    "activeContacts": "3 Active Media Contacts",
+    "shareTwitter": "Share on Twitter",
+    "shareFacebook": "Share on Facebook",
+    "shareLinkedIn": "Share on LinkedIn",
+    "adminPanel": "Admin Panel"
+  },
+  "sections": {
+    "latestReleases": "Latest Press Releases",
+    "featuredStories": "Featured Stories",
+    "quickDownloads": "Quick Downloads",
+    "pressReleases": "Press Releases",
+    "mediaAssets": "Media Assets Library",
+    "allStories": "All Stories",
+    "ourTeam": "Our Media Team"
+  },
+  "common": {
+    "viewAll": "View All",
+    "new": "NEW",
+    "readTime": "2 min read",
+    "share": "Share",
+    "readMore": "Read Full Release",
+    "downloadPDF": "Download PDF",
+    "featured": "Featured",
+    "readStory": "Read Story",
+    "files": "files",
+    "download": "Download",
+    "preview": "Preview",
+    "attachments": "attachment(s)",
+    "noItems": "No items found",
+    "noAssets": "No assets found",
+    "noAssetsDescription": "Try adjusting your filters or check back later for new content"
+  },
+  "assets": {
+    "title": "Media Assets Library",
+    "description": "High-resolution images, videos, logos, and documents for press use",
+    "downloadAll": "Download All",
+    "advancedFilters": "Advanced Filters",
+    "all": "All Assets",
+    "images": "Images",
+    "videos": "Videos",
+    "documents": "Documents",
+    "logos": "Logos"
+  }
+}

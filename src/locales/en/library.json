@@ -1,0 +1,194 @@
+{
+  "hero": {
+    "title": "NARA Library Catalogue",
+    "subtitle": "Discover our comprehensive collection of marine and aquatic research resources",
+    "stats": {
+      "totalItems": "Total Items",
+      "categories": "Categories",
+      "languages": "Languages",
+      "yearsCovered": "Years Covered"
+    },
+    "searchPlaceholder": "Search by title, author, subject, ISBN, keywords...",
+    "searchButton": "Search",
+    "hideFilters": "Hide Filters",
+    "advancedSearch": "Advanced Search",
+    "browseCategories": "Browse Categories"
+  },
+  "materialTypes": {
+    "ACT": "Acts",
+    "ATC": "Atapattu Collection",
+    "BOBP": "BOBP Reports",
+    "CD": "CDs",
+    "DMAP": "Digital Map",
+    "EBOOK": "Electronic Books",
+    "FAO": "FAO Reports",
+    "IOC": "IOC Reports",
+    "IWMI": "IWMI Reports",
+    "JR": "Journal",
+    "LBOOK": "Lending Book",
+    "MAP": "Maps",
+    "NEWS": "Newspaper Articles",
+    "PREF": "Permanent Reference",
+    "PROC": "Proceedings",
+    "UACOL": "Prof. Upali Amarasinghe Collection",
+    "RBOOK": "Reference Book",
+    "RPAPER": "Research Papers",
+    "RNARA": "Research Reports - NARA",
+    "SREF": "Special Reference",
+    "SLBOOK": "Sri Lanka Collection - Books",
+    "SLREP": "Sri Lanka Collection - Reports",
+    "THESIS": "Thesis",
+    "WFISH": "World Fisheries Collection",
+    "EJART": "e-Journal Articles",
+    "EREP": "e-Reports"
+  },
+  "filters": {
+    "advancedFilters": "Advanced Filters",
+    "materialType": "Material Type",
+    "allTypes": "All Types",
+    "publicationYear": "Publication Year",
+    "allYears": "All Years",
+    "language": "Language",
+    "allLanguages": "All Languages",
+    "activeFilters": "Active Filters:",
+    "year": "Year:",
+    "clearAll": "Clear All",
+    "quickFilters": "Quick Filters:",
+    "eBooks": "E-Books",
+    "naraResearch": "NARA Research",
+    "theses": "Theses",
+    "thisYear": "This Year"
+  },
+  "browse": {
+    "title": "Browse by Material Type",
+    "subtitle": "Explore our collection of 26 specialized categories",
+    "item": "item",
+    "items": "items"
+  },
+  "featured": {
+    "naraResearch": {
+      "title": "NARA Research",
+      "description": "Access our exclusive marine research collection",
+      "cta": "Explore Collection →"
+    },
+    "academicResources": {
+      "title": "Academic Resources",
+      "description": "Browse thesis, research papers, and journals",
+      "cta": "View Theses →"
+    },
+    "specialCollections": {
+      "title": "Special Collections",
+      "description": "Discover curated collections and archives",
+      "cta": "Explore Archives →"
+    }
+  },
+  "results": {
+    "title": "Search Results",
+    "itemsFound": "items found",
+    "itemsInCollection": "items in this collection",
+    "item": "item",
+    "backToCategories": "Back to Categories",
+    "searching": "Searching...",
+    "loadingItems": "Loading items...",
+    "noItemsFound": "No items found matching your search.",
+    "tryDifferent": "Try different keywords or clear your filters.",
+    "page": "Page",
+    "of": "of"
+  },
+  "availability": {
+    "available": "Available",
+    "checkedOut": "Checked Out",
+    "checkouts": "checkouts"
+  },
+  "sections": {
+    "popularItems": "Popular Items",
+    "newArrivals": "New Arrivals"
+  },
+  "about": {
+    "title": "About NARA Library",
+    "description": "The NARA Library is a specialized resource center focusing on marine science, aquatic research, and fisheries management. Our collection includes scientific publications, research reports, theses, and digital resources from around the world.",
+    "openHours": {
+      "title": "Open Hours",
+      "schedule": "Mon-Fri: 8:30 AM - 4:30 PM"
+    },
+    "contact": {
+      "title": "Contact",
+      "email": "library@nara.ac.lk"
+    }
+  },
+  "services": {
+    "title": "Library Services",
+    "patronPortal": {
+      "title": "Patron Portal",
+      "description": "Manage loans, holds, and account"
+    },
+    "digitalRepository": {
+      "title": "Digital Repository",
+      "description": "Access digital collections & archives"
+    },
+    "needHelp": {
+      "title": "Need Help?",
+      "description": "Contact library staff for assistance"
+    }
+  },
+  "carousel": {
+    "badge": "Explore Our Collection",
+    "title": "Featured",
+    "titleHighlight": "Research Library",
+    "description": "Discover our curated collection of marine science research, publications, and resources",
+    "pages": "pages",
+    "viewDetails": "View Details",
+    "exploreFullLibrary": "Explore Full Library",
+    "accessInfo": "Access thousands of research papers, publications, and marine science resources",
+    "books": [
+      {
+        "id": "marine-biodiversity",
+        "title": "Marine Biodiversity of Sri Lankan Waters",
+        "author": "Dr. Arjan Rajasuriya",
+        "category": "Marine Biology",
+        "description": "A comprehensive study of marine biodiversity in Sri Lankan coastal waters",
+        "language": "English"
+      },
+      {
+        "id": "sustainable-fisheries",
+        "title": "Sustainable Fisheries Management",
+        "author": "Prof. Nimal Fernando",
+        "category": "Fisheries",
+        "description": "Best practices for sustainable fisheries in tropical waters",
+        "language": "English"
+      },
+      {
+        "id": "coastal-restoration",
+        "title": "Coastal Ecosystem Restoration",
+        "author": "Dr. Chamari Silva",
+        "category": "Conservation",
+        "description": "Innovative approaches to coastal ecosystem restoration",
+        "language": "English"
+      },
+      {
+        "id": "climate-ocean-acidification",
+        "title": "Climate Change and Ocean Acidification",
+        "author": "Dr. Sampath Perera",
+        "category": "Climate Science",
+        "description": "Impact of climate change on Sri Lankan marine ecosystems",
+        "language": "English"
+      },
+      {
+        "id": "marine-spatial-planning",
+        "title": "Marine Spatial Planning in South Asia",
+        "author": "Prof. Nilanthi Jayasuriya",
+        "category": "Policy",
+        "description": "Framework for effective marine spatial planning",
+        "language": "English"
+      },
+      {
+        "id": "aquaculture-innovations",
+        "title": "Aquaculture Innovations",
+        "author": "Dr. Rohan de Silva",
+        "category": "Aquaculture",
+        "description": "Modern techniques in sustainable aquaculture",
+        "language": "English"
+      }
+    ]
+  }
+}

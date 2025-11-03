@@ -1,0 +1,25 @@
+{
+  "login": {
+    "title": "වාරයක් ආපසු සාදරයෙන් පිළිගනිමු",
+    "subtitle": "ඔබගේ පුස්තකාල ගණුදෙනුට පිවිසෙන්න",
+    "errors": {
+      "generic": "ඇතුල් වීම අසාර්ථක විය"
+    },
+    "fields": {
+      "emailLabel": "ඊමේල් ලිපිනය",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "මුරපදය",
+      "passwordPlaceholder": "ඔබගේ මුරපදය ඇතුල් කරන්න"
+    },
+    "links": {
+      "forgotPassword": "මුරපදය අමතකද?"
+    },
+    "rememberMe": "දින 30ක් වාරයෙන් සලකන්න",
+    "divider": "හෝ දිගටම යන්න",
+    "buttons": {
+      "signIn": "ඇතුල් වන්න",
+      "signingIn": "ඇතුල් වෙමින්...",
+      "google": "Google සමඟ ඇතුල් වන්න"
+    }
+  }
+}

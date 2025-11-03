@@ -1,0 +1,25 @@
+{
+  "login": {
+    "title": "வணக்கம் மீண்டும் வருக",
+    "subtitle": "நூலக கணக்கில் உள்நுழையவும்",
+    "errors": {
+      "generic": "உள்நுழைவு தோல்வியடைந்தது"
+    },
+    "fields": {
+      "emailLabel": "மின்னஞ்சல் முகவரி",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "கடவுச்சொல்",
+      "passwordPlaceholder": "உங்கள் கடவுச்சொல்லை உள்ளிடவும்"
+    },
+    "links": {
+      "forgotPassword": "கடவுச்சொல்லை மறந்துவிட்டீர்களா?"
+    },
+    "rememberMe": "30 நாட்களுக்கு என்னை நினைவில் வைத்திருக்கவும்",
+    "divider": "அல்லது தொடரவும்",
+    "buttons": {
+      "signIn": "உள்நுழை",
+      "signingIn": "உள்நுழைகிறது...",
+      "google": "Google மூலம் உள்நுழைக"
+    }
+  }
+}

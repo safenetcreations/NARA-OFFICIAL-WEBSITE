@@ -1,0 +1,80 @@
+{
+  "hero": {
+    "badge": "NARA Research Divisions",
+    "title": "Explore Our Divisions",
+    "subtitle": "Discover world-class marine research across 10 specialized divisions. Download comprehensive guides and explore our expertise.",
+    "searchPlaceholder": "Search divisions by name, expertise, or services...",
+    "searchAria": "Search divisions",
+    "stats": [
+      { "icon": "Building2", "value": "10", "label": "Divisions" },
+      { "icon": "Users", "value": "200+", "label": "Researchers" },
+      { "icon": "FileText", "value": "10", "label": "PDF Guides" },
+      { "icon": "Award", "value": "50+", "label": "Services" }
+    ]
+  },
+  "filters": {
+    "categories": {
+      "all": "All Divisions",
+      "research": "Research",
+      "services": "Services",
+      "monitoring": "Monitoring"
+    },
+    "view": {
+      "grid": "Grid",
+      "list": "List"
+    }
+  },
+  "results": {
+    "summary": "Showing {{count}} of {{total}} divisions",
+    "summary_one": "Showing {{count}} of {{total}} division",
+    "matching": "matching \"{{query}}\""
+  },
+  "empty": {
+    "title": "No Divisions Found",
+    "description": "Try adjusting your search or filter criteria.",
+    "clear": "Clear Filters"
+  },
+  "card": {
+    "pdfAvailable": "PDF Available",
+    "metrics": {
+      "focusAreas": "Focus Areas",
+      "services": "Services",
+      "team": "Team"
+    },
+    "pdfInfo": {
+      "title": "Download Division Guide",
+      "pages": "{{count}} pages",
+      "pages_one": "{{count}} page",
+      "size": "{{size}} KB"
+    },
+    "actions": {
+      "explore": "Explore Division",
+      "download": "Download PDF"
+    }
+  },
+  "cta": {
+    "heading": "Ready to Collaborate?",
+    "description": "Partner with our world-class research divisions to advance marine science and sustainable ocean management.",
+    "primary": "Contact Us",
+    "secondary": "View Research",
+    "downloadAll": "Download All PDFs"
+  },
+  "pdfCard": {
+    "headerTitle": "Division Guide",
+    "headerSubtitle": "Official Documentation",
+    "badge": "PDF",
+    "fileInfo": {
+      "formatLabel": "Format",
+      "formatValue": "PDF",
+      "pagesLabel": "Pages",
+      "sizeLabel": "Size"
+    },
+    "buttons": {
+      "download": "Download PDF",
+      "downloading": "Downloading...",
+      "downloaded": "Downloaded!",
+      "preview": "Preview"
+    },
+    "fileNameLabel": "File name"
+  }
+}
