@@ -20,7 +20,6 @@ import { getPrimaryDivisionImage } from '../../services/divisionImagesService';
 // Lazy load heavy components
 const SriLankaEEZMap = lazy(() => import('../../components/SriLankaEEZMap'));
 const APIIntegrationShowcase = lazy(() => import('../../components/sections/APIIntegrationShowcase'));
-const AcademyShowcase = lazy(() => import('../../components/sections/AcademyShowcase'));
 const LibraryBooksCarousel = lazy(() => import('../../components/library/LibraryBooksCarousel'));
 const GovFooter = lazy(() => import('../../components/compliance/GovFooter'));
 const UnifiedServicesHub = lazy(() => import('../../components/UnifiedServicesHub'));
@@ -931,14 +930,6 @@ const NewHomePage = () => {
           </div>
         }>
           <UnifiedServicesHub />
-        </Suspense>
-
-        <Suspense fallback={
-          <div className="py-20 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-400"></div>
-          </div>
-        }>
-          <AcademyShowcase />
         </Suspense>
 
         <section className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-12 sm:py-16 md:py-20 px-4">

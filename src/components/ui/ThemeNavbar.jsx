@@ -130,24 +130,6 @@ const ThemeNavbar = () => {
       icon: Icons.GraduationCap,
       dropdown: [
         { labelKey: 'navbar.menu.resources.links.learningAcademy', path: '/learning-development-academy', icon: Icons.BookOpen },
-        { 
-          labelKey: 'navbar.menu.academy.links.aquaSchool', 
-          path: 'https://nara-aquaschool.web.app/', 
-          icon: Icons.School,
-          isExternal: true 
-        },
-        { 
-          labelKey: 'navbar.menu.academy.links.nexus', 
-          path: 'https://nexus-nara.web.app/', 
-          icon: Icons.Users,
-          isExternal: true 
-        },
-        {
-          labelKey: 'navbar.menu.academy.links.schoolDirectory',
-          path: '/aqua-school-directory',
-          icon: Icons.Database,
-          isExternal: false
-        },
         { labelKey: 'navbar.menu.resources.links.libraryCatalogue', path: '/library', icon: Icons.Library },
         { labelKey: 'navbar.menu.resources.links.digitalProductLibrary', path: '/digital-product-library', icon: Icons.Archive },
         { labelKey: 'navbar.menu.services.links.digitalMarketplace', path: '/nara-digital-marketplace', icon: Icons.ShoppingBag }
